@@ -1,0 +1,11 @@
+{
+  "name": "ekap-aiq-review",
+  "version": "1.0.0",
+  "description": "EKAP AIQ Review Surface Accessibility and Web Application",
+  "scripts": {
+    "a11y": "pa11y http://localhost:8000"
+  },
+  "devDependencies": {
+    "pa11y": "^8.0.0"
+  }
+}

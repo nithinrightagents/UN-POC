@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EKAP AIQ Review{% endblock %}</title>
+    <style>
+        :root { color-scheme: light; }
+        body { font-family: -apple-system, "Segoe UI", Arial, sans-serif; margin: 0; padding: 0;
+               background: #f7f7f8; color: #1a1a1a; line-height: 1.5; }
+        a { color: #0b5fff; }
+        a:focus, button:focus, input:focus, select:focus, textarea:focus, summary:focus {
+            outline: 3px solid #0b5fff; outline-offset: 2px;
+        }
+        .skip-link { position: absolute; left: -999px; top: 0; background: #fff; padding: 8px 16px; z-index: 100; }
+        .skip-link:focus { left: 0; }
+        header.site { background: #1a2b4c; color: #fff; padding: 1rem 1.5rem; }
+        header.site a { color: #fff; text-decoration: none; font-weight: 600; }
+        main { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+        .card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 1.25rem; margin-bottom: 1rem; }
+        .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin-left: 0.4rem; }
+        .badge--verified { background: #e6f4ea; color: #1e7e34; }
+        .badge--unverified { background: #fdecea; color: #a12622; }
+        .badge--stale { background: #fff8e1; color: #8a6d00; }
+        .badge--pass { background: #e6f4ea; color: #1e7e34; }
+        .badge--fail { background: #fdecea; color: #a12622; }
+        .confidence { font-weight: 700; font-variant-numeric: tabular-nums; }
+        .confidence--low { color: #a12622; }
+        table.detail__table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; }
+        table.detail__table th, table.detail__table td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #eee; }
+        .evidence { border-left: 4px solid #0b5fff; padding-left: 1rem; margin: 1rem 0; }
+        .evidence--missing { border-left-color: #a12622; background: #fdecea; padding: 1rem; }
+        .evidence__capture { max-width: 100%; border: 1px solid #ccc; margin: 0.5rem 0; }
+        .status--unlocked { color: #1e7e34; }
+        .status--locked { color: #8a6d00; }
+        form.actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        button { padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid #999; background: #fff; cursor: pointer; }
+        button.primary { background: #0b5fff; color: #fff; border-color: #0b5fff; }
+        button.danger { background: #a12622; color: #fff; border-color: #a12622; }
+        label { display: block; font-weight: 600; margin-top: 0.5rem; }
+        textarea, input[type=text] { width: 100%; box-sizing: border-box; padding: 0.4rem; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <header class="site">
+        <a href="/">EKAP AIQ &mdash; Review</a>
+    </header>
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKAP AIQ - Interactive System Architecture & Multi-Agent Flowchart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* United Nations Brand — Blue + White on Dark */
+      --un-blue:      #2E7EAA;  /* Professional slate-teal — UN-adjacent */
+      --un-blue-dim:  #23617F;  /* deeper institutional blue */
+      --un-blue-glow: rgba(46, 126, 170, 0.28);
+
+      --bg-dark:       #0c0f13;             /* near-black warm neutral */
+      --bg-card:       rgba(16, 21, 29, 0.90); /* dark neutral glass */
+      --bg-card-hover: rgba(22, 30, 42, 0.94);
+      --border-color:  rgba(255, 255, 255, 0.07); /* neutral subtle border */
+      --border-un:     rgba(46, 126, 170, 0.28);  /* institutional blue border */
+      --border-glow:   #2E7EAA;
+      --text-main:     #EDF0F3;   /* off-white — easier on eyes */
+      --text-muted:    #8A9DB5;   /* cool blue-gray muted */
+      --text-dim:      #505F73;   /* dim neutral */
+
+      /* Professional Accent Palette — desaturated & institutional */
+      --accent-blue:    #2E7EAA; /* Institutional slate-teal */
+      --accent-emerald: #2D8C64; /* Forest green — calm, professional */
+      --accent-amber:   #9A7B3A; /* Warm brass — not flashy */
+      --accent-rose:    #8C3D4A; /* Deep burgundy — serious severity */
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Subtle Executive Grid Overlay */
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: 
+        radial-gradient(rgba(46, 126, 170, 0.055) 1px, transparent 1px),
+        radial-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+      background-size: 32px 32px, 16px 16px;
+      background-position: 0 0, 8px 8px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse at center, black 50%, transparent 90%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 90%);
+    }
+
+    /* Professional Header Styling */
+    header {
+      background: rgba(10, 14, 20, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 1.1rem 2.2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.05), 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-badge {
+      background: #1C4F6E;
+      color: #C8DCE8;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      border: 1px solid rgba(46, 126, 170, 0.35);
+      box-shadow: 0 2px 12px rgba(28, 79, 110, 0.5);
+    }
+
+    h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #FFFFFF, #C8E6F8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Professional Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(15, 20, 28, 0.85);
+      padding: 0.3rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(12px);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.83rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-btn.active {
+      background: #1C4F6E;
+      color: #C8DCE8;
+      border-color: rgba(46, 126, 170, 0.4);
+      box-shadow: 0 2px 10px rgba(28, 79, 110, 0.45);
+    }
+
+    /* Main Container Layout */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 73px);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left Control Sidebar */
+    .toolbar-sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background: rgba(12, 17, 25, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+      color: #6B8FAD;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      color: var(--text-muted);
+      padding: 0.58rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-chip:hover {
+      border-color: rgba(46, 126, 170, 0.45);
+      color: #EDF0F3;
+      background: rgba(46, 126, 170, 0.08);
+    }
+
+    .filter-chip.active {
+      background: rgba(46, 126, 170, 0.12);
+      border-color: #2E7EAA;
+      color: #EDF0F3;
+    }
+
+    .filter-count {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.12rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sim-controls {
+      background: rgba(14, 20, 30, 0.95);
+      border: 1px solid rgba(46, 126, 170, 0.22);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .btn-sim {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.83rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #163C52, #1C4F6E);
+      color: #C8DCE8;
+      box-shadow: 0 3px 14px rgba(22, 60, 82, 0.5);
+      border: 1px solid rgba(46, 126, 170, 0.38);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1C4F6E, #23617F);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 18px rgba(22, 60, 82, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .step-indicator {
+      font-size: 0.76rem;
+      color: #8FBECD;
+      text-align: center;
+      font-family: var(--font-mono);
+      background: rgba(14, 28, 40, 0.6);
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid rgba(46, 126, 170, 0.2);
+    }
+
+    /* Flowchart Canvas Area */
+    .canvas-view {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .flow-svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .flow-grid-container {
+      position: relative;
+      z-index: 2;
+      padding: 2.8rem 1.5rem;
+      width: 100%;
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 2.6rem;
+      align-items: center;
+    }
+
+    .flow-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1.8rem;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    /* Refined Professional Node Cards */
+    .node-card-wrapper {
+      perspective: 1000px;
+    }
+
+    .node-card {
+      background: rgba(13, 18, 26, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.1rem;
+      width: 250px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, border-color 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6);
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .node-card:hover {
+      border-color: rgba(46, 126, 170, 0.5);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(46, 126, 170, 0.18);
+    }
+
+    .node-card.selected {
+      border-color: #2E7EAA;
+      box-shadow: 0 0 0 2px rgba(46, 126, 170, 0.45), 0 10px 32px rgba(0, 0, 0, 0.5);
+      background: rgba(46, 126, 170, 0.07);
+    }
+
+    .node-card.sim-highlight {
+      border-color: #2E7EAA;
+      box-shadow: 0 0 22px rgba(46, 126, 170, 0.45);
+      animation: pulseHighlight 1.5s infinite alternate;
+    }
+
+    @keyframes pulseHighlight {
+      0% { box-shadow: 0 0 12px rgba(46, 126, 170, 0.35); }
+      100% { box-shadow: 0 0 28px rgba(46, 126, 170, 0.65); }
+    }
+
+    .node-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .node-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .node-title-box {
+      overflow: hidden;
+    }
+
+    .node-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .node-category {
+      font-size: 0.66rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .node-desc {
+      font-size: 0.78rem;
+      color: #c0cede;
+      line-height: 1.45;
+      margin-bottom: 0.8rem;
+    }
+
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 0.6rem;
+      font-size: 0.72rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .meta-label {
+      color: var(--text-dim);
+    }
+
+    .meta-val {
+      font-family: var(--font-mono);
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.12rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.67rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .badge-retry {
+      position: absolute;
+      top: -10px;
+      right: 12px;
+      background: #1C3A50;
+      color: #8FBECD;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      letter-spacing: 0.4px;
+      border: 1px solid rgba(46, 126, 170, 0.3);
+    }
+
+    /* Enterprise — desaturated institutional palette */
+    .cat-input      { background: rgba(46,126,170,0.10); color: #7BAEC5; border: 1px solid rgba(46,126,170,0.22); }
+    .cat-links      { background: rgba(90,105,118,0.12); color: #8CA0B0; border: 1px solid rgba(90,105,118,0.22); }
+    .cat-capture    { background: rgba(38,108,136,0.10); color: #6FA8BF; border: 1px solid rgba(38,108,136,0.2); }
+    .cat-assessor   { background: rgba(45,140,100,0.10); color: #6AABA0; border: 1px solid rgba(45,140,100,0.22); }
+    .cat-validator  { background: rgba(154,123,58,0.10); color: #B89E6A; border: 1px solid rgba(154,123,58,0.22); }
+    .cat-adjudicator{ background: rgba(140,61,74,0.10);  color: #B07A82; border: 1px solid rgba(140,61,74,0.22); }
+    .cat-review     { background: rgba(80,80,110,0.12);  color: #9898BE; border: 1px solid rgba(80,80,110,0.22); }
+    .cat-output     { background: rgba(45,140,100,0.09); color: #60A090; border: 1px solid rgba(45,140,100,0.2); }
+
+    /* Right Inspector Side Panel */
+    .inspector-panel {
+      width: 390px;
+      flex-shrink: 0;
+      background: rgba(12, 17, 25, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-left: 1px solid rgba(255, 255, 255, 0.07);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .inspector-panel.collapsed {
+      width: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
+    }
+
+    .inspector-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .inspector-title-area {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .inspector-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .info-title {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #6AABBD;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 0.9rem;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .code-snippet {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #07090d;
+      color: #e2e8f0;
+      padding: 0.9rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 220px;
+    }
+
+    .rule-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rule-item {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.6rem 0.9rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-blue);
+      font-size: 0.8rem;
+      color: var(--text-main);
+      line-height: 1.45;
+    }
+
+    .rule-item.warning { border-left-color: #9A7B3A; }
+    .rule-item.danger  { border-left-color: #8C3D4A; }
+    .rule-item.success { border-left-color: #2D8C64; }
+
+    /* Institutional Connector Paths */
+    .flow-line {
+      fill: none;
+      stroke: rgba(46, 126, 170, 0.2);
+      stroke-width: 1.5;
+      transition: all 0.3s ease;
+    }
+
+    .flow-line.active {
+      stroke: #2E7EAA;
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 4px rgba(46, 126, 170, 0.5));
+    }
+
+    .flow-line.sim-active {
+      stroke: #4A9FBF;
+      stroke-width: 3;
+      stroke-dasharray: 8 4;
+      animation: dashSim 0.8s linear infinite;
+      filter: drop-shadow(0 0 6px rgba(74, 159, 191, 0.6));
+    }
+
+    @keyframes dashSim {
+      to { stroke-dashoffset: -24; }
+    }
+
+    /* Matrix Table View */
+    .matrix-view {
+      padding: 2rem;
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .matrix-table th {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--text-main);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .matrix-table td {
+      padding: 1rem;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-muted);
+      vertical-align: top;
+    }
+
+    .matrix-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .agent-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Subtle Canvas Grid -->
+  <canvas id="background-canvas"></canvas>
+  <div class="grid-overlay"></div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand-title">
+      <span class="brand-badge">UN EKAP AIQ</span>
+      <div>
+        <h1>System Architecture & Multi-Agent Flowchart</h1>
+        <div class="subtitle">Interactive multi-agent assessment pipeline for UN E-Government Survey (Module 2.1)</div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-canvas" onclick="switchView('canvas')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Interactive Flowchart
+      </button>
+      <button class="tab-btn" id="tab-matrix" onclick="switchView('matrix')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Agent Spec Matrix
+      </button>
+      <button class="tab-btn active" id="btn-toggle-inspector" onclick="toggleInspectorPanel()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Toggle Details Panel
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Left Toolbar Sidebar -->
+    <div class="toolbar-sidebar">
+      <div>
+        <div class="section-title">Pipeline Stage Filter</div>
+        <div class="filter-group">
+          <div class="filter-chip active" onclick="filterNodes('all', this)">
+            <span>All System Stages</span>
+            <span class="filter-count">8</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('links', this)">
+            <span>1. Link Resolution</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('capture', this)">
+            <span>2. Traversal & Render</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('assessor', this)">
+            <span>3. Assessor Agents</span>
+            <span class="filter-count">2</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('validator', this)">
+            <span>4. Validation Stage</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('adjudicator', this)">
+            <span>5. Adjudication Engine</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('review', this)">
+            <span>6. Human Review</span>
+            <span class="filter-count">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Playback Controls -->
+      <div class="sim-controls">
+        <div class="section-title" style="margin-bottom:0.2rem;">Live Flow Simulation</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">Step through a sample question unit ("France Open Data Portal"):</div>
+        
+        <button class="btn-sim btn-primary" id="btn-run-sim" onclick="toggleSimulation()">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          Start Step Simulation
+        </button>
+
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn-sim btn-secondary" onclick="prevSimStep()">Prev Step</button>
+          <button class="btn-sim btn-secondary" onclick="nextSimStep()">Next Step</button>
+        </div>
+
+        <div class="step-indicator" id="sim-status">Status: Idle</div>
+      </div>
+
+      <div style="margin-top:auto;">
+        <div class="section-title">System Invariants</div>
+        <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.45;">
+          🛡️ <strong>Structural Independence:</strong> Agents run in separate ADK sessions with zero shared state.<br><br>
+          ⚡ <strong>Rate Limited:</strong> Shared per-domain token bucket protects target gov portals.
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Canvas Area -->
+    <div class="canvas-view" id="canvas-container">
+      <svg class="flow-svg-layer" id="flow-svg"></svg>
+
+      <div class="flow-grid-container">
+        
+        <!-- Row 1: System Inputs -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-input" onclick="selectNode('input')">
+              <div class="node-header">
+                <div class="node-icon cat-input">📥</div>
+                <div class="node-title-box">
+                  <div class="node-title">System Input & Scope</div>
+                  <div class="node-category">Configuration & Data</div>
+                </div>
+              </div>
+              <div class="node-desc">Questionnaire (Module 2.1) + Target Country Portals (193 Member States) + Session Config.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Input Data:</span><span class="meta-val">Questions & Portals</span></div>
+                <div class="meta-item"><span class="meta-label">Target Units:</span><span class="meta-val">~38,600 pairs</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Link Resolution & Live Traversal -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-link" onclick="selectNode('link')">
+              <div class="node-header">
+                <div class="node-icon cat-links">🔍</div>
+                <div class="node-title-box">
+                  <div class="node-title">1. Link Resolution</div>
+                  <div class="node-category">Discovery Engine</div>
+                </div>
+              </div>
+              <div class="node-desc">Resolves target page URL via prior KB → MSQ DB → Gov TLD Search fallthrough.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Input:</span><span class="meta-val">Question + Country</span></div>
+                <div class="meta-item"><span class="meta-label">Output:</span><span class="meta-val">Candidate URL</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-capture" onclick="selectNode('capture')">
+              <div class="node-header">
+                <div class="node-icon cat-capture">🌐</div>
+                <div class="node-title-box">
+                  <div class="node-title">2. Live Traversal</div>
+                  <div class="node-category">Playwright & Limiter</div>
+                </div>
+              </div>
+              <div class="node-desc">Live browser render, region screenshot, DOM capture, language detect & auth-wall check.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Token Bucket:</span><span class="meta-val">Shared Per-Domain</span></div>
+                <div class="meta-item"><span class="meta-label">Output:</span><span class="meta-val">DOM + Screenshot</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Parallel Assessor Agents -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-assessor1" onclick="selectNode('assessor1')">
+              <div class="badge-retry">Retry Gate &lt; 75</div>
+              <div class="node-header">
+                <div class="node-icon cat-assessor">🤖</div>
+                <div class="node-title-box">
+                  <div class="node-title">3a. Assessor Agent 1</div>
+                  <div class="node-category">ADK Session 1</div>
+                </div>
+              </div>
+              <div class="node-desc">Evaluates question against DOM evidence independently with prompt profile A.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Input:</span><span class="meta-val">Closed Schema (DOM)</span></div>
+                <div class="meta-item"><span class="meta-label">Output:</span><span class="meta-val">Answer + Citation</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-assessor2" onclick="selectNode('assessor2')">
+              <div class="badge-retry">Retry Gate &lt; 75</div>
+              <div class="node-header">
+                <div class="node-icon cat-assessor">🤖</div>
+                <div class="node-title-box">
+                  <div class="node-title">3b. Assessor Agent 2</div>
+                  <div class="node-category">ADK Session 2</div>
+                </div>
+              </div>
+              <div class="node-desc">Evaluates question independently in isolated ADK session with prompt profile B.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Input:</span><span class="meta-val">Closed Schema (DOM)</span></div>
+                <div class="meta-item"><span class="meta-label">Output:</span><span class="meta-val">Answer + Citation</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4: Validation Stage -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-validator" onclick="selectNode('validator')">
+              <div class="badge-retry">Max 2 Retries</div>
+              <div class="node-header">
+                <div class="node-icon cat-validator">🛡️</div>
+                <div class="node-title-box">
+                  <div class="node-title">4. Validator Agent</div>
+                  <div class="node-category">Verification Engine</div>
+                </div>
+              </div>
+              <div class="node-desc">Re-traverses live link per agent output. Verifies evidence selector & text hash.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Evaluation:</span><span class="meta-val">1 Agent Output</span></div>
+                <div class="meta-item"><span class="meta-label">Taxonomy:</span><span class="meta-val">Pass / Fail + Reason</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 5: Mechanical Adjudication & Human Review -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-adjudicator" onclick="selectNode('adjudicator')">
+              <div class="badge-retry">Max 2 Retries</div>
+              <div class="node-header">
+                <div class="node-icon cat-adjudicator">⚖️</div>
+                <div class="node-title-box">
+                  <div class="node-title">5. Adjudicator</div>
+                  <div class="node-category">Consensus Rules</div>
+                </div>
+              </div>
+              <div class="node-desc">Deterministic comparison of validated agent positions. Flags discrepancies.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Input:</span><span class="meta-val">≥ 2 Validated Runs</span></div>
+                <div class="meta-item"><span class="meta-label">Rules:</span><span class="meta-val">Unanimous / Escalated</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-review" onclick="selectNode('review')">
+              <div class="node-header">
+                <div class="node-icon cat-review">👤</div>
+                <div class="node-title-box">
+                  <div class="node-title">6. Human Review</div>
+                  <div class="node-category">Web App Surface</div>
+                </div>
+              </div>
+              <div class="node-desc">UN Assessor reviews consensus answers, evidence screenshots & escalations.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Authority:</span><span class="meta-val">Human Override</span></div>
+                <div class="meta-item"><span class="meta-label">Output:</span><span class="meta-val">Approved Record</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 6: Export Output -->
+        <div class="flow-row">
+          <div class="node-card-wrapper">
+            <div class="node-card" id="node-output" onclick="selectNode('output')">
+              <div class="node-header">
+                <div class="node-icon cat-output">📦</div>
+                <div class="node-title-box">
+                  <div class="node-title">Final Output & Audit</div>
+                  <div class="node-category">EKAP Database & JSON</div>
+                </div>
+              </div>
+              <div class="node-desc">Exported JSON-L dataset + EKAP `EKAP_AOSQInteractions` traceability table.</div>
+              <div class="node-meta">
+                <div class="meta-item"><span class="meta-label">Format:</span><span class="meta-val">JSON-L + SQL</span></div>
+                <div class="meta-item"><span class="meta-label">Audit Trail:</span><span class="meta-val">100% Immutable</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right Inspector Panel -->
+    <div class="inspector-panel" id="inspector">
+      <div class="inspector-header">
+        <div class="inspector-title-area">
+          <div class="node-icon cat-assessor" id="insp-icon">🤖</div>
+          <div>
+            <h2 style="font-size:1.05rem; color:var(--text-main);" id="insp-title">Assessor Agent 1</h2>
+            <div style="font-size:0.75rem; color:var(--text-muted);" id="insp-cat">Stage 3a • ADK Session</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="inspector-body">
+        <div class="info-block">
+          <div class="info-title">🎯 Component Purpose</div>
+          <div class="info-box" id="insp-purpose">
+            Evaluates a specific UN assessment question against rendered portal DOM content using an isolated Google ADK agent session.
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-title">📥 Closed Input Schema</div>
+          <div class="code-snippet" id="insp-input-schema">{
+  "session_id": "sess_2026_0813",
+  "agent_index": 0,
+  "round_number": 1,
+  "question": {
+    "question_id": "Q14_OPEN_DATA",
+    "text": "Does national portal provide an open data link?",
+    "answer_type": "binary"
+  },
+  "portal": {
+    "portal_id": "P_FRA",
+    "resolved_url": "https://www.data.gouv.fr"
+  }
+}</div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-title">📤 Output Payload</div>
+          <div class="code-snippet" id="insp-output-schema">{
+  "run_id": "run_9941a",
+  "answer": "YES",
+  "confidence": 87,
+  "justification": "Page explicitly features open data portal link in footer.",
+  "evidence": {
+    "resolved_url": "https://www.data.gouv.fr",
+    "element_reference": {
+      "css_path": "footer > a.data-link",
+      "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4"
+    }
+  }
+}</div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-title">🔒 Structural Invariants & Rules</div>
+          <div class="rule-list" id="insp-rules">
+            <div class="rule-item success">✓ <strong>Strict Independence:</strong> Schema is closed. Cannot see ground truth or other agent answers.</div>
+            <div class="rule-item warning">⚠️ <strong>Confidence Gate:</strong> If confidence &lt; 75, agent retries once with self-critique.</div>
+            <div class="rule-item danger">🚫 <strong>Auth Walls:</strong> If authentication boundary is detected, answer MUST be null.</div>
+          </div>
+        </div>
+
+        <div class="info-block">
+          <div class="info-title">📂 Code & Spec Location</div>
+          <div class="info-box" style="font-family:var(--font-mono); font-size:0.8rem;" id="insp-code-ref">
+            src/ekap_aiq/agents/assessor.py<br>
+            specs/001-ekap-aiq-assessment/contracts/assessor-agent.md
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matrix View -->
+    <div class="matrix-view" id="matrix-container">
+      <h2 style="font-size:1.35rem; color:var(--text-main);">Agent & System Component Specification Matrix</h2>
+      <div style="font-size:0.88rem; color:var(--text-muted);">Detailed specifications of all multi-agent roles, inputs, outputs, retries, and failure modes in the UN EKAP AIQ pipeline.</div>
+
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th>Component / Agent</th>
+            <th>Primary Function</th>
+            <th>Input Schema</th>
+            <th>Output Schema</th>
+            <th>Retry & Escalation Limits</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="agent-pill">🔍 Link Resolution</div></td>
+            <td>Discovers target page URLs via Prior KB → MSQ DB → Gov Search.</td>
+            <td><code>(question_id, portal_id)</code></td>
+            <td>Candidate usable URL + resolution source tag.</td>
+            <td>Fallthrough across 3 sources. Escalates if unreachable.</td>
+          </tr>
+          <tr>
+            <td><div class="agent-pill">🌐 Traversal & Render</div></td>
+            <td>Live headless rendering, DOM capture, region screenshot & auth check.</td>
+            <td>Candidate URL + Rate Limit token</td>
+            <td>Rendered DOM, Screenshot, Language code, Auth flag.</td>
+            <td>Per-domain token bucket rate limiting.</td>
+          </tr>
+          <tr>
+            <td><div class="agent-pill">🤖 Assessor Agent 1 & 2</div></td>
+            <td>Independent AI assessment of question against DOM evidence.</td>
+            <td>Closed Schema (Question + DOM, NO cross-agent data).</td>
+            <td>Binary/Enum Answer, Confidence (0-100), Evidence Citation.</td>
+            <td>If Confidence &lt; 75: 1 retry round with self-critique addendum.</td>
+          </tr>
+          <tr>
+            <td><div class="agent-pill">🛡️ Validator Agent</div></td>
+            <td>Re-fetches live URL and verifies element selector & text hash.</td>
+            <td>Exactly ONE Assessor Agent output + Live URL.</td>
+            <td>Pass/Fail, Quality score, Verified timestamp, Gap list.</td>
+            <td>Up to 2 retries for failed agent. Escalates if &lt; 2 agents pass.</td>
+          </tr>
+          <tr>
+            <td><div class="agent-pill">⚖️ Mechanical Adjudicator</div></td>
+            <td>Deterministic consensus building & discrepancy detection.</td>
+            <td>Set of ≥ 2 Validated Agent outputs.</td>
+            <td>Consensus Answer & Confidence OR Escalation Record.</td>
+            <td>Up to 2 retry rounds with anonymized disagreement points.</td>
+          </tr>
+          <tr>
+            <td><div class="agent-pill">👤 Human Review Surface</div></td>
+            <td>UN Assessor web app for validating, editing, or overriding pre-fills.</td>
+            <td>Pre-filled survey, Evidence citations, Escalation flags.</td>
+            <td>Final approved assessment record + override reasoning.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // Subtle Professional Canvas Lines
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const lines = Array.from({ length: 12 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      length: 120 + Math.random() * 180,
+      speed: 0.3 + Math.random() * 0.7,
+      angle: -Math.PI / 4,
+      alpha: 0.08 + Math.random() * 0.15
+    }));
+
+    function drawBackgroundLines() {
+      ctx.clearRect(0, 0, width, height);
+
+      lines.forEach(l => {
+        l.x += Math.cos(l.angle) * l.speed;
+        l.y += Math.sin(l.angle) * l.speed;
+
+        if (l.x > width + 150 || l.y > height + 150) {
+          l.x = Math.random() * width - 150;
+          l.y = -50;
+        }
+
+        const grad = ctx.createLinearGradient(
+          l.x, l.y,
+          l.x - Math.cos(l.angle) * l.length,
+          l.y - Math.sin(l.angle) * l.length
+        );
+
+        grad.addColorStop(0, '#009EDB');
+        grad.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(
+          l.x - Math.cos(l.angle) * l.length,
+          l.y - Math.sin(l.angle) * l.length
+        );
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = l.alpha;
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(drawBackgroundLines);
+    }
+    drawBackgroundLines();
+
+    // Clean 3D Card Hover Effect
+    document.querySelectorAll('.node-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -5;
+        const rotateY = ((x - centerX) / centerX) * 5;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(4px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+      });
+    });
+
+    // Data definition for nodes
+    const nodeDetails = {
+      'input': {
+        icon: '📥', catClass: 'cat-input',
+        title: 'System Input & Scope', category: 'Configuration & Data',
+        purpose: 'Provides the fixed questionnaire (Module 2.1 - Institutional Framework) and target UN member state country portals.',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "cycle": "2026_BIENNIAL",\n  "questionnaire": "Module 2.1 (200 binary indicators)",\n  "portals": ["USA", "FRA", "BRA", "CHN", "NGA", "... (193 UN States)"]\n}`,
+        outputSchema: `{\n  "total_units": 38600,\n  "unit_schema": {\n    "question_id": "string",\n    "portal_id": "string",\n    "unit_state": "pending"\n  }\n}`,
+        rules: [
+          { type: 'success', text: 'Snapshot Configuration: Settings are snapshotted per session for audit consistency.' },
+          { type: 'warning', text: 'No ground-truth labels are ever accessible to Assessor Agents.' }
+        ],
+        codeRef: 'src/ekap_aiq/config/settings.py\ndata/questions/module_2_1.json'
+      },
+
+      'link': {
+        icon: '🔍', catClass: 'cat-links',
+        title: '1. Link Resolution Engine', category: 'Discovery Engine',
+        purpose: 'Resolves where to look for evidence. Fallsthrough prior survey KB -> Member State Questionnaire (MSQ) -> Gov TLD Search.',
+        inputSchema: `{\n  "question_id": "Q14_OPEN_DATA",\n  "portal_id": "P_FRA",\n  "country_name": "France"\n}`,
+        outputSchema: `{\n  "resolved_url": "https://www.data.gouv.fr",\n  "source": "prior_survey_kb",\n  "usable": true\n}`,
+        rules: [
+          { type: 'success', text: 'Strict Boundary: Link resolution sources tell WHERE to look; they NEVER supply the answer.' },
+          { type: 'warning', text: 'Search Fallthrough: Web search is strictly restricted to government TLDs (.gov, .gouv, etc.).' }
+        ],
+        codeRef: 'src/ekap_aiq/linkresolution/chain.py\nspecs/001-ekap-aiq-assessment/contracts/configuration.md'
+      },
+
+      'capture': {
+        icon: '🌐', catClass: 'cat-capture',
+        title: '2. Live Traversal & Capture', category: 'Playwright & Limiter',
+        purpose: 'Executes headless browser traversal to capture live HTML DOM, region screenshot, composite element references, and detect auth walls.',
+        inputSchema: `{\n  "resolved_url": "https://www.data.gouv.fr",\n  "rate_limit_token": "acquired"\n}`,
+        outputSchema: `{\n  "dom_snapshot": "<html...>",\n  "screenshot_ref": "blob://scr_9821.png",\n  "detected_language": "fr",\n  "auth_boundary_observed": false\n}`,
+        rules: [
+          { type: 'danger', text: 'Rate Limiter: Shared token bucket per domain protects target government websites from overload.' },
+          { type: 'warning', text: 'Auth Wall Detection: If a sign-in wall is hit, unit escalates immediately.' }
+        ],
+        codeRef: 'src/ekap_aiq/portal/browser.py\nsrc/ekap_aiq/ratelimit/token_bucket.py'
+      },
+
+      'assessor1': {
+        icon: '🤖', catClass: 'cat-assessor',
+        title: '3a. Assessor Agent 1', category: 'ADK Session 1',
+        purpose: 'First independent AI agent. Evaluates question against DOM evidence using Prompt Profile A.',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "agent_index": 0,\n  "question": { "question_id": "Q14", "text": "Open Data Portal?" },\n  "portal": { "resolved_url": "https://www.data.gouv.fr" }\n}`,
+        outputSchema: `{\n  "run_id": "run_01a",\n  "answer": "YES",\n  "confidence": 88,\n  "justification": "Portal contains dedicated open data section.",\n  "evidence": { "css_path": "footer > a.open-data", "text_hash": "abc1234" }\n}`,
+        rules: [
+          { type: 'success', text: 'Structural Independence: Runs in its own ADK session with no shared conversational state.' },
+          { type: 'warning', text: 'Confidence Gate: If confidence < 75, agent retries ONCE with self-critique.' }
+        ],
+        codeRef: 'src/ekap_aiq/agents/assessor.py\nspecs/001-ekap-aiq-assessment/contracts/assessor-agent.md'
+      },
+
+      'assessor2': {
+        icon: '🤖', catClass: 'cat-assessor',
+        title: '3b. Assessor Agent 2', category: 'ADK Session 2',
+        purpose: 'Second independent AI agent. Evaluates question against DOM evidence using Prompt Profile B.',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "agent_index": 1,\n  "question": { "question_id": "Q14", "text": "Open Data Portal?" },\n  "portal": { "resolved_url": "https://www.data.gouv.fr" }\n}`,
+        outputSchema: `{\n  "run_id": "run_02b",\n  "answer": "YES",\n  "confidence": 85,\n  "justification": "Observed open dataset repository link.",\n  "evidence": { "css_path": "nav > ul > li.data", "text_hash": "def5678" }\n}`,
+        rules: [
+          { type: 'success', text: 'Closed Schema Guard: Cannot see Agent 1\'s answer, confidence, or evidence.' },
+          { type: 'warning', text: 'Model Divergence: Uses distinct temperature & prompt seed to ensure independent judgment.' }
+        ],
+        codeRef: 'src/ekap_aiq/agents/assessor.py\nspecs/001-ekap-aiq-assessment/contracts/assessor-agent.md'
+      },
+
+      'validator': {
+        icon: '🛡️', catClass: 'cat-validator',
+        title: '4. Validator Agent', category: 'Verification Engine',
+        purpose: 'Evaluates EXACTLY ONE Assessor Agent output by re-traversing the live URL to verify evidence composite selector and text hash.',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "run_id": "run_01a",\n  "agent_output": { /* Assessor 1 Output */ }\n}`,
+        outputSchema: `{\n  "validation_id": "val_773a",\n  "passed": true,\n  "quality_score": 0.92,\n  "verification_outcome": "confirmed",\n  "verified_at": "2026-08-13T10:22:31Z"\n}`,
+        rules: [
+          { type: 'success', text: 'Single Agent Isolation: Validator sees only 1 agent output per invocation.' },
+          { type: 'warning', text: 'Retry Bounds: Failed agent retries up to 2 times. If < 2 agents pass overall, unit escalates.' }
+        ],
+        codeRef: 'src/ekap_aiq/agents/validator.py\nspecs/001-ekap-aiq-assessment/contracts/validator.md'
+      },
+
+      'adjudicator': {
+        icon: '⚖️', catClass: 'cat-adjudicator',
+        title: '5. Mechanical Adjudicator', category: 'Consensus Rules',
+        purpose: 'Compares validated agent positions mechanically using deterministic rules (NO LLM judge).',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "question_id": "Q14",\n  "validated_runs": [ run_01a (YES), run_02b (YES) ]\n}`,
+        outputSchema: `{\n  "adjudication_id": "adj_1092",\n  "discrepancy_flagged": false,\n  "consensus_answer": "YES",\n  "consensus_confidence": 86\n}`,
+        rules: [
+          { type: 'success', text: 'Deterministic Engine: No model judging models. Pure algorithmic rules.' },
+          { type: 'warning', text: 'Discrepancy Retry: If answers differ or confidence delta > 10, triggers up to 2 anonymized retry rounds.' }
+        ],
+        codeRef: 'src/ekap_aiq/agents/adjudicator.py\nspecs/001-ekap-aiq-assessment/contracts/adjudicator.md'
+      },
+
+      'review': {
+        icon: '👤', catClass: 'cat-review',
+        title: '6. Human Review Surface', category: 'Web App Surface',
+        purpose: 'Provides a web UI for UN Assessors to inspect AI pre-filled answers, screenshots, evidence citations, and override decisions.',
+        inputSchema: `{\n  "portal_id": "P_FRA",\n  "prefilled_survey": [ /* All 200 question consensus answers & escalations */ ]\n}`,
+        outputSchema: `{\n  "reviewer_id": "usr_un_admin_04",\n  "overrides": [\n    { "question_id": "Q45", "original": "NO", "override": "YES", "reason": "Verified via law doc" }\n  ]\n}`,
+        rules: [
+          { type: 'success', text: 'Human Authority: System proposed answers are never mutated; overrides create immutable audit records.' }
+        ],
+        codeRef: 'src/ekap_aiq/review/app.py\nspecs/001-ekap-aiq-assessment/contracts/ekap-integration.md'
+      },
+
+      'output': {
+        icon: '📦', catClass: 'cat-output',
+        title: 'Final Output & Audit', category: 'EKAP Database & JSON',
+        purpose: 'Exports validated pre-filled dataset as JSON-L and projects audit records onto EKAP `EKAP_AOSQInteractions` table.',
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "status": "completed"\n}`,
+        outputSchema: `{\n  "export_jsonl": "./out/cycle_2026_biennial.jsonl",\n  "db_records": "EKAP_AOSQInteractions (38,600 rows)"\n}`,
+        rules: [
+          { type: 'success', text: 'Full Traceability: Every exported record carries session ID, model version, and screenshot references.' }
+        ],
+        codeRef: 'src/ekap_aiq/export/jsonl_exporter.py\nspecs/001-ekap-aiq-assessment/contracts/export-schema.md'
+      }
+    };
+
+    // Connections definition
+    const connections = [
+      { from: 'input', to: 'link' },
+      { from: 'link', to: 'capture' },
+      { from: 'capture', to: 'assessor1' },
+      { from: 'capture', to: 'assessor2' },
+      { from: 'assessor1', to: 'validator' },
+      { from: 'assessor2', to: 'validator' },
+      { from: 'validator', to: 'adjudicator' },
+      { from: 'adjudicator', to: 'review' },
+      { from: 'review', to: 'output' }
+    ];
+
+    // Simulation steps
+    const simSteps = [
+      { node: 'input', msg: 'Stage 0: Questionnaire & Country Portal initialized.' },
+      { node: 'link', msg: 'Stage 1: Link resolved -> https://www.data.gouv.fr (Source: Prior KB)' },
+      { node: 'capture', msg: 'Stage 2: Live Playwright traversal complete. DOM & screenshot captured.' },
+      { node: 'assessor1', msg: 'Stage 3a: Assessor Agent 1 evaluates DOM -> Answer YES (Confidence 88).' },
+      { node: 'assessor2', msg: 'Stage 3b: Assessor Agent 2 evaluates DOM -> Answer YES (Confidence 85).' },
+      { node: 'validator', msg: 'Stage 4: Validator Agent re-traverses live page -> Evidence CONFIRMED (Pass).' },
+      { node: 'adjudicator', msg: 'Stage 5: Adjudicator detects unanimous agreement -> Consensus YES (Conf 86).' },
+      { node: 'review', msg: 'Stage 6: UN Reviewer approves pre-filled consensus answer.' },
+      { node: 'output', msg: 'Stage 7: Record exported to JSON-L and EKAP audit database!' }
+    ];
+
+    let currentSimIndex = -1;
+    let simInterval = null;
+
+    // SVG Line Drawing Function
+    function drawConnections() {
+      const svg = document.getElementById('flow-svg');
+      svg.innerHTML = '';
+
+      connections.forEach(conn => {
+        const fromElem = document.getElementById(`node-${conn.from}`);
+        const toElem = document.getElementById(`node-${conn.to}`);
+
+        if (!fromElem || !toElem) return;
+
+        const containerRect = document.getElementById('canvas-container').getBoundingClientRect();
+        const fromRect = fromElem.getBoundingClientRect();
+        const toRect = toElem.getBoundingClientRect();
+
+        const x1 = fromRect.left + fromRect.width / 2 - containerRect.left + document.getElementById('canvas-container').scrollLeft;
+        const y1 = fromRect.bottom - containerRect.top + document.getElementById('canvas-container').scrollTop;
+        const x2 = toRect.left + toRect.width / 2 - containerRect.left + document.getElementById('canvas-container').scrollLeft;
+        const y2 = toRect.top - containerRect.top + document.getElementById('canvas-container').scrollTop;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const controlY = y1 + (y2 - y1) / 2;
+        const d = `M ${x1} ${y1} C ${x1} ${controlY}, ${x2} ${controlY}, ${x2} ${y2}`;
+
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'flow-line');
+        path.setAttribute('id', `line-${conn.from}-${conn.to}`);
+
+        svg.appendChild(path);
+      });
+    }
+
+    // Node Selection Handler
+    function selectNode(id) {
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+      const card = document.getElementById(`node-${id}`);
+      if (card) card.classList.add('selected');
+
+      const details = nodeDetails[id];
+      if (!details) return;
+
+      document.getElementById('insp-icon').className = `node-icon ${details.catClass}`;
+      document.getElementById('insp-icon').innerText = details.icon;
+      document.getElementById('insp-title').innerText = details.title;
+      document.getElementById('insp-cat').innerText = details.category;
+      document.getElementById('insp-purpose').innerText = details.purpose;
+      document.getElementById('insp-input-schema').innerText = details.inputSchema;
+      document.getElementById('insp-output-schema').innerText = details.outputSchema;
+
+      const rulesContainer = document.getElementById('insp-rules');
+      rulesContainer.innerHTML = details.rules.map(r => 
+        `<div class="rule-item ${r.type}">${r.text}</div>`
+      ).join('');
+
+      document.getElementById('insp-code-ref').innerText = details.codeRef;
+
+      // Highlight connections
+      document.querySelectorAll('.flow-line').forEach(l => l.classList.remove('active'));
+      connections.forEach(conn => {
+        if (conn.from === id || conn.to === id) {
+          const line = document.getElementById(`line-${conn.from}-${conn.to}`);
+          if (line) line.classList.add('active');
+        }
+      });
+    }
+
+    // View Switching (Canvas vs Matrix)
+    function switchView(view) {
+      document.getElementById('tab-canvas').classList.toggle('active', view === 'canvas');
+      document.getElementById('tab-matrix').classList.toggle('active', view === 'matrix');
+
+      document.getElementById('canvas-container').style.display = view === 'canvas' ? 'flex' : 'none';
+      document.getElementById('inspector').style.display = view === 'canvas' ? 'flex' : 'none';
+      document.getElementById('matrix-container').style.display = view === 'matrix' ? 'flex' : 'none';
+
+      if (view === 'canvas') setTimeout(drawConnections, 50);
+    }
+
+    // Node Filter Function
+    function filterNodes(cat, btn) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.node-card').forEach(card => {
+        if (cat === 'all') {
+          card.style.opacity = '1';
+        } else {
+          card.style.opacity = card.id.includes(cat) ? '1' : '0.2';
+        }
+      });
+    }
+
+    // Simulation Execution Controls
+    function toggleSimulation() {
+      if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+        document.getElementById('btn-run-sim').innerText = 'Resume Simulation';
+        document.getElementById('sim-status').innerText = 'Status: Paused';
+      } else {
+        document.getElementById('btn-run-sim').innerText = 'Pause Simulation';
+        simInterval = setInterval(() => {
+          if (currentSimIndex >= simSteps.length - 1) {
+            currentSimIndex = 0;
+          } else {
+            currentSimIndex++;
+          }
+          applySimStep(currentSimIndex);
+        }, 2200);
+      }
+    }
+
+    function prevSimStep() {
+      if (simInterval) clearInterval(simInterval);
+      currentSimIndex = Math.max(0, currentSimIndex - 1);
+      applySimStep(currentSimIndex);
+    }
+
+    function nextSimStep() {
+      if (simInterval) clearInterval(simInterval);
+      currentSimIndex = Math.min(simSteps.length - 1, currentSimIndex + 1);
+      applySimStep(currentSimIndex);
+    }
+
+    function applySimStep(idx) {
+      const step = simSteps[idx];
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('sim-highlight'));
+      document.querySelectorAll('.flow-line').forEach(l => l.classList.remove('sim-active'));
+
+      selectNode(step.node);
+      const card = document.getElementById(`node-${step.node}`);
+      if (card) card.classList.add('sim-highlight');
+
+      document.getElementById('sim-status').innerText = `[Step ${idx + 1}/${simSteps.length}]\n${step.msg}`;
+
+      // Highlight trajectory line
+      if (idx > 0) {
+        const prevStep = simSteps[idx - 1];
+        const line = document.getElementById(`line-${prevStep.node}-${step.node}`);
+        if (line) line.classList.add('sim-active');
+      }
+    }
+
+    // Toggle Inspector Panel Visibility
+    function toggleInspectorPanel() {
+      const inspector = document.getElementById('inspector');
+      const btn = document.getElementById('btn-toggle-inspector');
+      inspector.classList.toggle('collapsed');
+      const isCollapsed = inspector.classList.contains('collapsed');
+      btn.classList.toggle('active', !isCollapsed);
+      setTimeout(drawConnections, 350);
+    }
+
+    // Initial setup
+    window.addEventListener('load', () => {
+      drawConnections();
+      selectNode('input');
+      const container = document.getElementById('canvas-container');
+      if (container) {
+        container.addEventListener('scroll', drawConnections);
+      }
+    });
+
+    window.addEventListener('resize', drawConnections);
+  </script>
+</body>
+</html>

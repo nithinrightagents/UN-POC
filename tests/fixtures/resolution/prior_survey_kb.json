@@ -1,0 +1,13 @@
+{
+  "success": {
+    "question_id": "q1", "country_id": "EE", "url": "https://www.eesti.ee",
+    "origin_cycle_id": "c0", "origin_session_id": "s0"
+  },
+  "empty": {
+    "question_id": "q-no-history", "country_id": "ZZ"
+  },
+  "stale_beyond_max_age": {
+    "question_id": "q-old", "country_id": "EE", "url": "https://www.eesti.ee",
+    "recorded_at_days_ago": 900
+  }
+}

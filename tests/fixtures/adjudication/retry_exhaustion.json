@@ -1,0 +1,33 @@
+{
+  "description": "Disagreement persists through the full retry limit -> escalated, no automatic consensus, every round's positions carried.",
+  "per_question_confidence_threshold": 10,
+  "adjudication_retry_limit": 2,
+  "rounds": [
+    {
+      "round_number": 1,
+      "runs": [
+        {"agent_index": 0, "answer": true, "confidence": 80},
+        {"agent_index": 1, "answer": false, "confidence": 75}
+      ]
+    },
+    {
+      "round_number": 2,
+      "runs": [
+        {"agent_index": 0, "answer": true, "confidence": 82},
+        {"agent_index": 1, "answer": false, "confidence": 78}
+      ]
+    },
+    {
+      "round_number": 3,
+      "runs": [
+        {"agent_index": 0, "answer": true, "confidence": 84},
+        {"agent_index": 1, "answer": false, "confidence": 80}
+      ]
+    }
+  ],
+  "expected": {
+    "escalated": true,
+    "retry_count": 2,
+    "final_consensus_answer": null
+  }
+}

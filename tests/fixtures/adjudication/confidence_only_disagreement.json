@@ -1,0 +1,13 @@
+{
+  "description": "Identical answers but confidence delta exceeds threshold -> flagged. Agreement on the answer alone is not sufficient to deliver.",
+  "per_question_confidence_threshold": 10,
+  "runs": [
+    {"agent_index": 0, "answer": true, "confidence": 95},
+    {"agent_index": 1, "answer": true, "confidence": 60}
+  ],
+  "expected": {
+    "discrepancy_flagged": true,
+    "flag_reason": "confidence_delta",
+    "consensus_answer": null
+  }
+}

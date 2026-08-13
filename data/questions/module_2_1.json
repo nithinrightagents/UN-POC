@@ -1,0 +1,255 @@
+{
+  "questionnaire": "Module 2.1 — Institutional Framework",
+  "source": "Module 2.1 Institutional Framework.pdf (UN DESA, Public Institutions)",
+  "questions": [
+    {
+      "question_id": "IF-010",
+      "indicator_id": "#010",
+      "text": "Organizational structure — Information available on the organizational structure and/or chart of the government.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "question_id": "IF-011",
+      "indicator_id": "#011",
+      "text": "Names/titles of heads of government agencies/departments/ministries — Information on government heads and contacts of head of department available on the national portal(s).",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "question_id": "IF-012",
+      "indicator_id": "#012",
+      "text": "Links to sub-national/local government institutions/agencies — Existence of links to any local/regional/national government agencies.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "question_id": "IF-014",
+      "indicator_id": "#014",
+      "text": "Privacy statement(s) — Existence of a privacy policy or statement available on the national portal.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "question_id": "IF-342",
+      "indicator_id": "#342",
+      "text": "National e-Government/Digital Government strategy — Existence of a National e-Government/Digital Government strategy or equivalent.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-339",
+      "indicator_id": "#339",
+      "text": "Citizens' rights to access government information — Information (content or documents) regarding users' rights to access government information.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "evidence_locus_note": "Confirmed: requires dedicated section on national portal."
+    },
+    {
+      "question_id": "IF-338",
+      "indicator_id": "#338",
+      "text": "Legislation/law/policy/regulation on personal data protection — Existence of legislation/law/policy/regulation on personal data protection.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-340",
+      "indicator_id": "#340",
+      "text": "Legislation/law/policy/regulation on cybersecurity — Existence of legislation/law/policy/regulation on cybersecurity.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-337",
+      "indicator_id": "#337",
+      "text": "National CIO — Information/contact about a National CIO or equivalent.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "evidence_locus_needs_confirmation": true,
+      "evidence_locus_note": "Could be on the portal or on a separate digital-agency site. Defaulted to national_portal_only pending confirmation — see poc-question-set.md."
+    },
+    {
+      "question_id": "IF-345",
+      "indicator_id": "#345",
+      "text": "Legislation/law/policy/regulation on e-participation — Existence of legislation/law/policy/regulation on e-participation.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-341",
+      "indicator_id": "#341",
+      "text": "Legislation/law/policy/regulation on Open Government Data — Existence of legislation/law/policy/regulation on Open Government Data.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-090-health",
+      "indicator_id": "#090",
+      "text": "Link to the sectoral or ministerial website — Health.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Health"
+    },
+    {
+      "question_id": "IF-103-education",
+      "indicator_id": "#103",
+      "text": "Link to the sectoral or ministerial website — Education.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Education"
+    },
+    {
+      "question_id": "IF-119-employment",
+      "indicator_id": "#119",
+      "text": "Link to the sectoral or ministerial website — Employment and/or Labor.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Employment/Labor"
+    },
+    {
+      "question_id": "IF-132-social-protection",
+      "indicator_id": "#132",
+      "text": "Link to the sectoral or ministerial website — Social Protection.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Social Protection"
+    },
+    {
+      "question_id": "IF-161-environment",
+      "indicator_id": "#161",
+      "text": "Link to the sectoral or ministerial website — Environment.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Environment"
+    },
+    {
+      "question_id": "IF-172-justice",
+      "indicator_id": "#172",
+      "text": "Link to the sectoral or ministerial website — Justice.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "national_portal_only",
+      "sector": "Justice"
+    },
+    {
+      "question_id": "IF-091-health",
+      "indicator_id": "#091",
+      "text": "Information on policies related to different sectors — Health.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Health"
+    },
+    {
+      "question_id": "IF-104-education",
+      "indicator_id": "#104",
+      "text": "Information on policies related to different sectors — Education.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Education"
+    },
+    {
+      "question_id": "IF-120-employment",
+      "indicator_id": "#120",
+      "text": "Information on policies related to different sectors — Employment and/or Labor.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Employment/Labor"
+    },
+    {
+      "question_id": "IF-133-social-protection",
+      "indicator_id": "#133",
+      "text": "Information on policies related to different sectors — Social Protection.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Social Protection"
+    },
+    {
+      "question_id": "IF-162-environment",
+      "indicator_id": "#162",
+      "text": "Information on policies related to different sectors — Environment.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Environment"
+    },
+    {
+      "question_id": "IF-173-justice",
+      "indicator_id": "#173",
+      "text": "Information on policies related to different sectors — Justice.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain",
+      "sector": "Justice"
+    },
+    {
+      "question_id": "IF-336",
+      "indicator_id": "#336",
+      "text": "Legislation/law/regulation against misinformation, disinformation and/or fake news — Existence of legislation/law/regulation against misinformation, disinformation and/or fake news.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-343",
+      "indicator_id": "#343",
+      "text": "A cloud strategy or equivalent — Information on a cloud strategy or equivalent.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "question_id": "IF-344",
+      "indicator_id": "#344",
+      "text": "Strategy or equivalent on the use of artificial intelligence (AI enabled) — Information on a strategy or equivalent on the use of artificial intelligence for e-government or the public sector.",
+      "answer_type": "binary",
+      "is_custom": false,
+      "requires_authenticated_access": false,
+      "evidence_locus": "any_government_domain"
+    }
+  ]
+}

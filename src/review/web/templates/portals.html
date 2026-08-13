@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Portals — EKAP AIQ Review{% endblock %}
+{% block content %}
+<h1>Session {{ session_id }}</h1>
+<p>{{ portals|length }} portal(s) in scope.</p>
+{% for p in portals %}
+<div class="card">
+    <h2><a href="/portal/{{ p.portal_id }}?session={{ session_id }}">{{ p.country_id }}</a></h2>
+    {% if p.unlocked %}
+        <p class="status status--unlocked">✓ Ready for review — {{ p.terminal_count }}/{{ p.total_questions }} questions terminal</p>
+    {% else %}
+        <p class="status status--locked">In progress — {{ p.terminal_count }}/{{ p.total_questions }} questions terminal</p>
+    {% endif %}
+    {% if p.escalated_question_ids %}
+        <p>{{ p.escalated_question_ids|length }} question(s) escalated.</p>
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

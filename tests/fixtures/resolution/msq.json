@@ -1,0 +1,8 @@
+{
+  "success": {
+    "question_id": "q1", "country_id": "EE", "url": "https://msq.example.gov"
+  },
+  "empty": {
+    "question_id": "q-no-candidate", "country_id": "ZZ"
+  }
+}

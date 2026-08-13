@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment / credentials
+.env
+*.env.local
+gcp-credentials*.json
+service-account*.json
+
+# Data produced at runtime — not source
+*.db
+*.sqlite
+*.sqlite3
+data/exports/
+data/captures/
+out/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Playwright
+playwright-report/
+test-results/

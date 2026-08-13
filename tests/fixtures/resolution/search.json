@@ -1,0 +1,11 @@
+{
+  "success_government_domain": {
+    "query": "USA government portal", "returned_url": "https://www.usa.gov/agencies"
+  },
+  "unusable_non_government_domain": {
+    "query": "Estonia government portal", "returned_url": "https://blog.example.com/estonia-guide"
+  },
+  "empty": {
+    "query": "Nowhere government portal", "returned_url": null
+  }
+}

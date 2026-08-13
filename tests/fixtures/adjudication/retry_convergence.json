@@ -1,0 +1,26 @@
+{
+  "description": "Round 1 disagrees; round 2 (after a disagreement-points addendum) converges -> consensus produced, full retry history retained.",
+  "per_question_confidence_threshold": 10,
+  "adjudication_retry_limit": 2,
+  "rounds": [
+    {
+      "round_number": 1,
+      "runs": [
+        {"agent_index": 0, "answer": true, "confidence": 80},
+        {"agent_index": 1, "answer": false, "confidence": 70}
+      ]
+    },
+    {
+      "round_number": 2,
+      "runs": [
+        {"agent_index": 0, "answer": true, "confidence": 85},
+        {"agent_index": 1, "answer": true, "confidence": 82}
+      ]
+    }
+  ],
+  "expected": {
+    "escalated": false,
+    "retry_count": 1,
+    "final_consensus_answer": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "description": "Answers differ -> flagged regardless of confidence values (FR-028).",
+  "per_question_confidence_threshold": 10,
+  "runs": [
+    {"agent_index": 0, "answer": true, "confidence": 95},
+    {"agent_index": 1, "answer": false, "confidence": 92}
+  ],
+  "expected": {
+    "discrepancy_flagged": true,
+    "flag_reason": "answers_differ",
+    "consensus_answer": null
+  }
+}

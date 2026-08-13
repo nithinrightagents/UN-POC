@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ portal.country_id }} — EKAP AIQ Review{% endblock %}
+{% block content %}
+<p><a href="/?session={{ session_id }}">&larr; All portals</a></p>
+<h1>{{ portal.country_id }}</h1>
+{% if not status.unlocked %}
+<p class="status status--locked">
+    This portal is not yet fully pre-filled ({{ status.terminal_count }}/{{ status.total_questions }} terminal).
+    Review normally unlocks once every question reaches a terminal state.
+</p>
+{% endif %}
+<ul>
+{% for q in questions %}
+<li>
+    <a href="/portal/{{ portal.portal_id }}/question/{{ q.question_id }}?session={{ session_id }}">
+        {{ q.text }}
+    </a>
+    {% if q.question_id in status.escalated_question_ids %}
+        <span class="badge badge--fail">escalated</span>
+    {% endif %}
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

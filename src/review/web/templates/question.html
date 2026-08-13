@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ view.question_text }} — EKAP AIQ Review{% endblock %}
+{% block content %}
+<p><a href="/portal/{{ view.portal_id }}?session={{ session_id }}">&larr; {{ view.portal_id }}</a></p>
+<h1>{{ view.question_text }}</h1>
+
+<div class="card">
+    <p>
+        Proposed answer: <strong>{{ view.delivered_answer }}</strong>
+        &nbsp;|&nbsp; Confidence:
+        <span class="confidence {% if view.below_acceptance_threshold %}confidence--low{% endif %}">
+            {{ view.consensus_confidence if view.consensus_confidence is not none else 'n/a' }}%
+        </span>
+        {% if view.below_acceptance_threshold %}
+            <span class="badge badge--fail">below acceptance threshold</span>
+        {% endif %}
+    </p>
+    {% if view.justification %}
+    <p><em>Justification:</em> {{ view.justification }}</p>
+    {% endif %}
+    {% if view.escalated %}
+    <p class="badge badge--fail" role="alert">Escalated{% if view.escalation_reason %}: {{ view.escalation_reason }}{% endif %}</p>
+    {% endif %}
+    <p>Provenance: {{ view.provenance }}
+        {% if view.actor_id %} by {{ view.actor_id }} at {{ view.acted_at }}{% endif %}
+    </p>
+
+    {{ evidence_html | safe }}
+
+    {{ detail_html | safe }}
+</div>
+
+<form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/approve?session={{ session_id }}">
+    <input type="hidden" name="actor_id" value="demo-assessor">
+    <button type="submit" class="primary">Approve</button>
+</form>
+
+<form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/edit?session={{ session_id }}">
+    <input type="hidden" name="actor_id" value="demo-assessor">
+    <label for="edited_answer">Edit answer</label>
+    <input type="text" id="edited_answer" name="edited_answer" value="{{ view.delivered_answer }}">
+    <button type="submit">Save edit</button>
+</form>
+
+<form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/reject?session={{ session_id }}">
+    <input type="hidden" name="actor_id" value="demo-assessor">
+    <label for="override_answer">Override answer</label>
+    <input type="text" id="override_answer" name="override_answer">
+    <label for="rejection_reason">Reason (required)</label>
+    <textarea id="rejection_reason" name="rejection_reason" rows="2" required></textarea>
+    <button type="submit" class="danger">Reject &amp; override</button>
+</form>
+{% endblock %}

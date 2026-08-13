@@ -1,0 +1,27 @@
+{
+  "description": "Heavy first-round disagreement (8 of 10 questions differ) where every question later converged on retry. Portal-level measures are computed from first_round_positions ONLY (FR-035) -- the retry outcomes below are informational and must NOT change the flag. The portal still flags for joint human review, and none of the converged questions are re-run or discarded (FR-039).",
+  "differing_answer_rate_threshold": 0.10,
+  "affirmative_rate_gap_threshold": 0.10,
+  "first_round_positions": [
+    {"question_id": "q0", "agent_0": true,  "agent_1": false},
+    {"question_id": "q1", "agent_0": true,  "agent_1": false},
+    {"question_id": "q2", "agent_0": false, "agent_1": true},
+    {"question_id": "q3", "agent_0": false, "agent_1": true},
+    {"question_id": "q4", "agent_0": true,  "agent_1": false},
+    {"question_id": "q5", "agent_0": false, "agent_1": true},
+    {"question_id": "q6", "agent_0": true,  "agent_1": false},
+    {"question_id": "q7", "agent_0": false, "agent_1": true},
+    {"question_id": "q8", "agent_0": true,  "agent_1": true},
+    {"question_id": "q9", "agent_0": false, "agent_1": false}
+  ],
+  "converged_on_retry": {
+    "note": "Every question above reached consensus by round 2 in this scenario -- irrelevant to the portal-level flag, which is fixed at round 1.",
+    "all_questions_final_state": "delivered"
+  },
+  "expected": {
+    "differing_answer_rate": 0.80,
+    "flagged": true,
+    "triggering_measure": "differing_answer_rate",
+    "zero_questions_re_run_or_discarded": true
+  }
+}

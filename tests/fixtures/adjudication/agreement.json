@@ -1,0 +1,13 @@
+{
+  "description": "Identical answers, confidence delta at or below threshold -> no flag, consensus produced.",
+  "per_question_confidence_threshold": 10,
+  "runs": [
+    {"agent_index": 0, "answer": true, "confidence": 88},
+    {"agent_index": 1, "answer": true, "confidence": 91}
+  ],
+  "expected": {
+    "discrepancy_flagged": false,
+    "flag_reason": null,
+    "consensus_answer": true
+  }
+}

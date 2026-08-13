@@ -1,0 +1,586 @@
+"""EKAP AIQ command-line interface.
+
+Subcommands are added incrementally as each pipeline stage is implemented;
+see specs/001-ekap-aiq-assessment/quickstart.md for the full command set
+this mirrors.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import sqlite3
+
+import click
+
+from shared.config.settings import Settings, load_settings
+from shared.config.validation import ConfigurationError, validate_settings
+from shared.persistence.schema import connect, init_db
+
+
+def _connect(settings: Settings) -> sqlite3.Connection:
+    return connect(settings.database_path)
+
+
+@click.group()
+@click.option("--env-file", default=".env", help="Path to .env file")
+@click.pass_context
+def main(ctx: click.Context, env_file: str) -> None:
+    """EKAP AIQ — AI-assisted portal assessment proof of concept."""
+    ctx.ensure_object(dict)
+    ctx.obj["env_file"] = env_file
+    ctx.obj["settings"] = load_settings(env_file)
+
+
+@main.group()
+def config() -> None:
+    """Inspect configuration."""
+
+
+@config.command("show")
+@click.pass_context
+def config_show(ctx: click.Context) -> None:
+    """Print every parameter with its effective value, default, and source (FR-073)."""
+    settings: Settings = ctx.obj["settings"]
+    defaults = Settings.defaults()
+    effective = settings.as_dict()
+
+    click.echo(f"{'PARAMETER':<42} {'EFFECTIVE':<30} {'DEFAULT':<30} SOURCE")
+    for key in sorted(effective):
+        eff = effective[key]
+        default = defaults[key]
+        source = "default" if eff == default else "configured"
+        click.echo(f"{key:<42} {str(eff):<30} {str(default):<30} {source}")
+
+    try:
+        validate_settings(settings)
+        click.secho("\nConfiguration is valid.", fg="green")
+    except ConfigurationError as exc:
+        click.secho(f"\n{exc}", fg="red")
+
+
+@main.group()
+def db() -> None:
+    """Database administration."""
+
+
+@db.command("init")
+@click.pass_context
+def db_init(ctx: click.Context) -> None:
+    """Create the append-only schema (FR-062)."""
+    settings: Settings = ctx.obj["settings"]
+    init_db(settings.database_path)
+    click.secho(f"Initialized database at {settings.database_path}", fg="green")
+
+
+@main.group()
+def seed() -> None:
+    """Seed demo / fixture data."""
+
+
+@seed.command("demo-review")
+@click.pass_context
+def seed_demo_review_cmd(ctx: click.Context) -> None:
+    """Seed one complete assessment and one with broken evidence, for
+    demonstrating the review surface with no assessment pipeline running
+    (US1 independent test)."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.persistence.schema import init_db
+    from review.seed_demo import seed_demo_review
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    result = seed_demo_review(conn)
+    click.secho(f"Seeded session={result['session_id']} portal={result['portal_id']}", fg="green")
+    click.echo(f"Open: http://{settings.serve_host}:{settings.serve_port}/?session={result['session_id']}")
+
+
+@main.command()
+@click.pass_context
+def serve(ctx: click.Context) -> None:
+    """Start the review web app."""
+    settings: Settings = ctx.obj["settings"]
+    import uvicorn
+
+    from review.web.app import build_app
+
+    app = build_app(settings.database_path, settings)
+    uvicorn.run(app, host=settings.serve_host, port=settings.serve_port)
+
+
+@main.group()
+def audit() -> None:
+    """Audit trail reconstruction (FR-061)."""
+
+
+@audit.command("reconstruct")
+@click.option("--session", "session_id", required=True)
+@click.option("--question", "question_id", default=None)
+@click.option("--portal", "portal_id", default=None)
+@click.pass_context
+def audit_reconstruct(ctx: click.Context, session_id: str, question_id: str | None, portal_id: str | None) -> None:
+    """Reconstruct full history from the session identifier alone (SC-005)."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.persistence.repositories import Repository
+    from review.audit import reconstruct_question_history, reconstruct_session_summary
+
+    conn = _connect(settings)
+    repo = Repository(conn)
+    if question_id and portal_id:
+        result = reconstruct_question_history(repo, session_id, question_id, portal_id)
+    else:
+        result = reconstruct_session_summary(repo, session_id)
+    click.echo(json.dumps(result, indent=2, default=str))
+
+
+@main.group()
+def verify() -> None:
+    """Post-hoc verification of pipeline invariants (FR-112–FR-118)."""
+
+
+@verify.command("independence")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def verify_independence_cmd(ctx: click.Context, session_id: str) -> None:
+    """SC-008, SC-017: no agent's input contained another agent's output;
+    the population of results shows a non-degenerate spread."""
+    settings: Settings = ctx.obj["settings"]
+    from agents.verify import verify_independence
+    from shared.persistence.repositories import Repository
+
+    repo = Repository(_connect(settings))
+    report = verify_independence(repo, session_id)
+
+    click.echo(f"Total runs: {report.total_runs} across {report.total_units} units")
+    if report.cross_contamination_findings:
+        click.secho("Cross-contamination findings:", fg="red")
+        for f in report.cross_contamination_findings:
+            click.echo(f"  - {f}")
+    if report.degenerate_units:
+        click.secho(f"Degenerate (zero-variance) units: {len(report.degenerate_units)}", fg="yellow")
+        for u in report.degenerate_units:
+            click.echo(f"  - {u}")
+    if report.clean:
+        click.secho("Independence checks passed.", fg="green")
+    else:
+        click.secho("Independence checks FAILED.", fg="red")
+        raise SystemExit(1)
+
+
+@verify.command("evidence")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def verify_evidence_cmd(ctx: click.Context, session_id: str) -> None:
+    """SC-018: 100% of answers reaching adjudication carry independently
+    verified evidence with a verification timestamp."""
+    settings: Settings = ctx.obj["settings"]
+    from agents.verify import verify_evidence_reached_adjudication
+    from shared.persistence.repositories import Repository
+
+    repo = Repository(_connect(settings))
+    report = verify_evidence_reached_adjudication(repo, session_id)
+
+    click.echo(
+        f"{report.total_validated_pass_runs - report.unverified_count}/"
+        f"{report.total_validated_pass_runs} validated-pass runs carry verified evidence"
+    )
+    if report.clean:
+        click.secho("Evidence verification checks passed.", fg="green")
+    else:
+        click.secho(f"{report.unverified_count} run(s) reached validated_pass without verified evidence:", fg="red")
+        for rid in report.unverified_run_ids:
+            click.echo(f"  - {rid}")
+        raise SystemExit(1)
+
+
+@main.command()
+@click.option("--cycle", "cycle_id", required=True, help="Survey cycle id to run against")
+@click.option("--portal", "portal_filter", default=None, help="Restrict to one country id")
+@click.option("--questions", "questions_filter", default=None, help="Comma-separated question ids")
+@click.option("--agents", "agents_override", type=int, default=None, help="Override AIQ_ASSESSOR_AGENT_COUNT")
+@click.option("--batch-size", "batch_size_override", type=int, default=None, help="Override AIQ_BATCH_SIZE")
+@click.option("--no-adjudicate", is_flag=True, default=False, help="Stop after assessment; skip adjudication")
+@click.option("--resume", is_flag=True, default=False, help="Resume the most recent non-complete session for this cycle")
+@click.option("--session", "session_id_opt", default=None, help="Resume a specific session id instead of the latest")
+@click.pass_context
+def run(
+    ctx: click.Context, cycle_id: str, portal_filter: str | None, questions_filter: str | None,
+    agents_override: int | None, batch_size_override: int | None, no_adjudicate: bool,
+    resume: bool, session_id_opt: str | None,
+) -> None:
+    """Run (or resume) an assessment batch for one survey cycle (FR-064–FR-070)."""
+    settings: Settings = ctx.obj["settings"]
+
+    if agents_override is not None:
+        settings.assessor_agent_count = agents_override
+        settings.agent_models = (settings.agent_models * agents_override)[:agents_override] or settings.agent_models
+        settings.agent_temperatures = (settings.agent_temperatures * agents_override)[:agents_override]
+        settings.agent_prompt_profiles = (settings.agent_prompt_profiles * agents_override)[:agents_override]
+    if batch_size_override is not None:
+        settings.batch_size = batch_size_override
+
+    try:
+        validate_settings(settings)
+    except ConfigurationError as exc:
+        click.secho(str(exc), fg="red")
+        raise SystemExit(1)
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+
+    from core.llm_factory import ModelProvider
+    from shared.state.entities import (
+        AssessmentSession, ConfigurationSnapshot, SessionMode, SessionStatus, new_id,
+    )
+    from orchestration.scheduler import run_batch
+    from shared.persistence.repositories import Repository
+    from shared.tools.browser import BrowserSession
+    from shared.ratelimit.token_bucket import get_shared_limiter
+    from core.telemetry.cost_ledger import CostLedger
+    from core.telemetry.fetch_log import FetchLog
+    from core.telemetry.stage_events import StageEventLog
+
+    repo = Repository(conn)
+
+    if resume or session_id_opt:
+        session_id = session_id_opt
+        if not session_id:
+            row = conn.execute(
+                "SELECT session_id FROM assessment_sessions WHERE cycle_id = ? "
+                "ORDER BY created_at DESC LIMIT 1",
+                (cycle_id,),
+            ).fetchone()
+            if not row:
+                click.secho(f"No session found to resume for cycle {cycle_id!r}.", fg="red")
+                raise SystemExit(1)
+            session_id = row["session_id"]
+        click.echo(f"Resuming session {session_id}")
+    else:
+        snapshot = ConfigurationSnapshot(snapshot_id=new_id("cfg"), session_id="", values=settings.as_dict())
+        session = AssessmentSession(
+            session_id=new_id("session"), cycle_id=cycle_id, mode=SessionMode.PRODUCTION,
+            config_snapshot_id=snapshot.snapshot_id, status=SessionStatus.RUNNING,
+        )
+        snapshot.session_id = session.session_id
+        repo.insert_config_snapshot(snapshot)
+        repo.insert_session(session)
+        session_id = session.session_id
+        click.echo(f"Started session {session_id}")
+
+    questions = repo.list_questions(cycle_id)
+    if questions_filter:
+        wanted = set(questions_filter.split(","))
+        questions = [q for q in questions if q.question_id in wanted]
+    portals = repo.list_portals(cycle_id)
+    if portal_filter:
+        portals = [p for p in portals if p.country_id == portal_filter]
+
+    if not questions or not portals:
+        click.secho(
+            f"No questions/portals to run: {len(questions)} question(s), {len(portals)} portal(s) "
+            f"for cycle {cycle_id!r}. Seed the cycle's questions and target portals first.",
+            fg="yellow",
+        )
+        return
+
+    async def _run() -> None:
+        limiter = get_shared_limiter(settings.rate_limit_per_domain_rps)
+        provider = ModelProvider(settings.google_cloud_project, settings.google_cloud_location, settings.google_genai_use_vertexai)
+        browser = BrowserSession(settings.user_agent, limiter)
+        await browser.start()
+        capture_dir = f"./data/captures/{session_id}"
+        import pathlib
+
+        pathlib.Path(capture_dir).mkdir(parents=True, exist_ok=True)
+
+        import httpx
+
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as http_client:
+                summary = await run_batch(
+                    repo=repo, settings=settings, session_id=session_id, provider=provider,
+                    browser=browser, http_client=http_client,
+                    fetch_log=FetchLog(conn, session_id), stage_log=StageEventLog(conn, session_id),
+                    cost_ledger=CostLedger(conn, session_id), capture_dir=capture_dir,
+                    questions=questions, portals=portals, adjudicate_results=not no_adjudicate,
+                )
+        finally:
+            await browser.stop()
+
+        click.echo(
+            f"delivered={summary.delivered} escalated={summary.escalated} "
+            f"unassessable={summary.unassessable} in_progress={summary.in_progress} "
+            f"(of {len(summary.outcomes)} units)"
+        )
+
+    run_async(_run())
+
+
+@verify.command("resume")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def verify_resume_cmd(ctx: click.Context, session_id: str) -> None:
+    """SC-006: zero duplicated and zero lost units after a resume."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.persistence.repositories import Repository
+    from orchestration.verify import verify_resume
+
+    repo = Repository(_connect(settings))
+    report = verify_resume(repo, session_id, settings.assessor_agent_count)
+
+    click.echo(f"Checked {report.total_units} unit(s).")
+    if report.duplicated_units:
+        click.secho("Duplicated units:", fg="red")
+        for u in report.duplicated_units:
+            click.echo(f"  - {u}")
+    if report.lost_units:
+        click.secho("Lost units (delivered without sufficient validated evidence):", fg="red")
+        for u in report.lost_units:
+            click.echo(f"  - {u}")
+    if report.clean:
+        click.secho("Resume checks passed: zero duplicated, zero lost.", fg="green")
+    else:
+        click.secho("Resume checks FAILED.", fg="red")
+        raise SystemExit(1)
+
+
+@main.group()
+def question() -> None:
+    """Manage questionnaire and questions."""
+
+
+@question.command("add")
+@click.option("--question-id", required=True, help="Question identifier, e.g. OSQ-CUSTOM-01")
+@click.option("--text", required=True, help="Question text")
+@click.option("--author", "author_actor_id", required=True, help="Author/actor ID")
+@click.option("--cycle", "cycle_id", required=True, help="Survey cycle ID")
+@click.option("--answer-type", type=click.Choice(["binary", "scalar", "enum"]), default="binary")
+@click.option("--evidence-locus", type=click.Choice(["national_portal_only", "any_government_domain"]), default="national_portal_only")
+@click.option("--requires-auth", is_flag=True, default=False)
+@click.option("--session", "session_id", default=None, help="Optional session ID to enqueue mid-run")
+@click.pass_context
+def question_add_cmd(
+    ctx: click.Context, question_id: str, text: str, author_actor_id: str,
+    cycle_id: str, answer_type: str, evidence_locus: str, requires_auth: bool, session_id: str | None,
+) -> None:
+    """Add a custom, cycle-scoped question (FR-053, FR-054)."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.state.entities import AnswerType, EvidenceLocus, Question
+    from shared.persistence.repositories import Repository
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    repo = Repository(conn)
+
+    q = Question(
+        question_id=question_id,
+        cycle_id=cycle_id,
+        text=text,
+        answer_type=AnswerType(answer_type),
+        evidence_locus=EvidenceLocus(evidence_locus),
+        is_custom=True,
+        author_actor_id=author_actor_id,
+        requires_authenticated_access=requires_auth,
+    )
+    repo.insert_question(q)
+    click.secho(f"Added custom question {question_id} (cycle={cycle_id}, author={author_actor_id})", fg="green")
+
+    if session_id:
+        from orchestration.scheduler import enqueue_custom_question
+        portals = repo.list_portals(cycle_id)
+        enqueued = enqueue_custom_question(repo, session_id, q, portals)
+        click.echo(f"Enqueued {len(enqueued)} units mid-run for session {session_id}.")
+
+
+@main.group()
+def benchmark() -> None:
+    """Benchmark evaluation mode and cross-run comparison."""
+
+
+@benchmark.command("run")
+@click.option("--set", "set_id", required=True, help="Benchmark set ID")
+@click.option("--dataset", "json_dataset", default="data/benchmark/module_2_1.json", help="Path to JSON dataset")
+@click.pass_context
+def benchmark_run_cmd(ctx: click.Context, set_id: str, json_dataset: str) -> None:
+    """Run pipeline in benchmark mode against ground truth dataset (FR-093)."""
+    settings: Settings = ctx.obj["settings"]
+    from benchmark.runner import run_benchmark_session
+    from benchmark.store import BenchmarkStore
+    from shared.persistence.repositories import Repository
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    repo = Repository(conn)
+    store = BenchmarkStore(conn)
+
+    b_set = store.load_from_json(json_dataset, set_id, "Benchmark Set")
+    gt_list = store.list_ground_truth(set_id)
+
+    questions = repo.list_questions("2026-cycle") or []
+    portals = repo.list_portals("2026-cycle") or []
+
+    async def _run():
+        session_id, result = await run_benchmark_session(repo, settings, set_id, questions, portals)
+        click.secho(f"Completed benchmark session {session_id}", fg="green")
+        click.echo(f"Overall Accuracy: {result.overall_accuracy:.2%}")
+        click.echo(f"Discrepancy Flag Rate: {result.discrepancy_flag_rate:.2%}")
+
+    run_async(_run())
+
+
+@benchmark.command("compare")
+@click.option("--run", "session_id_a", required=True, help="Session A ID")
+@click.option("--against", "session_id_b", required=True, help="Session B ID")
+@click.pass_context
+def benchmark_compare_cmd(ctx: click.Context, session_id_a: str, session_id_b: str) -> None:
+    """Compare two benchmark runs (FR-099, SC-022)."""
+    settings: Settings = ctx.obj["settings"]
+    from benchmark.compare import compare_benchmark_runs
+    from shared.persistence.repositories import Repository
+
+    conn = _connect(settings)
+    repo = Repository(conn)
+    report = compare_benchmark_runs(repo, session_id_a, session_id_b)
+    click.echo(json.dumps(asdict(report), indent=2, default=str))
+
+
+@main.command()
+@click.option("--cycle", "cycle_id", required=True, help="Survey cycle ID to export")
+@click.option("--out", "output_dir", default="./data/exports", help="Output directory")
+@click.option("--actor", "actor_id", default="system-exporter", help="Producing actor ID")
+@click.pass_context
+def export(ctx: click.Context, cycle_id: str, output_dir: str, actor_id: str) -> None:
+    """Export delivered answers and exclusion report for a cycle (FR-101–FR-106)."""
+    settings: Settings = ctx.obj["settings"]
+    from export.writer import export_cycle_answers
+    from shared.persistence.repositories import Repository
+
+    conn = _connect(settings)
+    repo = Repository(conn)
+    ndjson_path, excl_path = export_cycle_answers(repo, cycle_id, output_dir, actor_id)
+    click.secho(f"Exported NDJSON to {ndjson_path}", fg="green")
+    click.secho(f"Exported Exclusion Report to {excl_path}", fg="green")
+
+
+@main.group()
+def telemetry() -> None:
+    """Inspect telemetry, fetch counts, timings, and model cost."""
+
+
+@telemetry.command("summary")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def telemetry_summary_cmd(ctx: click.Context, session_id: str) -> None:
+    """Print telemetry summary report (FR-112)."""
+    settings: Settings = ctx.obj["settings"]
+    from core.telemetry.reports import get_telemetry_summary
+
+    conn = _connect(settings)
+    res = get_telemetry_summary(conn, session_id)
+    click.echo(json.dumps(res, indent=2, default=str))
+
+
+@telemetry.command("timings")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def telemetry_timings_cmd(ctx: click.Context, session_id: str) -> None:
+    """Print stage execution timings (FR-113, FR-114)."""
+    settings: Settings = ctx.obj["settings"]
+    from core.telemetry.reports import get_timings_report
+
+    conn = _connect(settings)
+    res = get_timings_report(conn, session_id)
+    click.echo(json.dumps(res, indent=2, default=str))
+
+
+@telemetry.command("fetches")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def telemetry_fetches_cmd(ctx: click.Context, session_id: str) -> None:
+    """Print per-domain fetch counts (assessor vs validator) (FR-115)."""
+    settings: Settings = ctx.obj["settings"]
+    from core.telemetry.reports import get_fetches_report
+
+    conn = _connect(settings)
+    res = get_fetches_report(conn, session_id)
+    click.echo(json.dumps(res, indent=2, default=str))
+
+
+@telemetry.command("cost")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def telemetry_cost_cmd(ctx: click.Context, session_id: str) -> None:
+    """Print model invocation cost ledger (FR-116)."""
+    settings: Settings = ctx.obj["settings"]
+    from core.telemetry.reports import get_cost_report
+
+    conn = _connect(settings)
+    res = get_cost_report(conn, session_id)
+    click.echo(json.dumps(res, indent=2, default=str))
+
+
+@verify.command("benchmark-isolation")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def verify_benchmark_isolation_cmd(ctx: click.Context, session_id: str) -> None:
+    """Assert ground truth reached zero agent/validator/adjudicator invocations (FR-094, SC-021)."""
+    settings: Settings = ctx.obj["settings"]
+    from benchmark.verify import verify_benchmark_isolation
+    from shared.persistence.repositories import Repository
+
+    conn = _connect(settings)
+    repo = Repository(conn)
+    report = verify_benchmark_isolation(repo, session_id)
+    if report.clean:
+        click.secho("Benchmark isolation checks passed: zero ground-truth leakage.", fg="green")
+    else:
+        click.secho("Benchmark isolation checks FAILED.", fg="red")
+        for f in report.leakage_findings:
+            click.echo(f"  - {f}")
+        raise SystemExit(1)
+
+
+@verify.command("telemetry-hygiene")
+@click.option("--session", "session_id", required=True)
+@click.pass_context
+def verify_telemetry_hygiene_cmd(ctx: click.Context, session_id: str) -> None:
+    """Assert zero credentials and zero ground truth in telemetry (FR-110, FR-117)."""
+    settings: Settings = ctx.obj["settings"]
+    from telemetry.verify import verify_telemetry_hygiene
+
+    conn = _connect(settings)
+    report = verify_telemetry_hygiene(conn, session_id)
+    if report.clean:
+        click.secho("Telemetry hygiene checks passed: zero credentials, zero ground truth.", fg="green")
+    else:
+        click.secho("Telemetry hygiene checks FAILED.", fg="red")
+        for f in report.findings:
+            click.echo(f"  - {f}")
+        raise SystemExit(1)
+
+
+@verify.command("no-credentials")
+@click.pass_context
+def verify_no_credentials_cmd(ctx: click.Context) -> None:
+    """Assert zero credentials across all database/observability records (FR-110)."""
+    settings: Settings = ctx.obj["settings"]
+    from telemetry.verify import verify_no_credentials
+
+    conn = _connect(settings)
+    report = verify_no_credentials(conn)
+    if report.clean:
+        click.secho("No-credentials check passed across all tables.", fg="green")
+    else:
+        click.secho("No-credentials check FAILED.", fg="red")
+        for f in report.findings:
+            click.echo(f"  - {f}")
+        raise SystemExit(1)
+
+
+def run_async(coro):
+    return asyncio.run(coro)
+
+
+if __name__ == "__main__":
+    main()
+
