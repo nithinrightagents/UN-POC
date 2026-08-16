@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from shared.state.entities import UnitState
+from shared.state.reason_tags import is_blocked
 from shared.persistence.repositories import Repository
 
 _TERMINAL = {UnitState.DELIVERED.value, UnitState.ESCALATED.value, UnitState.UNASSESSABLE.value}
@@ -44,7 +45,7 @@ def portal_review_status(
         state = unit["state"] if unit else UnitState.PENDING.value
         if state in _TERMINAL:
             terminal_count += 1
-            if state == UnitState.ESCALATED.value:
+            if is_blocked(state):
                 escalated.append(qid)
         else:
             pending.append(qid)

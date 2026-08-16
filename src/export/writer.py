@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Sequence
 
 from shared.state.entities import AnswerExport, SessionMode, UnitState, utcnow, new_id
+from shared.state.reason_tags import is_blocked, reason_tag
 from export.invariants import validate_export_record, validate_export_set
 from shared.persistence.repositories import Repository
 
@@ -62,31 +63,54 @@ def export_cycle_answers(
                     sess_used = s
                     break
 
-            if not unit or unit.get("state") != UnitState.DELIVERED.value:
+            # FR-BF-013/FR-BF-014, R3: a human decision recorded for a blocked
+            # unit (ESCALATED/UNASSESSABLE) also makes it export-eligible as
+            # delivered, without touching the unit's own terminal state.
+            dec = (
+                repo.latest_assessor_decision(sess_used.session_id, q.question_id, p.portal_id)
+                if sess_used
+                else None
+            )
+            unit_state = unit.get("state") if unit else None
+            is_delivered = unit_state == UnitState.DELIVERED.value
+            is_blocked_with_decision = bool(unit) and is_blocked(unit_state) and dec is not None
+
+            if not (is_delivered or is_blocked_with_decision):
                 # Determine exclusion reason
                 reason = "awaiting_human_review"
+                esc_reason_value = unit.get("escalation_reason") if unit else None
                 if q.requires_authenticated_access:
                     reason = "requires_authenticated_access"
-                elif unit and unit.get("state") == UnitState.ESCALATED.value:
-                    esc_reason = unit.get("escalation_reason", "unresolved_disagreement")
+                elif unit and is_blocked(unit_state):
+                    esc_reason = esc_reason_value or "unresolved_disagreement"
                     reason = esc_reason if isinstance(esc_reason, str) else esc_reason.value
-                elif unit and unit.get("state") == UnitState.UNASSESSABLE.value:
-                    reason = "no_usable_url"
+
+                # FR-BF-015: the raw `reason` code is unchanged; `reason_tag`
+                # carries the same human-readable text a reviewer would see.
+                reason_tag_text = None
+                if unit and esc_reason_value:
+                    resolution_manner = None
+                    if esc_reason_value == "language_declined":
+                        language_decisions = repo.list_language_decisions(p.portal_id)
+                        if language_decisions:
+                            resolution_manner = language_decisions[-1].resolution_manner
+                    reason_tag_text = reason_tag(
+                        esc_reason_value, unit, resolution_manner=resolution_manner
+                    ).text
 
                 excluded_items.append({
                     "country_id": p.country_id,
                     "question_id": q.question_id,
                     "reason": reason,
+                    "reason_tag": reason_tag_text,
                 })
                 continue
 
-            # Delivered unit
+            # Delivered (or blocked-with-a-human-decision) unit
             consensus_answer = unit.get("consensus_answer")
             consensus_confidence = unit.get("consensus_confidence", 80)
             below_thresh = bool(unit.get("below_acceptance_threshold", False))
 
-            # Fetch assessor decision if human reviewed
-            dec = repo.get_assessor_decision(sess_used.session_id, q.question_id, p.portal_id) if hasattr(repo, "get_assessor_decision") else None
             provenance = "system_proposed"
             acting_actor = sess_used.session_id
             acted_time = sess_used.started_at.isoformat() if hasattr(sess_used.started_at, "isoformat") else str(sess_used.started_at)

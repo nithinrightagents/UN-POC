@@ -23,7 +23,6 @@ All parameters named in FR-072.
 | `AIQ_BEST_EFFORT_CONFIDENCE_CEILING` | int | `74` | 0–100; must be **below** the acceptance threshold | FR-018 |
 | `AIQ_KB_LINK_SOURCE_ENABLED` | bool | `true` | Prior-survey KB as a **link** source | FR-122 |
 | `AIQ_MSQ_LINK_SOURCE_ENABLED` | bool | `true` | MSQ submissions read for **links** only, never for answers | FR-122, FR-126 |
-| `AIQ_KB_MAX_LINK_AGE_DAYS` | int | `730` | ≥ 1; one biennial cycle | FR-128 |
 | `AIQ_SUPPORTED_LANGUAGES` | csv | *(empty)* | ISO 639-1 codes | FR-014 |
 | `AIQ_RATE_LIMIT_PER_DOMAIN_RPS` | float | `0.5` | > 0 | FR-069 |
 | `AIQ_UNRESPONSIVE_PORTAL_ATTEMPT_BOUND` | int | `3` | ≥ 1 | FR-071 |
@@ -36,6 +35,7 @@ All parameters named in FR-072.
 - **`AIQ_SUPPORTED_LANGUAGES` defaults to empty.** Deliberate. Its contents depend on a language-coverage evaluation of the configured models (spec, Dependencies), which is a project activity and a prerequisite for a first production run. An empty set routes every portal to a human language decision (FR-017) — visibly wrong, and therefore safe. A plausible-looking default would silently assert coverage nobody has established.
 - **`AIQ_BEST_EFFORT_CONFIDENCE_CEILING = 74`** sits one point below the acceptance threshold, so a translated answer never clears the threshold on its own. The two are coupled: move the threshold and this must move with it, which the startup validator below enforces.
 - **Named confidence tiers no longer exist** (FR-041). Confidence is displayed as a 0–100 percentage everywhere, and the acceptance threshold is the single boundary. `AIQ_CONFIDENCE_TIER_BANDS` was removed rather than defaulted — two labels for one number let a reader trust the label and skip the number.
+- **`AIQ_KB_MAX_LINK_AGE_DAYS` (FR-128) has been removed.** The prior-survey KB link source no longer age-bounds candidates; any link on record is returned as usable regardless of how old it is. Staleness of a reused link is now left to be caught downstream — by portal unreachability, page-content mismatch at assessment time, or human review — rather than pre-filtered by age.
 - **`AIQ_ASSESSOR_AGENT_COUNT` below 2 rejects the run** rather than degrading to a single agent (FR-009). Silent degradation would destroy the discrepancy signal while producing output that looks normal.
 
 ## Model provider (research R2)

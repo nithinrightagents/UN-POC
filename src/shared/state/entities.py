@@ -103,6 +103,7 @@ class EscalationReason(str, Enum):
     UNVERIFIABLE_TARGET = "unverifiable_target"
     REQUIRES_AUTHENTICATED_ACCESS = "requires_authenticated_access"
     LANGUAGE_DECLINED = "language_declined"
+    LANGUAGE_NOT_SUPPORTED = "language_not_supported"
 
 
 class LanguageDecisionOutcome(str, Enum):
@@ -233,6 +234,7 @@ class AssessorAgentRun:
     auth_boundary_url: str | None = None
     model_identity: str | None = None
     below_acceptance_threshold: bool = False
+    detected_language: str | None = None
 
 
 @dataclass

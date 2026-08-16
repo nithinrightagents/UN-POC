@@ -44,6 +44,13 @@ required structured format including a numeric confidence (0-100) that reflects
 ONLY the quality and authority of the evidence you found on THIS page -- not your
 general belief about the country.
 
+You must also report `detected_language`: the ISO 639-1 two-letter code of the
+language the PAGE CONTENT below is actually written in (not the language of this
+question or these instructions). Report exactly what you observe on the page --
+do not guess toward any particular language, and do not let it affect your answer
+or confidence. Use "unknown" only if the page content is too sparse, garbled, or
+non-linguistic (e.g. an error page) to identify a language at all.
+
 {addendum_section}
 
 PAGE CONTENT:

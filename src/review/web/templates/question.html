@@ -6,7 +6,7 @@
 
 <div class="card">
     <p>
-        Proposed answer: <strong>{{ view.delivered_answer }}</strong>
+        Proposed answer: <strong>{% if view.delivered_answer is not none %}{{ view.delivered_answer }}{% else %}<em>Not yet answered</em>{% endif %}</strong>
         &nbsp;|&nbsp; Confidence:
         <span class="confidence {% if view.below_acceptance_threshold %}confidence--low{% endif %}">
             {{ view.consensus_confidence if view.consensus_confidence is not none else 'n/a' }}%
@@ -19,7 +19,8 @@
     <p><em>Justification:</em> {{ view.justification }}</p>
     {% endif %}
     {% if view.escalated %}
-    <p class="badge badge--fail" role="alert">Escalated{% if view.escalation_reason %}: {{ view.escalation_reason }}{% endif %}</p>
+    <p class="badge badge--fail" role="alert">{{ view.reason_tag.text if view.reason_tag else 'Left blank' }}</p>
+    {{ attempt_history_html | safe }}
     {% endif %}
     <p>Provenance: {{ view.provenance }}
         {% if view.actor_id %} by {{ view.actor_id }} at {{ view.acted_at }}{% endif %}
@@ -30,15 +31,17 @@
     {{ detail_html | safe }}
 </div>
 
+{% if view.system_proposed_answer is not none %}
 <form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/approve?session={{ session_id }}">
     <input type="hidden" name="actor_id" value="demo-assessor">
     <button type="submit" class="primary">Approve</button>
 </form>
+{% endif %}
 
 <form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/edit?session={{ session_id }}">
     <input type="hidden" name="actor_id" value="demo-assessor">
     <label for="edited_answer">Edit answer</label>
-    <input type="text" id="edited_answer" name="edited_answer" value="{{ view.delivered_answer }}">
+    <input type="text" id="edited_answer" name="edited_answer" value="{{ view.delivered_answer if view.delivered_answer is not none else '' }}">
     <button type="submit">Save edit</button>
 </form>
 

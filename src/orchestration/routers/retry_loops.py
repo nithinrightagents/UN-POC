@@ -210,6 +210,7 @@ def _run_output_from_agent_run(run: AssessorAgentRun, evidence: EvidenceArtifact
         auth_boundary_observed=run.auth_boundary_observed,
         auth_boundary_url=run.auth_boundary_url,
         model_identity=run.model_identity or "",
+        detected_language=run.detected_language,
     )
 
 

@@ -4,6 +4,12 @@ Presents, for one question, the proposed answer, justification, numeric
 confidence as a percentage, resolved URL, supplying source, and the
 complete evidence set -- without the reviewer navigating to any external
 tool (FR-023).
+
+A blocked unit (ESCALATED or UNASSESSABLE, see shared.state.reason_tags)
+never carries a forced or placeholder answer -- its delivered/system-proposed
+answer stays None until a human decision exists (FR-BF-002) -- and carries a
+canonical Reason Tag plus the full attempt history the pipeline already
+recorded before it blocked (FR-BF-005, FR-BF-008, FR-BF-009).
 """
 
 from __future__ import annotations
@@ -12,6 +18,7 @@ from dataclasses import dataclass, field
 
 from shared.state.confidence import is_below_acceptance_threshold
 from shared.state.entities import EvidenceArtifact
+from shared.state.reason_tags import ReasonTag, is_blocked, reason_tag
 from shared.persistence.repositories import Repository
 
 
@@ -25,6 +32,16 @@ class AgentPositionView:
     model_identity: str | None
     validation_passed: bool | None
     validation_gaps: list[str] = field(default_factory=list)
+
+
+@dataclass
+class AttemptHistoryView:
+    resolution_attempts: list[dict]
+    reachability_attempts: int | None
+    verification_attempts: int | None
+    retry_counts: list[dict]
+    points_of_disagreement: list[str]
+    has_any_evidence: bool
 
 
 @dataclass
@@ -43,11 +60,13 @@ class QuestionReviewView:
     evidence_missing: bool
     escalated: bool
     escalation_reason: str | None
+    reason_tag: ReasonTag | None
     agent_positions: list[AgentPositionView]
     discrepancy_flagged: bool
     provenance: str  # "system_proposed" | "human_edited" | "human_overridden"
     actor_id: str | None
     acted_at: str | None
+    attempt_history: AttemptHistoryView | None
 
 
 def build_question_review(
@@ -59,20 +78,25 @@ def build_question_review(
         return None
 
     unit = repo.get_unit(session_id, question_id, portal_id)
+    unit_data = unit or {}
     unit_state = unit["state"] if unit else "pending"
-    escalated = unit_state == "escalated"
+    escalated = is_blocked(unit_state)
     escalation_reason = unit.get("escalation_reason") if unit else None
 
     adjudications = repo.list_adjudication_results(session_id, question_id, portal_id)
     latest_adj = adjudications[-1] if adjudications else None
 
-    # Per-agent positions from the round the delivered adjudication used.
+    # Per-agent positions: the round the delivered adjudication used, unless
+    # the unit is blocked -- a disagreement block shows every round (FR-BF-009).
     round_number = latest_adj.round_number if latest_adj else 1
-    runs = repo.list_agent_runs(session_id, question_id, portal_id, round_number=round_number)
+    if escalated:
+        runs = repo.list_agent_runs(session_id, question_id, portal_id)
+    else:
+        runs = repo.list_agent_runs(session_id, question_id, portal_id, round_number=round_number)
 
     agent_views: list[AgentPositionView] = []
     evidence: EvidenceArtifact | None = None
-    for run in sorted(runs, key=lambda r: r.agent_index):
+    for run in sorted(runs, key=lambda r: (r.round_number, r.agent_index)):
         validations = repo.list_validation_results(run.run_id)
         latest_validation = validations[-1] if validations else None
         agent_views.append(
@@ -93,6 +117,8 @@ def build_question_review(
     # FR-046: the original system-proposed answer is the adjudicator's consensus
     # answer, full stop -- it must never be derived from a prior human decision.
     # A human decision changes what is *delivered*, never what was *proposed*.
+    # For a blocked unit there is no adjudicated consensus, so both stay None
+    # (FR-BF-002) until a human decision is recorded below.
     system_proposed_answer = latest_adj.consensus_answer if latest_adj else None
     delivered_answer = system_proposed_answer
     consensus_confidence = latest_adj.consensus_confidence if latest_adj else None
@@ -125,6 +151,36 @@ def build_question_review(
         )
     )
 
+    tag: ReasonTag | None = None
+    attempt_history: AttemptHistoryView | None = None
+    if escalated and escalation_reason:
+        resolution_manner = None
+        if escalation_reason == "language_declined":
+            language_decisions = repo.list_language_decisions(portal_id)
+            if language_decisions:
+                resolution_manner = language_decisions[-1].resolution_manner
+        tag = reason_tag(escalation_reason, unit_data, resolution_manner=resolution_manner)
+
+        points_of_disagreement = [adj.flag_reason for adj in adjudications if adj.flag_reason]
+        verification_attempt_counts = [
+            v.verification_attempts for run in runs for v in repo.list_validation_results(run.run_id)
+        ]
+        attempt_history = AttemptHistoryView(
+            resolution_attempts=list(unit_data.get("resolution_history", [])),
+            reachability_attempts=unit_data.get("attempts") or unit_data.get("reachability_attempts"),
+            verification_attempts=max(verification_attempt_counts, default=None),
+            retry_counts=[
+                {
+                    "agent_index": run.agent_index,
+                    "confidence_retry_count": run.confidence_retry_count,
+                    "validation_retry_count": run.validation_retry_count,
+                }
+                for run in sorted(runs, key=lambda r: (r.round_number, r.agent_index))
+            ],
+            points_of_disagreement=points_of_disagreement,
+            has_any_evidence=evidence is not None,
+        )
+
     return QuestionReviewView(
         question_id=question_id,
         portal_id=portal_id,
@@ -140,9 +196,11 @@ def build_question_review(
         evidence_missing=evidence_missing,
         escalated=escalated,
         escalation_reason=escalation_reason,
+        reason_tag=tag,
         agent_positions=agent_views,
         discrepancy_flagged=latest_adj.discrepancy_flagged if latest_adj else False,
         provenance=provenance,
         actor_id=actor_id,
         acted_at=acted_at,
+        attempt_history=attempt_history,
     )

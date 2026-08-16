@@ -1,8 +1,9 @@
 """The batch scheduler (FR-064–FR-070, research R6).
 
-Ties link resolution, the language decision gate, N independent Assessor
-Agents (each running its own confidence gate and validation retry loop),
-and adjudication into one per-unit pipeline, run across many units with
+Ties link resolution, N independent Assessor Agents (each running its own
+confidence gate and validation retry loop, and each reporting the language
+it observed on the page as part of its normal structured response), and
+adjudication into one per-unit pipeline, run across many units with
 concurrency bounded PER UNIT (`settings.batch_size`), not per fetch --
 every fetch inside a unit still passes through the single shared
 per-domain rate limiter (FR-089), so raising batch_size increases how many
@@ -25,6 +26,7 @@ units); it is only not maximally efficient in that one interrupted case.
 from __future__ import annotations
 
 import asyncio
+from collections import Counter
 from dataclasses import dataclass, field
 
 import httpx
@@ -43,7 +45,6 @@ from shared.state.entities import (
     DiscrepancyCase,
     EscalationQueueItem,
     EscalationReason,
-    LanguageDecisionOutcome,
     Question,
     TargetPortal,
     UnitState,
@@ -51,13 +52,6 @@ from shared.state.entities import (
 )
 from shared.state.resume import remaining_work
 from shared.tools.linkresolution.chain import resolve_link
-from orchestration.routers.language_decision import (
-    apply_best_effort_confidence_cap,
-    create_pending_decision,
-    language_requires_decision,
-    resolve_decision_expired,
-    window_has_expired,
-)
 from orchestration.routers.retry_loops import (
     _describe_disagreement,
     materialize_evidence_artifact,
@@ -66,7 +60,6 @@ from orchestration.routers.retry_loops import (
 )
 from shared.persistence.repositories import Repository
 from shared.tools.browser import BrowserSession
-from shared.tools.language import detect_language
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
 from core.telemetry.langsmith_tracing import safe_trace, unit_trace
@@ -245,69 +238,6 @@ async def process_unit(
                 {"reason": "question is flagged requires_authenticated_access (FR-107)"},
             )
 
-        # --- Language decision gate (FR-015–FR-020) ---------------------------
-        best_effort = False
-        if current_state_ref[0] == UnitState.RESOLVED and "language_checked" not in unit_data:
-            page_result, page = await browser.fetch(resolved_url, "assessor_agent", fetch_log)
-            detected_language = None
-            if page_result.reachable and page is not None:
-                # LangSmith tracing (FR-T-002): language_detection child span
-                async with safe_trace("language_detection", run_type="chain", inputs={"question_id": question.question_id, "portal_id": portal_id, "resolved_url": resolved_url}) as lang_span:
-                    with stage_log.timed(
-                        "language_detection", {"question_id": question.question_id, "portal_id": portal_id}
-                    ):
-                        detected_language = detect_language(page_result.html)
-                    lang_span.patch(outputs={"detected_language": detected_language})
-                await browser.close_page(page)
-            unit_data["language_checked"] = True
-            unit_data["detected_language"] = detected_language
-
-            if detected_language and language_requires_decision(detected_language, settings.supported_languages):
-                decisions = [
-                    d for d in repo.list_language_decisions(portal_id) if d.detected_language == detected_language
-                ]
-                pending = next((d for d in decisions if d.resolution_manner == "pending"), None)
-                if pending is None and not decisions:
-                    pending = create_pending_decision(portal_id, session_id, detected_language)
-                    repo.insert_language_decision(pending)
-
-                latest = decisions[-1] if decisions else pending
-
-                if latest.resolution_manner == "pending":
-                    if window_has_expired(latest.decided_at, settings.language_decision_window_hours):
-                        repo.insert_language_decision(resolve_decision_expired(latest))
-                        return await escalate(
-                            EscalationReason.LANGUAGE_DECLINED,
-                            {"detected_language": detected_language, "manner": "window_expired"},
-                        )
-                    # FR-020: a pending decision never blocks the rest of the batch --
-                    # leave this unit at RESOLVED (non-terminal, resumable) and move on.
-                    advance(UnitState.RESOLVED, unit_data)
-                    outcome = UnitOutcome(
-                        question.question_id, portal_id, UnitState.RESOLVED,
-                        f"awaiting language decision ({detected_language})",
-                    )
-                    root_run.patch(outputs={"outcome": outcome.final_state.value, "detail": outcome.detail})
-                    return outcome
-                if latest.decision == LanguageDecisionOutcome.DECLINED:
-                    return await escalate(
-                        EscalationReason.LANGUAGE_DECLINED,
-                        {"detected_language": detected_language, "manner": "declined"},
-                    )
-                if latest.decision == LanguageDecisionOutcome.EXPIRED:
-                    return await escalate(
-                        EscalationReason.LANGUAGE_DECLINED,
-                        {"detected_language": detected_language, "manner": "window_expired"},
-                    )
-                # AUTHORIZED: proceed, confidence capped below the acceptance threshold.
-                best_effort = True
-                unit_data["best_effort"] = True
-
-            advance(UnitState.RESOLVED, unit_data)
-
-
-    best_effort = best_effort or unit_data.get("best_effort", False)
-
     # --- Independent assessment (FR-008–FR-013, FR-076–FR-091) ------------
     round_number = unit_data.get("round_number", 1)
 
@@ -340,10 +270,6 @@ async def process_unit(
             settings=settings, fetch_log=fetch_log, stage_log=stage_log,
             cost_ledger=cost_ledger, capture_dir=capture_dir,
         )
-        if best_effort and initial_run.confidence is not None:
-            initial_run.confidence = apply_best_effort_confidence_cap(
-                initial_run.confidence, settings.best_effort_confidence_ceiling
-            )
         initial_evidence = materialize_evidence_artifact(initial_run)
         if initial_evidence:
             repo.insert_evidence(initial_evidence)
@@ -376,6 +302,29 @@ async def process_unit(
         await asyncio.gather(*(run_one_agent(i, round_number, None) for i in dispatch_indices))
     ) if dispatch_indices else []
     all_runs = retained_runs + new_runs
+
+    # --- Language support check (FR-015 replacement) -----------------------
+    # Each assessor already reads the page to answer the question, so it
+    # reports the language it observed as part of that same structured
+    # response (no separate detection call, no python language-ID package).
+    # The LLM reports the truth; this comparison against the configured
+    # allow-list is the only place policy is applied. Independent agents
+    # occasionally disagree on a marginal read, so the majority reported
+    # language decides -- one outlier agent cannot flip the unit's outcome.
+    reported_languages = [r.detected_language for r in all_runs if r.detected_language]
+    if reported_languages:
+        language_counts = Counter(reported_languages)
+        majority_language, _ = language_counts.most_common(1)[0]
+        if majority_language not in settings.supported_languages:
+            return await escalate(
+                EscalationReason.LANGUAGE_NOT_SUPPORTED,
+                {
+                    "detected_language": majority_language,
+                    "reported_languages": dict(language_counts),
+                    "supported_languages": settings.supported_languages,
+                },
+            )
+
     validated_runs = [r for r in all_runs if r.state == AgentRunState.VALIDATED_PASS]
 
     if len(validated_runs) < 2:

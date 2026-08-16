@@ -51,9 +51,7 @@ async def resolve_link(
             if not settings.kb_link_source_enabled:
                 continue
             order += 1
-            attempt = resolve_from_prior_survey_kb(
-                repo, question_id, country_id, settings.kb_max_link_age_days, order
-            )
+            attempt = resolve_from_prior_survey_kb(repo, question_id, country_id, order)
         elif source_name == "msq":
             if not settings.msq_link_source_enabled:
                 continue

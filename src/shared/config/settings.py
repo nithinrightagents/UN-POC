@@ -27,14 +27,14 @@ class Settings:
     google_genai_use_vertexai: bool = True
     google_cloud_project: str = ""
     google_cloud_location: str = "us-central1"
-    agent_1_model: str = "gemini-3.5-flash"
-    agent_2_model: str = "gemini-3.5-flash"
-    agent_models: list[str] = field(default_factory=lambda: ["gemini-3.5-flash", "gemini-3.5-flash"])
+    agent_1_model: str = "gemini-2.5-flash"
+    agent_2_model: str = "gemini-2.5-flash"
+    agent_models: list[str] = field(default_factory=lambda: ["gemini-2.5-flash", "gemini-2.5-flash"])
     agent_temperatures: list[float] = field(default_factory=lambda: [0.2, 0.7])
     agent_prompt_profiles: list[str] = field(
         default_factory=lambda: ["literal", "inferential"]
     )
-    validator_model: str = "gemini-3.5-flash"
+    validator_model: str = "gemini-2.5-flash"
     allow_identical_agent_models: bool = True
 
     # --- Independent assessment ---
@@ -57,10 +57,13 @@ class Settings:
     # --- Link resolution ---
     kb_link_source_enabled: bool = True
     msq_link_source_enabled: bool = True
-    kb_max_link_age_days: int = 730
     url_resolution_mode: str = "historical_first"
 
     # --- Language handling ---
+    # Language is detected inline by the assessor LLM itself as part of its
+    # normal structured response (agents/assessor/agent.py) and compared
+    # against this allow-list in orchestration/scheduler.py -- no separate
+    # detection package or pre-fetch step.
     supported_languages: list[str] = field(default_factory=lambda: ["en"])
     language_decision_window_hours: int = 48
 
@@ -125,7 +128,6 @@ _ENV_MAP = {
     ),
     "kb_link_source_enabled": ("AIQ_KB_LINK_SOURCE_ENABLED", _bool),
     "msq_link_source_enabled": ("AIQ_MSQ_LINK_SOURCE_ENABLED", _bool),
-    "kb_max_link_age_days": ("AIQ_KB_MAX_LINK_AGE_DAYS", int),
     "url_resolution_mode": ("AIQ_URL_RESOLUTION_MODE", str),
     "supported_languages": ("AIQ_SUPPORTED_LANGUAGES", _split_csv),
     "language_decision_window_hours": ("AIQ_LANGUAGE_DECISION_WINDOW_HOURS", int),

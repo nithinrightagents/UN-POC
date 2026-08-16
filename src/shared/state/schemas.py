@@ -94,6 +94,7 @@ class AssessorAgentOutput(BaseModel):
     auth_boundary_observed: bool = False
     auth_boundary_url: str | None = None
     model_identity: str = ""
+    detected_language: str | None = None
 
     @model_validator(mode="after")
     def _auth_boundary_implies_no_answer(self) -> "AssessorAgentOutput":

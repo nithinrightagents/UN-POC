@@ -16,6 +16,7 @@ VALID_EXCLUSION_REASONS = frozenset({
     "unverifiable_target",
     "requires_authenticated_access",
     "language_declined",
+    "language_not_supported",
 })
 
 

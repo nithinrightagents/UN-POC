@@ -55,8 +55,14 @@ _RESPONSE_SCHEMA = {
             "description": "The exact short text snippet from the page that is the evidence, "
             "or empty string if the answer is negative (feature not found).",
         },
+        "detected_language": {
+            "type": "string",
+            "description": "ISO 639-1 two-letter code of the language the PAGE CONTENT is "
+            "written in (not the language of this question), e.g. 'en', 'fr', 'ar'. "
+            "Use 'unknown' if it cannot be determined.",
+        },
     },
-    "required": ["answer", "confidence", "justification", "evidence_quote"],
+    "required": ["answer", "confidence", "justification", "evidence_quote", "detected_language"],
 }
 
 
@@ -175,12 +181,15 @@ async def run_assessor_agent(
                                 element_text=located["text"],
                             )
 
+                    detected_language = str(parsed.get("detected_language") or "unknown").strip().lower() or "unknown"
+
                     return AssessorAgentOutput(
                         answer=bool(parsed.get("answer", False)) if question["answer_type"] == "binary" else parsed.get("answer"),
                         confidence=max(0, min(100, int(parsed.get("confidence", 0)))),
                         justification=str(parsed.get("justification", "")),
                         evidence=evidence,
                         model_identity=response.model_identity,
+                        detected_language=detected_language,
                     )
                 finally:
                     await browser.close_page(page)
@@ -209,6 +218,7 @@ async def run_assessor_agent(
             auth_boundary_url=output.auth_boundary_url,
             model_identity=output.model_identity,
             below_acceptance_threshold=outcome.below_acceptance_threshold,
+            detected_language=output.detected_language,
         )
         # Stash the raw evidence output for the caller (persistence needs a
         # standalone EvidenceArtifact record + artifact_id before it can be
@@ -219,6 +229,7 @@ async def run_assessor_agent(
             "confidence": run.confidence,
             "state": run.state.value,
             "auth_boundary_observed": run.auth_boundary_observed,
+            "detected_language": run.detected_language,
         })
         return run
 
@@ -232,7 +243,13 @@ def _parse_model_json(text: str) -> dict:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        return {"answer": False, "confidence": 0, "justification": "Model output was not valid JSON.", "evidence_quote": ""}
+        return {
+            "answer": False,
+            "confidence": 0,
+            "justification": "Model output was not valid JSON.",
+            "evidence_quote": "",
+            "detected_language": "unknown",
+        }
 
 
 class AssessorAgent(BaseAgent[AssessorAgentInput, AssessorAgentRun]):

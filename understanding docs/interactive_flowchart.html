@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UN EKAP AIQ - Executive System Architecture & Multi-Agent Flowchart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Institutional UN Executive Palette */
+      --un-blue-primary: #1C4F6E;
+      --un-blue-accent:  #2E7EAA;
+      --un-blue-light:   #4FA3D1;
+      --un-blue-glow:    rgba(46, 126, 170, 0.25);
+
+      --bg-base:         #0B0F17;
+      --bg-surface:      #0F1624;
+      --bg-card:         rgba(17, 24, 39, 0.88);
+      --bg-card-hover:   rgba(24, 34, 53, 0.95);
+      
+      --border-subtle:   rgba(255, 255, 255, 0.08);
+      --border-card:     rgba(255, 255, 255, 0.1);
+      --border-accent:   rgba(46, 126, 170, 0.45);
+      
+      --text-main:       #F1F5F9;
+      --text-muted:      #94A3B8;
+      --text-dim:        #64748B;
+
+      /* Semantic Connection Colors */
+      --flow-primary:    #38BDF8;  /* Clean Azure */
+      --flow-retry:      #F59E0B;  /* Amber */
+      --flow-escalation: #EF4444;  /* Red / Rose */
+      --flow-telemetry:  #A855F7;  /* Purple */
+      --flow-benchmark:  #EAB308;  /* Gold */
+
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Subtle Grid & Lights */
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .grid-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: 
+        radial-gradient(rgba(46, 126, 170, 0.06) 1px, transparent 1px),
+        radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 32px 32px, 16px 16px;
+      background-position: 0 0, 8px 8px;
+      pointer-events: none;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse at center, black 60%, transparent 95%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 60%, transparent 95%);
+    }
+
+    /* Mouse Spotlight Follower */
+    #mouse-spotlight {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(46, 126, 170, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      transition: opacity 0.3s ease;
+      opacity: 0;
+    }
+
+    /* Executive Header */
+    header {
+      background: rgba(11, 15, 23, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.9rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-badge {
+      background: var(--un-blue-primary);
+      color: #E2F1F8;
+      font-weight: 700;
+      font-size: 0.74rem;
+      padding: 0.38rem 0.8rem;
+      border-radius: 6px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: 1px solid rgba(79, 163, 209, 0.35);
+      box-shadow: 0 2px 10px rgba(28, 79, 110, 0.4);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #38BDF8;
+      box-shadow: 0 0 8px #38BDF8;
+    }
+
+    h1 {
+      font-size: 1.22rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFFFFF 40%, #C8E6F8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.01em;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.12rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .pill-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.08rem 0.45rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: #93C5FD;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      background: rgba(15, 22, 34, 0.85);
+      padding: 0.3rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 0.45rem 0.95rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tab-btn.active {
+      background: var(--un-blue-primary);
+      color: #FFFFFF;
+      border-color: rgba(79, 163, 209, 0.4);
+      box-shadow: 0 2px 10px rgba(28, 79, 110, 0.4);
+    }
+
+    /* Main Container Layout */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 66px);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Left Control Sidebar */
+    .toolbar-sidebar {
+      width: 275px;
+      flex-shrink: 0;
+      background: rgba(11, 16, 25, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-right: 1px solid var(--border-subtle);
+      padding: 1.2rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+      color: #6B8FAD;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Search Box */
+    .search-box {
+      position: relative;
+      margin-bottom: 0.2rem;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(15, 22, 34, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem 0.5rem 1.9rem;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      outline: none;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--un-blue-accent);
+      box-shadow: 0 0 0 2px var(--un-blue-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    /* Filter Chips */
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      padding: 0.48rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-chip:hover {
+      border-color: rgba(46, 126, 170, 0.4);
+      color: #FFFFFF;
+      background: rgba(46, 126, 170, 0.08);
+    }
+
+    .filter-chip.active {
+      background: rgba(46, 126, 170, 0.16);
+      border-color: var(--un-blue-accent);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .filter-count {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.08rem 0.38rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #94A3B8;
+    }
+
+    /* Simulation Controller Card */
+    .sim-controls {
+      background: rgba(14, 20, 32, 0.95);
+      border: 1px solid rgba(46, 126, 170, 0.25);
+      border-radius: 8px;
+      padding: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .sim-select {
+      width: 100%;
+      background: rgba(9, 13, 20, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 0.45rem 0.6rem;
+      font-size: 0.76rem;
+      font-family: var(--font-sans);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-sim {
+      width: 100%;
+      padding: 0.52rem;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #163C52, #1C4F6E);
+      color: #E2F1F8;
+      box-shadow: 0 2px 10px rgba(22, 60, 82, 0.4);
+      border: 1px solid rgba(46, 126, 170, 0.38);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1C4F6E, #23617F);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: #E2E8F0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .step-indicator {
+      font-size: 0.72rem;
+      color: #8FBECD;
+      font-family: var(--font-mono);
+      background: rgba(8, 12, 18, 0.85);
+      padding: 0.5rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(46, 126, 170, 0.2);
+      line-height: 1.4;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Invariant Mini Cards */
+    .invariants-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .invariant-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.73rem;
+      line-height: 1.4;
+      color: var(--text-muted);
+    }
+
+    .invariant-card strong {
+      color: #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.2rem;
+      font-size: 0.75rem;
+    }
+
+    .invariant-card code {
+      font-family: var(--font-mono);
+      color: #38BDF8;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.08rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.68rem;
+    }
+
+    /* Canvas Viewport Area */
+    .canvas-view {
+      flex: 1;
+      min-width: 0;
+      position: relative;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Top Legend Bar */
+    .canvas-top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      width: 100%;
+      background: rgba(11, 15, 23, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.6rem 1.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-group {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s;
+      user-select: none;
+    }
+
+    .legend-item:hover {
+      color: var(--text-main);
+    }
+
+    .legend-line {
+      width: 18px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    .legend-line.primary   { background: var(--flow-primary); }
+    .legend-line.retry     { background: var(--flow-retry); stroke-dasharray: 4 2; }
+    .legend-line.escalate  { background: var(--flow-escalation); }
+    .legend-line.telemetry { background: var(--flow-telemetry); }
+    .legend-line.benchmark { background: var(--flow-benchmark); }
+
+    .canvas-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .canvas-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 0.32rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .canvas-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+    }
+
+    /* SVG Layer */
+    .flow-svg-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .flow-grid-container {
+      position: relative;
+      z-index: 2;
+      padding: 2.2rem 2rem 5rem 2rem;
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      gap: 3.4rem;
+      align-items: center;
+    }
+
+    /* Stage Tiers */
+    .stage-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+      position: relative;
+    }
+
+    .stage-label-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+      color: #64748B;
+      padding-left: 0.5rem;
+    }
+
+    .stage-label-banner::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.08), transparent);
+    }
+
+    .flow-row {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 1.8rem;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    /* Refined Executive Node Card */
+    .node-card-wrapper {
+      perspective: 1000px;
+    }
+
+    .node-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 1.1rem;
+      width: 285px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .node-card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(46, 126, 170, 0.2);
+      background: var(--bg-card-hover);
+    }
+
+    .node-card.selected {
+      border-color: #2E7EAA;
+      box-shadow: 0 0 0 2px rgba(46, 126, 170, 0.4), 0 12px 32px rgba(0, 0, 0, 0.6);
+      background: rgba(20, 32, 48, 0.95);
+    }
+
+    .node-card.sim-highlight {
+      border-color: #38BDF8;
+      box-shadow: 0 0 24px rgba(56, 189, 248, 0.5);
+      animation: pulseExecutive 1.5s infinite alternate;
+    }
+
+    @keyframes pulseExecutive {
+      0% { box-shadow: 0 0 12px rgba(56, 189, 248, 0.35); }
+      100% { box-shadow: 0 0 28px rgba(56, 189, 248, 0.7); }
+    }
+
+    /* Node Header Row */
+    .node-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .node-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .node-title-box {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .node-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.4rem;
+    }
+
+    .node-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      letter-spacing: -0.01em;
+    }
+
+    .node-category {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      margin-top: 0.1rem;
+    }
+
+    /* Embedded Card Pill Badges */
+    .card-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 0.16rem 0.5rem;
+      border-radius: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-benchmark  { background: rgba(234, 179, 8, 0.15); color: #FACC15; border: 1px solid rgba(234, 179, 8, 0.35); }
+    .badge-telemetry  { background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .badge-retry-pill { background: rgba(46, 126, 170, 0.18); color: #7DD3FC; border: 1px solid rgba(46, 126, 170, 0.4); }
+    .badge-gate       { background: rgba(20, 184, 166, 0.15); color: #5EEAD4; border: 1px solid rgba(20, 184, 166, 0.35); }
+    .badge-portal     { background: rgba(139, 92, 246, 0.15); color: #DDD6FE; border: 1px solid rgba(139, 92, 246, 0.35); }
+    .badge-blank      { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .badge-unified    { background: rgba(59, 130, 246, 0.15); color: #93C5FD; border: 1px solid rgba(59, 130, 246, 0.35); }
+
+    /* Node Card Bullet Lists */
+    .node-desc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 0.85rem;
+      flex: 1;
+    }
+
+    .desc-bullet {
+      font-size: 0.76rem;
+      color: #CBD5E1;
+      line-height: 1.45;
+      position: relative;
+      padding-left: 1rem;
+    }
+
+    .desc-bullet::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      top: -1px;
+      color: #38BDF8;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .node-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.32rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding-top: 0.55rem;
+      font-size: 0.71rem;
+      margin-top: auto;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .meta-label {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .meta-val {
+      font-family: var(--font-mono);
+      color: #E2E8F0;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.66rem;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Category Palette */
+    .cat-input       { background: rgba(46,126,170,0.12); color: #7BAEC5; border: 1px solid rgba(46,126,170,0.3); }
+    .cat-benchmark   { background: rgba(170,140,40,0.12); color: #D4B054; border: 1px solid rgba(170,140,40,0.3); }
+    .cat-telemetry   { background: rgba(100,90,160,0.12); color: #A79BD1; border: 1px solid rgba(100,90,160,0.3); }
+    .cat-links       { background: rgba(90,105,118,0.14); color: #8CA0B0; border: 1px solid rgba(90,105,118,0.3); }
+    .cat-capture     { background: rgba(38,108,136,0.12); color: #6FA8BF; border: 1px solid rgba(38,108,136,0.3); }
+    .cat-assessor    { background: rgba(45,140,100,0.12); color: #6AABA0; border: 1px solid rgba(45,140,100,0.3); }
+    .cat-validator   { background: rgba(154,123,58,0.12); color: #B89E6A; border: 1px solid rgba(154,123,58,0.3); }
+    .cat-langcheck   { background: rgba(111,168,191,0.12);color: #7BC4B0; border: 1px solid rgba(111,168,191,0.3); }
+    .cat-adjudicator { background: rgba(140,61,74,0.12);  color: #B07A82; border: 1px solid rgba(140,61,74,0.3); }
+    .cat-portaladj   { background: rgba(120,90,170,0.12); color: #A98FD1; border: 1px solid rgba(120,90,170,0.3); }
+    .cat-escalation  { background: rgba(180,70,60,0.14);  color: #E08A7A; border: 1px solid rgba(180,70,60,0.35); }
+    .cat-review      { background: rgba(80,80,110,0.14);  color: #9898BE; border: 1px solid rgba(80,80,110,0.3); }
+    .cat-output      { background: rgba(45,140,100,0.12); color: #60A090; border: 1px solid rgba(45,140,100,0.3); }
+
+    /* SVG Flow Connector Lines */
+    .flow-line {
+      fill: none;
+      stroke-width: 1.8;
+      transition: stroke-width 0.25s ease, stroke 0.25s ease, opacity 0.25s ease;
+      opacity: 0.5;
+    }
+
+    .flow-line.type-primary    { stroke: var(--flow-primary); }
+    .flow-line.type-retry      { stroke: var(--flow-retry); stroke-dasharray: 6 3; }
+    .flow-line.type-escalation { stroke: var(--flow-escalation); }
+    .flow-line.type-telemetry  { stroke: var(--flow-telemetry); stroke-dasharray: 4 3; }
+    .flow-line.type-benchmark  { stroke: var(--flow-benchmark); stroke-dasharray: 5 3; }
+
+    .flow-line:hover, .flow-line.highlighted {
+      stroke-width: 3.2;
+      opacity: 1;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    .flow-line.active {
+      stroke-width: 3.2;
+      opacity: 1;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    .flow-line.sim-active {
+      stroke-width: 3.5;
+      opacity: 1;
+      stroke-dasharray: 8 4;
+      animation: dashSim 0.7s linear infinite;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+
+    @keyframes dashSim {
+      to { stroke-dashoffset: -24; }
+    }
+
+    .flow-line.dimmed {
+      opacity: 0.08;
+    }
+
+    /* Right Inspector Side Panel */
+    .inspector-panel {
+      width: 420px;
+      flex-shrink: 0;
+      background: rgba(11, 16, 25, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      transition: width 0.3s ease;
+      z-index: 10;
+    }
+
+    .inspector-panel.collapsed {
+      width: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
+    }
+
+    .inspector-header {
+      padding: 1.2rem 1.4rem;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .inspector-title-area {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .inspector-body {
+      padding: 1.3rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+    }
+
+    .info-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .info-title {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #7DD3FC;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Inspector Bullet Lists */
+    .insp-bullet-list {
+      list-style: none;
+      background: rgba(15, 22, 34, 0.75);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .insp-bullet-item {
+      font-size: 0.81rem;
+      color: #CBD5E1;
+      line-height: 1.45;
+      position: relative;
+      padding-left: 1.15rem;
+    }
+
+    .insp-bullet-item::before {
+      content: '▸';
+      position: absolute;
+      left: 0.1rem;
+      top: 0;
+      color: #38BDF8;
+      font-weight: 800;
+    }
+
+    .code-snippet-wrapper {
+      position: relative;
+    }
+
+    .code-snippet {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      background: #06090E;
+      color: #E2E8F0;
+      padding: 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 200px;
+    }
+
+    .btn-copy {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+
+    .rule-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .rule-item {
+      background: rgba(15, 22, 34, 0.75);
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--flow-primary);
+      font-size: 0.79rem;
+      color: var(--text-main);
+      line-height: 1.45;
+      border-top: 1px solid var(--border-subtle);
+      border-right: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .rule-item.warning { border-left-color: #F59E0B; }
+    .rule-item.danger  { border-left-color: #EF4444; }
+    .rule-item.success { border-left-color: #10B981; }
+
+    /* Matrix View Table */
+    .matrix-view {
+      padding: 2rem;
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      overflow-y: auto;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .matrix-table th {
+      background: rgba(17, 24, 39, 0.95);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+      font-weight: 700;
+    }
+
+    .matrix-table td {
+      padding: 1rem;
+      font-size: 0.82rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .matrix-table tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .matrix-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .matrix-bullets li {
+      position: relative;
+      padding-left: 1rem;
+      color: #CBD5E1;
+    }
+
+    .matrix-bullets li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #38BDF8;
+      font-weight: bold;
+    }
+
+    .agent-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-size: 0.88rem;
+    }
+
+    /* Floating Tooltip */
+    #flow-tooltip {
+      position: fixed;
+      background: rgba(11, 15, 23, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #F1F5F9;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+      display: none;
+      max-width: 260px;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Lines Canvas -->
+  <canvas id="background-canvas"></canvas>
+  <div class="grid-overlay"></div>
+  <div id="mouse-spotlight"></div>
+  <div id="flow-tooltip"></div>
+
+  <!-- Header Section -->
+  <header>
+    <div class="brand-title">
+      <span class="brand-badge">
+        <span class="live-dot"></span>
+        UN EKAP AIQ
+      </span>
+      <div>
+        <h1>System Architecture & Multi-Agent Flowchart</h1>
+        <div class="subtitle">
+          <span>End-to-End Operational Pipeline for UN E-Government Survey (Module 2.1)</span>
+          <span class="pill-tag">193 Portals</span>
+          <span class="pill-tag">Prefilled Review</span>
+          <span class="pill-tag">Blank-Field Fallback</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-canvas" onclick="switchView('canvas')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Interactive Flowchart
+      </button>
+      <button class="tab-btn" id="tab-matrix" onclick="switchView('matrix')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Agent Spec Matrix
+      </button>
+      <button class="tab-btn active" id="btn-toggle-inspector" onclick="toggleInspectorPanel()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Inspector Panel
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- Left Control Sidebar -->
+    <div class="toolbar-sidebar">
+      <div>
+        <div class="section-title">
+          <span>Search & Filter</span>
+        </div>
+        <div class="search-box">
+          <svg class="search-icon" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" class="search-input" id="node-search" placeholder="Search components, rules..." oninput="handleSearch(this.value)">
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">
+          <span>Pipeline Stage Filter</span>
+        </div>
+        <div class="filter-group">
+          <div class="filter-chip active" onclick="filterNodes('all', this)">
+            <span>All System Stages</span>
+            <span class="filter-count">14</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('input', this)">
+            <span>0. Setup & Scope</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('benchmark', this)">
+            <span>Alt. Benchmark Mode</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('telemetry', this)">
+            <span>Observability Lane</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('link', this)">
+            <span>1. Link Resolution</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('capture', this)">
+            <span>2. Traversal & Capture</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('assessor', this)">
+            <span>3. Parallel Assessors</span>
+            <span class="filter-count">2</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('validator', this)">
+            <span>4. Validation Stage</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('langcheck', this)">
+            <span>5. Language Policy</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('adjudicator', this)">
+            <span>6. Question Adjudicator</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('portaladj', this)">
+            <span>7. Portal Aggregate</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('escalation', this)">
+            <span>8. Blank-Field Fallback</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('review', this)">
+            <span>9. Unified Portal Review</span>
+            <span class="filter-count">1</span>
+          </div>
+          <div class="filter-chip" onclick="filterNodes('output', this)">
+            <span>10. Final Delivery</span>
+            <span class="filter-count">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulation Playback Controls -->
+      <div class="sim-controls">
+        <div class="section-title" style="margin-bottom:0;">
+          <span>Interactive Simulation</span>
+        </div>
+        <select class="sim-select" id="sim-scenario-select" onchange="changeSimScenario(this.value)">
+          <option value="happy">Scenario 1: Clean Consensus Flow</option>
+          <option value="retry">Scenario 2: Low-Confidence & Validation Retry</option>
+          <option value="escalation">Scenario 3: Discrepancy & Blank-Field Review</option>
+          <option value="benchmark">Scenario 4: Benchmark Set Accuracy Eval</option>
+        </select>
+        
+        <button class="btn-sim btn-primary" id="btn-run-sim" onclick="toggleSimulation()">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span id="btn-sim-text">Play Scenario</span>
+        </button>
+
+        <div style="display:flex; gap:0.4rem;">
+          <button class="btn-sim btn-secondary" onclick="prevSimStep()">Prev</button>
+          <button class="btn-sim btn-secondary" onclick="nextSimStep()">Next</button>
+          <button class="btn-sim btn-secondary" onclick="resetSim()">Reset</button>
+        </div>
+
+        <div class="step-indicator" id="sim-status">Status: Ready to simulate. Select a scenario or click Play.</div>
+      </div>
+
+      <!-- System Invariants Section -->
+      <div>
+        <div class="section-title">
+          <span>Core System Invariants</span>
+        </div>
+        <div class="invariants-container">
+          <div class="invariant-card">
+            <strong>📋 Prefilled Blank Fallback</strong>
+            <span>Blocked units set <code>answer=null</code> with canonical reason tags; never block portal review.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>🛡️ Structural Independence</strong>
+            <span>Fresh, stateless model call per assessor — zero shared memory or conversation history.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>⚡ Shared Rate Limiter</strong>
+            <span>Single token bucket (<code>0.5 req/s</code>, capacity 5) throttles all fetches across every unit.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>🗣️ Inline Language Check</strong>
+            <span>Self-reported ISO codes with majority-vote gating; no external detector package.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>🔢 N-Agent Configurable</strong>
+            <span>Defaults to 2 assessors; pairwise combinations & voting generalize seamlessly to N.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>🗺️ Portal-Level Lens</strong>
+            <span>Macro discrepancy detector evaluates aggregate first-round divergence across entire portals.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>📝 Append-Only Ledger</strong>
+            <span>Reviewer edits create new records; system proposals remain immutable in audit provenance.</span>
+          </div>
+          <div class="invariant-card">
+            <strong>🧪 CLI Verification</strong>
+            <span>Guarantees verified via runnable commands: <code>aiq verify resume / hygiene / no-credentials</code>.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Canvas Area -->
+    <div class="canvas-view" id="canvas-container">
+      
+      <!-- Canvas Top Bar -->
+      <div class="canvas-top-bar">
+        <div class="legend-group">
+          <div class="legend-item" onclick="filterConnections('all')">
+            <span class="legend-line" style="background: linear-gradient(to right, #38BDF8, #F59E0B, #EF4444);"></span>
+            <span>All Links (25)</span>
+          </div>
+          <div class="legend-item" onclick="filterConnections('primary')">
+            <span class="legend-line primary"></span>
+            <span>Main Pipeline</span>
+          </div>
+          <div class="legend-item" onclick="filterConnections('retry')">
+            <span class="legend-line retry"></span>
+            <span>Retry Loops (≤2)</span>
+          </div>
+          <div class="legend-item" onclick="filterConnections('escalation')">
+            <span class="legend-line escalate"></span>
+            <span>Escalation & Blank Fallbacks</span>
+          </div>
+          <div class="legend-item" onclick="filterConnections('telemetry_benchmark')">
+            <span class="legend-line telemetry"></span>
+            <span>Telemetry & Benchmark</span>
+          </div>
+        </div>
+
+        <div class="canvas-controls">
+          <button class="canvas-btn" onclick="highlightAllConnected()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Show Paths
+          </button>
+          <button class="canvas-btn" onclick="scrollToTop()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+            Top
+          </button>
+        </div>
+      </div>
+
+      <!-- SVG Drawing Layer -->
+      <svg class="flow-svg-layer" id="flow-svg">
+        <defs>
+          <marker id="arrow-primary" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38BDF8"/>
+          </marker>
+          <marker id="arrow-retry" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#F59E0B"/>
+          </marker>
+          <marker id="arrow-escalation" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EF4444"/>
+          </marker>
+          <marker id="arrow-telemetry" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#A855F7"/>
+          </marker>
+          <marker id="arrow-benchmark" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EAB308"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <!-- Flow Grid Container -->
+      <div class="flow-grid-container">
+        
+        <!-- Stage 0: System Inputs, Benchmark & Telemetry Tier -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 0 · Session Initialization & Environment Setup</div>
+          <div class="flow-row">
+            
+            <!-- Node: Benchmark Mode -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-benchmark" onclick="selectNode('benchmark')">
+                <div class="node-header">
+                  <div class="node-icon cat-benchmark">🎯</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">Benchmark Mode</div>
+                      <span class="card-badge badge-benchmark">Alt. Mode</span>
+                    </div>
+                    <div class="node-category">SessionMode.BENCHMARK</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Runs the SAME scheduler/agents against a physically separate ground-truth store.</li>
+                  <li class="desc-bullet">AST-enforced code isolation prevents production import into benchmark data.</li>
+                  <li class="desc-bullet">Computes accuracy across 4 confidence bands prior to human review.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Isolation:</span><span class="meta-val">AST Static Check</span></div>
+                  <div class="meta-item"><span class="meta-label">Export Rule:</span><span class="meta-val">Never Exported (E2)</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Node: System Input -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-input" onclick="selectNode('input')">
+                <div class="node-header">
+                  <div class="node-icon cat-input">📥</div>
+                  <div class="node-title-box">
+                    <div class="node-title">System Input & Scope</div>
+                    <div class="node-category">Configuration & Batching</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Loads Module 2.1 questionnaire (~200 indicators) × 193 member states.</li>
+                  <li class="desc-bullet">Snapshots full runtime configuration per session for audit reproduction.</li>
+                  <li class="desc-bullet">Concurrent batching (50 units) throttled by shared per-domain rate limiter.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Input Scope:</span><span class="meta-val">Questions × 193 Portals</span></div>
+                  <div class="meta-item"><span class="meta-label">Concurrency:</span><span class="meta-val">50 units / batch</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Node: Telemetry & Observability -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-telemetry" onclick="selectNode('telemetry')">
+                <div class="node-header">
+                  <div class="node-icon cat-telemetry">🔭</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">Telemetry & Tracing</div>
+                      <span class="card-badge badge-telemetry">Cross-Cutting</span>
+                    </div>
+                    <div class="node-category">Observability Lanes</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Dual-lane recording: SQLite cost/fetch/stage ledger + LangSmith span tree.</li>
+                  <li class="desc-bullet">Tracing failures are swallowed automatically; never fatal to assessment runs.</li>
+                  <li class="desc-bullet">Automated regex hygiene scanner checks for credential or ground-truth leaks.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Ledger Lanes:</span><span class="meta-val">SQLite + LangSmith</span></div>
+                  <div class="meta-item"><span class="meta-label">CLI Check:</span><span class="meta-val">aiq telemetry ...</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stage 1 & 2: Link Resolution & Live Traversal -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 1 & 2 · Evidence Discovery & Browser Traversal</div>
+          <div class="flow-row">
+            
+            <!-- Node: Link Resolution -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-link" onclick="selectNode('link')">
+                <div class="node-header">
+                  <div class="node-icon cat-links">🔍</div>
+                  <div class="node-title-box">
+                    <div class="node-title">1. Link Resolution</div>
+                    <div class="node-category">Discovery Engine</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">3-source fallthrough: Prior-Survey KB → MSQ Submissions → Gov-TLD Search.</li>
+                  <li class="desc-bullet">Strict boundary: Discovers WHERE to look; never supplies or implies answers.</li>
+                  <li class="desc-bullet">Exhausting all sources marks unit UNASSESSABLE with canonical reason tag.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Resolution:</span><span class="meta-val">Historical First (3 srcs)</span></div>
+                  <div class="meta-item"><span class="meta-label">No URL:</span><span class="meta-val">→ Blank + Reason Tag</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Node: Traversal & Render -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-capture" onclick="selectNode('capture')">
+                <div class="node-header">
+                  <div class="node-icon cat-capture">🌐</div>
+                  <div class="node-title-box">
+                    <div class="node-title">2. Live Traversal</div>
+                    <div class="node-category">Playwright & Limiter</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Independent live headless Playwright render inside each assessor's session.</li>
+                  <li class="desc-bullet">Real token bucket: 0.5 req/s (1 token / 2s), burst 5, per domain.</li>
+                  <li class="desc-bullet">2-signal auth-wall detection sets answer=null with "Login barrier" reason tag.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Rate Limiter:</span><span class="meta-val">0.5 req/s/domain</span></div>
+                  <div class="meta-item"><span class="meta-label">Auth Wall:</span><span class="meta-val">→ Blank + Reason Tag</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stage 3: Parallel Assessor Agents -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 3 · Isolated Multi-Agent Assessment</div>
+          <div class="flow-row">
+            
+            <!-- Node: Assessor Agent 1 -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-assessor1" onclick="selectNode('assessor1')">
+                <div class="node-header">
+                  <div class="node-icon cat-assessor">🤖</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">3a. Assessor Agent 1</div>
+                      <span class="card-badge badge-retry-pill">Gate 75 · ≤1 Retry</span>
+                    </div>
+                    <div class="node-category">Model Call (Index 0)</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">gemini-2.5/3.5-flash @ temp 0.2, strict "literal" prompt profile.</li>
+                  <li class="desc-bullet">Generates binary answer, justification, CSS path & self-reported language.</li>
+                  <li class="desc-bullet">Confidence &lt; 75 triggers 1 self-critique retry without capping score.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Stance:</span><span class="meta-val">Temp 0.2 · literal</span></div>
+                  <div class="meta-item"><span class="meta-label">&lt;75 Conf:</span><span class="meta-val">1 Self-Critique Retry</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Node: Assessor Agent 2 -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-assessor2" onclick="selectNode('assessor2')">
+                <div class="node-header">
+                  <div class="node-icon cat-assessor">🤖</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">3b. Assessor Agent 2</div>
+                      <span class="card-badge badge-retry-pill">Gate 75 · ≤1 Retry</span>
+                    </div>
+                    <div class="node-category">Model Call (Index 1)</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">gemini-2.5/3.5-flash @ temp 0.7, exploratory "inferential" profile.</li>
+                  <li class="desc-bullet">Zero shared state with Agent 1; divergence provides genuine discrepancy signal.</li>
+                  <li class="desc-bullet">N-agent configurable: scales to 3+ agents via config lists.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Stance:</span><span class="meta-val">Temp 0.7 · inferential</span></div>
+                  <div class="meta-item"><span class="meta-label">Capacity:</span><span class="meta-val">Expandable to N</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stage 4: Validation Engine -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 4 · Independent Verification & Coherence Checking</div>
+          <div class="flow-row">
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-validator" onclick="selectNode('validator')">
+                <div class="node-header">
+                  <div class="node-icon cat-validator">🛡️</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">4. Validator Agent</div>
+                      <span class="card-badge badge-retry-pill">≤2 Retries · 3/3</span>
+                    </div>
+                    <div class="node-category">Verification Engine</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Grades exactly ONE agent's output; never compares agents to each other.</li>
+                  <li class="desc-bullet">Live re-fetch relocates cited DOM element via CSS path & text hash (≤3 attempts).</li>
+                  <li class="desc-bullet">Unverifiable targets fall back to blank field with "Evidence unverified" tag.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Re-verify:</span><span class="meta-val">Fresh Fetch (≤3 att)</span></div>
+                  <div class="meta-item"><span class="meta-label">On Failure:</span><span class="meta-val">→ Blank + Reason Tag</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5: Language Support Policy Check -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 5 · Language Support Majority Gate</div>
+          <div class="flow-row">
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-langcheck" onclick="selectNode('langcheck')">
+                <div class="node-header">
+                  <div class="node-icon cat-langcheck">🗣️</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">5. Language Policy Check</div>
+                      <span class="card-badge badge-gate">Hard Gate</span>
+                    </div>
+                    <div class="node-category">Inline Majority Vote</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Tallies self-reported ISO language codes across all validated agent runs.</li>
+                  <li class="desc-bullet">No external language detector package; LLM's own inline read is source of truth.</li>
+                  <li class="desc-bullet">Unsupported majority language sets answer=null with "Unsupported language" tag.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Input Data:</span><span class="meta-val">All Agent Language Tags</span></div>
+                  <div class="meta-item"><span class="meta-label">On Mismatch:</span><span class="meta-val">→ Blank + Reason Tag</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6: Per-Question Consensus Adjudication -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 6 · Algorithmic Consensus Adjudication</div>
+          <div class="flow-row">
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-adjudicator" onclick="selectNode('adjudicator')">
+                <div class="node-header">
+                  <div class="node-icon cat-adjudicator">⚖️</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">6. Adjudicator</div>
+                      <span class="card-badge badge-retry-pill">≤2 Retries · All</span>
+                    </div>
+                    <div class="node-category">Consensus Rules Table</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Deterministic Python decision table; never uses a 3rd "judge" LLM.</li>
+                  <li class="desc-bullet">Discrepancy flagged if answers differ OR confidence delta > 10 points.</li>
+                  <li class="desc-bullet">Unresolved disagreements (after 2 retries) fall back to blank field with reason tag.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Discrepancy:</span><span class="meta-val">Answer≠ OR Δ&gt;10</span></div>
+                  <div class="meta-item"><span class="meta-label">Unresolved:</span><span class="meta-val">→ Blank + Reason Tag</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 7: Portal-Level Aggregate Adjudication -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 7 · Portal-Level Aggregate Discrepancy Lens</div>
+          <div class="flow-row">
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-portaladj" onclick="selectNode('portaladj')">
+                <div class="node-header">
+                  <div class="node-icon cat-portaladj">🗺️</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">7. Portal-Level Adjudicator</div>
+                      <span class="card-badge badge-portal">Portal Lens</span>
+                    </div>
+                    <div class="node-category">Aggregate Rate Check</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Evaluates whole portal divergence using FIRST-round (pre-retry) answers.</li>
+                  <li class="desc-bullet">Flags whole portal if differing-answer rate or affirmative gap exceeds 10%.</li>
+                  <li class="desc-bullet">Macro discrepancy alerts reviewer directly on the unified portal review screen.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Scope:</span><span class="meta-val">Whole Portal (Round 1)</span></div>
+                  <div class="meta-item"><span class="meta-label">Threshold:</span><span class="meta-val">10% Divergence</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 8 & 9: Blank-Field Fallback & Unified Prefilled Review -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 8 & 9 · Blank-Field Fallback Annotations & Prefilled Review</div>
+          <div class="flow-row">
+            
+            <!-- Node: Blank-Field Fallback Annotations -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-escalation" onclick="selectNode('escalation')">
+                <div class="node-header">
+                  <div class="node-icon cat-escalation">📋</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">8. Blank-Field Fallback</div>
+                      <span class="card-badge badge-blank">Blank = null</span>
+                    </div>
+                    <div class="node-category">Canonical Reason Tags (FR-BF)</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Blocked units set answer to null (blank) rather than forcing an unfounded guess.</li>
+                  <li class="desc-bullet">Attaches deterministic canonical Reason Tags (e.g. "Left blank: Login barrier observed").</li>
+                  <li class="desc-bullet">Carries visited URLs, screenshots & round attempt history as reviewer context.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Answer Value:</span><span class="meta-val">null (Left blank)</span></div>
+                  <div class="meta-item"><span class="meta-label">Annotations:</span><span class="meta-val">7 Canonical Templates</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Node: Unified Prefilled Review -->
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-review" onclick="selectNode('review')">
+                <div class="node-header">
+                  <div class="node-icon cat-review">👤</div>
+                  <div class="node-title-box">
+                    <div class="node-title-row">
+                      <div class="node-title">9. Unified Portal Review</div>
+                      <span class="card-badge badge-unified">Unified View</span>
+                    </div>
+                    <div class="node-category">Prefilled Questionnaire Web App</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Single portal view displays all ~200 questions: answered prefilled, blocked blank.</li>
+                  <li class="desc-bullet">One-click Approve on high-confidence answers; edit or fill in blanks directly.</li>
+                  <li class="desc-bullet">Review of valid questions is never blocked by a single escalated question.</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Review Surface:</span><span class="meta-val">/portal/{id} Unified Set</span></div>
+                  <div class="meta-item"><span class="meta-label">Actions:</span><span class="meta-val">Approve / Edit / Fill Blank</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stage 10: Final Delivery & Export -->
+        <div class="stage-wrapper">
+          <div class="stage-label-banner">Stage 10 · Survey Output, Audit Export & EKAP Projection</div>
+          <div class="flow-row">
+            <div class="node-card-wrapper">
+              <div class="node-card" id="node-output" onclick="selectNode('output')">
+                <div class="node-header">
+                  <div class="node-icon cat-output">📦</div>
+                  <div class="node-title-box">
+                    <div class="node-title">Final Output & Export</div>
+                    <div class="node-category">NDJSON & EKAP Schema</div>
+                  </div>
+                </div>
+                <ul class="node-desc-list">
+                  <li class="desc-bullet">Two-file delivery: NDJSON answers + complete exclusion_report.json.</li>
+                  <li class="desc-bullet">Exclusion report carries exact canonical Reason Tags alongside raw codes.</li>
+                  <li class="desc-bullet">Invariants E1–E4 verified: zero silent drops (Delivered + Excluded = 100%).</li>
+                </ul>
+                <div class="node-meta">
+                  <div class="meta-item"><span class="meta-label">Formats:</span><span class="meta-val">NDJSON + JSON Exclusions</span></div>
+                  <div class="meta-item"><span class="meta-label">Invariants:</span><span class="meta-val">E1–E4 Verified</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right Inspector Panel -->
+    <div class="inspector-panel" id="inspector">
+      <div class="inspector-header">
+        <div class="inspector-title-area">
+          <div class="node-icon cat-assessor" id="insp-icon">🤖</div>
+          <div>
+            <h2 style="font-size:0.98rem; color:var(--text-main); font-weight:700;" id="insp-title">Assessor Agent 1</h2>
+            <div style="font-size:0.72rem; color:var(--text-muted);" id="insp-cat">Stage 3a • Model Call (Index 0)</div>
+          </div>
+        </div>
+        <button class="canvas-btn" style="padding:0.25rem 0.5rem;" onclick="toggleInspectorPanel()">✕</button>
+      </div>
+
+      <div class="inspector-body">
+        
+        <!-- Component Purpose in Bullet Points -->
+        <div class="info-block">
+          <div class="info-title">
+            <span>🎯 Component Purpose & Architecture</span>
+          </div>
+          <ul class="insp-bullet-list" id="insp-purpose-list">
+            <li class="insp-bullet-item">Evaluates UN assessment indicators against rendered portal DOM content.</li>
+            <li class="insp-bullet-item">Operates in total structural isolation with zero shared conversation memory.</li>
+            <li class="insp-bullet-item">Self-reports inline page language and element citations in one structured payload.</li>
+          </ul>
+        </div>
+
+        <!-- Closed Input Schema -->
+        <div class="info-block">
+          <div class="info-title">
+            <span>📥 Closed Input Schema</span>
+          </div>
+          <div class="code-snippet-wrapper">
+            <button class="btn-copy" onclick="copySnippet('insp-input-schema')">Copy</button>
+            <div class="code-snippet" id="insp-input-schema">{
+  "session_id": "sess_2026_0813",
+  "agent_index": 0,
+  "round_number": 1,
+  "question": {
+    "question_id": "Q14_OPEN_DATA",
+    "text": "Does national portal provide an open data link?",
+    "answer_type": "binary"
+  },
+  "portal": {
+    "portal_id": "P_FRA",
+    "resolved_url": "https://www.data.gouv.fr"
+  }
+}</div>
+          </div>
+        </div>
+
+        <!-- Output Schema -->
+        <div class="info-block">
+          <div class="info-title">
+            <span>📤 Output Payload Schema</span>
+          </div>
+          <div class="code-snippet-wrapper">
+            <button class="btn-copy" onclick="copySnippet('insp-output-schema')">Copy</button>
+            <div class="code-snippet" id="insp-output-schema">{
+  "run_id": "run_9941a",
+  "answer": "YES",
+  "confidence": 88,
+  "justification": "Page explicitly features open data portal link in footer.",
+  "evidence": {
+    "resolved_url": "https://www.data.gouv.fr",
+    "element_reference": {
+      "css_path": "footer > a.data-link",
+      "text_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4"
+    }
+  },
+  "detected_language": "fr"
+}</div>
+          </div>
+        </div>
+
+        <!-- Structural Invariants & Rules -->
+        <div class="info-block">
+          <div class="info-title">
+            <span>🔒 Structural Invariants & Guarantees</span>
+          </div>
+          <div class="rule-list" id="insp-rules">
+            <div class="rule-item success">✓ <strong>Strict Independence:</strong> Closed schema. Cannot see ground truth or other agent answers.</div>
+            <div class="rule-item warning">⚠️ <strong>Confidence Gate:</strong> If confidence &lt; 75, agent retries once with self-critique addendum.</div>
+            <div class="rule-item danger">🚫 <strong>Auth Boundaries:</strong> If login barrier detected, answer MUST be null &amp; escalated.</div>
+          </div>
+        </div>
+
+        <!-- Code & Spec Location -->
+        <div class="info-block">
+          <div class="info-title">
+            <span>📂 Code & Contract Locations</span>
+          </div>
+          <div class="insp-bullet-list" style="font-family:var(--font-mono); font-size:0.75rem;" id="insp-code-ref">
+            <li class="insp-bullet-item">src/agents/assessor/agent.py</li>
+            <li class="insp-bullet-item">specs/001-ekap-aiq-assessment/contracts/assessor-agent.md</li>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Matrix View -->
+    <div class="matrix-view" id="matrix-container">
+      <div>
+        <h2 style="font-size:1.3rem; color:var(--text-main); font-weight:800;">Agent & System Component Specification Matrix</h2>
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">Complete architectural specification of all multi-agent roles, inputs, outputs, retries, and failure modes.</div>
+      </div>
+
+      <table class="matrix-table">
+        <thead>
+          <tr>
+            <th style="width:18%;">Component / Agent</th>
+            <th style="width:28%;">Primary Function & Key Logic</th>
+            <th style="width:20%;">Input & Scope Schema</th>
+            <th style="width:20%;">Output Payload</th>
+            <th style="width:14%;">Retries & Limits</th>
+          </tr>
+        </thead>
+        <tbody id="matrix-tbody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // Subtle Canvas Lines
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const lines = Array.from({ length: 12 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      length: 120 + Math.random() * 180,
+      speed: 0.3 + Math.random() * 0.5,
+      angle: -Math.PI / 4,
+      alpha: 0.04 + Math.random() * 0.08
+    }));
+
+    function drawBackgroundCanvas() {
+      ctx.clearRect(0, 0, width, height);
+
+      lines.forEach(l => {
+        l.x += Math.cos(l.angle) * l.speed;
+        l.y += Math.sin(l.angle) * l.speed;
+
+        if (l.x > width + 150 || l.y > height + 150) {
+          l.x = Math.random() * width - 150;
+          l.y = -50;
+        }
+
+        const grad = ctx.createLinearGradient(
+          l.x, l.y,
+          l.x - Math.cos(l.angle) * l.length,
+          l.y - Math.sin(l.angle) * l.length
+        );
+
+        grad.addColorStop(0, '#2E7EAA');
+        grad.addColorStop(1, 'transparent');
+
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y);
+        ctx.lineTo(
+          l.x - Math.cos(l.angle) * l.length,
+          l.y - Math.sin(l.angle) * l.length
+        );
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = l.alpha;
+        ctx.stroke();
+      });
+
+      requestAnimationFrame(drawBackgroundCanvas);
+    }
+    drawBackgroundCanvas();
+
+    // Mouse Spotlight Follower
+    const mouseSpotlight = document.getElementById('mouse-spotlight');
+    window.addEventListener('mousemove', (e) => {
+      mouseSpotlight.style.opacity = '1';
+      mouseSpotlight.style.left = `${e.clientX}px`;
+      mouseSpotlight.style.top = `${e.clientY}px`;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouseSpotlight.style.opacity = '0';
+    });
+
+    // 3D Card Hover Physics
+    function initCardHoverEffects() {
+      document.querySelectorAll('.node-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -4;
+          const rotateY = ((x - centerX) / centerX) * 4;
+
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(4px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)`;
+        });
+      });
+    }
+    initCardHoverEffects();
+
+    // Node Details Data with 100% Bullet Points & Simplified Blank-Field Fallback Architecture
+    const nodeDetails = {
+      'benchmark': {
+        icon: '🎯', catClass: 'cat-benchmark',
+        title: 'Benchmark Mode', category: 'SessionMode.BENCHMARK',
+        purposeBullets: [
+          'Executes the EXACT same production scheduler, agents, validator, and adjudicator against held-out ground truth.',
+          'Eliminates eval drift by ensuring the benchmark is measured directly on live production code rather than a separate script.',
+          'Computes overall accuracy, accuracy by class, and accuracy across 4 confidence bands (0-50, 51-70, 71-85, 86-100) before any human sees the answers.',
+          'Enables instant A/B regression diffing via `aiq benchmark compare --run A --against B`.'
+        ],
+        inputSchema: `{\n  "mode": "benchmark",\n  "set_id": "bench_2026_v3",\n  "ground_truth_count": 400\n}`,
+        outputSchema: `{\n  "result_id": "bmres_881",\n  "overall_accuracy": 0.91,\n  "accuracy_by_class": { "open_data": 0.88, "transparency": 0.94 },\n  "accuracy_by_confidence_band": { "86-100": 0.97, "71-85": 0.81 },\n  "discrepancy_flag_rate": 0.09\n}`,
+        rules: [
+          { type: 'success', text: 'Physically Separate Store: BenchmarkSet / GroundTruthAnswer live in dedicated repository classes. Production code has zero import path into benchmark data, enforced by a static AST test.' },
+          { type: 'danger', text: 'Never Exported (Invariant E2): Benchmark session answers can NEVER appear in delivered NDJSON exports.' },
+          { type: 'warning', text: 'Independence Floor Check: Discrepancy flag rate must fall between ~5%-25%; rates outside this band indicate accidental cache or seed sharing.' }
+        ],
+        codeRef: ['src/benchmark/runner.py', 'src/benchmark/compare.py', 'src/benchmark/measures.py', 'src/benchmark/store.py', 'src/benchmark/verify.py']
+      },
+
+      'telemetry': {
+        icon: '🔭', catClass: 'cat-telemetry',
+        title: 'Telemetry & Observability', category: 'Cross-Cutting Instrumentation',
+        purposeBullets: [
+          'Records every pipeline stage twice across two structurally independent lanes without influencing decisions.',
+          'Lane 1: Synchronous SQLite ledger (stage_events, fetch_records, cost_ledger_entries) queried via `aiq telemetry`.',
+          'Lane 2: Optional LangSmith distributed span tree capturing complete hierarchical run traces.',
+          'Automated hygiene scanner scans all stored JSON blobs for credentials or ground-truth leakage.'
+        ],
+        inputSchema: `{\n  "stage": "assessor_run",\n  "unit_ref": { "question_id": "Q14", "portal_id": "P_FRA" },\n  "agent_index": 0\n}`,
+        outputSchema: `{\n  "unit_states": { "delivered": 190, "escalated": 12 },\n  "fetches_by_domain": { "data.gouv.fr": { "assessor": 4, "validator": 3 } },\n  "total_cost_usd": 12.482113\n}`,
+        rules: [
+          { type: 'success', text: 'Tracing Outages Never Fatal: safe_trace() catches upload errors and downgrades to no-op spans.' },
+          { type: 'warning', text: 'Shared Fetch Budget Measurable: FetchLog.summary_by_caller() splits every domain fetch into assessor vs validator.' },
+          { type: 'danger', text: 'Automated Hygiene Scanning: `aiq verify telemetry-hygiene / no-credentials` verifies zero secret leaks.' }
+        ],
+        codeRef: ['src/core/telemetry/cost_ledger.py', 'src/core/telemetry/fetch_log.py', 'src/core/telemetry/stage_events.py', 'src/core/telemetry/langsmith_tracing.py']
+      },
+
+      'input': {
+        icon: '📥', catClass: 'cat-input',
+        title: 'System Input & Scope', category: 'Configuration & Data',
+        purposeBullets: [
+          'Loads the fixed Module 2.1 questionnaire (~200 indicators) across 193 UN member state portals.',
+          'Captures complete Settings snapshot (ConfigurationSnapshot) to ensure full reproducibility over time.',
+          'Initializes resumable state machine per unit: PENDING → RESOLVING → ASSESSING → ADJUDICATING → TERMINAL (DELIVERED / ESCALATED / UNASSESSABLE).',
+          'Dispatches units in concurrent batches (default 50) governed by the shared rate limiter.'
+        ],
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "cycle": "2026_BIENNIAL",\n  "questionnaire": "Module 2.1 (~200 binary indicators)",\n  "portals": ["USA", "FRA", "BRA", "CHN", "NGA", "... (193 UN States)"]\n}`,
+        outputSchema: `{\n  "total_units": 38600,\n  "batch_size": 50,\n  "config_snapshot_id": "snap-9f21ab7c"\n}`,
+        rules: [
+          { type: 'success', text: 'Batch != Fetch Concurrency: batch_size controls unit scheduling, while the per-domain rate limiter governs actual network requests.' },
+          { type: 'warning', text: 'Configurable N: assessor_agent_count defaults to 2, but math and voting scale automatically to N.' },
+          { type: 'danger', text: 'Clean Resume Semantics: `aiq run --resume` discards incomplete, non-terminal runs to prevent partial state corruption.' }
+        ],
+        codeRef: ['src/shared/config/settings.py', 'src/orchestration/scheduler.py', 'src/shared/state/resume.py', 'src/shared/state/unit_state.py']
+      },
+
+      'link': {
+        icon: '🔍', catClass: 'cat-links',
+        title: '1. Link Resolution Engine', category: 'Discovery Engine',
+        purposeBullets: [
+          'Discovers candidate portal URLs via 3-source fallthrough: Prior-Survey KB → Member State Submissions (MSQ) → Gov Search.',
+          'Strict architectural boundary: link resolution only identifies WHERE to look, never supplying answers.',
+          'Enforces evidence locus: national_portal_only restricts domains, while any_government_domain permits verified .gov extensions.',
+          'Exhausting all sources marks unit UNASSESSABLE with reason tag: "Left blank: No usable URL could be resolved for this question".'
+        ],
+        inputSchema: `{\n  "question_id": "Q14_OPEN_DATA",\n  "portal_id": "P_FRA",\n  "country_name": "France"\n}`,
+        outputSchema: `{\n  "resolved_url": "https://www.data.gouv.fr",\n  "source": "prior_survey_kb",\n  "usable": true,\n  "resolution_history": ["kb_hit"]\n}`,
+        rules: [
+          { type: 'success', text: 'MSQ Answer-Proof: MSQ source only extracts submitted URLs, never government response texts.' },
+          { type: 'warning', text: 'Gov-TLD Suffix Filter: Search results are restricted to verified government suffixes (.gov, .gouv, .gob, etc.).' },
+          { type: 'danger', text: 'Blank Fallback (FR-BF-001): Units with no URL still appear in the review questionnaire as blank fields with full search history.' }
+        ],
+        codeRef: ['src/shared/tools/linkresolution/chain.py', 'src/shared/tools/linkresolution/sources/', 'src/shared/tools/linkresolution/locus.py']
+      },
+
+      'capture': {
+        icon: '🌐', catClass: 'cat-capture',
+        title: '2. Live Traversal & Capture', category: 'Playwright & Limiter',
+        purposeBullets: [
+          'Executes live headless Playwright rendering, DOM extraction, and cropped region screenshot generation.',
+          'Runs inline inside each assessor agent’s independent page load rather than using a shared pre-fetch.',
+          'Enforces strict per-domain token bucket: 0.5 req/s (1 token / 2s, burst capacity 5).',
+          'Detects authentication walls; sets answer to null with canonical tag "Left blank: Login authentication barrier observed".'
+        ],
+        inputSchema: `{\n  "resolved_url": "https://www.data.gouv.fr",\n  "rate_limit_token": "acquired"\n}`,
+        outputSchema: `{\n  "dom_snapshot": "<html...>",\n  "screenshot_ref": "blob://scr_9821.png",\n  "auth_boundary_observed": false\n}`,
+        rules: [
+          { type: 'danger', text: 'Real Token Bucket: Shared asyncio.Lock per domain ensures all assessor and validator fetches respect 0.5 req/s.' },
+          { type: 'warning', text: 'Zero Guesses on Login Walls (FR-BF-002): An auth barrier immediately yields a blank field with full screenshot context.' },
+          { type: 'success', text: 'Fresh Browser Context: Every single fetch opens a clean Playwright context with zero shared cookies or cache.' }
+        ],
+        codeRef: ['src/agents/assessor/agent.py', 'src/shared/tools/browser.py', 'src/shared/tools/boundaries.py', 'src/shared/ratelimit/token_bucket.py']
+      },
+
+      'assessor1': {
+        icon: '🤖', catClass: 'cat-assessor',
+        title: '3a. Assessor Agent 1', category: 'Model Call (Index 0)',
+        purposeBullets: [
+          'Stateless model call using gemini-2.5/3.5-flash at temperature 0.2 with the "literal" prompt profile.',
+          'Literal stance: answers YES only if the feature is explicitly and directly visible on the page (no inference).',
+          'Produces structured answer, justification, CSS selector reference, and inline ISO detected language.',
+          'Confidence gate: scores < 75 trigger exactly one self-critique retry without capping score.'
+        ],
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "agent_index": 0,\n  "question": { "question_id": "Q14", "text": "Open Data Portal?" },\n  "portal": { "resolved_url": "https://www.data.gouv.fr" }\n}`,
+        outputSchema: `{\n  "run_id": "run_01a",\n  "answer": "YES",\n  "confidence": 88,\n  "justification": "Portal contains explicit open data section.",\n  "evidence": { "css_path": "footer > a.open-data", "text_hash": "abc1234" },\n  "detected_language": "fr"\n}`,
+        rules: [
+          { type: 'success', text: 'Structural Independence: Fresh stateless call per attempt; no conversation history shared with other agents.' },
+          { type: 'warning', text: 'Confidence Gate (Threshold 75): Retry does NOT cap score; admitted with below_acceptance_threshold flag if still low.' },
+          { type: 'danger', text: 'Auth Short-Circuit: Detecting a login barrier immediately returns null answer with confidence 0.' }
+        ],
+        codeRef: ['src/agents/assessor/agent.py', 'src/orchestration/routers/confidence_gate.py', 'src/shared/prompts/profiles.py']
+      },
+
+      'assessor2': {
+        icon: '🤖', catClass: 'cat-assessor',
+        title: '3b. Assessor Agent 2', category: 'Model Call (Index 1)',
+        purposeBullets: [
+          'Second independent assessor using gemini-2.5/3.5-flash at temperature 0.7 with the "inferential" prompt profile.',
+          'Inferential stance: permitted to make supported inferences from nav menus, lowering confidence proportionally.',
+          'Deliberate divergence axis: differing temperature and prompt profile generate authentic discrepancy signals.',
+          'Reports its own detected language independently for majority-vote consensus at Stage 5.'
+        ],
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "agent_index": 1,\n  "question": { "question_id": "Q14", "text": "Open Data Portal?" },\n  "portal": { "resolved_url": "https://www.data.gouv.fr" }\n}`,
+        outputSchema: `{\n  "run_id": "run_02b",\n  "answer": "YES",\n  "confidence": 85,\n  "justification": "Observed open dataset repository link.",\n  "evidence": { "css_path": "nav > ul > li.data", "text_hash": "def5678" },\n  "detected_language": "fr"\n}`,
+        rules: [
+          { type: 'success', text: 'Closed Schema Guard: Cannot see Agent 1 answers, evidence citations, or language tags.' },
+          { type: 'warning', text: 'Calibrated Confidence: Inferential answers must reduce confidence in proportion to degree of inference.' },
+          { type: 'success', text: 'N-Agent Scalable: Additional agents added by appending model/temperature/profile settings.' }
+        ],
+        codeRef: ['src/agents/assessor/agent.py', 'src/shared/config/settings.py', 'src/shared/prompts/profiles.py']
+      },
+
+      'validator': {
+        icon: '🛡️', catClass: 'cat-validator',
+        title: '4. Validator Agent', category: 'Verification Engine',
+        purposeBullets: [
+          'Grades exactly ONE assessor run per invocation; never compares agents to each other or creates its own answer.',
+          'Live re-verification: performs a fresh live fetch of the URL and relocates the cited DOM element via CSS path and hash.',
+          'Judges 3 coherence questions via an isolated LLM call (temperature 0.0): evidence supports answer, justification consistent, confidence proportionate.',
+          'Unverifiable evidence triggers blank fallback with reason tag: "Left blank: Evidence could not be independently verified".'
+        ],
+        inputSchema: `{\n  "session_id": "sess_2026_0813",\n  "run_id": "run_01a",\n  "question_text": "Does the portal provide an open data link?",\n  "output": { /* full Assessor 1 output */ },\n  "element_reference": { "css_path": "footer > a.open-data", "text_hash": "abc1234" }\n}`,
+        outputSchema: `{\n  "validation_id": "val_773a",\n  "passed": true,\n  "quality_score": 1.0,\n  "gaps": [],\n  "verification_outcome": "confirmed",\n  "verification_attempts": 1\n}`,
+        rules: [
+          { type: 'warning', text: 'Strict Quality Bar: quality_score = (checks passed)/3 must be ≥ 0.70 (effectively 3/3 checks required).' },
+          { type: 'warning', text: 'Retries Single Agent Only: Failed validation re-runs only the failing agent with gap feedback (≤2 retries).' },
+          { type: 'danger', text: 'Unverifiable Target (FR-BF-001): If live re-fetch fails to relocate element, question falls back to blank with reason tag.' }
+        ],
+        codeRef: ['src/agents/validator/agent.py', 'src/agents/validator/tools/evidence_verification.py', 'src/shared/tools/element_ref.py']
+      },
+
+      'langcheck': {
+        icon: '🗣️', catClass: 'cat-langcheck',
+        title: '5. Language Policy Check', category: 'Majority Vote Gate',
+        purposeBullets: [
+          'Tallies self-reported language codes from all assessor runs and compares majority to `AIQ_SUPPORTED_LANGUAGES`.',
+          'Eliminates third-party detector packages (`py3langid` removed); model’s inline reading is the sole source of truth.',
+          'Majority vote handles marginal disagreement on mixed-language portals cleanly.',
+          'Unsupported majority language falls back to blank field with reason tag: "Left blank: Unsupported language \'{language}\' detected".'
+        ],
+        inputSchema: `{\n  "agent_runs": [\n    { "run_id": "run_01a", "detected_language": "fr" },\n    { "run_id": "run_02b", "detected_language": "fr" }\n  ],\n  "supported_languages": ["en"]\n}`,
+        outputSchema: `// On Pass: Continues directly to Adjudicator\n// On Blocked Fallback:\n{\n  "state": "escalated",\n  "escalation_reason": "language_not_supported",\n  "reason_tag": "Left blank: Unsupported language 'fr' detected",\n  "answer": null\n}`,
+        rules: [
+          { type: 'success', text: 'Inline Self-Report: Language detection is produced as part of the structured answer, not a pre-fetch.' },
+          { type: 'warning', text: 'Majority Vote: Outlier agent disagreement cannot unilaterally block a unit.' },
+          { type: 'danger', text: 'Blank Fallback (FR-BF-001): Unsupported language leaves answer blank with clear reason tag for human translator.' }
+        ],
+        codeRef: ['src/orchestration/scheduler.py', 'src/shared/state/reason_tags.py', 'specs/004-blank-field-fallback/spec.md']
+      },
+
+      'adjudicator': {
+        icon: '⚖️', catClass: 'cat-adjudicator',
+        title: '6. Per-Question Adjudicator', category: 'Consensus Rules Table',
+        purposeBullets: [
+          'Mechanical Python decision table computing consensus over validated agent runs without an LLM judge.',
+          'Exact two-part discrepancy rule: (a) answers differ, OR (b) confidence delta between agents exceeds 10 points.',
+          'Calculates consensus confidence with an agreement bonus of up to +5 points for tight score alignment.',
+          'Disagreements unresolved after 2 retries fall back to blank field with reason tag: "Left blank: Unresolved AI disagreement after retry limit".'
+        ],
+        inputSchema: `{\n  "question_id": "Q14",\n  "validated_runs": [\n    { "agent_index": 0, "answer": "YES", "confidence": 88 },\n    { "agent_index": 1, "answer": "YES", "confidence": 85 }\n  ]\n}`,
+        outputSchema: `{\n  "adjudication_id": "adj_1092",\n  "discrepancy_flagged": false,\n  "consensus_answer": "YES",\n  "consensus_confidence": 89,\n  "max_pairwise_confidence_delta": 3\n}`,
+        rules: [
+          { type: 'success', text: 'Algorithmic Engine: Itertools.combinations math generalizes to any number of agents N.' },
+          { type: 'success', text: 'Agreement Bonus: Tight agreement awards up to +5 bonus points on top of the average score.' },
+          { type: 'danger', text: 'No Forced Consensus (FR-BF-002): Never forces a guess; preserves all round positions and presents as blank field.' }
+        ],
+        codeRef: ['src/agents/adjudicator/agent.py', 'src/orchestration/routers/retry_loops.py', 'src/shared/state/reason_tags.py']
+      },
+
+      'portaladj': {
+        icon: '🗺️', catClass: 'cat-portaladj',
+        title: '7. Portal-Level Adjudicator', category: 'Aggregate Discrepancy Lens',
+        purposeBullets: [
+          'Evaluates aggregate divergence across all indicators for a single portal using FIRST-round (pre-retry) answers.',
+          'Computes differing_answer_rate and affirmative_rate_gap across the entire national portal.',
+          'Flags the whole portal for joint human review if either rate exceeds the configured 10% threshold.',
+          'Macro divergence banner appears directly on the unified portal review screen for context.'
+        ],
+        inputSchema: `{\n  "portal_id": "P_FRA",\n  "first_round_runs_by_question": {\n    "Q14": [run_a, run_b],\n    "Q15": [run_a, run_b]\n  }\n}`,
+        outputSchema: `{\n  "differing_answer_rate": 0.14,\n  "affirmative_rate_gap": 0.06,\n  "flagged": true,\n  "thresholds": { "differing_rate": 0.10, "affirmative_gap": 0.10 }\n}`,
+        rules: [
+          { type: 'warning', text: 'First-Round Only: Uses pre-retry answers to detect initial systemic read differences.' },
+          { type: 'warning', text: '10% Default Thresholds: Governed by AIQ_PORTAL_DIFFERING_ANSWER_RATE_THRESHOLD.' },
+          { type: 'success', text: 'Macro Safety Layer: Provides holistic quality check across all 200 indicators per country.' }
+        ],
+        codeRef: ['src/agents/portal_adjudicator/agent.py', 'src/shared/state/measures.py']
+      },
+
+      'escalation': {
+        icon: '📋', catClass: 'cat-escalation',
+        title: '8. Blank-Field Fallback Annotations', category: 'Canonical Reason Tags (FR-BF)',
+        purposeBullets: [
+          'Simplified Escalation Architecture: Blocked units do NOT sit in a detached queue; their answer is set to null (blank) directly in the portal questionnaire.',
+          'Attaches deterministic, canonical Reason Tags (FR-BF-005, FR-BF-006) defined in `src/shared/state/reason_tags.py`.',
+          '7 Canonical Reason Tags: Auth Wall, Unresolved Disagreement, Unsupported Language, Language Declined, Portal Unreachable, Unverifiable Evidence, No Usable URL.',
+          'Carries complete attempt history (rounds, agent positions, visited URLs, attempt counts) directly into the review screen.'
+        ],
+        inputSchema: `{\n  "escalation_reason": "unresolved_disagreement",\n  "context": { "detected_language": "fr", "attempts": 3 }\n}`,
+        outputSchema: `{\n  "reason_tag": {\n    "condition": "unresolved_disagreement",\n    "text": "Left blank: Unresolved AI disagreement after retry limit"\n  },\n  "answer": null,\n  "attempt_history": { /* all round positions & URLs */ }\n}`,
+        rules: [
+          { type: 'success', text: 'Fixed Canonical Templates (FR-BF-006): Single source of truth in reason_tags.py ensures deterministic, testable wording.' },
+          { type: 'warning', text: 'Unblocked Portal Review (FR-BF-003): A blocked question NEVER stops other questions on the same portal from being reviewed.' },
+          { type: 'danger', text: 'No Guessed Answers (FR-BF-002): Pipeline never forces an answer when blocked; always yields answer=null.' }
+        ],
+        codeRef: ['src/shared/state/reason_tags.py', 'src/review/query.py', 'specs/004-blank-field-fallback/spec.md']
+      },
+
+      'review': {
+        icon: '👤', catClass: 'cat-review',
+        title: '9. Unified Portal Review', category: 'Prefilled Questionnaire Web App',
+        purposeBullets: [
+          'Unified UN Assessor Interface: Displays all ~200 questions for a country on a single clean review screen (`/portal/{portal_id}`).',
+          'Prefilled Answers: High-confidence consensus questions show proposed answers ready for one-click APPROVE or EDIT.',
+          'Blank Questions with Reason Tags: Blocked units appear blank with their explicit Reason Tag and attempt history card, allowing the human to supply the final answer.',
+          'Every human action writes an append-only AssessorDecision record; system proposals are never mutated.'
+        ],
+        inputSchema: `{\n  "portal_id": "P_FRA",\n  "session_id": "sess_2026_0813",\n  "prefilled_questions": [ /* 190 answered + 10 blank */ ]\n}`,
+        outputSchema: `{\n  "decision_id": "dec-4a19",\n  "question_id": "Q14",\n  "action": "edit",\n  "delivered_answer": "YES",\n  "provenance": "human_edited"\n}`,
+        rules: [
+          { type: 'success', text: 'Single Screen Resolution (FR-BF-008): Assessor has all URLs, evidence and agent positions directly on-screen.' },
+          { type: 'warning', text: 'Append-Only Ledger: Human decisions record actor_id and timestamp; proposals are immutable.' },
+          { type: 'success', text: 'Provenance Auditing: Every question tracks provenance as system_proposed, human_edited, or human_overridden.' }
+        ],
+        codeRef: ['src/review/query.py', 'src/review/web/app.py', 'src/review/web/templates/question.html', 'src/review/actions.py']
+      },
+
+      'output': {
+        icon: '📦', catClass: 'cat-output',
+        title: 'Final Output & Export', category: 'NDJSON & EKAP Schema',
+        purposeBullets: [
+          'Two-file export delivery: NDJSON file for DELIVERED units + comprehensive exclusion_report.json.',
+          'Exclusion report carries exact canonical Reason Tags alongside raw machine-readable codes.',
+          'Projects complete audit trail into EKAP’s `EKAP_AOSQInteractions` schema with HumanReviewRequired flags.',
+          'Invariants E1–E4 verified: zero silent drops (Delivered + Excluded = 100%).'
+        ],
+        inputSchema: `{\n  "cycle_id": "2026_BIENNIAL",\n  "output_dir": "./out/"\n}`,
+        outputSchema: `{\n  "ndjson_path": "./out/export_2026_BIENNIAL.ndjson",\n  "exclusion_path": "./out/exclusion_report_2026_BIENNIAL.json",\n  "delivered_count": 38200,\n  "excluded_count": 400\n}`,
+        rules: [
+          { type: 'success', text: 'Zero Silent Drops (E4): Validates that delivered + excluded exactly equals questions × portals.' },
+          { type: 'danger', text: 'Benchmark Isolation (E2): Benchmark runs can NEVER write to delivered survey output.' },
+          { type: 'success', text: 'Reason Tag Parity: Exclusion report includes the exact human-readable Reason Tag shown on the review screen.' }
+        ],
+        codeRef: ['src/export/writer.py', 'src/export/ekap_projection.py', 'src/export/invariants.py']
+      }
+    };
+
+    // Connections Definition
+    const connections = [
+      // 1. Primary Flow (Data & Stage Progression)
+      { id: 'c-input-link', from: 'input', to: 'link', type: 'primary', label: 'In-Scope Units' },
+      { id: 'c-link-capture', from: 'link', to: 'capture', type: 'primary', label: 'Resolved URL' },
+      { id: 'c-capture-assessor1', from: 'capture', to: 'assessor1', type: 'primary', label: 'DOM + Screenshot' },
+      { id: 'c-capture-assessor2', from: 'capture', to: 'assessor2', type: 'primary', label: 'DOM + Screenshot' },
+      { id: 'c-assessor1-validator', from: 'assessor1', to: 'validator', type: 'primary', label: 'Answer + Evidence' },
+      { id: 'c-assessor2-validator', from: 'assessor2', to: 'validator', type: 'primary', label: 'Answer + Evidence' },
+      { id: 'c-validator-langcheck', from: 'validator', to: 'langcheck', type: 'primary', label: 'Validated Runs' },
+      { id: 'c-langcheck-adjudicator', from: 'langcheck', to: 'adjudicator', type: 'primary', label: 'Supported Lang' },
+      { id: 'c-adjudicator-review', from: 'adjudicator', to: 'review', type: 'primary', label: 'Prefilled Consensus' },
+      { id: 'c-adjudicator-portaladj', from: 'adjudicator', to: 'portaladj', type: 'primary', label: 'Round-1 Unit Answers' },
+      { id: 'c-portaladj-review', from: 'portaladj', to: 'review', type: 'primary', label: 'Portal Aggregate Lens' },
+      { id: 'c-review-output', from: 'review', to: 'output', type: 'primary', label: 'Final Survey Export' },
+
+      // 2. Retry & Feedback Loops (Amber)
+      { id: 'c-assessor1-retry', from: 'assessor1', to: 'assessor1', type: 'retry', label: 'Conf < 75 (≤1 Retry)', loop: 'left' },
+      { id: 'c-assessor2-retry', from: 'assessor2', to: 'assessor2', type: 'retry', label: 'Conf < 75 (≤1 Retry)', loop: 'right' },
+      { id: 'c-validator-retry1', from: 'validator', to: 'assessor1', type: 'retry', label: 'Validation Gap (≤2)', loop: 'left' },
+      { id: 'c-validator-retry2', from: 'validator', to: 'assessor2', type: 'retry', label: 'Validation Gap (≤2)', loop: 'right' },
+      { id: 'c-adjudicator-retry1', from: 'adjudicator', to: 'assessor1', type: 'retry', label: 'Discrepancy Re-run (≤2)', loop: 'far-left' },
+      { id: 'c-adjudicator-retry2', from: 'adjudicator', to: 'assessor2', type: 'retry', label: 'Discrepancy Re-run (≤2)', loop: 'far-right' },
+
+      // 3. Escalation & Blank-Field Fallback Paths (Rose / Red)
+      { id: 'c-link-esc', from: 'link', to: 'escalation', type: 'escalation', label: 'No URL Resolved' },
+      { id: 'c-capture-esc', from: 'capture', to: 'escalation', type: 'escalation', label: 'Auth Barrier Observed' },
+      { id: 'c-validator-esc', from: 'validator', to: 'escalation', type: 'escalation', label: 'Unverifiable Target' },
+      { id: 'c-langcheck-esc', from: 'langcheck', to: 'escalation', type: 'escalation', label: 'Unsupported Language' },
+      { id: 'c-adjudicator-esc', from: 'adjudicator', to: 'escalation', type: 'escalation', label: 'Unresolved Disagreement' },
+      { id: 'c-portaladj-esc', from: 'portaladj', to: 'escalation', type: 'escalation', label: 'Portal Discrepancy > 10%' },
+      { id: 'c-escalation-review', from: 'escalation', to: 'review', type: 'escalation', label: 'Blank + Reason Tag → Review' },
+
+      // 4. Benchmark & Telemetry Observation Paths (Purple / Yellow)
+      { id: 'c-input-benchmark', from: 'input', to: 'benchmark', type: 'benchmark', label: 'Benchmark Fork' },
+      { id: 'c-benchmark-assessor1', from: 'benchmark', to: 'assessor1', type: 'benchmark', label: 'Ground Truth Eval' },
+      { id: 'c-benchmark-assessor2', from: 'benchmark', to: 'assessor2', type: 'benchmark', label: 'Ground Truth Eval' },
+      { id: 'c-input-telemetry', from: 'input', to: 'telemetry', type: 'telemetry', label: 'Session Ledger Init' },
+      { id: 'c-telemetry-capture', from: 'telemetry', to: 'capture', type: 'telemetry', label: 'Fetch & Rate Logging' },
+      { id: 'c-telemetry-validator', from: 'telemetry', to: 'validator', type: 'telemetry', label: 'Cost & Event Ledger' },
+      { id: 'c-telemetry-output', from: 'telemetry', to: 'output', type: 'telemetry', label: 'Audit & Hygiene Verification' }
+    ];
+
+    // Simulation Scenarios
+    const simScenarios = {
+      happy: [
+        { node: 'input', msg: '• Stage 0: Initialized questionnaire for France (Module 2.1). Unit state: PENDING.' },
+        { node: 'link', msg: '• Stage 1: Candidate link resolved to https://www.data.gouv.fr via Prior KB. State: RESOLVED.' },
+        { node: 'capture', msg: '• Stage 2: Playwright live render executed under 0.5 req/s token bucket. No auth wall.' },
+        { node: 'assessor1', msg: '• Stage 3a: Assessor 1 (Literal, 0.2) returns YES (conf 88, lang "fr"). ≥ 75 threshold.' },
+        { node: 'assessor2', msg: '• Stage 3b: Assessor 2 (Inferential, 0.7) returns YES (conf 85, lang "fr"). ≥ 75 threshold.' },
+        { node: 'validator', msg: '• Stage 4: Validator re-fetches live page independently. Element relocated, 3/3 checks PASS.' },
+        { node: 'langcheck', msg: '• Stage 5: Majority language "fr" verified against allow-list. Passed to consensus.' },
+        { node: 'adjudicator', msg: '• Stage 6: Answers match, delta = 3 (≤ 10). Consensus YES (conf 89 with bonus). Prefilled.' },
+        { node: 'portaladj', msg: '• Stage 7: Portal-level aggregate divergence under 10% threshold.' },
+        { node: 'review', msg: '• Stage 9: Assessor views prefilled portal questionnaire and clicks APPROVE. Provenance: system_proposed.' },
+        { node: 'output', msg: '• Stage 10: Exported to NDJSON answers file & projected onto EKAP_AOSQInteractions audit.' }
+      ],
+      retry: [
+        { node: 'input', msg: '• Stage 0: Unit initialized for complex multi-portal query. State: PENDING.' },
+        { node: 'link', msg: '• Stage 1: Resolved target URL via Gov Search fallthrough.' },
+        { node: 'capture', msg: '• Stage 2: Captured DOM snapshot and region screenshot.' },
+        { node: 'assessor1', msg: '• Stage 3a: Assessor 1 reports initial confidence 68 (< 75 threshold).' },
+        { node: 'assessor1', msg: '• Stage 3a (Retry): Re-evaluated with self-critique addendum → Confidence improved to 82.' },
+        { node: 'assessor2', msg: '• Stage 3b: Assessor 2 returns YES (conf 80).' },
+        { node: 'validator', msg: '• Stage 4: Live re-fetch detects selector gap → Requests Validator retry for Agent 2.' },
+        { node: 'assessor2', msg: '• Stage 3b (Val Retry): Re-submitted with corrected CSS selector → Validator passes 3/3.' },
+        { node: 'langcheck', msg: '• Stage 5: Language verified.' },
+        { node: 'adjudicator', msg: '• Stage 6: Consensus achieved without discrepancy escalation.' },
+        { node: 'review', msg: '• Stage 9: Human reviewer approves validated output.' },
+        { node: 'output', msg: '• Stage 10: Delivered cleanly.' }
+      ],
+      escalation: [
+        { node: 'input', msg: '• Stage 0: Unit initialized for ambiguous portal. State: PENDING.' },
+        { node: 'link', msg: '• Stage 1: Candidate link resolved.' },
+        { node: 'capture', msg: '• Stage 2: Traversal successful.' },
+        { node: 'assessor1', msg: '• Stage 3a: Assessor 1 answers YES (conf 90).' },
+        { node: 'assessor2', msg: '• Stage 3b: Assessor 2 answers NO (conf 85).' },
+        { node: 'validator', msg: '• Stage 4: Both agents validated independently.' },
+        { node: 'langcheck', msg: '• Stage 5: Language verified.' },
+        { node: 'adjudicator', msg: '• Stage 6: Discrepancy detected (answers differ) → Max retries (2) reached.' },
+        { node: 'escalation', msg: '• Stage 8: Unit blocked. Answer set to null with tag "Left blank: Unresolved AI disagreement after retry limit".' },
+        { node: 'review', msg: '• Stage 9: Assessor opens prefilled portal questionnaire, sees blank field with reason tag & history, and supplies answer.' },
+        { node: 'output', msg: '• Stage 10: Written to NDJSON with provenance="human_overridden" and full audit trace.' }
+      ],
+      benchmark: [
+        { node: 'input', msg: '• Stage 0: Benchmark Session initialized with SessionMode.BENCHMARK (Set ID: bench_v3).' },
+        { node: 'benchmark', msg: '• Benchmark Store: Ingests 400 held-out ground truth units via AST-isolated repository.' },
+        { node: 'assessor1', msg: '• Stage 3a: Dual assessors evaluate benchmark set directly using production code.' },
+        { node: 'assessor2', msg: '• Stage 3b: Independent assessment completes with 9% discrepancy flag rate.' },
+        { node: 'validator', msg: '• Stage 4: Verification executed on benchmark outputs.' },
+        { node: 'adjudicator', msg: '• Stage 6: Adjudication calculates overall accuracy (91%) across 4 confidence bands.' },
+        { node: 'telemetry', msg: '• Observability: Generates accuracy breakdown reports; export strictly prohibited (E2).' }
+      ]
+    };
+
+    let activeScenarioKey = 'happy';
+    let currentSimIndex = -1;
+    let simInterval = null;
+    let activeConnectionFilter = 'all';
+
+    // SVG Line Drawing Engine
+    function drawConnections() {
+      const svg = document.getElementById('flow-svg');
+      const defs = svg.querySelector('defs');
+      svg.innerHTML = '';
+      if (defs) svg.appendChild(defs);
+
+      const container = document.getElementById('canvas-container');
+      const containerRect = container.getBoundingClientRect();
+      const scrollLeft = container.scrollLeft;
+      const scrollTop = container.scrollTop;
+
+      connections.forEach(conn => {
+        if (activeConnectionFilter === 'primary' && conn.type !== 'primary') return;
+        if (activeConnectionFilter === 'retry' && conn.type !== 'retry') return;
+        if (activeConnectionFilter === 'escalation' && conn.type !== 'escalation') return;
+        if (activeConnectionFilter === 'telemetry_benchmark' && conn.type !== 'telemetry' && conn.type !== 'benchmark') return;
+
+        const fromElem = document.getElementById(`node-${conn.from}`);
+        const toElem = document.getElementById(`node-${conn.to}`);
+
+        if (!fromElem || !toElem) return;
+
+        const fromRect = fromElem.getBoundingClientRect();
+        const toRect = toElem.getBoundingClientRect();
+
+        let x1, y1, x2, y2, d;
+
+        const isSelfLoop = conn.from === conn.to;
+        const isSameRow = Math.abs(fromRect.top - toRect.top) < 45;
+        const isFromAbove = fromRect.bottom < toRect.top;
+
+        if (isSelfLoop) {
+          if (conn.loop === 'left') {
+            const startX = fromRect.left - containerRect.left + scrollLeft;
+            const startY = fromRect.top + fromRect.height * 0.3 - containerRect.top + scrollTop;
+            const endY = fromRect.top + fromRect.height * 0.7 - containerRect.top + scrollTop;
+            d = `M ${startX} ${startY} C ${startX - 45} ${startY - 25}, ${startX - 45} ${endY + 25}, ${startX} ${endY}`;
+          } else {
+            const startX = fromRect.right - containerRect.left + scrollLeft;
+            const startY = fromRect.top + fromRect.height * 0.3 - containerRect.top + scrollTop;
+            const endY = fromRect.top + fromRect.height * 0.7 - containerRect.top + scrollTop;
+            d = `M ${startX} ${startY} C ${startX + 45} ${startY - 25}, ${startX + 45} ${endY + 25}, ${startX} ${endY}`;
+          }
+        } else if (conn.loop === 'far-left' || conn.loop === 'left') {
+          x1 = fromRect.left - containerRect.left + scrollLeft;
+          y1 = fromRect.top + fromRect.height * 0.5 - containerRect.top + scrollTop;
+          x2 = toRect.left - containerRect.left + scrollLeft;
+          y2 = toRect.top + toRect.height * 0.5 - containerRect.top + scrollTop;
+          const curveX = Math.min(x1, x2) - (conn.loop === 'far-left' ? 70 : 40);
+          d = `M ${x1} ${y1} C ${curveX} ${y1}, ${curveX} ${y2}, ${x2} ${y2}`;
+        } else if (conn.loop === 'far-right' || conn.loop === 'right') {
+          x1 = fromRect.right - containerRect.left + scrollLeft;
+          y1 = fromRect.top + fromRect.height * 0.5 - containerRect.top + scrollTop;
+          x2 = toRect.right - containerRect.left + scrollLeft;
+          y2 = toRect.top + toRect.height * 0.5 - containerRect.top + scrollTop;
+          const curveX = Math.max(x1, x2) + (conn.loop === 'far-right' ? 70 : 40);
+          d = `M ${x1} ${y1} C ${curveX} ${y1}, ${curveX} ${y2}, ${x2} ${y2}`;
+        } else if (isSameRow) {
+          if (fromRect.left < toRect.left) {
+            x1 = fromRect.right - containerRect.left + scrollLeft;
+            y1 = fromRect.top + fromRect.height * 0.5 - containerRect.top + scrollTop;
+            x2 = toRect.left - containerRect.left + scrollLeft;
+            y2 = toRect.top + toRect.height * 0.5 - containerRect.top + scrollTop;
+          } else {
+            x1 = fromRect.left - containerRect.left + scrollLeft;
+            y1 = fromRect.top + fromRect.height * 0.5 - containerRect.top + scrollTop;
+            x2 = toRect.right - containerRect.left + scrollLeft;
+            y2 = toRect.top + toRect.height * 0.5 - containerRect.top + scrollTop;
+          }
+          const midX = x1 + (x2 - x1) / 2;
+          d = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+        } else if (isFromAbove) {
+          x1 = fromRect.left + fromRect.width / 2 - containerRect.left + scrollLeft;
+          y1 = fromRect.bottom - containerRect.top + scrollTop;
+          x2 = toRect.left + toRect.width / 2 - containerRect.left + scrollLeft;
+          y2 = toRect.top - containerRect.top + scrollTop;
+          const midY = y1 + (y2 - y1) / 2;
+          d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+        } else {
+          x1 = fromRect.left + fromRect.width / 2 - containerRect.left + scrollLeft;
+          y1 = fromRect.top - containerRect.top + scrollTop;
+          x2 = toRect.left + toRect.width / 2 - containerRect.left + scrollLeft;
+          y2 = toRect.bottom - containerRect.top + scrollTop;
+          const midY = y1 + (y2 - y1) / 2;
+          d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', `flow-line type-${conn.type}`);
+        path.setAttribute('id', `line-${conn.from}-${conn.to}`);
+        path.setAttribute('marker-end', `url(#arrow-${conn.type})`);
+        path.dataset.label = `${conn.label} (${conn.from} → ${conn.to})`;
+
+        path.addEventListener('mouseenter', (e) => {
+          path.classList.add('highlighted');
+          showTooltip(e, conn.label);
+        });
+
+        path.addEventListener('mousemove', (e) => {
+          updateTooltipPos(e);
+        });
+
+        path.addEventListener('mouseleave', () => {
+          path.classList.remove('highlighted');
+          hideTooltip();
+        });
+
+        svg.appendChild(path);
+      });
+    }
+
+    // Tooltip helper
+    function showTooltip(e, text) {
+      const tooltip = document.getElementById('flow-tooltip');
+      tooltip.innerText = text;
+      tooltip.style.display = 'block';
+      updateTooltipPos(e);
+    }
+
+    function updateTooltipPos(e) {
+      const tooltip = document.getElementById('flow-tooltip');
+      tooltip.style.left = `${e.clientX + 16}px`;
+      tooltip.style.top = `${e.clientY + 16}px`;
+    }
+
+    function hideTooltip() {
+      const tooltip = document.getElementById('flow-tooltip');
+      tooltip.style.display = 'none';
+    }
+
+    // Node Selection Handler
+    function selectNode(id) {
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+      const card = document.getElementById(`node-${id}`);
+      if (card) card.classList.add('selected');
+
+      const details = nodeDetails[id];
+      if (!details) return;
+
+      document.getElementById('insp-icon').className = `node-icon ${details.catClass}`;
+      document.getElementById('insp-icon').innerText = details.icon;
+      document.getElementById('insp-title').innerText = details.title;
+      document.getElementById('insp-cat').innerText = details.category;
+
+      // Render Purpose Bullet Points
+      const purposeContainer = document.getElementById('insp-purpose-list');
+      purposeContainer.innerHTML = details.purposeBullets.map(b => 
+        `<li class="insp-bullet-item">${b}</li>`
+      ).join('');
+
+      document.getElementById('insp-input-schema').innerText = details.inputSchema;
+      document.getElementById('insp-output-schema').innerText = details.outputSchema;
+
+      // Render Rules
+      const rulesContainer = document.getElementById('insp-rules');
+      rulesContainer.innerHTML = details.rules.map(r => 
+        `<div class="rule-item ${r.type}">${r.text}</div>`
+      ).join('');
+
+      // Render Code References
+      const codeRefContainer = document.getElementById('insp-code-ref');
+      codeRefContainer.innerHTML = details.codeRef.map(c => 
+        `<li class="insp-bullet-item">${c}</li>`
+      ).join('');
+
+      // Highlight active connection lines
+      document.querySelectorAll('.flow-line').forEach(l => {
+        l.classList.remove('active', 'dimmed');
+      });
+
+      connections.forEach(conn => {
+        const line = document.getElementById(`line-${conn.from}-${conn.to}`);
+        if (line) {
+          if (conn.from === id || conn.to === id) {
+            line.classList.add('active');
+          } else {
+            line.classList.add('dimmed');
+          }
+        }
+      });
+    }
+
+    // Highlight All Connected Paths
+    function highlightAllConnected() {
+      document.querySelectorAll('.flow-line').forEach(l => l.classList.remove('dimmed', 'active'));
+    }
+
+    // Filter Connections
+    function filterConnections(type) {
+      activeConnectionFilter = type;
+      drawConnections();
+    }
+
+    // View Switching (Canvas vs Matrix)
+    function switchView(view) {
+      document.getElementById('tab-canvas').classList.toggle('active', view === 'canvas');
+      document.getElementById('tab-matrix').classList.toggle('active', view === 'matrix');
+
+      document.getElementById('canvas-container').style.display = view === 'canvas' ? 'flex' : 'none';
+      document.getElementById('inspector').style.display = view === 'canvas' ? 'flex' : 'none';
+      document.getElementById('matrix-container').style.display = view === 'matrix' ? 'flex' : 'none';
+
+      if (view === 'canvas') setTimeout(drawConnections, 50);
+      if (view === 'matrix') renderMatrixTable();
+    }
+
+    // Render Matrix View with Bullet Points
+    function renderMatrixTable() {
+      const tbody = document.getElementById('matrix-tbody');
+      tbody.innerHTML = Object.keys(nodeDetails).map(key => {
+        const d = nodeDetails[key];
+        return `
+          <tr>
+            <td>
+              <div class="agent-pill">${d.icon} ${d.title}</div>
+              <div style="font-size:0.72rem; color:var(--text-dim); margin-top:0.2rem;">${d.category}</div>
+            </td>
+            <td>
+              <ul class="matrix-bullets">
+                ${d.purposeBullets.map(p => `<li>${p}</li>`).join('')}
+              </ul>
+            </td>
+            <td>
+              <pre style="font-family:var(--font-mono); font-size:0.72rem; background:rgba(0,0,0,0.4); padding:0.6rem; border-radius:6px; overflow-x:auto;">${d.inputSchema}</pre>
+            </td>
+            <td>
+              <pre style="font-family:var(--font-mono); font-size:0.72rem; background:rgba(0,0,0,0.4); padding:0.6rem; border-radius:6px; overflow-x:auto;">${d.outputSchema}</pre>
+            </td>
+            <td>
+              <ul class="matrix-bullets">
+                ${d.rules.map(r => `<li><strong>${r.type.toUpperCase()}:</strong> ${r.text.substring(0, 85)}...</li>`).join('')}
+              </ul>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Search and Highlight Function
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.node-card').forEach(card => {
+        if (!q) {
+          card.style.opacity = '1';
+          return;
+        }
+        const text = card.innerText.toLowerCase();
+        card.style.opacity = text.includes(q) ? '1' : '0.15';
+      });
+    }
+
+    // Node Filter Function
+    function filterNodes(cat, btn) {
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.node-card').forEach(card => {
+        if (cat === 'all') {
+          card.style.opacity = '1';
+        } else {
+          card.style.opacity = card.id.includes(cat) ? '1' : '0.15';
+        }
+      });
+    }
+
+    // Simulation Execution Engine
+    function changeSimScenario(val) {
+      activeScenarioKey = val;
+      resetSim();
+    }
+
+    function toggleSimulation() {
+      const btn = document.getElementById('btn-sim-text');
+      if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+        btn.innerText = 'Resume Simulation';
+        document.getElementById('sim-status').innerText = 'Status: Paused.';
+      } else {
+        btn.innerText = 'Pause Simulation';
+        const steps = simScenarios[activeScenarioKey];
+        simInterval = setInterval(() => {
+          if (currentSimIndex >= steps.length - 1) {
+            currentSimIndex = 0;
+          } else {
+            currentSimIndex++;
+          }
+          applySimStep(currentSimIndex);
+        }, 2200);
+      }
+    }
+
+    function prevSimStep() {
+      if (simInterval) clearInterval(simInterval);
+      const steps = simScenarios[activeScenarioKey];
+      currentSimIndex = Math.max(0, currentSimIndex - 1);
+      applySimStep(currentSimIndex);
+    }
+
+    function nextSimStep() {
+      if (simInterval) clearInterval(simInterval);
+      const steps = simScenarios[activeScenarioKey];
+      currentSimIndex = Math.min(steps.length - 1, currentSimIndex + 1);
+      applySimStep(currentSimIndex);
+    }
+
+    function resetSim() {
+      if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+      }
+      currentSimIndex = -1;
+      document.getElementById('btn-sim-text').innerText = 'Play Scenario';
+      document.getElementById('sim-status').innerText = 'Status: Ready. Click Play or Next.';
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('sim-highlight'));
+      document.querySelectorAll('.flow-line').forEach(l => l.classList.remove('sim-active', 'active', 'dimmed'));
+    }
+
+    function applySimStep(idx) {
+      const steps = simScenarios[activeScenarioKey];
+      const step = steps[idx];
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('sim-highlight'));
+      document.querySelectorAll('.flow-line').forEach(l => l.classList.remove('sim-active'));
+
+      selectNode(step.node);
+      const card = document.getElementById(`node-${step.node}`);
+      if (card) {
+        card.classList.add('sim-highlight');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      document.getElementById('sim-status').innerText = `[Step ${idx + 1}/${steps.length}]\n${step.msg}`;
+
+      if (idx > 0) {
+        const prevStep = steps[idx - 1];
+        const line = document.getElementById(`line-${prevStep.node}-${step.node}`);
+        if (line) line.classList.add('sim-active');
+      }
+    }
+
+    // Toggle Inspector Panel Visibility
+    function toggleInspectorPanel() {
+      const inspector = document.getElementById('inspector');
+      const btn = document.getElementById('btn-toggle-inspector');
+      inspector.classList.toggle('collapsed');
+      const isCollapsed = inspector.classList.contains('collapsed');
+      btn.classList.toggle('active', !isCollapsed);
+      setTimeout(drawConnections, 320);
+    }
+
+    // Copy Code Snippet
+    function copySnippet(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const tooltip = document.getElementById('flow-tooltip');
+        tooltip.innerText = 'Copied to clipboard!';
+        tooltip.style.display = 'block';
+        tooltip.style.left = '50%';
+        tooltip.style.top = '20px';
+        setTimeout(() => tooltip.style.display = 'none', 1400);
+      });
+    }
+
+    function scrollToTop() {
+      const container = document.getElementById('canvas-container');
+      if (container) container.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initial setup on window load
+    window.addEventListener('load', () => {
+      drawConnections();
+      selectNode('input');
+      const container = document.getElementById('canvas-container');
+      if (container) {
+        container.addEventListener('scroll', drawConnections);
+      }
+      initCardHoverEffects();
+    });
+
+    window.addEventListener('resize', drawConnections);
+  </script>
+</body>
+</html>
