@@ -11,11 +11,11 @@ Configuration is loaded at process start. A process environment variable takes p
 | `GOOGLE_GENAI_USE_VERTEXAI` | `TRUE` | Routes Google GenAI/ADK calls through Vertex AI. |
 | `GOOGLE_CLOUD_PROJECT` | *(empty)* | GCP project identifier. It must be supplied before a real Vertex AI run; the empty value means no project is configured in this file. |
 | `GOOGLE_CLOUD_LOCATION` | `us-central1` | Vertex AI region in which portal content is processed. This is a compliance/data-residency setting as well as a service location. |
-| `AIQ_AGENT_1_MODEL` | `gemini-3.5-flash` | Model used by assessor agent 1. |
-| `AIQ_AGENT_2_MODEL` | `gemini-3.5-flash` | Model used by assessor agent 2. |
+| `AIQ_AGENT_1_MODEL` | `gemini-3.7-flash` | Model used by assessor agent 1. |
+| `AIQ_AGENT_2_MODEL` | `gemini-3.7-flash` | Model used by assessor agent 2. |
 | `AIQ_AGENT_TEMPERATURES` | `0.1,0.1` | Comma-separated sampling temperatures, ordered by assessor-agent index. Lower values make output more deterministic. |
 | `AIQ_AGENT_PROMPT_PROFILES` | `literal,inferential` | Comma-separated assessment stances: agent 1 interprets literally; agent 2 may make supported inferences. |
-| `AIQ_VALIDATOR_MODEL` | `gemini-3.5-flash` | Model used by the validation stage. |
+| `AIQ_VALIDATOR_MODEL` | `gemini-3.7-flash` | Model used by the validation stage. |
 | `AIQ_ALLOW_IDENTICAL_AGENT_MODELS` | `true` | Explicitly permits both assessors to use the same model. Prompt profiles still provide a divergence axis. |
 
 `AIQ_AGENT_MODELS` is not set. The application therefore constructs its model list from `AIQ_AGENT_1_MODEL` and `AIQ_AGENT_2_MODEL`.

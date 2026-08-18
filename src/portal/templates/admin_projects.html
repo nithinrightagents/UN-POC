@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Admin — Survey Projects | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <span>Admin</span>
+    <span>/</span>
+    <span>Projects</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Survey Projects &amp; Cycles</h1>
+        <p class="lead">Configure assessment cycles, define indicator questionnaires, and assign country and municipal target units.</p>
+    </div>
+</div>
+
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-bar-chart"/></svg>
+    <span>Configured Survey Cycles</span>
+</div>
+
+<div class="table-responsive">
+    <table class="data-table" aria-label="Projects Table">
+        <thead>
+            <tr>
+                <th scope="col">Project Name &amp; ID</th>
+                <th scope="col">Survey Type</th>
+                <th scope="col">Target Units</th>
+                <th scope="col">Questionnaire</th>
+                <th scope="col" style="text-align: right;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in cycles %}
+            <tr>
+                <td>
+                    <div style="font-weight: 700; color: var(--color-text-primary); font-size: 0.95rem;">{{ c.name }}</div>
+                    <code style="color: var(--color-text-muted); font-size: 0.8rem;">{{ c.cycle_id }}</code>
+                </td>
+                <td>
+                    {% if c.project_type.value == "national_osi" %}
+                    <span class="badge badge--ai">
+                        <span class="badge-dot"></span>
+                        National OSI Survey
+                    </span>
+                    {% else %}
+                    <span class="badge badge--role-b">
+                        <span class="badge-dot"></span>
+                        LOSI City Project
+                    </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ c.country_set|length }}</strong> units
+                </td>
+                <td>
+                    <span class="muted">{{ c.questionnaire_ref or 'Default Set' }}</span>
+                </td>
+                <td style="text-align: right;">
+                    <a href="/admin/projects/{{ c.cycle_id }}" class="btn btn-sm btn-primary">
+                        <span>Manage Workspace</span>
+                        <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;" class="muted">
+                    No survey projects configured yet. Use the form below to initialize a new cycle.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <div>
+            <h3>Create New Survey Project</h3>
+            <p class="muted">Initialize a new national or municipal e-government assessment cycle.</p>
+        </div>
+        <div class="stat-icon" style="width: 36px; height: 36px;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+        </div>
+    </div>
+    
+    <form class="stack" method="post" action="/admin/projects" style="max-width: 680px;">
+        <div class="form-group">
+            <label for="cycle_id">Project Identifier (Slug)</label>
+            <input type="text" id="cycle_id" name="cycle_id" placeholder="e.g. un-egov-2026 or losi-uk-2025" required pattern="[a-zA-Z0-9_-]+" title="Alphanumeric, dashes, and underscores only">
+            <span class="form-help">Unique slug used in URLs and database queries.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Project Display Name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. UN E-Government Survey 2026" required>
+        </div>
+
+        <div class="form-group">
+            <label for="project_type">Assessment Scope / Type</label>
+            <select id="project_type" name="project_type" required>
+                <option value="national_osi">National Online Service Index (193 Member States)</option>
+                <option value="losi_city">Local Online Service Index (LOSI Municipalities)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="questionnaire_ref">Questionnaire Reference Bank</label>
+            <input type="text" id="questionnaire_ref" name="questionnaire_ref" value="UN MSQ 2026 Indicator Set">
+            <span class="form-help">Identifier of the indicator set used for evaluation.</span>
+        </div>
+
+        <div style="margin-top: 0.5rem;">
+            <button class="primary" type="submit">
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+                <span>Initialize Project</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -40,7 +40,7 @@ class Settings:
     # --- Independent assessment ---
     assessor_agent_count: int = 2
     batch_size: int = 50
-    adjudication_retry_limit: int = 2
+    adjudication_retry_limit: int = 2  # Deprecated in spec 008 (intra-run retries superseded by resolver); kept for backwards compatibility
     validation_retry_limit: int = 2
     validation_quality_threshold: float = 0.70
     per_question_confidence_threshold: int = 10
@@ -53,6 +53,13 @@ class Settings:
     # --- Portal-level discrepancy ---
     portal_differing_answer_rate_threshold: float = 0.10
     portal_affirmative_rate_gap_threshold: float = 0.10
+
+    # --- Human Assessor A/B discrepancy (spec 005) ---
+    # Deliberately separate from portal_differing_answer_rate_threshold above:
+    # that setting governs the AI-vs-AI consensus threshold, while
+    # this one governs the human blind-assessor pipeline, whose
+    # transcript-specified trigger is explicitly ">5%" (spec 005 Section 3.4).
+    human_discrepancy_rate_threshold: float = 0.05
 
     # --- Link resolution ---
     kb_link_source_enabled: bool = True
@@ -80,6 +87,14 @@ class Settings:
     serve_host: str = "127.0.0.1"
     serve_port: int = 8080
 
+    # --- Programmatic interface (spec 007) ---
+    api_key: str = ""
+    max_concurrent_assessment_runs: int = 2
+
+    # --- Prefill pipeline (spec 008) ---
+    prefill_confidence_gap_tolerance: int = 10
+    prefill_run_budget: float = 0.0
+
     @property
     def resolution_order(self) -> list[str]:
         """The three named modes (FR-003)."""
@@ -91,7 +106,10 @@ class Settings:
         return modes[self.url_resolution_mode]
 
     def as_dict(self) -> dict:
-        return {f.name: getattr(self, f.name) for f in fields(self)}
+        d = {f.name: getattr(self, f.name) for f in fields(self)}
+        if d.get("api_key"):
+            d["api_key"] = "***"
+        return d
 
     @classmethod
     def defaults(cls) -> dict:
@@ -126,6 +144,10 @@ _ENV_MAP = {
         "AIQ_PORTAL_AFFIRMATIVE_RATE_GAP_THRESHOLD",
         float,
     ),
+    "human_discrepancy_rate_threshold": (
+        "AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD",
+        float,
+    ),
     "kb_link_source_enabled": ("AIQ_KB_LINK_SOURCE_ENABLED", _bool),
     "msq_link_source_enabled": ("AIQ_MSQ_LINK_SOURCE_ENABLED", _bool),
     "url_resolution_mode": ("AIQ_URL_RESOLUTION_MODE", str),
@@ -138,6 +160,10 @@ _ENV_MAP = {
     "database_path": ("AIQ_DATABASE_PATH", str),
     "serve_host": ("AIQ_SERVE_HOST", str),
     "serve_port": ("AIQ_SERVE_PORT", int),
+    "api_key": ("AIQ_API_KEY", str),
+    "max_concurrent_assessment_runs": ("AIQ_MAX_CONCURRENT_ASSESSMENT_RUNS", int),
+    "prefill_confidence_gap_tolerance": ("AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE", int),
+    "prefill_run_budget": ("AIQ_PREFILL_RUN_BUDGET", float),
 }
 
 

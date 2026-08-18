@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Assessor Portal — Select Unit &amp; Role | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <span>Assessor Portal</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="badge badge--role-a">Blind Double-Assessment</span>
+            <span class="badge badge--neutral">Independent Human Intake</span>
+        </div>
+        <h1>Assessor Workspace</h1>
+        <p class="lead">Select your survey cycle, country or municipal unit, and assigned evaluation role. Under UN assessment methodology, Assessor A and Assessor B evaluate independently without visibility into peer submissions.</p>
+    </div>
+</div>
+
+<div class="alert-box" style="margin-bottom: 2rem;">
+    <svg class="icon-lg" aria-hidden="true"><use href="#icon-shield"/></svg>
+    <div>
+        <strong>Double-Blind Evaluation Guarantee:</strong> Your submissions are securely partitioned. AI pre-fills provide starting suggestions and evidence links to accelerate your assessment, but your submitted answers remain strictly confidential until Senior Reviewer arbitration.
+    </div>
+</div>
+
+{% for c in cycles %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="margin-bottom: 0;">{{ c.name }}</h3>
+                <span class="badge badge--neutral">{{ c.project_type.value }}</span>
+            </div>
+            <code style="font-size: 0.8rem; color: var(--color-text-muted);">{{ c.cycle_id }}</code>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table" aria-label="Assessor Units for {{ c.name }}">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 40%;">Country / Municipality</th>
+                    <th scope="col" style="width: 30%;">Assessor A Workspace</th>
+                    <th scope="col" style="width: 30%;">Assessor B Workspace</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in units_by_cycle[c.cycle_id] %}
+                <tr>
+                    <td>
+                        <div style="font-weight: 700; color: var(--color-text-primary); font-size: 0.95rem;">
+                            {{ u.display_name or u.country_id }}
+                        </div>
+                        <span class="muted">{{ u.resolved_url }}</span>
+                    </td>
+                    <td>
+                        <a href="/assessor/{{ c.cycle_id }}/{{ u.portal_id }}?role=A" class="btn btn-sm" style="background-color: var(--color-role-a-bg); color: var(--color-role-a-text); border-color: var(--color-role-a-border); font-weight: 600;">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                            <span>Open as Assessor A</span>
+                            <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="/assessor/{{ c.cycle_id }}/{{ u.portal_id }}?role=B" class="btn btn-sm" style="background-color: var(--color-role-b-bg); color: var(--color-role-b-text); border-color: var(--color-role-b-border); font-weight: 600;">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                            <span>Open as Assessor B</span>
+                            <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align: center; padding: 2rem;" class="muted">
+                        No units registered for this survey cycle yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+    <p class="muted" style="margin-bottom: 1rem;">No survey cycles available. Create one in the Admin workspace.</p>
+    <a href="/admin" class="btn btn-primary">Go to Admin</a>
+</div>
+{% endfor %}
+
+{% endblock %}

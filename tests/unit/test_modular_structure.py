@@ -1,4 +1,4 @@
-"""Unit test verifying the modular folder structure pivot."""
+"""Unit test verifying the modular folder structure."""
 
 import pytest
 from unittest.mock import MagicMock

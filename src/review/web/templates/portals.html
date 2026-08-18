@@ -1,19 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Portals — EKAP AIQ Review{% endblock %}
 {% block content %}
-<h1>Session {{ session_id }}</h1>
-<p>{{ portals|length }} portal(s) in scope.</p>
-{% for p in portals %}
-<div class="card">
-    <h2><a href="/portal/{{ p.portal_id }}?session={{ session_id }}">{{ p.country_id }}</a></h2>
-    {% if p.unlocked %}
-        <p class="status status--unlocked">✓ Ready for review — {{ p.terminal_count }}/{{ p.total_questions }} questions terminal</p>
-    {% else %}
-        <p class="status status--locked">In progress — {{ p.terminal_count }}/{{ p.total_questions }} questions terminal</p>
-    {% endif %}
-    {% if p.escalated_question_ids %}
-        <p>{{ p.escalated_question_ids|length }} question(s) escalated.</p>
-    {% endif %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <span>AI Review</span>
+    <span>/</span>
+    <span>Session {{ session_id }}</span>
 </div>
-{% endfor %}
+
+<div class="page-header">
+    <div>
+        <h1>Session Review Workspace</h1>
+        <p class="lead">{{ portals|length }} target portal(s) in scope for session <code>{{ session_id }}</code>.</p>
+    </div>
+</div>
+
+<div class="section-title">
+    <span>Target Portals</span>
+</div>
+
+<div class="grid-2">
+    {% for p in portals %}
+    <div class="card" style="border-left: 4px solid {% if p.unlocked %}var(--color-success-border){% else %}var(--color-warning-border){% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+            <h2 style="font-size: 1.35rem; margin-bottom: 0;">
+                <a href="/portal/{{ p.portal_id }}?session={{ session_id }}">{{ p.country_id }}</a>
+            </h2>
+            {% if p.unlocked %}
+            <span class="badge badge--verified">Ready for Review</span>
+            {% else %}
+            <span class="badge badge--stale">In Progress</span>
+            {% endif %}
+        </div>
+
+        <p class="muted" style="margin-bottom: 1rem;">
+            Progress: <strong>{{ p.terminal_count }} / {{ p.total_questions }}</strong> indicators terminal.
+        </p>
+
+        {% if p.escalated_question_ids %}
+        <div class="alert-box danger" style="padding: 0.5rem 0.75rem; margin-bottom: 1rem; font-size: 0.85rem;">
+            <span>{{ p.escalated_question_ids|length }} question(s) escalated to human review.</span>
+        </div>
+        {% endif %}
+
+        <a href="/portal/{{ p.portal_id }}?session={{ session_id }}" class="btn btn-sm btn-primary">
+            <span>Review Questions &rarr;</span>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
 {% endblock %}

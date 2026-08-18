@@ -8,26 +8,21 @@ keeps this testable without live network access.
 
 from __future__ import annotations
 
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
 
 from shared.state.entities import LinkSource, ResolutionAttempt
 
-# Deliberately conservative: only TLD/second-level patterns that are widely
-# recognized as government-restricted namespaces. A production build would
-# source this from an authoritative registry rather than a fixed list.
-_GOV_TLD_PATTERNS = (
-    ".gov",
-    ".gov.uk",
-    ".gob.",
-    ".gouv.",
-    ".govt.",
-    ".go.",  # .go.jp, .go.kr, etc.
-    ".mil",
-    ".government.",
-)
+# Deliberately conservative: only TLD/second-level *labels* widely recognized
+# as government-restricted namespaces. A production build would source this
+# from an authoritative registry rather than a fixed list. Matched against
+# whole dot-separated labels, not substrings -- "gov" must be its own label
+# (as in example.gov.uk), not just a fragment of a longer word, or an
+# unrelated vanity domain like "govdirectory.org" would false-positive since
+# "gov" appears as a substring right after a "." from "www.".
+_GOV_LABELS = frozenset({"gov", "gob", "gouv", "govt", "go", "mil", "government"})
 
 
 def is_government_domain(url: str) -> bool:
@@ -35,7 +30,24 @@ def is_government_domain(url: str) -> bool:
         host = urlparse(url).netloc.lower()
     except Exception:  # noqa: BLE001
         return False
-    return any(pattern in f".{host}." for pattern in _GOV_TLD_PATTERNS) or host.endswith(".gov")
+    host = host.split("@")[-1].split(":")[0]  # strip userinfo@ and :port if present
+    labels = host.split(".")
+    return any(label in _GOV_LABELS for label in labels)
+
+
+def _unwrap_ddg_redirect(href: str) -> str:
+    """DuckDuckGo's HTML endpoint returns result links as /l/?uddg=<encoded
+    target>&rut=... redirect wrappers, not the target URL itself -- checking
+    is_government_domain() against the wrapper always sees duckduckgo.com,
+    never the actual result site. Unwraps uddg back to the real target;
+    returns href unchanged if it isn't one of these wrapper links."""
+    parsed = urlparse(href, scheme="https")
+    if "duckduckgo.com" not in parsed.netloc and parsed.netloc != "":
+        return href
+    if parsed.path != "/l/":
+        return href
+    target = parse_qs(parsed.query).get("uddg")
+    return target[0] if target else href
 
 
 async def search_for_link(
@@ -60,8 +72,8 @@ async def search_for_link(
         )
 
     soup = BeautifulSoup(response.text, "html.parser")
-    links = [a.get("href") for a in soup.select("a.result__a")][:max_results]
-    links = [link for link in links if link]
+    raw_links = [a.get("href") for a in soup.select("a.result__a")][:max_results]
+    links = [_unwrap_ddg_redirect(link) for link in raw_links if link]
 
     for link in links:
         if is_government_domain(link):

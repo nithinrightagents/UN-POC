@@ -1,1 +1,3 @@
-{"feature_directory":"specs/004-blank-field-fallback"}
+{
+  "feature_directory": "specs/008-decoupled-ai-prefill"
+}

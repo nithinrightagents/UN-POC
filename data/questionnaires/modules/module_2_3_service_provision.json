@@ -1,0 +1,698 @@
+{
+  "module": "Service Provision",
+  "module_id": "2.3",
+  "source_pdf": "Module 2.3 Service Provision.pdf",
+  "total_questions": 30,
+  "questions": [
+    {
+      "question_id": "SP-029",
+      "indicator_id": "#029",
+      "module": "Service Provision",
+      "title": "E-procurement platform",
+      "text": "E-procurement platform — The provision by the government of an e-procurement platform for bidding processes/submission of tenders.",
+      "what": "The provision by the government of an e-procurement platform for bidding processes/submission of tenders.",
+      "why": "Ensures transparency, enhances competition, and streamlines bidding processes, fostering fair and efficient access for vendors while promoting accountability and reducing corruption in public procurement.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Planning: a. Foster collaboration from across the administration at each stage and validate user needs assumptions. b. Involve diverse user groups in the planning phase. 2. Informing the Market: a. Articulate clear, value-based requirements and evaluation criteria. b. Broadly advertise opportunities and promptly respond to supplier queries. 3. Evaluation and Award: a. Objectively shortlist suppliers and conduct evaluations of suppliers with a diverse team. b. Award the contract to the supplier aligning best with requirements. 4. Additional Guidance: a. Encourage supplier questions for clarity. b. Proactively manage conflicts of interest. c. Maintain comprehensive records accessible to relevant stakeholders.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Argentina’s e-procurement platform",
+      "reference_links": [
+        "the full ITU Procurement Guidelines - United for Smart Sustainable Cities (U4SSC)"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-043",
+      "indicator_id": "#043",
+      "module": "Service Provision",
+      "title": "Income taxes",
+      "text": "Income taxes — The ability for residents to file online personal income tax on any of the national government portals.",
+      "what": "The ability for residents to file online personal income tax on any of the national government portals.",
+      "why": "Enhances efficiency, reduces paperwork, and ensures accurate and timely submissions, thereby simplifying the tax process for businesses and promoting fiscal responsibility within the country.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal and Security Requirements: a. Ensure the online system complies with data protection laws and implements robust security. 2. Choose an E-Government Platform: a. Select or develop a secure and user-friendly e-government platform handling income tax forms. 3. Collaborate with Tax Authorities: a. Work closely with tax authorities to integrate the online system with their databases. 4. Secure Payment Gateway: a. Integrate a secure payment gateway for businesses to pay taxes and fees online. 5. Automated Notifications: a. Set up automated email notifications to confirm receipt of submitted forms and provide updates. 6. Data Integration and Analysis: a. Integrate the online tax filing system with other government databases.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland tax return online form",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland tax return online form"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-044",
+      "indicator_id": "#044",
+      "module": "Service Provision",
+      "title": "Value Added Tax, Goods & Services Tax",
+      "text": "Value Added Tax, Goods & Services Tax — The ability for businesses to submit online for: Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent on any of the national government por",
+      "what": "The ability for businesses to submit online for: Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent on any of the national government portals.",
+      "why": "Streamlines administrative processes, improves efficiency, and enhances transparency in tax administration for businesses, thereby promoting compliance and supporting the government's revenue collection efforts",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Platforms: a. Create user-friendly online platforms specifically for businesses to manage VAT, GST, or equivalent. 2. Enable Registration: a. Allow users to register for VAT/GST online, streamlining the process and reducing paperwork. 3. Facilitate Tax Filing: a. Provide digital tools for users to easily file tax returns electronically, including automated calculations. 4. Allow Online Payments: a. Enable users to make tax payments securely through the online portal using various payment methods. 5. Offer Access to Information: a. Provide comprehensive guidance and resources on VAT/GST regulations, compliance requirements, and deadlines. 6. Ensure Data Security: a. Implement robust security measures to safeguard users' sensitive tax information and financial data. For more information, check out the OECD’s International VAT/GST Guidelines",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Thailand’s VAT-SBT e-portal",
+      "reference_links": [
+        "Thailand’s VAT-SBT e-portal"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-045",
+      "indicator_id": "#045",
+      "module": "Service Provision",
+      "title": "Entry or Transit Visa",
+      "text": "Entry or Transit Visa — This online process allows applicants to complete and submit visa forms, upload required documents, pay application fees, and schedule appointments wi",
+      "what": "This online process allows applicants to complete and submit visa forms, upload required documents, pay application fees, and schedule appointments without the need for physical submission.",
+      "why": "Streamlines the visa application process, enhances efficiency, and improves accessibility for travelers, reducing processing times and administrative burdens for both applicants and government authorities.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Portal: a. Create a dedicated section on the government portal for visa applications. 2. Enable Online Applications: a. Implement an online form for visa applicants to complete and submit electronically. 3. Provide Document Upload: a. Allow applicants to upload required documents securely through the portal. 4. Offer Online Payment: a. Enable online payment options for visa application fees. 5. Facilitate Appointment Booking: a. Allow applicants to schedule visa appointments online, if necessary. 6. Ensure Data Security: a. Implement robust security measures to protect applicants' personal information. 7. Offer Application Tracking: a. Enable applicants to track the status of their visa applications online.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out New Zealand’s Visa portal",
+      "reference_links": [
+        "New Zealand’s Visa portal"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-046",
+      "indicator_id": "#046",
+      "module": "Service Provision",
+      "title": "Registration or renewal for a vehicle",
+      "text": "Registration or renewal for a vehicle — Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s). Users can access and complete registrat",
+      "what": "Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s). Users can access and complete registration forms, upload required documents, pay registration fees, and schedule appointments if necessary.",
+      "why": "Streamlines administrative procedures, improves efficiency, and enhances accessibility for vehicle owners, thereby contributing to overall customer satisfaction and effective governance.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal and Security Requirements: a. Understand country laws and regulations related to online vehicle registration and renewal. b. Ensure compliance with data protection and cybersecurity standards to safeguard user information. 2. Implement Secure Payment Gateway: a. Integrate a secure payment gateway for processing registration or renewal fees. b. Utilize encryption and other security measures to protect financial transactions. 3. Enable Document Uploads: a. Allow users to upload necessary documents (such as vehicle title, insurance, and identification). 4. Integrate Verification Systems: a. Integrate with relevant databases (e.g., vehicle registration database, insurance records) for real-time verification of user-provided information. 5. Implement Notification System: a. Set up automated email or SMS notifications to inform users about the status of their application.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Monaco’s online vehicle registration",
+      "reference_links": [
+        "Monaco’s online vehicle registration"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-047",
+      "indicator_id": "#047",
+      "module": "Service Provision",
+      "title": "Online Police declaration",
+      "text": "Online Police declaration — The ability for users to make declarations to the police online, (e.g., declaring a theft) on the national porta.",
+      "what": "The ability for users to make declarations to the police online, (e.g., declaring a theft) on the national porta.",
+      "why": "Ensures swift reporting of incidents like theft, promoting national safety and enabling law enforcement to respond effectively.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. User-Friendly Interface: a. Create a simple, intuitive interface on any of the government portal(s) where users can easily locate the online declaration section. 2. Clear Instructions: a. Provide clear instructions guiding users on how to fill out the online declaration form.. 3. Secure Platform: a. Implement robust security measures to protect users’ sensitive information. 4. Real-Time Confirmation: a. Send an immediate confirmation to users once their declaration is submitted, 5. Automated Case Numbers: a. Generate automated case numbers for each declaration. 6. Integration with Police Database: a. Integrate the online declaration system with the national police database",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Saudi Arabia’s Police App.",
+      "reference_links": [
+        "Saudi Arabia’s Police App."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-048",
+      "indicator_id": "#048",
+      "module": "Service Provision",
+      "title": "Address change notiﬁcation",
+      "text": "Address change notiﬁcation — The ability to notify the government of moving/changing your address online.",
+      "what": "The ability to notify the government of moving/changing your address online.",
+      "why": "Enhances efficiency, ensures accurate citizen records, and facilitates seamless service delivery, promoting convenience and reducing bureaucratic delays.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Website Development: a. Mobile Compatibility: Ensure the online service is accessible and user-friendly 2. Secure Online Platform: a. Data Encryption: Implement SSL certificates to encrypt user data for security during transmission. b. User Authentication: Utilize secure user authentication methods to validate users' identities. 3. Address Verification: a. Address Validation: Integrate address validation services to confirm the accuracy. b. Document Upload: Allow users to upload documents (e.g., utility bills) as proof of new address. 4. Notification Process: a. Confirmation Emails: Send confirmation emails to users after successful address change submissions. b. Automated Notifications: Notify users about the status of their application through emails or SMS. 5. Integration with Government Databases: a. Database Integration: Integrate with national databases to update citizen information in real-time.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Saudi Arabia’s page for modifying the national address",
+      "reference_links": [
+        "Saudi Arabia’s page for modifying the national address"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-049",
+      "indicator_id": "#049",
+      "module": "Service Provision",
+      "title": "Registration for a new company or business entity",
+      "text": "Registration for a new company or business entity — The ability to register for a new company or business entity with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to register for a new company or business entity with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances efficiency, reduces paperwork, and provides convenient access for entrepreneurs, fostering a business-friendly environment within the government.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Registration Form: a. Create a streamlined digital form for new company or business entity registration on the government portal. 2. Provide Clear Instructions: a. Offer concise guidance on the registration process, requirements, and necessary documentation. 3. Enable Document Upload: a. Allow users to upload required business documents electronically through the portal. 4. Implement Secure Authentication: a. Ensure robust authentication measures to verify users' identities and protect sensitive business information. 5. Offer Real-Time Status Updates: a. Enable users to track the progress of their registration application and receive notifications on any required actions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's online registration for a business entity",
+      "reference_links": [
+        "Kazakhstan's online registration for a business entity"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-050",
+      "indicator_id": "#050",
+      "module": "Service Provision",
+      "title": "Birth /Death / Marriage certiﬁcate",
+      "text": "Birth /Death / Marriage certiﬁcate — The ability to apply for a birth/death/marriage certificate online with i) information, or ii) full online application at any of the government portal",
+      "what": "The ability to apply for a birth/death/marriage certificate online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Streamlines the process for users, ensuring timely and accurate documentation, promoting efficiency, and enhancing overall citizen satisfaction.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal Requirements: a. Ensure compliance with country laws and regulations regarding online certificate applications. 2. Implement Security Measures: a. Prioritize data security. Use encryption protocols to safeguard sensitive information. 3. Integrate Payment Gateways: a. If applicable, integrate secure payment gateways to facilitate online payment for processing fees. 4. Establish Verification Protocols: a. Implement a robust system for verifying applicant identities. 5. Enable Document Upload: a. Allow applicants to upload necessary documents digitally. 6. Provide Application Tracking: a. Offer a feature that enables applicants to track the status of their applications.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s online certificate page",
+      "reference_links": [
+        "Finland’s online certificate page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-053",
+      "indicator_id": "#053",
+      "module": "Service Provision",
+      "title": "Personal Identity Cards",
+      "text": "Personal Identity Cards — The ability for users to apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government p",
+      "what": "The ability for users to apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Streamlines administrative procedures, enhances accessibility, and improves efficiency in the issuance of personal identification documents,",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Form: a. Create a simple, user-friendly digital application form for Personal Identity Cards on the government portal. 2. Enable Document Upload: a. Allow users to securely upload necessary identification documents directly through the portal. 3. Implement Secure Payment: a. Provide a safe and reliable online payment system for any associated fees. 4. Offer Appointment Booking: a. Allow users to schedule appointments for in-person verification or card collection if needed. 5. Ensure Data Protection: a. Implement stringent security measures to safeguard users' personal information and privacy. For more information, check out the European Commission’s page on European Digital Identity",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Japan’s online application for an Identity card",
+      "reference_links": [
+        "Japan’s online application for an Identity card"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-054",
+      "indicator_id": "#054",
+      "module": "Service Provision",
+      "title": "Driver’s license",
+      "text": "Driver’s license — The ability for users to apply for driver’s licenses with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability for users to apply for driver’s licenses with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances citizen convenience, reduces administrative burden, and promotes efficient government services, streamlining the application process for residents while ensuring accurate and secure data submission.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Website Preparation: a. Ensure your government website has a secure and user-friendly interface 2. Data Security: a. Implement robust data encryption and security measures to protect applicants' sensitive information. 3. Application Development: a. Collaborate with a skilled web developer or use a trusted application platform 4. Payment Gateway Integration: a. Integrate a secure payment gateway to facilitate online payments. 5. Document Upload Feature: a. Implement a secure document upload feature allowing applicants to submit necessary documents 6. User Guidance: a. Provide clear instructions and guidelines throughout the application process to assist users.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out France’s online Driver’s license page",
+      "reference_links": [
+        "France’s online Driver’s license page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-055",
+      "indicator_id": "#055",
+      "module": "Service Provision",
+      "title": "Online land title registration",
+      "text": "Online land title registration — The ability to apply for land title registration online with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to apply for land title registration online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances accessibility, streamlines bureaucratic processes, and promotes efficiency, ensuring people can securely manage property transactions and reducing paperwork.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Digital Platform Development: a. Design a secure, user-friendly platform for land title registration with Mobile Responsiveness. 2. User Authentication and Security: a. Implement strong authentication methods, such as two-factor authentication, to verify users' identities. b. Utilize SSL certificates to encrypt data transmitted between users and the online platform. 3. Document Verification and Submission: a. Allow applicants to upload necessary documents securely. b. Integrate automated tools to verify document authenticity and accuracy. 4. Real-Time Application Tracking: a. Provide a unique application ID to track the status of their application. b. Send automated email or SMS notifications to update applicants. 5. Integration with Government Databases: a. Integrate the online platform with national databases and land registry systems. b. Ensure seamless synchronization between online submissions and internal government records.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Sweden’s online registration of a property and mortage",
+      "reference_links": [
+        "Sweden’s online registration of a property and mortage"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-056",
+      "indicator_id": "#056",
+      "module": "Service Provision",
+      "title": "Online environment-related permit",
+      "text": "Online environment-related permit — The ability to apply for environment-related permits online with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to apply for environment-related permits online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Streamlines the application process, promotes environmental compliance, and facilitates sustainable development practices within the country.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal Requirements: a. Research and understand the legalities and regulations concerning environment-related permits in your country. Ensure that the online system complies with all necessary laws. 2. List Required Documents: a. Clearly state all the documents and information applicants need to provide. 3. Develop Secure Online Forms: a. Build secure online forms that capture all necessary details. 4. Provide Detailed Instructions: a. Clearly outline the application process, required documents, and fees. 5. Secure Online Payment Gateway: a. Integrate a secure online payment gateway for applicants to pay permit fees. 6. Implement Tracking System: a. Develop a tracking system that allows applicants to check the status of their applications.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Israel’s application for import/export of hazardous waste",
+      "reference_links": [
+        "Israel’s application for import/export of hazardous waste"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-057",
+      "indicator_id": "#057",
+      "module": "Service Provision",
+      "title": "Online building permit",
+      "text": "Online building permit — The ability to apply for building permits online with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to apply for building permits online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances efficiency and convenience for people and businesses, streamlining the process, reducing paperwork, and ensuring quicker approvals, fostering economic development and adherence to regulations.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Website Preparation: a. Create a dedicated section for building permits, clearly visible in the website's navigation menu. 2. Online Platform Selection: a. Choose a secure and user-friendly online platform where applicants can submit their forms. It could be a section within your national website or an external portal. 3. Provide Detailed Instructions: a. Clearly outline the application process, required documents, and fees. 4. Secure Online Payment Gateway: a. Integrate a secure online payment gateway for applicants to pay permit fees. 5. Real-Time Application Tracking: a. Implement a system that allows applicants to track their application status in real-time. For more info, check out the current author’s full guide.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Ukraine’s online permit for construction work",
+      "reference_links": [
+        "Ukraine’s online permit for construction work"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-058",
+      "indicator_id": "#058",
+      "module": "Service Provision",
+      "title": "Government vacancy positions",
+      "text": "Government vacancy positions — The ability to apply for government vacancy positions online with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to apply for government vacancy positions online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances accessibility, streamlines the application process, and promotes equal opportunities, ensuring a more efficient and inclusive recruitment system for all residents.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Select an Applicant Tracking System (ATS): a. Choose a reputable ATS software that aligns with the country’s needs 2. Detailed Job Listings: a. Provide comprehensive job descriptions, qualifications, and application instructions for each vacancy. 3. Resume Upload and Parsing: a. Enable applicants to upload resumes and ensure the system can parse essential information. 4. Customized Application Forms: a. Create tailored application forms for different job categories, gathering specific information required. 5. Integration with HR Systems: a. Integrate the online application system with existing HR databases for seamless data transfer and efficient application processing. 6. Automated Notifications: a. Set up automated email notifications to acknowledge application submissions and provide updates.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Peru’s dedicated government portal for vacancy positions",
+      "reference_links": [
+        "this guide by ebizneeds: or Workable’s"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-059",
+      "indicator_id": "#059",
+      "module": "Service Provision",
+      "title": "Registration for business license",
+      "text": "Registration for business license — The ability to apply for a business license online with i) information, or ii) full online application at any of the government portal(s).",
+      "what": "The ability to apply for a business license online with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances efficiency, reduces paperwork, and provides convenient access for entrepreneurs, fostering a business-friendly environment within the government.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Requirements: a. Identify essential features: user registration, document uploads, payment gateways. 2. Choose a Platform: a. Opt for a user-friendly CMS like WordPress or specialized licensing software. b. Prioritize security, ease of customization, and scalability 3. Ensure Security: a. Implement robust user authentication methods & Regularly update security protocols 4. Enable Document Uploads: a. Integrate cloud storage 5. Incorporate Payment Gateways: a. Include multiple payment options: credit/debit cards, PayPal, online banking. 6. Implement Application Tracking: a. Assign unique application IDs for tracking.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s online business registration page",
+      "reference_links": [
+        "Iceland’s online business registration page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-062",
+      "indicator_id": "#062",
+      "module": "Service Provision",
+      "title": "Water utility/ Energy (electricity/gas) utility",
+      "text": "Water utility/ Energy (electricity/gas) utility — The ability to pay for online expenses related to utilities (water and energy), either on public or non-public sectors website.",
+      "what": "The ability to pay for online expenses related to utilities (water and energy), either on public or non-public sectors website.",
+      "why": "Enhances user convenience, promotes timely payments, and streamlines administrative processes, ensuring efficient and hassle-free transactions for residents.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Select a Secure Payment Gateway: a. Choose a reliable and secure payment gateway provider that supports online transactions. 2. Integration with Government Website: a. Seamlessly integrate the selected payment gateway into the government website. b. Implement SSL encryption to protect data during transmission between the user and the gateway. 3. Payment Options and Information: a. Clearly display payment options (credit cards, debit cards, digital wallets) and accepted currencies. 4. Provide External Payment Portal Link (if applicable): a. If using an external payment portal, clearly indicate the link on the government website. 5. Automated Confirmation and Receipts: a. Email electronic receipts to users, including transaction details and a reference number. 6. Data Security Measures: a. Store minimal customer data and comply with data protection regulations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Cabo Verde’s online portal for utilities payment",
+      "reference_links": [
+        "Science Soft’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-079",
+      "indicator_id": "#079",
+      "module": "Service Provision",
+      "title": "Digital invoices",
+      "text": "Digital invoices — The ability to pay for digital invoices or \"e-invoicing” at any of the government portal(s). Users can manage their financial transactions with govern",
+      "what": "The ability to pay for digital invoices or \"e-invoicing” at any of the government portal(s). Users can manage their financial transactions with government agencies, such as paying for services, taxes, fees, or fines, using secure online payment methods.",
+      "why": "Enhances transparency, streamlines administrative processes, reduces paperwork, and improves the overall efficiency",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Create E-Invoicing Section: a. Develop a dedicated section on the government portal for e-invoicing transactions. 2. Enable Secure Payment: a. Integrate a secure online payment system for users to settle digital invoices. 3. Provide Invoice Access: a. Allow users to view and download digital invoices directly from their accounts. 4. Offer Multiple Payment Options: a. Provide diverse payment methods, such as credit cards, bank transfers, or digital wallets. 5. Ensure Data Protection: a. Implement robust security measures to safeguard users' financial information and transaction details. For more information, check out the European Commission’s digital invoice page",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s digital invoice portal ¨",
+      "reference_links": [
+        "Estonia’s digital invoice portal ¨"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-080",
+      "indicator_id": "#080",
+      "module": "Service Provision",
+      "title": "GIS data and/or online services",
+      "text": "GIS data and/or online services — The presence of GIS or other geospatial-related data and/or online services at any of the government portal(s). These can give access to spatial infor",
+      "what": "The presence of GIS or other geospatial-related data and/or online services at any of the government portal(s). These can give access to spatial information, maps, and related services for users, allowing users to visualize, analyze, and interpret geographic data for various purposes",
+      "why": "Enhances transparency, promotes evidence-based decision-making, improves public service delivery, and fosters innovation and collaboration",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Needs and Requirements: a. Identify the specific geospatial data and services that would benefit users and align with objectives. 2. Develop GIS Integration Plan: a. Create a strategy for integrating GIS technologies and datasets into the government portal, considering data acquisition, storage, and visualization. 3. Implement User-Friendly Interface: a. Design an intuitive and user-friendly interface for accessing and interacting with geospatial data and online mapping services. 4. Ensure Data Quality and Accuracy: a. Verify the accuracy and reliability of geospatial data and ensure compliance with data standards and regulations. For more information, check out the UN-GGIM’s INTEGRATED GEOSPATIAL INFORMATION FRAMEWORK Guide",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United Arab Emirates’s spatial data platforms for online services",
+      "reference_links": [
+        "The United Arab Emirates’s spatial data platforms for online services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-082",
+      "indicator_id": "#082",
+      "module": "Service Provision",
+      "title": "Business tax ﬁling",
+      "text": "Business tax ﬁling — The ability for users to apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(",
+      "what": "The ability for users to apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(s).",
+      "why": "Enhances efficiency, reduces paperwork, and ensures accurate and timely submissions, thereby simplifying the tax process for businesses and promoting fiscal responsibility within the country.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal and Security Requirements: a. Ensure the online system complies with data protection laws and implements robust security. 2. Choose an E-Government Platform: a. Select or develop a secure and user-friendly e-government platform handling various tax forms. 3. Collaborate with Tax Authorities: a. Work closely with tax authorities to integrate the online system with their databases. 4. Secure Payment Gateway: a. Integrate a secure payment gateway for businesses to pay taxes and fees online. 5. Automated Notifications: a. Set up automated email notifications to confirm receipt of submitted forms and provide updates. 6. Data Integration and Analysis: a. Integrate the online tax filing system with other government databases.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Singapore’s business tax app",
+      "reference_links": [
+        "Singapore’s business tax app"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-131b",
+      "indicator_id": "#131b",
+      "module": "Service Provision",
+      "title": "Transitioning people to retirement",
+      "text": "Transitioning people to retirement — The ability for users to apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the gov",
+      "what": "The ability for users to apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the government portal(s). Allows individuals nearing retirement age to access information, resources, and assistance related to retirement planning and benefits entitlements, as well as to submit applications or requests for retirement benefits, pension schemes, or other retirement-related services.",
+      "why": "Enhances accessibility, streamline administrative processes, and improve the overall retirement experience for individuals",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Retirement Transition Section: a. Create a dedicated section on the government portal for retirement transition services. 2. Provide Retirement Information: a. Offer comprehensive information on retirement planning, benefits, and entitlements. 3. Enable Online Applications: a. Implement a user-friendly online application process for retirement benefits or services. 4. Ensure Data Security: a. Implement robust security measures to protect users' personal information and sensitive data. 5. Offer Support Channels: a. Provide online assistance and support for individuals navigating the retirement transition process.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Israel’s retirement service page",
+      "reference_links": [
+        "Israel’s retirement service page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-095",
+      "indicator_id": "#095",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors (#095,",
+      "text": "Online services provision for six main sectors (#095, — Evidence of a section on the national website where online services are listed for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUST",
+      "what": "Evidence of a section on the national website where online services are listed for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-095a",
+      "indicator_id": "#095a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors (#095a, 108a, 124a, 137a,",
+      "text": "Mobile services for six main sectors (#095a, 108a, 124a, 137a, — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, J",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-095b",
+      "indicator_id": "#095b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors (#095b, 108b, 124b, 137b, 166b,",
+      "text": "SMS alert for six main sectors (#095b, 108b, 124b, 137b, 166b, — Evidence of users’ ability to receive SMS alerts for services in HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-117",
+      "indicator_id": "#117,#118",
+      "module": "Service Provision",
+      "title": "Scholarships, fellowships or other forms of government funding",
+      "text": "Scholarships, fellowships or other forms of government funding — (#117) Information on available scholarships or other forms of government funding for EDUCATION and (#118) online application for government scholarsh",
+      "what": "(#117) Information on available scholarships or other forms of government funding for EDUCATION and (#118) online application for government scholarships and fellowships with i) information, or ii) full online application at any of the government portal(s)",
+      "why": "Crucial for promoting accessibility, transparency, and equity in education opportunities.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Centralize Scholarship Information: a. Compile comprehensive details about available scholarships and government funding programs for education on the government portal. 2. Develop Online Application System: a. Create an online platform for users to easily access information about scholarships and submit applications electronically. 3. Provide Clear Instructions: a. Offer clear guidelines and instructions for users on how to apply for scholarships and government funding through the portal. 4. Ensure Data Security: a. Implement robust security measures to protect users' personal information and sensitive data. 5. Offer Support Channels: a. Provide online assistance and support to help users navigate the scholarship application process.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out South Africa’s education funding assistance page",
+      "reference_links": [
+        "South Africa’s education funding assistance page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-143",
+      "indicator_id": "#143",
+      "module": "Service Provision",
+      "title": "Speciﬁc Services/ Information available for vulnerable groups",
+      "text": "Speciﬁc Services/ Information available for vulnerable groups — Service or information for below vulnerable groups with i) information, or ii) full online application at any of the government portal(s). Vulnerable ",
+      "what": "Service or information for below vulnerable groups with i) information, or ii) full online application at any of the government portal(s). Vulnerable groups: poor (below the poverty line) /persons with disabilities /older persons/immigrants, migrant workers, refugees, and internally displaced persons/women/youth",
+      "why": "Ensures equitable access to government support and resources, fostering inclusivity and addressing the specific needs of marginalized populations.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Identify Vulnerable Groups: a. Determine the specific needs of each vulnerable group. 2. Develop Tailored Services: a. Create customized services and information resources for each vulnerable group. See here for examples 3. Ensure Accessibility: a. Design the government portal to be accessible to all users, including those with disabilities, by incorporating features such as text-to-speech functionality and adjustable font sizes. 4. Provide Online Application Options: a. Offer online application options for government assistance programs and services. 5. Promote Awareness: a. Implement outreach and awareness campaigns to inform about the available services and resources. For more info, check out the OECD’s Lithuania guide Delivering for people in vulnerable situations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United Arab Emirates’ online services for women",
+      "reference_links": [
+        "The United Arab Emirates’ online services for women"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-149",
+      "indicator_id": "#149",
+      "module": "Service Provision",
+      "title": "Application for citizenship or residentship",
+      "text": "Application for citizenship or residentship — Information on eligibility and/or procedure for applying for citizenship or residency in any of the government portal(s).",
+      "what": "Information on eligibility and/or procedure for applying for citizenship or residency in any of the government portal(s).",
+      "why": "Ensures transparency, facilitates access to legal documentation, and promotes immigrants' integration into society.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Legal and Security Requirements: a. Understand the legal framework and security protocols required 2. Choose a Reliable Platform: a. Select a secure and user-friendly online platform for applications. 3. Provide Comprehensive Information: a. Offer detailed information about eligibility criteria, required documents, processing timelines and different types of residency permits. 4. Implement Secure Document Upload: a. Enable a secure document upload feature 5. Integrate Payment Gateway: a. Implement a secure payment gateway to process application fees online. 6. Enable Application Tracking: a. Allow applicants to track the status of their applications through the portal.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the The United Arab Emirates’s page giving information on acquiring Emirati citizenship",
+      "reference_links": [
+        "the The United Arab Emirates’s page giving information on acquiring Emirati citizenship"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-182",
+      "indicator_id": "#182",
+      "module": "Service Provision",
+      "title": "Aﬃdavit of criminal record/background clearance",
+      "text": "Aﬃdavit of criminal record/background clearance — Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the gover",
+      "what": "Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the government portal(s)",
+      "why": "Streamlines the process, enhances transparency, and facilitates individuals' access to vital legal documentation.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Application System: a. Create a user-friendly online platform for individuals to apply for a criminal record/background clearance directly through the government portal. 2. Provide Information: a. Offer clear guidance on the eligibility criteria, required documentation, and application process. 3. Ensure Secure Document Submission: a. Implement robust security measures to safeguard sensitive information submitted by applicants. 4. Enable Tracking: a. Allow applicants to track the status of their applications and receive notifications regarding any updates or requests for additional information. 5. Offer Support Channels: a. Provide online assistance and support options for applicants who may require guidance or encounter difficulties during the application process.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Bahrain’s good conduct application page",
+      "reference_links": [
+        "Bahrain’s good conduct application page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-183",
+      "indicator_id": "#183",
+      "module": "Service Provision",
+      "title": "Access to justice information",
+      "text": "Access to justice information — Access to justice information by i) retrieving information, ii) filing (open) online; iii) managing of court cases at any of the government portal(s).",
+      "what": "Access to justice information by i) retrieving information, ii) filing (open) online; iii) managing of court cases at any of the government portal(s). Allows individuals to access vital legal resources, initiate legal actions conveniently, and monitor the progress of their cases.",
+      "why": "Promotes legal empowerment, and facilitates individuals' participation in the judicial process through convenient online access to legal resources and services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Online Legal Database: a. Develop a comprehensive online database containing relevant legal information, court procedures, and case management tools accessible to the public. 2. Implement E-Filing System: a. Introduce an electronic filing system for users to initiate legal actions and submit documents online. 3. Enable Case Tracking: a. Enable users to track the progress of their court cases, receive updates on hearings and judgments, and access relevant documents securely through their user accounts. 4. Provide User Support: a. Offer online assistance and guidance to help users navigate the legal process. 5. Ensure Data Security: a. Implement robust security measures to safeguard sensitive legal information.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Hungary’s courts portal",
+      "reference_links": [
+        "Hungary’s courts portal"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-184",
+      "indicator_id": "#184",
+      "module": "Service Provision",
+      "title": "Beneﬁts Application",
+      "text": "Beneﬁts Application — Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment",
+      "what": "Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment benefits through i) information, or ii) full online application at any of the government portal(s)",
+      "why": "Streamlines the process, improves accessibility, and provides timely support to individuals in need of assistance due to illness, injury, disability, maternity, newborn care, or unemployment.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop Online Application Forms: a. Create user-friendly online forms for each type of benefit application, allowing applicants to provide necessary information and documentation electronically. 2. Provide Clear Instructions: a. Offer detailed instructions guiding applicants through the application process, including eligibility criteria, required documents, and submission procedures. 3. Enable Document Upload: a. Implement a secure document upload feature, allowing applicants to submit supporting documents, such as medical records or identification, alongside their online applications. 4. Offer Application Tracking: a. Enable applicants to track the status of their benefit applications, receive notifications on progress, and access updates or requests for additional information through their user accounts.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Argentina’s children based benefits page",
+      "reference_links": [
+        "Argentina’s children based benefits page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    }
+  ]
+}

@@ -36,7 +36,7 @@ Two scopes, deliberately separate. **Per-question** adjudication drives retries.
 }
 ```
 
-### Decision table (FR-028)
+### Decision table (FR-028) *(Per-question retry loops superseded by spec 008 FR-PF-025: two-assessor arbitration & resolver)*
 
 | Answers | Max pairwise confidence delta | Flagged | Reason |
 |---|---|---|---|

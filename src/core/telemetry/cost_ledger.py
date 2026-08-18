@@ -27,9 +27,10 @@ class CostLedgerEntry:
 
 
 class CostLedger:
-    def __init__(self, conn: sqlite3.Connection, session_id: str):
+    def __init__(self, conn: sqlite3.Connection, session_id: str, budget: Any | None = None):
         self.conn = conn
         self.session_id = session_id
+        self.budget = budget
 
     def record(
         self,
@@ -40,6 +41,8 @@ class CostLedger:
         cost: float,
         agent_index: int | None = None,
     ) -> None:
+        if self.budget is not None:
+            self.budget.record(cost)
         entry = CostLedgerEntry(
             entry_id=new_id("cost"),
             session_id=self.session_id,

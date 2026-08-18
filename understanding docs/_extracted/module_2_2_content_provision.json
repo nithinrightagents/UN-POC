@@ -1,0 +1,70 @@
+{
+  "module": "Content Provision",
+  "source_pdf": "Module 2.2 Content Provision.pdf",
+  "indicators": [
+    {
+      "code": "#015",
+      "sector_labels": null,
+      "title": "Foreign language support",
+      "description": "Evidence of the national portal(s) available in more than one official language",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#028",
+      "sector_labels": null,
+      "title": "Procurement announcements",
+      "description": "Evidence of announcements of forthcoming procurement/bidding processes",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#030",
+      "sector_labels": null,
+      "title": "Procurement results",
+      "description": "Information about results of procurement/bidding processes online",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#088",
+      "sector_labels": null,
+      "title": "Web statistics",
+      "description": "Evidence of web statistics on usage, such as new visits, total page views, average time on site",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#117",
+      "sector_labels": null,
+      "title": "Available scholarships or other funding",
+      "description": "Information on available scholarships or other forms of government funding for Education",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#129",
+      "sector_labels": null,
+      "title": "Employment for youth",
+      "description": "Evidence of links and references for Employment for youth",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#131a",
+      "sector_labels": null,
+      "title": "Workers' compensation benefits",
+      "description": "Information on how users can apply online for workers' compensation benefits due to illness and injury",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#150",
+      "sector_labels": null,
+      "title": "Long term care",
+      "description": "Information on how older persons can apply for long term care.",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    }
+  ]
+}

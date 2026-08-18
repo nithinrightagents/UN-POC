@@ -52,3 +52,20 @@ def test_unrecognized_reason_raises_keyerror():
 def test_portal_discrepancy_has_no_template():
     with pytest.raises(KeyError):
         reason_tag(EscalationReason.PORTAL_DISCREPANCY.value, {})
+
+
+from shared.state.entities import PrefillReason
+from shared.state.reason_tags import prefill_reason_tag
+
+
+@pytest.mark.parametrize("reason", list(PrefillReason))
+def test_every_prefill_reason_has_a_template(reason):
+    tag = prefill_reason_tag(reason.value, _FIXTURE_CONTEXT)
+    assert tag.text.startswith("No suggestion: ")
+    assert tag.condition is reason
+
+
+def test_unrecognized_prefill_reason_raises_keyerror():
+    with pytest.raises(KeyError):
+        prefill_reason_tag("not_a_real_prefill_reason", {})
+

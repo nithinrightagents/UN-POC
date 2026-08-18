@@ -30,6 +30,7 @@ from shared.state.entities import (
     AnswerType,
     EscalationReason,
     EvidenceLocus,
+    PrefillReason,
     Question,
     TargetPortal,
     UnitState,
@@ -168,7 +169,7 @@ async def _run(repo, settings, provider) -> "UnitOutcome":
 
 
 @pytest.mark.asyncio
-async def test_majority_unsupported_language_escalates():
+async def test_majority_unsupported_language_produces_no_suggestion():
     repo = _repo()
     _seed_resolved_unit(repo, "s1", "q1", "p1", "https://example.gov/page")
     settings = _settings(agent_count=2, supported_languages=["en"])
@@ -176,13 +177,18 @@ async def test_majority_unsupported_language_escalates():
 
     outcome = await _run(repo, settings, provider)
 
-    assert outcome.final_state == UnitState.ESCALATED
-    assert outcome.detail == EscalationReason.LANGUAGE_NOT_SUPPORTED.value
+    assert outcome.final_state == UnitState.NO_SUGGESTION
+    assert outcome.detail == PrefillReason.UNSUPPORTED_LANGUAGE.value
 
+    # Zero escalation items written
     escalations = repo.list_escalations("s1")
-    assert len(escalations) == 1
-    assert escalations[0].reason == EscalationReason.LANGUAGE_NOT_SUPPORTED
-    assert escalations[0].context["detected_language"] == "fr"
+    assert len(escalations) == 0
+
+    # Prefill written with suggested=False and reason=unsupported_language
+    prefill = repo.latest_prefill("s1", "q1", "p1")
+    assert prefill is not None
+    assert prefill.suggested is False
+    assert prefill.reason == PrefillReason.UNSUPPORTED_LANGUAGE.value or prefill.reason == PrefillReason.UNSUPPORTED_LANGUAGE
 
 
 @pytest.mark.asyncio
@@ -194,12 +200,10 @@ async def test_supported_language_does_not_trigger_language_escalation():
 
     outcome = await _run(repo, settings, provider)
 
-    # Validation always fails in this fake (no evidence quote), so the unit
-    # still escalates -- but for lack of verifiable evidence, not language.
-    assert outcome.detail != EscalationReason.LANGUAGE_NOT_SUPPORTED.value
-    assert not any(
-        e.reason == EscalationReason.LANGUAGE_NOT_SUPPORTED for e in repo.list_escalations("s1")
-    )
+    assert outcome.detail != PrefillReason.UNSUPPORTED_LANGUAGE.value
+    prefill = repo.latest_prefill("s1", "q1", "p1")
+    assert prefill is not None
+    assert prefill.reason != PrefillReason.UNSUPPORTED_LANGUAGE.value and prefill.reason != PrefillReason.UNSUPPORTED_LANGUAGE
 
 
 @pytest.mark.asyncio
@@ -213,7 +217,7 @@ async def test_majority_vote_ignores_minority_outlier_language():
 
     outcome = await _run(repo, settings, provider)
 
-    assert outcome.detail != EscalationReason.LANGUAGE_NOT_SUPPORTED.value
-    assert not any(
-        e.reason == EscalationReason.LANGUAGE_NOT_SUPPORTED for e in repo.list_escalations("s1")
-    )
+    assert outcome.detail != PrefillReason.UNSUPPORTED_LANGUAGE.value
+    prefill = repo.latest_prefill("s1", "q1", "p1")
+    assert prefill is not None
+    assert prefill.reason != PrefillReason.UNSUPPORTED_LANGUAGE.value and prefill.reason != PrefillReason.UNSUPPORTED_LANGUAGE

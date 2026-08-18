@@ -57,7 +57,7 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
             portals.append({**asdict(p), **asdict(status)})
 
         return templates.TemplateResponse(
-            "portals.html", {"request": request, "session_id": session, "portals": portals}
+            request, "portals.html", {"session_id": session, "portals": portals}
         )
 
     @app.get("/portal/{portal_id}", response_class=HTMLResponse)
@@ -69,9 +69,8 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         status = portal_review_status(r, session, portal_id, qids)
 
         return templates.TemplateResponse(
-            "questions.html",
+            request, "questions.html",
             {
-                "request": request,
                 "session_id": session,
                 "portal": portal,
                 "questions": questions,
@@ -91,9 +90,8 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
             render_attempt_history_html(view.attempt_history) if view.escalated else ""
         )
         return templates.TemplateResponse(
-            "question.html",
+            request, "question.html",
             {
-                "request": request,
                 "session_id": session,
                 "view": view,
                 "evidence_html": evidence_html,

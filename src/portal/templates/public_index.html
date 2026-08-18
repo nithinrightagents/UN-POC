@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}UN E-Government Knowledge Base | Published Surveys{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <span>Public Knowledge Base</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="badge badge--published">
+                <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+                Official UN Data Repository
+            </span>
+            <span class="badge badge--neutral">Verified Publications</span>
+        </div>
+        <h1>UN E-Government Knowledge Base</h1>
+        <p class="lead">Public access to validated assessment rankings, Online Service Index (OSI) benchmarks, and municipal Local Online Service Index (LOSI) performance profiles.</p>
+    </div>
+</div>
+
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+    <span>Published Assessment Cycles</span>
+</div>
+
+<div class="grid-2">
+    {% for c in cycles %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-left: 4px solid var(--color-brand-primary);">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                <h3 style="margin-bottom: 0; font-size: 1.25rem;">{{ c.name }}</h3>
+                {% if c.project_type.value == "national_osi" %}
+                <span class="badge badge--ai">National OSI</span>
+                {% else %}
+                <span class="badge badge--role-b">LOSI City</span>
+                {% endif %}
+            </div>
+            <p class="muted" style="margin-bottom: 1rem; line-height: 1.6;">
+                Official published benchmark data for member states and municipal jurisdictions assessed in this cycle.
+            </p>
+        </div>
+        <div>
+            <a href="/public/{{ c.cycle_id }}" class="btn btn-primary" style="width: 100%;">
+                <span>View Official Rankings &amp; Profiles</span>
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 3rem 1.5rem; grid-column: 1 / -1;">
+        <div class="stat-icon" style="margin: 0 auto 1rem; width: 56px; height: 56px;">
+            <svg class="icon-lg" aria-hidden="true"><use href="#icon-file-text"/></svg>
+        </div>
+        <h3>No Publications Released Yet</h3>
+        <p class="muted" style="max-width: 480px; margin: 0 auto 1.5rem;">
+            Assessment cycles become publicly accessible once a Senior Reviewer authorizes and publishes unit evaluation results.
+        </p>
+        <a href="/admin" class="btn">Check Admin Status</a>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

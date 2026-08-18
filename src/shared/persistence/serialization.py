@@ -45,7 +45,8 @@ def _coerce(raw: dict, cls: type[T]) -> T:
     hints = typing.get_type_hints(cls)
     kwargs = {}
     for key, value in raw.items():
-        kwargs[key] = _coerce_value(value, hints.get(key))
+        if key in hints:
+            kwargs[key] = _coerce_value(value, hints.get(key))
     return cls(**kwargs)
 
 

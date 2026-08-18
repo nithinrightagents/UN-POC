@@ -15,7 +15,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .entities import TERMINAL_AGENT_RUN_STATES, AgentRunState, AssessorAgentRun, UnitState
+from .entities import (
+    TERMINAL_AGENT_RUN_STATES,
+    TERMINAL_UNIT_STATES,
+    AgentRunState,
+    AssessorAgentRun,
+    UnitState,
+)
 
 
 @dataclass
@@ -38,7 +44,7 @@ def remaining_work(
     regardless of state. Terminal runs are kept as-is; every other run's output is
     treated as discarded and that agent index is re-dispatched from scratch.
     """
-    if unit_state in (UnitState.DELIVERED, UnitState.ESCALATED, UnitState.UNASSESSABLE):
+    if unit_state in TERMINAL_UNIT_STATES:
         # Terminal units need no resume work at all.
         return ResumePlan(
             unit_state=unit_state,

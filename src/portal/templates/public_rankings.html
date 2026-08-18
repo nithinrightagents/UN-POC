@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}{{ cycle.name }} — Official Rankings | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/public">Public Knowledge Base</a>
+    <span>/</span>
+    <span>{{ cycle.name }}</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="badge badge--published">
+                <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+                Published Benchmarks
+            </span>
+            <span class="badge badge--neutral">
+                {% if is_losi %}Local Online Service Index (LOSI){% else %}Online Service Index (OSI){% endif %}
+            </span>
+        </div>
+        <h1>{{ cycle.name }}</h1>
+        <p class="lead">Comparative rankings and assessment maturity scores for published jurisdictions.</p>
+    </div>
+</div>
+
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-bar-chart"/></svg>
+    <span>Jurisdiction Performance Leaderboard</span>
+</div>
+
+<div class="table-responsive">
+    <table class="data-table" aria-label="Official Rankings Leaderboard">
+        <thead>
+            <tr>
+                <th scope="col" style="width: 100px; text-align: center;">Rank</th>
+                <th scope="col">{% if is_losi %}City Jurisdiction{% else %}Member State / Country{% endif %}</th>
+                <th scope="col" style="width: 260px;">Maturity Score</th>
+                <th scope="col" style="width: 140px; text-align: right;">Scorecard</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td style="text-align: center;">
+                    {% if loop.index == 1 %}
+                    <span class="badge" style="background-color: #fef3c7; color: #92400e; border-color: #fcd34d; font-weight: 700;">#1</span>
+                    {% elif loop.index == 2 %}
+                    <span class="badge" style="background-color: #f1f5f9; color: #334155; border-color: #cbd5e1; font-weight: 700;">#2</span>
+                    {% elif loop.index == 3 %}
+                    <span class="badge" style="background-color: #ffedd5; color: #9a3412; border-color: #fed7aa; font-weight: 700;">#3</span>
+                    {% else %}
+                    <span style="font-weight: 600; color: var(--color-text-muted);">#{{ loop.index }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="font-weight: 700; color: var(--color-text-primary); font-size: 1rem;">
+                        {{ row.portal.display_name or row.portal.country_id if row.portal else row.record.portal_id }}
+                    </div>
+                    {% if row.portal %}
+                    <span class="muted" style="font-size: 0.8rem;">{{ row.portal.resolved_url }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="progress-bar-track" style="flex: 1;">
+                            <div class="progress-bar-fill" style="width: {{ row.record.score * 100 }}%;"></div>
+                        </div>
+                        <strong style="font-size: 1.05rem; font-variant-numeric: tabular-nums; color: var(--color-brand-primary);">
+                            {{ "%.0f"|format(row.record.score * 100) }}%
+                        </strong>
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <a href="/public/{{ cycle.cycle_id }}/{{ row.record.portal_id }}" class="btn btn-sm btn-primary">
+                        <span>Scorecard</span>
+                        <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 3rem 1.5rem;" class="muted">
+                    No published results available for this survey cycle yet.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

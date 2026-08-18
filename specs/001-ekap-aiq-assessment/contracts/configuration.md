@@ -12,7 +12,7 @@ All parameters named in FR-072.
 |---|---|---|---|---|
 | `AIQ_ASSESSOR_AGENT_COUNT` | int | `2` | **≥ 2** — run rejected below | FR-008, FR-009 |
 | `AIQ_BATCH_SIZE` | int | `50` | ≥ 1 | FR-064 |
-| `AIQ_ADJUDICATION_RETRY_LIMIT` | int | `2` | ≥ 0 | FR-032 |
+| `AIQ_ADJUDICATION_RETRY_LIMIT` | int | `2` | ≥ 0 *(Deprecated in spec 008; intra-run retries replaced by resolver)* | FR-032 |
 | `AIQ_VALIDATION_RETRY_LIMIT` | int | `2` | ≥ 0 | FR-084 |
 | `AIQ_VALIDATION_QUALITY_THRESHOLD` | float | `0.70` | 0.0–1.0 | FR-078 |
 | `AIQ_PER_QUESTION_CONFIDENCE_THRESHOLD` | int | `10` | 0–100 | FR-029 |
@@ -29,6 +29,10 @@ All parameters named in FR-072.
 | `AIQ_LANGUAGE_DECISION_WINDOW_HOURS` | int | `48` | ≥ 1 | FR-019 |
 | `AIQ_VERIFICATION_ATTEMPT_BOUND` | int | `3` | ≥ 1 | FR-088 |
 | `AIQ_URL_RESOLUTION_MODE` | enum | `historical_first` | `msq_first` \| `historical_first` \| `search_first`. **Default is `historical_first`** — prior-survey KB, then MSQ, then search | FR-003 |
+| `AIQ_API_KEY` | str | *(empty)* | empty = programmatic access not configured | FR-API-035, FR-API-039 |
+| `AIQ_MAX_CONCURRENT_ASSESSMENT_RUNS` | int | `2` | ≥ 1 | FR-API-014a |
+| `AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE` | int | `10` | ≥ 0 | FR-PF-029 |
+| `AIQ_PREFILL_RUN_BUDGET` | float | `0.0` | ≥ 0.0 (0.0 = uncapped) | FR-PF-041c |
 
 ### Notes on specific defaults
 

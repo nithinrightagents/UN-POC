@@ -7,21 +7,29 @@ AssessorAgentRun, a new AssessorDecision), never a mutation of an old one.
 
 from __future__ import annotations
 
+import json
 import sqlite3
+from contextlib import contextmanager
 
 from shared.state.entities import (
     AdjudicationResult,
     AnswerExport,
     AssessmentSession,
     AssessorAgentRun,
+    AssessorCompletion,
     AssessorDecision,
+    AssessorRole,
     ConfigurationSnapshot,
     DiscrepancyCase,
     EscalationQueueItem,
     EvidenceArtifact,
+    HumanAssessorSubmission,
     LanguageDecision,
+    MSQDocument,
     MSQLinkCandidate,
+    Prefill,
     PriorSurveyLink,
+    PublicationRecord,
     Question,
     SurveyCycle,
     TargetPortal,
@@ -41,16 +49,30 @@ class Repository:
 
     def insert_cycle(self, cycle: SurveyCycle) -> None:
         self.conn.execute(
-            "INSERT INTO survey_cycles (cycle_id, data) VALUES (?, ?)",
+            "INSERT INTO survey_cycles (cycle_id, data) VALUES (?, ?) "
+            "ON CONFLICT(cycle_id) DO UPDATE SET data = excluded.data, created_at = datetime('now')",
             (cycle.cycle_id, to_json(cycle)),
         )
         self.conn.commit()
 
     def get_cycle(self, cycle_id: str) -> SurveyCycle | None:
         row = self.conn.execute(
-            "SELECT data FROM survey_cycles WHERE cycle_id = ?", (cycle_id,)
+            "SELECT data FROM survey_cycles WHERE cycle_id = ? ORDER BY created_at DESC, rowid DESC", (cycle_id,)
         ).fetchone()
         return from_json(row["data"], SurveyCycle) if row else None
+
+    def list_cycles(self) -> list[SurveyCycle]:
+        rows = self.conn.execute(
+            "SELECT data FROM survey_cycles ORDER BY created_at DESC, rowid DESC"
+        ).fetchall()
+        seen: set[str] = set()
+        out: list[SurveyCycle] = []
+        for r in rows:
+            c = from_json(r["data"], SurveyCycle)
+            if c.cycle_id not in seen:
+                seen.add(c.cycle_id)
+                out.append(c)
+        return out
 
     # --- Assessment Session --------------------------------------------
 
@@ -79,11 +101,12 @@ class Repository:
     def insert_question(self, question: Question) -> None:
         self.conn.execute(
             "INSERT INTO questions (question_id, cycle_id, is_custom, data) "
-            "VALUES (?, ?, ?, ?)",
+            "VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(question_id) DO UPDATE SET data = excluded.data, is_custom = excluded.is_custom, created_at = datetime('now')",
             (
                 question.question_id,
                 question.cycle_id,
-                int(question.is_custom),
+                1 if question.is_custom else 0,
                 to_json(question),
             ),
         )
@@ -182,6 +205,24 @@ class Repository:
         data = json.loads(row["data"])
         data["state"] = row["state"]
         return data
+
+    def list_units_for_portal(self, session_id: str, portal_id: str) -> list[dict]:
+        """Per-portal progress view (admin "Run AI Assessment" status) --
+        list_units() only selects `state`/`data`, not the question_id/portal_id
+        columns needed to group by unit here."""
+        import json
+
+        rows = self.conn.execute(
+            "SELECT question_id, state, data FROM units WHERE session_id = ? AND portal_id = ?",
+            (session_id, portal_id),
+        ).fetchall()
+        out = []
+        for r in rows:
+            d = json.loads(r["data"])
+            d["question_id"] = r["question_id"]
+            d["state"] = r["state"]
+            out.append(d)
+        return out
 
     def list_units(self, session_id: str, state: str | None = None) -> list[dict]:
         import json
@@ -400,8 +441,13 @@ class Repository:
         return from_json(row["data"], EscalationQueueItem) if row else None
 
     def list_escalations(self, session_id: str, unresolved_only: bool = False) -> list[EscalationQueueItem]:
+        # Newest first: find_resolved_answer (portal/discrepancy.py) relies on
+        # this ordering to prefer a fresh, still-open disagreement over a
+        # stale already-arbitrated item that happens to cover the same
+        # question_id (e.g. after a resubmission re-opens a settled dispute).
         rows = self.conn.execute(
-            "SELECT e.item_id, e.data FROM escalation_queue_items e WHERE e.session_id = ?",
+            "SELECT e.item_id, e.data FROM escalation_queue_items e WHERE e.session_id = ? "
+            "ORDER BY e.rowid DESC",
             (session_id,),
         ).fetchall()
         items = [from_json(r["data"], EscalationQueueItem) for r in rows]
@@ -540,3 +586,402 @@ class Repository:
             (cycle_id,),
         ).fetchall()
         return [from_json(r["data"], AnswerExport) for r in rows]
+
+    # --- Human Assessor Submission (spec 005) -------------------------------
+
+    def insert_human_submission(self, submission: HumanAssessorSubmission) -> None:
+        self.conn.execute(
+            "INSERT INTO human_assessor_submissions "
+            "(submission_id, session_id, cycle_id, question_id, portal_id, role, data) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                submission.submission_id,
+                submission.session_id,
+                submission.cycle_id,
+                submission.question_id,
+                submission.portal_id,
+                submission.role.value,
+                to_json(submission),
+            ),
+        )
+        self.conn.commit()
+
+    def list_human_submissions(
+        self,
+        session_id: str,
+        portal_id: str,
+        question_id: str | None = None,
+        role: AssessorRole | None = None,
+    ) -> list[HumanAssessorSubmission]:
+        sql = "SELECT data FROM human_assessor_submissions WHERE session_id = ? AND portal_id = ?"
+        params: list = [session_id, portal_id]
+        if question_id:
+            sql += " AND question_id = ?"
+            params.append(question_id)
+        if role:
+            sql += " AND role = ?"
+            params.append(role.value)
+        # created_at has only second-level resolution (SQLite datetime('now')),
+        # so two submissions in the same second need rowid as a tiebreaker to
+        # preserve true insertion order -- this is what "latest" relies on.
+        sql += " ORDER BY created_at, rowid"
+        rows = self.conn.execute(sql, params).fetchall()
+        return [from_json(r["data"], HumanAssessorSubmission) for r in rows]
+
+    def latest_human_submission(
+        self, session_id: str, question_id: str, portal_id: str, role: AssessorRole
+    ) -> HumanAssessorSubmission | None:
+        subs = self.list_human_submissions(session_id, portal_id, question_id, role)
+        return subs[-1] if subs else None
+
+    # --- MSQ Document (spec 005) --------------------------------------------
+
+    def insert_msq_document(self, doc: MSQDocument) -> None:
+        self.conn.execute(
+            "INSERT INTO msq_documents (msq_id, country_id, cycle_id, data) VALUES (?, ?, ?, ?)",
+            (doc.msq_id, doc.country_id, doc.cycle_id, to_json(doc)),
+        )
+        self.conn.commit()
+
+    def get_msq_document(self, msq_id: str) -> MSQDocument | None:
+        row = self.conn.execute(
+            "SELECT data FROM msq_documents WHERE msq_id = ?", (msq_id,)
+        ).fetchone()
+        return from_json(row["data"], MSQDocument) if row else None
+
+    def find_msq_document(self, cycle_id: str, country_id: str) -> MSQDocument | None:
+        row = self.conn.execute(
+            "SELECT data FROM msq_documents WHERE cycle_id = ? AND country_id = ? "
+            "ORDER BY created_at DESC, rowid DESC LIMIT 1",
+            (cycle_id, country_id),
+        ).fetchone()
+        return from_json(row["data"], MSQDocument) if row else None
+
+    # --- Publication Record (spec 005) --------------------------------------
+
+    def insert_publication(self, record: PublicationRecord) -> None:
+        self.conn.execute(
+            "INSERT INTO publication_records (publication_id, cycle_id, portal_id, data) "
+            "VALUES (?, ?, ?, ?)",
+            (record.publication_id, record.cycle_id, record.portal_id, to_json(record)),
+        )
+        self.conn.commit()
+
+    def latest_publication(self, cycle_id: str, portal_id: str) -> PublicationRecord | None:
+        row = self.conn.execute(
+            "SELECT data FROM publication_records WHERE cycle_id = ? AND portal_id = ? "
+            "ORDER BY created_at DESC, rowid DESC LIMIT 1",
+            (cycle_id, portal_id),
+        ).fetchone()
+        return from_json(row["data"], PublicationRecord) if row else None
+
+    def list_published_portals(self, cycle_id: str) -> list[PublicationRecord]:
+        """Latest publication record per portal within the cycle, published only."""
+        rows = self.conn.execute(
+            "SELECT data FROM publication_records WHERE cycle_id = ? ORDER BY created_at, rowid",
+            (cycle_id,),
+        ).fetchall()
+        latest_by_portal: dict[str, PublicationRecord] = {}
+        for r in rows:
+            record = from_json(r["data"], PublicationRecord)
+            latest_by_portal[record.portal_id] = record
+        return list(latest_by_portal.values())
+
+    def list_all_published_cycles(self) -> list[str]:
+        rows = self.conn.execute(
+            "SELECT DISTINCT cycle_id FROM publication_records"
+        ).fetchall()
+        return [r["cycle_id"] for r in rows]
+
+    # --- Transactions -------------------------------------------------------
+
+    @contextmanager
+    def begin_immediate(self):
+        """Acquires a write lock immediately (BEGIN IMMEDIATE).
+        Restores previous isolation_level on exit."""
+        prev_isolation = self.conn.isolation_level
+        self.conn.isolation_level = None
+        try:
+            self.conn.execute("BEGIN IMMEDIATE")
+            yield
+            if getattr(self.conn, "in_transaction", False):
+                self.conn.execute("COMMIT")
+        except Exception:
+            if getattr(self.conn, "in_transaction", False):
+                try:
+                    self.conn.execute("ROLLBACK")
+                except sqlite3.OperationalError:
+                    pass
+            raise
+        finally:
+            self.conn.isolation_level = prev_isolation
+
+    # --- Assessment Jobs (spec 007) -----------------------------------------
+
+    def insert_assessment_job(self, job) -> None:
+        data_str = json.dumps(job.data) if isinstance(job.data, dict) else to_json(job.data)
+        if getattr(job, "created_at", None) and getattr(job, "updated_at", None):
+            self.conn.execute(
+                "INSERT INTO assessment_jobs (job_id, session_id, cycle_id, portal_id, state, "
+                "questions_total, failure_cause, triggered_by, data, created_at, updated_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    job.job_id,
+                    job.session_id,
+                    job.cycle_id,
+                    job.portal_id,
+                    job.state,
+                    job.questions_total,
+                    job.failure_cause,
+                    job.triggered_by,
+                    data_str,
+                    job.created_at,
+                    job.updated_at,
+                ),
+            )
+        else:
+            self.conn.execute(
+                "INSERT INTO assessment_jobs (job_id, session_id, cycle_id, portal_id, state, "
+                "questions_total, failure_cause, triggered_by, data) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    job.job_id,
+                    job.session_id,
+                    job.cycle_id,
+                    job.portal_id,
+                    job.state,
+                    job.questions_total,
+                    job.failure_cause,
+                    job.triggered_by,
+                    data_str,
+                ),
+            )
+        self.conn.commit()
+
+    def get_assessment_job(self, job_id: str):
+        row = self.conn.execute(
+            "SELECT * FROM assessment_jobs WHERE job_id = ?", (job_id,)
+        ).fetchone()
+        return _row_to_job(row) if row else None
+
+    def latest_assessment_job(self, cycle_id: str, portal_id: str):
+        row = self.conn.execute(
+            "SELECT * FROM assessment_jobs WHERE cycle_id = ? AND portal_id = ? "
+            "ORDER BY created_at DESC, rowid DESC LIMIT 1",
+            (cycle_id, portal_id),
+        ).fetchone()
+        return _row_to_job(row) if row else None
+
+    def running_assessment_job(self, portal_id: str):
+        row = self.conn.execute(
+            "SELECT * FROM assessment_jobs WHERE portal_id = ? AND state = 'running' LIMIT 1",
+            (portal_id,),
+        ).fetchone()
+        return _row_to_job(row) if row else None
+
+    def count_running_assessment_jobs(self) -> int:
+        row = self.conn.execute(
+            "SELECT COUNT(*) AS cnt FROM assessment_jobs WHERE state = 'running'"
+        ).fetchone()
+        return row["cnt"] if row else 0
+
+    def update_assessment_job_state(
+        self,
+        job_id: str,
+        state: str,
+        failure_cause: str | None = None,
+        data: dict | None = None,
+    ) -> None:
+        if data is not None:
+            data_str = json.dumps(data)
+            self.conn.execute(
+                "UPDATE assessment_jobs SET state = ?, failure_cause = ?, data = ?, updated_at = datetime('now') "
+                "WHERE job_id = ?",
+                (state, failure_cause, data_str, job_id),
+            )
+        else:
+            self.conn.execute(
+                "UPDATE assessment_jobs SET state = ?, failure_cause = ?, updated_at = datetime('now') "
+                "WHERE job_id = ?",
+                (state, failure_cause, job_id),
+            )
+        self.conn.commit()
+
+    def sweep_running_assessment_jobs(self) -> int:
+        cursor = self.conn.execute(
+            "UPDATE assessment_jobs SET state = 'failed', failure_cause = 'service_stopped_mid_run', "
+            "updated_at = datetime('now') WHERE state = 'running'"
+        )
+        self.conn.commit()
+        return cursor.rowcount
+
+    # --- Prefills & Assessor Completions (spec 008) -----------------------
+
+    def insert_prefill(self, prefill: Prefill) -> None:
+        data = {
+            "answer": prefill.answer,
+            "confidence": prefill.confidence,
+            "justification": prefill.justification,
+            "evidence_url": prefill.evidence_url,
+            "supplying_source": prefill.supplying_source,
+            "agreement_outcome": prefill.agreement_outcome,
+            "confidence_gap": prefill.confidence_gap,
+            "resolver_decision": prefill.resolver_decision if isinstance(prefill.resolver_decision, dict) or prefill.resolver_decision is None else dict(prefill.resolver_decision.__dict__),
+            "unselected_position": prefill.unselected_position,
+            "position_run_ids": prefill.position_run_ids,
+            "reason": prefill.reason.value if hasattr(prefill.reason, "value") else prefill.reason,
+            "terminal_state": prefill.terminal_state.value if hasattr(prefill.terminal_state, "value") else prefill.terminal_state,
+        }
+        self.conn.execute(
+            """
+            INSERT INTO prefills (prefill_id, run_id, session_id, cycle_id, question_id, portal_id, suggested, data, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                prefill.prefill_id,
+                prefill.run_id,
+                prefill.session_id,
+                prefill.cycle_id,
+                prefill.question_id,
+                prefill.portal_id,
+                1 if prefill.suggested else 0,
+                json.dumps(data),
+                prefill.created_at.isoformat() if hasattr(prefill.created_at, "isoformat") else str(prefill.created_at),
+            ),
+        )
+        self.conn.commit()
+
+    def latest_prefill(
+        self, session_id: str, question_id: str, portal_id: str
+    ) -> Prefill | None:
+        row_completed_job = self.conn.execute(
+            """
+            SELECT job_id FROM assessment_jobs
+            WHERE portal_id = ? AND state IN ('done', 'completed')
+            ORDER BY created_at DESC LIMIT 1
+            """,
+            (portal_id,),
+        ).fetchone()
+
+        if row_completed_job:
+            row = self.conn.execute(
+                """
+                SELECT * FROM prefills
+                WHERE run_id = ? AND question_id = ? AND portal_id = ?
+                ORDER BY created_at DESC LIMIT 1
+                """,
+                (row_completed_job["job_id"], question_id, portal_id),
+            ).fetchone()
+            if row:
+                return _row_to_prefill(row)
+
+        row = self.conn.execute(
+            """
+            SELECT * FROM prefills
+            WHERE session_id = ? AND portal_id = ? AND question_id = ?
+            ORDER BY created_at DESC LIMIT 1
+            """,
+            (session_id, portal_id, question_id),
+        ).fetchone()
+        if row:
+            return _row_to_prefill(row)
+        return None
+
+    def list_prefills_for_run(self, run_id: str) -> list[Prefill]:
+        rows = self.conn.execute(
+            "SELECT * FROM prefills WHERE run_id = ? ORDER BY created_at ASC",
+            (run_id,),
+        ).fetchall()
+        return [_row_to_prefill(r) for r in rows]
+
+    def insert_assessor_completion(self, completion: AssessorCompletion) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO assessor_completions (
+                completion_id, session_id, cycle_id, portal_id, role, actor_id,
+                indicator_count_at_declaration, declared_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                completion.completion_id,
+                completion.session_id,
+                completion.cycle_id,
+                completion.portal_id,
+                completion.role,
+                completion.actor_id,
+                completion.indicator_count_at_declaration,
+                completion.declared_at.isoformat() if hasattr(completion.declared_at, "isoformat") else str(completion.declared_at),
+            ),
+        )
+        self.conn.commit()
+
+    def latest_assessor_completion(
+        self, session_id: str, portal_id: str, role: str
+    ) -> AssessorCompletion | None:
+        row = self.conn.execute(
+            """
+            SELECT * FROM assessor_completions
+            WHERE session_id = ? AND portal_id = ? AND role = ?
+            ORDER BY declared_at DESC LIMIT 1
+            """,
+            (session_id, portal_id, role),
+        ).fetchone()
+        if not row:
+            return None
+        return AssessorCompletion(
+            completion_id=row["completion_id"],
+            session_id=row["session_id"],
+            cycle_id=row["cycle_id"],
+            portal_id=row["portal_id"],
+            role=row["role"],
+            actor_id=row["actor_id"],
+            indicator_count_at_declaration=row["indicator_count_at_declaration"],
+            declared_at=row["declared_at"],
+        )
+
+
+def _row_to_prefill(row: sqlite3.Row) -> Prefill:
+    data = json.loads(row["data"]) if isinstance(row["data"], str) else (row["data"] or {})
+    return Prefill(
+        prefill_id=row["prefill_id"],
+        run_id=row["run_id"],
+        session_id=row["session_id"],
+        cycle_id=row["cycle_id"],
+        question_id=row["question_id"],
+        portal_id=row["portal_id"],
+        suggested=bool(row["suggested"]),
+        answer=data.get("answer"),
+        confidence=data.get("confidence"),
+        justification=data.get("justification"),
+        evidence_url=data.get("evidence_url"),
+        supplying_source=data.get("supplying_source"),
+        agreement_outcome=data.get("agreement_outcome"),
+        confidence_gap=data.get("confidence_gap"),
+        resolver_decision=data.get("resolver_decision"),
+        unselected_position=data.get("unselected_position"),
+        position_run_ids=data.get("position_run_ids", []),
+        reason=data.get("reason"),
+        terminal_state=data.get("terminal_state", "delivered"),
+        created_at=row["created_at"],
+    )
+
+
+def _row_to_job(row: sqlite3.Row):
+    from api.jobs import AssessmentJob
+
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    return AssessmentJob(
+        job_id=row["job_id"],
+        session_id=row["session_id"],
+        cycle_id=row["cycle_id"],
+        portal_id=row["portal_id"],
+        state=row["state"],
+        questions_total=row["questions_total"],
+        failure_cause=row["failure_cause"],
+        triggered_by=row["triggered_by"],
+        data=parsed_data,
+        created_at=row["created_at"],
+        updated_at=row["updated_at"],
+    )
+

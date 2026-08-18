@@ -1,0 +1,444 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ cycle.name }} | EKAP{% endblock %}
+{% block head %}
+{% if any_run_in_progress %}
+<meta http-equiv="refresh" content="10">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/admin">Admin Projects</a>
+    <span>/</span>
+    <span>{{ cycle.name }}</span>
+</div>
+
+{% if error_message %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Publication Refused: {{ error_message }}</strong>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge--ai">
+                <span class="badge-dot"></span>
+                {{ cycle.project_type.value }}
+            </span>
+            <span class="badge badge--neutral">{{ questions|length }} Indicators</span>
+            <span class="badge badge--neutral">{{ units|length }} Target Units</span>
+            {% if any_run_in_progress %}
+            <span class="badge badge--flag" aria-live="polite">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                AI Run In Progress (Auto-refreshing)
+            </span>
+            {% endif %}
+        </div>
+        <h1>{{ cycle.name }}</h1>
+        <p class="lead">Project Administration: manage indicators, assign target portals, trigger automated assessment runs, ingest MSQ submissions, and publish verified evaluations.</p>
+    </div>
+    <div class="page-actions">
+        <a href="/admin/projects/{{ cycle.cycle_id }}/escalations" class="btn btn-primary" style="background-color: var(--color-brand-navy); border-color: var(--color-brand-navy);">
+            <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+            <span>Arbitration &amp; Discrepancy Queue</span>
+        </a>
+    </div>
+</div>
+
+<!-- Indicators Section -->
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="margin: 0;">Assessment Indicators ({{ questions|length }})</h3>
+                <span class="badge badge--neutral" style="font-size: 0.75rem;">
+                    {{ cycle.questionnaire_ref }}
+                </span>
+            </div>
+            <p class="muted">Structured indicators evaluated by AI and blind human assessors with official What, Why, and How scoring criteria.</p>
+        </div>
+    </div>
+
+    <div class="table-responsive" style="max-height: 440px; overflow-y: auto; margin-bottom: 1.25rem; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm);">
+        <table class="data-table" aria-label="Project Indicators Table">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 130px;">Code</th>
+                    <th scope="col" style="width: 180px;">Dimension / Module</th>
+                    <th scope="col">Evaluation Indicator &amp; Scoring Guidance</th>
+                    <th scope="col" style="width: 140px;">Evidence Locus</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for q in questions %}
+                <tr>
+                    <td style="vertical-align: top;">
+                        <code class="question-code">{{ q.indicator_id or q.question_id }}</code>
+                        {% if q.is_custom %}
+                        <div style="margin-top: 0.25rem;">
+                            <span class="badge badge--warning" style="font-size: 0.65rem; padding: 0.1rem 0.35rem;">Custom</span>
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td style="vertical-align: top;">
+                        <span class="badge badge--neutral" style="font-weight: 600;">
+                            {{ q.question_class or 'Core Indicator' }}
+                        </span>
+                    </td>
+                    <td style="color: var(--color-text-primary);">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem; font-size: 0.95rem;">
+                            {{ q.title or q.text }}
+                        </div>
+                        {% if q.what or q.why or q.how %}
+                        <details style="background-color: var(--color-bg-surface-subtle); padding: 0.5rem 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-subtle); margin-top: 0.35rem; font-size: 0.85rem;">
+                            <summary style="cursor: pointer; color: var(--color-brand-primary); font-weight: 500;">
+                                View What, Why &amp; How Scoring Guide
+                            </summary>
+                            <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                                {% if q.what %}
+                                <div>
+                                    <strong style="color: var(--color-text-primary);">WHAT:</strong>
+                                    <span style="color: var(--color-text-secondary);">{{ q.what }}</span>
+                                </div>
+                                {% endif %}
+                                {% if q.why %}
+                                <div>
+                                    <strong style="color: var(--color-text-primary);">WHY:</strong>
+                                    <span style="color: var(--color-text-secondary);">{{ q.why }}</span>
+                                </div>
+                                {% endif %}
+                                {% if q.how %}
+                                <div>
+                                    <strong style="color: var(--color-text-primary);">HOW:</strong>
+                                    <span style="color: var(--color-text-secondary);">
+                                        {% if q.how is mapping %}
+                                            {{ q.how.scoring_guidance or q.how.criteria_for_yes or q.how }}
+                                        {% else %}
+                                            {{ q.how }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                {% if q.benchmark_case %}
+                                <div>
+                                    <strong style="color: var(--color-text-primary);">BENCHMARK:</strong>
+                                    <span style="color: var(--color-text-secondary);">{{ q.benchmark_case }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </details>
+                        {% else %}
+                        <div style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                            {{ q.text }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td style="vertical-align: top;">
+                        <span class="badge badge--neutral" style="font-size: 0.7rem;">
+                            {{ q.evidence_locus.value if q.evidence_locus else 'national_portal_only' }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem;" class="muted">
+                        No indicators added to this project yet. Use the form below to add indicators.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Indicator Form -->
+    <details style="background-color: var(--color-bg-surface-subtle); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+        <summary style="font-weight: 600; cursor: pointer; color: var(--color-brand-primary); display: flex; align-items: center; gap: 0.4rem; font-size: 1rem;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+            <span>Add New Indicator (What, Why, How)</span>
+        </summary>
+        
+        <div style="background-color: var(--color-info-bg); border: 1px solid var(--color-info-border); border-radius: var(--radius-xs); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--color-info-text);">
+            <strong>Questionnaire Set Customization:</strong> Adding a custom indicator will automatically branch this project's questionnaire into a distinct <strong>Custom Questionnaire Set</strong>, preserving the master template for other survey cycles.
+        </div>
+
+        <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions" style="margin-top: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="question_id">Indicator Identifier *</label>
+                    <input type="text" id="question_id" name="question_id" placeholder="e.g. CUST-015 or SEC-002" required>
+                </div>
+                <div class="form-group">
+                    <label for="title">Indicator Title *</label>
+                    <input type="text" id="title" name="title" placeholder="e.g. Digital Signature Verification on Citizen Portal" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="module">Dimension / Module *</label>
+                    <select id="module" name="module" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                        <option value="Institutional Framework">Institutional Framework</option>
+                        <option value="Content Provision">Content Provision</option>
+                        <option value="Service Provision">Service Provision</option>
+                        <option value="E-Participation">E-Participation</option>
+                        <option value="Technology">Technology</option>
+                        <option value="E-Government Literacy">E-Government Literacy</option>
+                        <option value="Custom Dimension">Custom Dimension</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="evidence_locus">Evidence Locus *</label>
+                    <select id="evidence_locus" name="evidence_locus" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                        <option value="national_portal_only">National Portal Only (Strict Locus)</option>
+                        <option value="any_government_domain">Any Official Government Domain</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="what">WHAT — Feature &amp; Scope Specification *</label>
+                <textarea id="what" name="what" rows="2" placeholder="Describe the exact content, service, document, or feature that constitutes evidence (e.g. An online tool allowing citizens to verify digital signatures on official certificates)." required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="why">WHY — Governance &amp; Maturity Objective *</label>
+                <textarea id="why" name="why" rows="2" placeholder="Explain why this feature is evaluated (e.g. Promotes document authenticity, fraud prevention, and trust in digital public transactions)." required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="how">HOW — Step-by-Step Scoring Guidance &amp; Pass Criteria *</label>
+                <textarea id="how" name="how" rows="3" placeholder="Provide indicative verification steps, search terms, and pass/fail rules (e.g. 1. Search for 'verify certificate' or 'digital signature'. 2. Criteria for Yes: An interactive verification page where a document ID or QR can be validated. Criteria for No: Only general text explaining that documents are signed without an online verification tool)." required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="benchmark_case">Benchmark Case / Reference Example (Optional)</label>
+                <input type="text" id="benchmark_case" name="benchmark_case" placeholder="e.g. Check out Estonia's DigiDoc validator or Denmark's NemID / MitID verification">
+            </div>
+
+            <div>
+                <button type="submit" class="btn btn-primary" style="background-color: var(--color-brand-primary);">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+                    <span>Save Indicator &amp; Branch Questionnaire Set</span>
+                </button>
+            </div>
+        </form>
+    </details>
+</div>
+
+<!-- Units Management Section -->
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+    <span>Monitored Units (Countries / Cities)</span>
+</div>
+
+{% for row in units %}
+<div class="card" style="border-left: 4px solid var(--color-brand-primary);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+                <h3 style="margin-bottom: 0; font-size: 1.25rem;">{{ row.portal.display_name or row.portal.country_id }}</h3>
+                <span class="badge badge--neutral">{{ row.portal.unit_type|upper }}</span>
+                {% if row.publication %}
+                <span class="badge badge--published">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                    Published &mdash; {{ "%.0f"|format(row.publication.score * 100) }}% Score
+                </span>
+                {% else %}
+                <span class="badge badge--neutral">Unpublished</span>
+                {% endif %}
+            </div>
+            <p class="muted">
+                Official Portal:
+                <a href="{{ row.portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 500; word-break: break-all;">
+                    {{ row.portal.resolved_url }}
+                    <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
+                </a>
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="/assessor/{{ cycle.cycle_id }}/{{ row.portal.portal_id }}?role=A" class="btn btn-sm" style="background-color: var(--color-role-a-bg); color: var(--color-role-a-text); border-color: var(--color-role-a-border);">
+                <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                <span>Assessor A</span>
+            </a>
+            <a href="/assessor/{{ cycle.cycle_id }}/{{ row.portal.portal_id }}?role=B" class="btn btn-sm" style="background-color: var(--color-role-b-bg); color: var(--color-role-b-text); border-color: var(--color-role-b-border);">
+                <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                <span>Assessor B</span>
+            </a>
+            {% if row.publication %}
+            <a href="/public/{{ cycle.cycle_id }}/{{ row.portal.portal_id }}" class="btn btn-sm btn-primary">
+                <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+                <span>Public Scorecard</span>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Status Grid -->
+    <div class="grid-3" style="margin-bottom: 1.25rem;">
+        <!-- AI Pre-fill Status -->
+        <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">AI Assessment Run</div>
+            {% if row.run_in_progress %}
+            <span class="badge badge--flag" style="margin-top: 0.25rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                Running &mdash; {{ row.assessed_count }}/{{ row.total_questions }} processed
+            </span>
+            {% elif row.started_count == 0 %}
+            <div style="font-size: 0.875rem; color: var(--color-text-muted);">Not started yet</div>
+            {% else %}
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--color-text-primary);">
+                {{ row.assessed_count }} / {{ row.total_questions }} indicators processed
+            </div>
+            {% if row.prefill_summary %}
+            <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <span class="badge badge--yes" style="font-size: 0.7rem;">{{ row.prefill_summary.suggested_count }} Suggested</span>
+                {% if row.prefill_summary.no_suggestion_count > 0 %}
+                <span class="badge badge--neutral" style="font-size: 0.7rem;">{{ row.prefill_summary.no_suggestion_count }} No Suggestion</span>
+                {% endif %}
+                {% for r_name, r_count in row.prefill_summary.by_reason.items() %}
+                <span class="badge badge--flag" style="font-size: 0.7rem;">{{ r_count }} {{ r_name|replace('_', ' ')|title }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Assessor A/B Completion Status -->
+        <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">Assessor Declarations</div>
+            <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                <div>
+                    Role A:
+                    {% if row.readiness and row.readiness.roles.A.complete %}
+                    <span class="badge badge--yes" style="font-size: 0.75rem;">Complete</span>
+                    {% elif row.readiness and row.readiness.roles.A.declared %}
+                    <span class="badge badge--pending" style="font-size: 0.75rem;">Declared ({{ row.readiness.roles.A.answered_count }}/{{ row.readiness.roles.A.total_indicators }})</span>
+                    {% else %}
+                    <span class="badge badge--neutral" style="font-size: 0.75rem;">Undeclared ({{ row.readiness.roles.A.answered_count if row.readiness else 0 }}/{{ row.total_questions }})</span>
+                    {% endif %}
+                </div>
+                <div>
+                    Role B:
+                    {% if row.readiness and row.readiness.roles.B.complete %}
+                    <span class="badge badge--yes" style="font-size: 0.75rem;">Complete</span>
+                    {% elif row.readiness and row.readiness.roles.B.declared %}
+                    <span class="badge badge--pending" style="font-size: 0.75rem;">Declared ({{ row.readiness.roles.B.answered_count }}/{{ row.readiness.roles.B.total_indicators }})</span>
+                    {% else %}
+                    <span class="badge badge--neutral" style="font-size: 0.75rem;">Undeclared ({{ row.readiness.roles.B.answered_count if row.readiness else 0 }}/{{ row.total_questions }})</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Discrepancy Status -->
+        <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">Assessor A/B Discrepancy</div>
+            {% if row.discrepancy %}
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+                <strong style="font-size: 1.1rem; color: var(--color-text-primary);">{{ "%.0f"|format(row.discrepancy.differing_answer_rate * 100) }}%</strong>
+                {% if row.discrepancy.outcome == "flagged_for_arbitration" %}
+                <span class="badge badge--flag">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+                    Flagged for Arbitration
+                </span>
+                {% else %}
+                <span class="badge badge--yes">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                    Within &le;5% Threshold
+                </span>
+                {% endif %}
+            </div>
+            {% else %}
+            <div style="font-size: 0.875rem; color: var(--color-text-muted);">Awaiting both submissions</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions Toolbar -->
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding-top: 0.75rem; border-top: 1px solid var(--color-border-subtle);">
+        <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/assess">
+            <button type="submit" class="btn btn-sm" {% if row.run_in_progress %}disabled{% endif %}>
+                <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"/></svg>
+                <span>{% if row.run_in_progress %}AI Run Executing…{% else %}Trigger AI Assessment{% endif %}</span>
+            </button>
+        </form>
+
+        <form class="inline" method="post" enctype="multipart/form-data" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/msq" style="background-color: var(--color-bg-surface-subtle); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <label for="msq_{{ row.portal.portal_id }}" style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); margin-right: 0.25rem;">MSQ PDF:</label>
+            <input type="file" id="msq_{{ row.portal.portal_id }}" name="msq_file" accept="application/pdf" required style="display: inline-block; font-size: 0.8rem;">
+            <button type="submit" class="btn btn-sm">
+                <svg class="icon" aria-hidden="true"><use href="#icon-upload"/></svg>
+                <span>Upload</span>
+            </button>
+        </form>
+
+        {% if row.readiness and not row.readiness.ready and row.readiness.blocking_reason %}
+        <span style="font-size: 0.8rem; color: #b45309; max-width: 350px;">{{ row.readiness.blocking_reason }}</span>
+        {% endif %}
+
+        <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/publish" style="margin-left: auto;">
+            <button class="success btn-sm" type="submit" {% if row.readiness and not row.readiness.ready %}disabled title="{{ row.readiness.blocking_reason }}"{% endif %}>
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                <span>Senior Reviewer: Publish Score</span>
+            </button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 2.5rem 1.5rem;">
+    <p class="muted">No target units configured for this survey cycle yet. Add one below.</p>
+</div>
+{% endfor %}
+
+<!-- Add Unit Card -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <div>
+            <h3>Register Target Unit (Country / City)</h3>
+            <p class="muted">Assign a new country or municipal portal URL to this survey cycle.</p>
+        </div>
+        <div class="stat-icon" style="width: 36px; height: 36px;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+        </div>
+    </div>
+    <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units" style="max-width: 680px;">
+        <div class="grid-2" style="margin-bottom: 0;">
+            <div class="form-group">
+                <label for="country_id">Country / City Code (ISO / ID)</label>
+                <input type="text" id="country_id" name="country_id" placeholder="e.g. DK, US, or LON" required>
+            </div>
+            <div class="form-group">
+                <label for="display_name">Unit Display Name</label>
+                <input type="text" id="display_name" name="display_name" placeholder="e.g. Denmark or London" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="url">Official Portal URL</label>
+            <input type="url" id="url" name="url" placeholder="https://www.borger.dk" required>
+        </div>
+
+        <div class="form-group">
+            <label for="unit_type">Unit Classification</label>
+            <select id="unit_type" name="unit_type" required>
+                <option value="country">National Member State Portal (Country)</option>
+                <option value="city">Local Municipality Portal (City)</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 0.5rem;">
+            <button class="primary" type="submit">
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+                <span>Add Unit to Project</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

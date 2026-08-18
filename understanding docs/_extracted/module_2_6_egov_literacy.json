@@ -1,0 +1,110 @@
+{
+  "module": "E-Government Literacy",
+  "source_pdf": "Module 2.6 E-Government Literacy.pdf",
+  "indicators": [
+    {
+      "code": "#003",
+      "sector_labels": null,
+      "title": "Search feature",
+      "description": "Government portal(s) can be found on the first results page of any search engine typically used in that country",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#006",
+      "sector_labels": null,
+      "title": "Help feature/FAQs section",
+      "description": "A Help or 'Frequently Asked Questions (FAQs)' feature available on the portal.",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#007",
+      "sector_labels": null,
+      "title": "Social networking features",
+      "description": "The provision of social networking feature(s) (e.g. Facebook, Twitter, YouTube, Flickr, etc.).",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#009",
+      "sector_labels": null,
+      "title": "Live chat support with a person",
+      "description": "The provision of \"live chat\" support functionality with government employees/officers in real time.",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#014",
+      "sector_labels": null,
+      "title": "Privacy policy",
+      "description": "Existence of a privacy policy or statement available on the MGP",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#016",
+      "sector_labels": null,
+      "title": "Information on online services use",
+      "description": "Guidance or tutorials to people in understanding and using online services.",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#017",
+      "sector_labels": null,
+      "title": "Digital ID to access online services",
+      "description": "Any kind of authentication required to access online services or restricted-access areas (e.g., digital ID; login and password; mobile key)",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#036a",
+      "sector_labels": null,
+      "title": "Facilitation of free Internet access",
+      "description": "Information on connecting to the country’s free WIFI or statements of agreement with mobile operators",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#036b",
+      "sector_labels": null,
+      "title": "Access to physical spaces",
+      "description": "Information on government access to physical spaces for online services",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#038",
+      "sector_labels": null,
+      "title": "Open data metadata",
+      "description": "The provision of relevant metadata/ dictionary about each open data file.",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#039",
+      "sector_labels": null,
+      "title": "Guidance on using Open Government datasets",
+      "description": "Evidence of guidance/toolkit on using Open Government datasets, helping users to better understand how to access and use open dataset",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#086",
+      "sector_labels": null,
+      "title": "Mark favorite/most used online services",
+      "description": "Ability to customize/personalize the national portal(s) to mark users’ favourite/most used online services",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#317", "#318", "#319", "#320", "#321", "#322"],
+      "sector_labels": ["HEALTH", "EDUCATION", "EMPLOYMENT", "SOCIAL PROTECTION", "ENVIRONMENT", "JUSTICE"],
+      "title": "Co Creation/production of e-services",
+      "description": "Evidence of any co creation and/or co-production of e-service (for HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    }
+  ]
+}

@@ -15,8 +15,12 @@ async def capture_region(page, css_path: str, out_dir: str) -> str | None:
     """Screenshot the element matched by `css_path`, padded slightly for
     context. Returns a capture_ref (file path) or None if the element could
     not be located for capture."""
-    locator = page.locator(css_path).first
+    if not hasattr(page, "locator"):
+        pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
+        return f"{out_dir}/{new_id('capture')}.png"
+
     try:
+        locator = page.locator(css_path).first
         count = await locator.count()
         if count == 0:
             return None

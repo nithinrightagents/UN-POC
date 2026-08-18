@@ -39,16 +39,29 @@ def list_escalation_queue(repo: Repository, session_id: str) -> list[EscalationV
 
 
 def dispose_escalation(
-    repo: Repository, item_id: str, resolution: str, resolved_by_actor_id: str, notes: str = ""
+    repo: Repository,
+    item_id: str,
+    resolution: str,
+    resolved_by_actor_id: str,
+    notes: str = "",
+    resolved_answers: dict[str, bool] | None = None,
 ) -> bool:
     """Returns True if this call recorded the disposition, False if another
     concurrent caller already resolved it first (FR-049) -- the caller
     should tell the user "already resolved" in that case, never silently
-    overwrite."""
+    overwrite.
+
+    resolved_answers (spec 005 Section 3.4/3.6): optional per-question_id
+    answers the arbitrator settled on for a portal_human discrepancy --
+    admin.py's publish route reads these back (via
+    portal/discrepancy.find_resolved_answer) so a disagreement that went
+    through joint review actually publishes the arbitrated answer instead of
+    an arbitrary Assessor-A-wins default."""
     disposition = {
         "resolution": resolution,
         "resolved_by_actor_id": resolved_by_actor_id,
         "notes": notes,
+        "resolved_answers": resolved_answers or {},
     }
     return repo.record_disposition(item_id, disposition)
 

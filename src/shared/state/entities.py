@@ -52,7 +52,7 @@ class LinkSource(str, Enum):
 
 
 class UnitState(str, Enum):
-    """The unit state machine. Exactly three terminal states — see FR-065, SC-009."""
+    """The unit state machine. Exactly four terminal states — see data-model.md §3."""
 
     PENDING = "pending"
     RESOLVING_LINK = "resolving_link"
@@ -61,13 +61,34 @@ class UnitState(str, Enum):
     ADJUDICATING = "adjudicating"
     RETRYING = "retrying"
     DELIVERED = "delivered"  # terminal
-    ESCALATED = "escalated"  # terminal
+    ESCALATED = "escalated"  # terminal — retained for historical rows and review/seed_demo.py, no longer reachable from the pipeline
     UNASSESSABLE = "unassessable"  # terminal
+    NO_SUGGESTION = "no_suggestion"  # terminal
 
 
 TERMINAL_UNIT_STATES = frozenset(
-    {UnitState.DELIVERED, UnitState.ESCALATED, UnitState.UNASSESSABLE}
+    {
+        UnitState.DELIVERED,
+        UnitState.ESCALATED,
+        UnitState.UNASSESSABLE,
+        UnitState.NO_SUGGESTION,
+    }
 )
+
+
+class PrefillReason(str, Enum):
+    """Reason taxonomy for when the prefill pipeline produces no suggestion (spec 008)."""
+
+    NO_USABLE_EVIDENCE = "no_usable_evidence"
+    EVIDENCE_UNREACHABLE = "evidence_unreachable"
+    UNSUPPORTED_LANGUAGE = "unsupported_language"
+    ACCESS_BOUNDARY = "access_boundary"
+    INSUFFICIENT_POSITIONS = "insufficient_positions"
+    UNRESOLVED_DISAGREEMENT = "unresolved_disagreement"
+    FAILED_FINAL_VALIDATION = "failed_final_validation"
+    ASSESSMENT_FAILURE = "assessment_failure"
+    BUDGET_REACHED = "budget_reached"
+
 
 
 class AgentRunState(str, Enum):
@@ -124,6 +145,23 @@ class AnswerProvenance(str, Enum):
     HUMAN_OVERRIDDEN = "human_overridden"
 
 
+class AssessorRole(str, Enum):
+    """The two blind human assessors recruited per country (spec 005,
+    UN_Project_Scope_Meeting_Transcript_Compacted.md Section 2). Distinct from
+    AssessorAgentRun.agent_index, which indexes independent AI agents."""
+
+    A = "A"
+    B = "B"
+
+
+class ProjectType(str, Enum):
+    """National OSI survey vs. a city-level LOSI project (transcript Section
+    4) -- same schema, different unit granularity and public presentation."""
+
+    NATIONAL_OSI = "national_osi"
+    LOSI_CITY = "losi_city"
+
+
 # --- Entities --------------------------------------------------------------
 
 
@@ -134,6 +172,7 @@ class SurveyCycle:
     questionnaire_ref: str
     country_set: list[str]
     status: str = "active"
+    project_type: ProjectType = ProjectType.NATIONAL_OSI
 
 
 @dataclass
@@ -159,6 +198,12 @@ class Question:
     requires_authenticated_access: bool = False
     question_class: str | None = None
     indicator_id: str | None = None
+    title: str | None = None
+    what: str | None = None
+    why: str | None = None
+    how: dict | str | None = None
+    benchmark_case: str | None = None
+    reference_links: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -180,6 +225,8 @@ class TargetPortal:
     resolution_history: list[ResolutionAttempt] = field(default_factory=list)
     detected_language: str | None = None
     language_in_supported_set: bool | None = None
+    unit_type: str = "country"  # "country" | "city" -- LOSI projects assess cities
+    display_name: str | None = None
 
 
 @dataclass
@@ -378,3 +425,119 @@ class AnswerExport:
     produced_by_actor_id: str
     record_ids: list[str]
     exclusion_report: list[dict]
+
+
+# --- Assessment & Workflow Engine entities --------------------------------
+# Human blind assessors A/B, MSQ ingestion, and one-click publication -- see
+# specs/005-un-ekap-platform/spec.md.
+
+
+@dataclass
+class HumanAssessorSubmission:
+    """One append-only answer from one human assessor (A or B) for one
+    question on one unit. A's rows are never queried while rendering B's
+    screen and vice versa (src/portal/assessor.py) -- blindness is a query
+    shape, not a UI toggle. `ai_suggested_answer` records what the pipeline
+    pre-fill proposed, purely so the review surface can show whether the
+    assessor agreed with or corrected the AI, never fed back into scoring."""
+
+    submission_id: str
+    session_id: str
+    cycle_id: str
+    question_id: str
+    portal_id: str
+    role: AssessorRole
+    assessor_actor_id: str
+    answer: object
+    evidence_url: str | None = None
+    notes: str | None = None
+    ai_suggested_answer: object | None = None
+    ai_suggestion_accepted: bool | None = None
+    submitted_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class Prefill:
+    """One append-only prefill record for one question on one unit (spec 008)."""
+
+    prefill_id: str
+    run_id: str
+    session_id: str
+    cycle_id: str
+    question_id: str
+    portal_id: str
+    suggested: bool
+    answer: bool | None = None
+    confidence: int | None = None
+    justification: str | None = None
+    evidence_url: str | None = None
+    supplying_source: LinkSource | str | None = None
+    agreement_outcome: str | None = None
+    confidence_gap: int | None = None
+    resolver_decision: dict | None = None
+    unselected_position: dict | None = None
+    position_run_ids: list[str] = field(default_factory=list)
+    reason: PrefillReason | str | None = None
+    terminal_state: UnitState | str = UnitState.DELIVERED
+    created_at: datetime | str = field(default_factory=utcnow)
+
+    def __post_init__(self) -> None:
+        if self.suggested:
+            if self.answer is None or self.reason is not None:
+                raise ValueError(
+                    "When suggested=True, answer must be non-null and reason must be None"
+                )
+        else:
+            if self.answer is not None or self.reason is None:
+                raise ValueError(
+                    "When suggested=False, answer must be None and reason must be non-null"
+                )
+
+
+@dataclass
+class AssessorCompletion:
+    """Explicit declaration of assessment completion by a human assessor role (spec 008)."""
+
+    completion_id: str
+    session_id: str
+    cycle_id: str
+    portal_id: str
+    role: str
+    actor_id: str
+    indicator_count_at_declaration: int
+    declared_at: datetime | str = field(default_factory=utcnow)
+
+
+@dataclass
+class MSQDocument:
+    """A parsed Member State Questionnaire, attached to a country as context
+    for assessors (transcript Section 3: MSQ never influences scoring, only
+    guides where to look). `sections` is {section_title: [{"question": ...,
+    "answer": ...}, ...]}, produced by src/portal/msq.py structural parsing --
+    not a semantic match to indicators."""
+
+    msq_id: str
+    country_id: str
+    cycle_id: str
+    source_filename: str
+    raw_text: str
+    sections: dict
+    extracted_urls: list[str] = field(default_factory=list)
+    uploaded_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class PublicationRecord:
+    """Append-only "this cycle+unit was published with this score at this
+    time" marker written by the Senior Reviewer's one-click publish action
+    (src/portal/admin.py). The public knowledge base
+    (src/portal/public.py) reads only the latest row per (cycle_id,
+    portal_id) -- never a manual export/import step."""
+
+    publication_id: str
+    cycle_id: str
+    portal_id: str
+    published_by_actor_id: str
+    score: float
+    score_breakdown: dict
+    published_at: datetime = field(default_factory=utcnow)

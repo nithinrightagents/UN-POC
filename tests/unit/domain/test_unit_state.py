@@ -1,7 +1,7 @@
 """Terminal-state exhaustiveness for the unit state machine — SC-009.
 
 Asserts no path leaves the machine without a delivered answer or a recorded
-escalation/unassessable reason.
+reason (unassessable / no_suggestion).
 """
 
 import pytest
@@ -9,6 +9,7 @@ import pytest
 from shared.state.entities import TERMINAL_UNIT_STATES, UnitState
 from shared.state.unit_state import (
     IllegalTransitionError,
+    _ALLOWED,
     assert_exhaustive_terminal_coverage,
     can_transition,
     is_terminal,
@@ -18,11 +19,12 @@ from shared.state.unit_state import (
 pytestmark = pytest.mark.unit
 
 
-def test_exactly_three_terminal_states():
+def test_exactly_four_terminal_states():
     assert TERMINAL_UNIT_STATES == {
         UnitState.DELIVERED,
         UnitState.ESCALATED,
         UnitState.UNASSESSABLE,
+        UnitState.NO_SUGGESTION,
     }
 
 
@@ -32,8 +34,13 @@ def test_terminal_states_have_no_outgoing_transitions():
             assert not can_transition(state, other)
 
 
-def test_every_non_terminal_state_can_reach_a_terminal_state():
+def test_every_prefill_terminal_is_reachable():
     assert_exhaustive_terminal_coverage()
+
+
+def test_escalated_has_zero_inbound_edges():
+    for src, targets in _ALLOWED.items():
+        assert UnitState.ESCALATED not in targets, f"{src} has inbound transition to ESCALATED"
 
 
 def test_illegal_transition_raises():
@@ -49,6 +56,10 @@ def test_delivered_is_terminal():
     assert is_terminal(UnitState.DELIVERED)
 
 
+def test_no_suggestion_is_terminal():
+    assert is_terminal(UnitState.NO_SUGGESTION)
+
+
 def test_pending_is_not_terminal():
     assert not is_terminal(UnitState.PENDING)
 
@@ -61,7 +72,7 @@ def test_pending_is_not_terminal():
             UnitState.PENDING,
             UnitState.RESOLVING_LINK,
             UnitState.RESOLVED,
-            UnitState.ESCALATED,
+            UnitState.NO_SUGGESTION,
         ],
         [
             UnitState.PENDING,
@@ -77,18 +88,14 @@ def test_pending_is_not_terminal():
             UnitState.RESOLVED,
             UnitState.ASSESSING,
             UnitState.ADJUDICATING,
-            UnitState.RETRYING,
-            UnitState.ADJUDICATING,
-            UnitState.DELIVERED,
+            UnitState.NO_SUGGESTION,
         ],
         [
             UnitState.PENDING,
             UnitState.RESOLVING_LINK,
             UnitState.RESOLVED,
             UnitState.ASSESSING,
-            UnitState.ADJUDICATING,
-            UnitState.RETRYING,
-            UnitState.ESCALATED,
+            UnitState.NO_SUGGESTION,
         ],
     ],
 )

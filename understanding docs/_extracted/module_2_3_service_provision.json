@@ -1,0 +1,246 @@
+{
+  "module": "Service Provision",
+  "source_pdf": "Module 2.3 Service Provision.pdf",
+  "indicators": [
+    {
+      "code": "#029",
+      "sector_labels": null,
+      "title": "E-procurement platform",
+      "description": "Existence of an e-procurement platform for bidding processes/submission of tenders on the national level portal or other government/ministry websites.",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#043",
+      "sector_labels": null,
+      "title": "Income taxes",
+      "description": "Service provision for Personal income taxes at any of the government portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#044",
+      "sector_labels": null,
+      "title": "Value Added Tax, Goods & Services Tax",
+      "description": "Online provision for businesses for Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent any of the government portal(s",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#045",
+      "sector_labels": null,
+      "title": "Entry or Transit Visa",
+      "description": "Online application for a visa to enter or transit through the country",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#046",
+      "sector_labels": null,
+      "title": "Registration or renewal for a vehicle",
+      "description": "Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#047",
+      "sector_labels": null,
+      "title": "Online Police declaration",
+      "description": "Online declaration to the police (e.g. theft, police report filing) at any of the government portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#048",
+      "sector_labels": null,
+      "title": "Address change notification",
+      "description": "Notify of moving/changing an address online at any of the government portal(s",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#049",
+      "sector_labels": null,
+      "title": "Registration for a new company or business entity",
+      "description": "Registration for a new company or business entity, with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#050", "#051", "#052"],
+      "sector_labels": null,
+      "title": "Birth /Death / Marriage certificate",
+      "description": "Apply or request for Birth /Death / Marriage certificate with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#053",
+      "sector_labels": null,
+      "title": "Personal Identity Cards",
+      "description": "Apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#054",
+      "sector_labels": null,
+      "title": "Driver's license",
+      "description": "Apply or request for a Driver's license with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#055",
+      "sector_labels": null,
+      "title": "Land title registration",
+      "description": "Apply or request for a Land title registration with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#056",
+      "sector_labels": null,
+      "title": "Environment-related permits",
+      "description": "Apply or request for an Environment-related permit with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#057",
+      "sector_labels": null,
+      "title": "Building permits",
+      "description": "Apply or request for a Building permit with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#058",
+      "sector_labels": null,
+      "title": "Government vacancy positions",
+      "description": "Apply or request for a Government vacancy position with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#059",
+      "sector_labels": null,
+      "title": "Business licenses",
+      "description": "Apply or request for a Business license with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#062", "#063"],
+      "sector_labels": null,
+      "title": "Water utility |Energy(electricity/gas) utility",
+      "description": "Online payment for utilities (Water/Electricity) offered either by the public or non-public sectors.",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#079",
+      "sector_labels": null,
+      "title": "Digital invoices",
+      "description": "National Portal provision of digital invoices or \"e-invoicing\" at any of the government portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#080", "#081"],
+      "sector_labels": null,
+      "title": "GIS data and/or online services",
+      "description": "Provision of GIS or other geospatial-related data and/or online services at any of the government portal(s).",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#082",
+      "sector_labels": null,
+      "title": "Business tax filing",
+      "description": "Apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(s).",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#131b",
+      "sector_labels": null,
+      "title": "Transitioning people to retirement",
+      "description": "Apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the government portal(s)",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#095", "#108", "#124", "#137", "#166", "#177"],
+      "sector_labels": ["Health", "Education", "Employment", "Social Protection", "Environment", "Justice"],
+      "title": "Online services provision for six main sectors",
+      "description": "A section on the national website where online services are listed (for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE)",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#095a", "#108a", "#124a", "#137a", "#166a", "#177a"],
+      "sector_labels": ["Health", "Education", "Employment", "Social Protection", "Environment", "Justice"],
+      "title": "Mobile service provision for six main sectors",
+      "description": "Mobile phone i.e. browser or an app services for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#095b", "#108b", "#124b", "#137b", "#166b", "#177b"],
+      "sector_labels": ["Health", "Education", "Employment", "Social Protection", "Environment", "Justice"],
+      "title": "SMS alert service provision for six main sectors",
+      "description": "SMS alerts service provision for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#117", "#118"],
+      "sector_labels": null,
+      "title": "Scholarships or other forms of government funding and government scholarships and fellowships",
+      "description": "Information on available scholarships or other forms of government funding for EDUCATION and government scholarships and fellowships online with i) information, or ii) full online application at any of the government portal(s)",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#143", "#144", "#145", "#146", "#147", "#148"],
+      "sector_labels": null,
+      "title": "Services/ Information available for vulnerable groups",
+      "description": "Service or information for vulnerable groups with i) information, or ii) full online application at any of the government portal(s) Vulnerable groups: poor (below poverty line) /persons with disabilities /older persons / immigrants, migrant workers, refugees, and internally displaced persons / women /youth",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#149",
+      "sector_labels": null,
+      "title": "Application for citizenship or residency",
+      "description": "Information on eligibility and/or procedure on applying for citizenship or residency any of the government portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#182",
+      "sector_labels": null,
+      "title": "Affidavit of criminal record/background clearance",
+      "description": "Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the government portal(s)",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#183",
+      "sector_labels": null,
+      "title": "Access to justice information",
+      "description": "Access to justice with i) retrieve information, ii) file (open) online; iii) manage of court cases",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#184", "#185", "#189", "#190", "#191"],
+      "sector_labels": null,
+      "title": "Benefits Application",
+      "description": "Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment benefits with i) information, or ii) full online application at any of the government portal(s)",
+      "answer_type": "enum",
+      "evidence_locus": "any_government_domain"
+    }
+  ]
+}

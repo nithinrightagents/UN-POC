@@ -1,0 +1,174 @@
+{
+  "module": "E-Participation",
+  "source_pdf": "Module 2.4 E-Participation.pdf",
+  "indicators": [
+    {
+      "code": "#021",
+      "sector_labels": null,
+      "title": "Corruption Reporting",
+      "description": "Report corruption by public servants or institutions",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#033",
+      "sector_labels": null,
+      "title": "Calendar on e-participation activities",
+      "description": "Calendar or announcements about any upcoming public engagement or e-participation activities",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#034",
+      "sector_labels": null,
+      "title": "Online tools for policy",
+      "description": "Online tools to obtain raw (non-deliberative) inputs for policy deliberation",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#037",
+      "sector_labels": null,
+      "title": "Open government data portal",
+      "description": "Open government data portal",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#040",
+      "sector_labels": null,
+      "title": "New open datasets requests",
+      "description": "Possibility to propose/request new open datasets be made available online",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#042",
+      "sector_labels": null,
+      "title": "Open Government Data events",
+      "description": "Information about the organization of competitions/ hackathons/ events around the use of open government data",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#078",
+      "sector_labels": null,
+      "title": "Open Datasets on government expenditures",
+      "description": "Open Government dataset(s) on national government expenditures (budget",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#092", "#105", "#121", "#134", "#163", "#174"],
+      "sector_labels": ["HEALTH", "EDUCATION", "EMPLOYMENT", "SOCIAL PROTECTION", "ENVIRONMENT", "JUSTICE"],
+      "title": "Government expenditures for 6 sectors",
+      "description": "Information on government expenditures (budget) on HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": ["#096", "#109", "#125", "#138", "#167", "#178"],
+      "sector_labels": ["HEALTH", "EDUCATION", "EMPLOYMENT", "SOCIAL PROTECTION", "ENVIRONMENT", "JUSTICE"],
+      "title": "Online consultations for 6 sectors",
+      "description": "Information about upcoming consultations intended to involve people in the past 12 months (HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE)",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#098", "#111", "#127", "#140", "#169", "#180"],
+      "sector_labels": ["HEALTH", "EDUCATION", "EMPLOYMENT", "SOCIAL PROTECTION", "ENVIRONMENT", "JUSTICE"],
+      "title": "Inclusion of voices in decision making in 6 sectors",
+      "description": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE)",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#099", "#112", "#128", "#141", "#170", "#181"],
+      "sector_labels": ["HEALTH", "EDUCATION", "EMPLOYMENT", "SOCIAL PROTECTION", "ENVIRONMENT", "JUSTICE"],
+      "title": "Open government datasets for 6 sectors",
+      "description": "Open Government dataset(s) on HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ENVIRONMENT/ JUSTICE",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#131",
+      "sector_labels": null,
+      "title": "Labor laws violation report",
+      "description": "Report online a violation of labor laws",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#193",
+      "sector_labels": null,
+      "title": "Participatory budgeting",
+      "description": "Availability of feature for participatory budgeting or similar mechanism",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#302",
+      "sector_labels": null,
+      "title": "E-participation portal(s)",
+      "description": "E-participation portal(s)",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#303",
+      "sector_labels": null,
+      "title": "Open data license",
+      "description": "Open data license for open government datasets",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#304", "#305", "#306", "#307", "#308", "#309"],
+      "sector_labels": ["EDUCATION", "EMPLOYMENT", "ENVIRONMENT", "HEALTH", "JUSTICE", "SOCIAL PROTECTION"],
+      "title": "Budget expenditure datasets for 6 sectors",
+      "description": "Open Government dataset(s) on budget/expenditure in EDUCATION/ EMPLOYMENT/ ENVIRONMENT/ HEALTH/ JUSTICE /SOCIAL PROTECTION",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#310",
+      "sector_labels": null,
+      "title": "Real time open datasets",
+      "description": "Evidence of real time open government dataset(s)",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": "#313",
+      "sector_labels": null,
+      "title": "Online services for rural areas",
+      "description": "Evidence of online government service available to the people living in rural area",
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain"
+    },
+    {
+      "code": "#323",
+      "sector_labels": null,
+      "title": "E-petition",
+      "description": "Evidence of e-petition or similar mechanism",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#324", "#325", "#326", "#327", "#328", "#329"],
+      "sector_labels": null,
+      "title": "Policy-decision making for vulnerable groups",
+      "description": "Evidence that people's voices were included in the policy decision-making on issues related to vulnerable group in the past 12 months (for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth).",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    },
+    {
+      "code": ["#330", "#331", "#332", "#333", "#334", "#335"],
+      "sector_labels": null,
+      "title": "Online consultations for vulnerable groups",
+      "description": "Information on online consultations via forums, polls, questionnaires etc. to involve people among vulnerable groups in the past 12 months (for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth).",
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only"
+    }
+  ]
+}

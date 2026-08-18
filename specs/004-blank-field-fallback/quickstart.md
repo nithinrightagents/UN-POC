@@ -35,7 +35,9 @@ Manual check:
 
 ```bash
 aiq serve
-# open http://<host>:<port>/portal/<demo-portal>/question/<demo-question>?session=<demo-session>
+# Since 005: this review surface is mounted at /review, not / -- see
+# specs/005-un-ekap-platform/spec.md §2.
+# open http://<host>:<port>/review/portal/<demo-portal>/question/<demo-question>?session=<demo-session>
 ```
 
 **Expected**: the question shows a blank "Proposed answer" (never the literal text `None`) and a "Left blank: ..." reason line; the portal's question list shows every blocked question, including the `UNASSESSABLE` one, marked as blocked; every other question on the same portal remains independently approvable/editable.

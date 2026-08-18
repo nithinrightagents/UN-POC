@@ -25,6 +25,24 @@ def validate_settings(settings: Settings) -> None:
             f"AIQ_ASSESSOR_AGENT_COUNT={settings.assessor_agent_count} must be >= 2 (FR-009)"
         )
 
+    # FR-API-014a: max concurrent assessment runs must be >= 1.
+    if settings.max_concurrent_assessment_runs < 1:
+        errors.append(
+            f"AIQ_MAX_CONCURRENT_ASSESSMENT_RUNS={settings.max_concurrent_assessment_runs} must be >= 1 (FR-API-014a)"
+        )
+
+    # FR-PF-029: prefill confidence gap tolerance must be >= 0.
+    if settings.prefill_confidence_gap_tolerance < 0:
+        errors.append(
+            f"AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE={settings.prefill_confidence_gap_tolerance} must be >= 0 (FR-PF-029)"
+        )
+
+    # FR-PF-041c: prefill run budget must be >= 0.0 (0.0 = uncapped).
+    if settings.prefill_run_budget < 0.0:
+        errors.append(
+            f"AIQ_PREFILL_RUN_BUDGET={settings.prefill_run_budget} must be >= 0.0 (FR-PF-041c)"
+        )
+
     # Confidence ceiling must be strictly below the acceptance threshold (FR-018).
     if settings.best_effort_confidence_ceiling >= settings.confidence_acceptance_threshold:
         errors.append(

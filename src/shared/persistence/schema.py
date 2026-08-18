@@ -227,6 +227,75 @@ CREATE TABLE IF NOT EXISTS benchmark_run_results (
 
 
 
+-- Assessment & Workflow Engine tables (spec 005): human blind assessors, MSQ ingestion, publication.
+CREATE TABLE IF NOT EXISTS human_assessor_submissions (
+    submission_id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL,
+    cycle_id TEXT NOT NULL,
+    question_id TEXT NOT NULL,
+    portal_id TEXT NOT NULL,
+    role TEXT NOT NULL,
+    data TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS msq_documents (
+    msq_id TEXT PRIMARY KEY,
+    country_id TEXT NOT NULL,
+    cycle_id TEXT NOT NULL,
+    data TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Append-only: a republish is a new row. "Currently published" is always
+-- the latest row per (cycle_id, portal_id), read via ORDER BY created_at DESC.
+CREATE TABLE IF NOT EXISTS publication_records (
+    publication_id TEXT PRIMARY KEY,
+    cycle_id TEXT NOT NULL,
+    portal_id TEXT NOT NULL,
+    data TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Append-only. A re-run writes a fresh row per indicator; the "current"
+-- prefill is the newest row belonging to the newest COMPLETED run
+-- (FR-PF-039). Never updated, never deleted.
+CREATE TABLE IF NOT EXISTS prefills (
+    prefill_id   TEXT PRIMARY KEY,
+    run_id       TEXT NOT NULL,        -- assessment_jobs.job_id
+    session_id   TEXT NOT NULL,
+    cycle_id     TEXT NOT NULL,
+    question_id  TEXT NOT NULL,
+    portal_id    TEXT NOT NULL,
+    suggested    INTEGER NOT NULL,     -- 1 = carries a suggestion, 0 = no suggestion
+    data         TEXT NOT NULL,        -- the payload below
+    created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Append-only. One row per explicit completion declaration. Completeness is
+-- NOT read from this table alone -- see "Derived completeness" below.
+CREATE TABLE IF NOT EXISTS assessor_completions (
+    completion_id                   TEXT PRIMARY KEY,
+    session_id                      TEXT NOT NULL,
+    cycle_id                        TEXT NOT NULL,
+    portal_id                       TEXT NOT NULL,
+    role                            TEXT NOT NULL,   -- 'A' | 'B'
+    actor_id                        TEXT NOT NULL,
+    indicator_count_at_declaration  INTEGER NOT NULL,
+    declared_at                     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_prefills_lookup
+    ON prefills(session_id, portal_id, question_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_prefills_run ON prefills(run_id);
+CREATE INDEX IF NOT EXISTS idx_completions_lookup
+    ON assessor_completions(session_id, portal_id, role, declared_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_human_submissions_lookup
+    ON human_assessor_submissions(session_id, portal_id, question_id, role);
+CREATE INDEX IF NOT EXISTS idx_msq_documents_country ON msq_documents(cycle_id, country_id);
+CREATE INDEX IF NOT EXISTS idx_publications_portal ON publication_records(cycle_id, portal_id);
+
 CREATE INDEX IF NOT EXISTS idx_units_session ON units(session_id);
 CREATE INDEX IF NOT EXISTS idx_units_state ON units(session_id, state);
 CREATE INDEX IF NOT EXISTS idx_runs_session ON assessor_agent_runs(session_id, question_id, portal_id);
@@ -235,11 +304,37 @@ CREATE INDEX IF NOT EXISTS idx_stage_events_session ON stage_events(session_id);
 CREATE INDEX IF NOT EXISTS idx_fetch_records_session ON fetch_records(session_id, domain);
 CREATE INDEX IF NOT EXISTS idx_cost_ledger_session ON cost_ledger_entries(session_id);
 CREATE INDEX IF NOT EXISTS idx_decisions_session ON assessor_decisions(session_id);
+
+-- Assessment Jobs (spec 007): tracks live background assessment run state.
+-- Deliberately mutable for live run state (same documented exception as units).
+CREATE TABLE IF NOT EXISTS assessment_jobs (
+    job_id           TEXT PRIMARY KEY,
+    session_id       TEXT NOT NULL,
+    cycle_id         TEXT NOT NULL,
+    portal_id        TEXT NOT NULL,
+    state            TEXT NOT NULL,            -- 'running' | 'done' | 'failed'
+    questions_total  INTEGER NOT NULL,         -- snapshot at trigger time (R7)
+    failure_cause    TEXT,                     -- NULL unless state='failed'
+    triggered_by     TEXT NOT NULL,            -- 'api' | 'portal'
+    data             TEXT NOT NULL,            -- JSON: terminal outcome counts, actor
+    created_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at       TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- At most one running job per unit: makes FR-API-014 a storage invariant, so
+-- two simultaneous triggers resolve atomically rather than by a memory check.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_assessment_jobs_one_running
+    ON assessment_jobs(portal_id) WHERE state = 'running';
+
+CREATE INDEX IF NOT EXISTS idx_assessment_jobs_unit
+    ON assessment_jobs(cycle_id, portal_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_assessment_jobs_state
+    ON assessment_jobs(state);
 """
 
 
 def connect(database_path: str) -> sqlite3.Connection:
-    conn = sqlite3.connect(database_path)
+    conn = sqlite3.connect(database_path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn

@@ -45,7 +45,12 @@ aiq seed demo-review --questions 5 --portal EE
 aiq serve --port 8080
 ```
 
-Open `http://localhost:8080`. For each seeded question verify the review surface shows, without navigating anywhere else: proposed answer, justification, numeric confidence **as a 0–100 percentage** (no tier label — FR-042), resolved URL, the source that supplied it, the region-scoped capture, and the referenced element with its text.
+> **Since 005:** `aiq serve` now starts the combined admin/assessor/public app
+> (`src/portal/webapp.py`); this review surface is mounted at `/review`, not
+> `/`. Open `http://localhost:8080/review` (see
+> [specs/005-un-ekap-platform/spec.md §2](../005-un-ekap-platform/spec.md)).
+
+Open `http://localhost:8080/review`. For each seeded question verify the review surface shows, without navigating anywhere else: proposed answer, justification, numeric confidence **as a 0–100 percentage** (no tier label — FR-042), resolved URL, the source that supplied it, the region-scoped capture, and the referenced element with its text.
 
 Then exercise all three dispositions:
 

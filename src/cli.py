@@ -95,15 +95,43 @@ def seed_demo_review_cmd(ctx: click.Context) -> None:
     click.echo(f"Open: http://{settings.serve_host}:{settings.serve_port}/?session={result['session_id']}")
 
 
+@seed.command("demo")
+@click.pass_context
+def seed_demo_cmd(ctx: click.Context) -> None:
+    """Seed the platform demo: two real projects (UN E-Gov 2026, LOSI UK 2025),
+    live AI pre-fill against real government portals, the real Denmark MSQ
+    ingested, and a deliberately-flagged Assessor A/B discrepancy so the
+    arbitration queue has a real case to show."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.persistence.repositories import Repository
+    from portal.seed import seed_demo_data
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    repo = Repository(conn)
+    result = run_async(seed_demo_data(repo, settings))
+    click.secho(f"Seeded projects: {', '.join(result['cycles'])}", fg="green")
+    click.echo(f"Open: http://{settings.serve_host}:{settings.serve_port}/")
+
+
+@seed.command("ekap-demo")
+@click.pass_context
+def seed_ekap_demo_cmd(ctx: click.Context) -> None:
+    """Alias for 'aiq seed demo'."""
+    ctx.forward(seed_demo_cmd)
+
+
 @main.command()
 @click.pass_context
 def serve(ctx: click.Context) -> None:
-    """Start the review web app."""
+    """Start the app: Admin, Assessor Portal, AI Review (mounted at
+    /review), and the Public Knowledge Base (spec 005)."""
     settings: Settings = ctx.obj["settings"]
     import uvicorn
 
-    from review.web.app import build_app
+    from portal.webapp import build_app
 
+    init_db(settings.database_path)
     app = build_app(settings.database_path, settings)
     uvicorn.run(app, host=settings.serve_host, port=settings.serve_port)
 
@@ -208,7 +236,7 @@ def run(
     agents_override: int | None, batch_size_override: int | None, no_adjudicate: bool,
     resume: bool, session_id_opt: str | None,
 ) -> None:
-    """Run (or resume) an assessment batch for one survey cycle (FR-064–FR-070)."""
+    """Run (or resume) an AI prefill assessment batch for one survey cycle (spec 008 decoupled prefill)."""
     settings: Settings = ctx.obj["settings"]
 
     if agents_override is not None:
@@ -235,7 +263,7 @@ def run(
     from orchestration.scheduler import run_batch
     from shared.persistence.repositories import Repository
     from shared.tools.browser import BrowserSession
-    from shared.ratelimit.token_bucket import get_shared_limiter
+    from shared.ratelimit.token_bucket import RateLimiter
     from core.telemetry.cost_ledger import CostLedger
     from core.telemetry.fetch_log import FetchLog
     from core.telemetry.stage_events import StageEventLog
@@ -284,7 +312,7 @@ def run(
         return
 
     async def _run() -> None:
-        limiter = get_shared_limiter(settings.rate_limit_per_domain_rps)
+        limiter = RateLimiter(rate_per_sec=settings.rate_limit_per_domain_rps)
         provider = ModelProvider(settings.google_cloud_project, settings.google_cloud_location, settings.google_genai_use_vertexai)
         browser = BrowserSession(settings.user_agent, limiter)
         await browser.start()
@@ -308,9 +336,10 @@ def run(
             await browser.stop()
 
         click.echo(
-            f"delivered={summary.delivered} escalated={summary.escalated} "
+            f"suggested={summary.delivered} no_suggestion={summary.no_suggestion + summary.unassessable} "
+            f"(delivered={summary.delivered} escalated={summary.escalated} "
             f"unassessable={summary.unassessable} in_progress={summary.in_progress} "
-            f"(of {len(summary.outcomes)} units)"
+            f"of {len(summary.outcomes)} units)"
         )
 
     run_async(_run())

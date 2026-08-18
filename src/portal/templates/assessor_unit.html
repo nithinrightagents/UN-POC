@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block title %}Assessor {{ role }} — {{ portal.display_name or portal.country_id }} | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/assessor">Assessor Workspace</a>
+    <span>/</span>
+    <span>{{ portal.display_name or portal.country_id }}</span>
+</div>
+
+{% if error_message %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>{{ error_message }}</strong>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            {% if role == "A" %}
+            <span class="badge badge--role-a" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                Active Role: Assessor A
+            </span>
+            {% else %}
+            <span class="badge badge--role-b" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+                Active Role: Assessor B
+            </span>
+            {% endif %}
+            <span class="badge badge--neutral">{{ rows|length }} Indicators</span>
+            <span class="badge badge--neutral">Blind Evaluation Mode</span>
+            {% if is_complete %}
+            <span class="badge badge--yes" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                Assessment Complete & Declared
+            </span>
+            {% endif %}
+        </div>
+        <h1>{{ portal.display_name or portal.country_id }}</h1>
+        <p class="lead">
+            Official Portal:
+            <a href="{{ portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600;">
+                {{ portal.resolved_url }}
+                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
+            </a>
+            &mdash; Evaluate each indicator using the portal and cited evidence.
+        </p>
+
+        <!-- Progress and Completion Section -->
+        <div style="margin-top: 1rem; padding: 1rem; background-color: var(--color-bg-surface-subtle); border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem;">
+                        Assessment Progress: {{ answered_count }} / {{ total_questions }} Answered
+                    </div>
+                    {% if outstanding_question_ids %}
+                    <div class="muted" style="font-size: 0.85rem;">
+                        Outstanding ({{ outstanding_question_ids|length }}): {{ outstanding_question_ids[:5]|join(', ') }}{% if outstanding_question_ids|length > 5 %}...{% endif %}
+                    </div>
+                    {% else %}
+                    <div style="color: var(--color-brand-success, #16a34a); font-size: 0.85rem; font-weight: 600;">
+                        All indicators answered.
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/complete">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="actor_id" value="{{ actor_id }}">
+                    <button type="submit" class="primary" {% if not can_complete %}disabled title="Answer all indicators before declaring completion"{% endif %}>
+                        <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                        <span>Declare Assessment Complete</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessor ID Switcher -->
+    <div class="card" style="padding: 1rem; margin-bottom: 0; min-width: 260px; background-color: var(--color-bg-surface-subtle);">
+        <form class="stack" method="get" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}">
+            <div class="form-group">
+                <label for="actor_id" style="font-size: 0.8rem;">Assessor Identifier</label>
+                <input type="text" id="actor_id" name="actor_id" value="{{ actor_id }}" style="font-size: 0.85rem; padding: 0.375rem 0.5rem;">
+            </div>
+            <input type="hidden" name="role" value="{{ role }}">
+            <button type="submit" class="btn-sm" style="width: 100%;">Update Assessor ID</button>
+        </form>
+    </div>
+</div>
+
+<!-- Indicator List -->
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-file-text"/></svg>
+    <span>Indicator Questionnaire Intake</span>
+</div>
+
+{% for row in rows %}
+<div class="question-card" id="q_{{ row.question.question_id }}">
+    <div class="question-card-header">
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
+            <code class="question-code">{{ row.question.indicator_id or row.question.question_id }}</code>
+            {% if row.question.question_class %}
+            <span class="badge badge--neutral" style="font-size: 0.75rem;">{{ row.question.question_class }}</span>
+            {% endif %}
+            <h3 class="question-title" style="flex: 1 1 100%; margin-top: 0.25rem;">
+                {{ row.question.title or row.question.text }}
+            </h3>
+        </div>
+        <div>
+            {% if row.mine %}
+            <span class="badge badge--yes">
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                Submitted
+            </span>
+            {% else %}
+            <span class="badge badge--pending">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                Pending Intake
+            </span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if row.question.what or row.question.why or row.question.how %}
+    <details style="background-color: var(--color-bg-surface-subtle); padding: 0.6rem 0.85rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-subtle); margin: 0.5rem 0; font-size: 0.85rem;">
+        <summary style="cursor: pointer; color: var(--color-brand-primary); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-help-circle"/></svg>
+            <span>Official Scoring Guide (What, Why, How)</span>
+        </summary>
+        <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
+            {% if row.question.what %}
+            <div>
+                <strong style="color: var(--color-text-primary);">WHAT:</strong>
+                <span style="color: var(--color-text-secondary);">{{ row.question.what }}</span>
+            </div>
+            {% endif %}
+            {% if row.question.why %}
+            <div>
+                <strong style="color: var(--color-text-primary);">WHY:</strong>
+                <span style="color: var(--color-text-secondary);">{{ row.question.why }}</span>
+            </div>
+            {% endif %}
+            {% if row.question.how %}
+            <div>
+                <strong style="color: var(--color-text-primary);">HOW:</strong>
+                <span style="color: var(--color-text-secondary);">
+                    {% if row.question.how is mapping %}
+                        {{ row.question.how.scoring_guidance or row.question.how.criteria_for_yes or row.question.how }}
+                    {% else %}
+                        {{ row.question.how }}
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+            {% if row.question.benchmark_case %}
+            <div>
+                <strong style="color: var(--color-text-primary);">BENCHMARK:</strong>
+                <span style="color: var(--color-text-secondary);">{{ row.question.benchmark_case }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </details>
+    {% endif %}
+
+    <!-- AI Suggestion Accelerator -->
+    {% if row.ai and row.ai.suggested %}
+    <div class="ai-suggestion-box">
+        <div class="ai-suggestion-header">
+            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                <span class="badge badge--ai">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"/></svg>
+                    AI Suggested Answer
+                </span>
+                <strong style="color: var(--color-text-primary); font-size: 0.95rem;">
+                    {{ "Yes — Feature Present" if row.ai.answer else "No — Absent / Not Found" }}
+                </strong>
+                {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") %}
+                <span class="badge badge--neutral" style="font-size: 0.75rem; background-color: var(--color-warning-subtle, #fef3c7); color: #92400e;">
+                    Settled Dispute
+                </span>
+                {% endif %}
+            </div>
+            <div class="ai-confidence-meter">
+                <span>Confidence:</span>
+                <span class="badge badge--neutral">{{ row.ai.confidence }}%</span>
+                {% if row.ai.confidence_gap %}
+                <span class="muted" style="font-size: 0.75rem;">(Gap: {{ row.ai.confidence_gap }})</span>
+                {% endif %}
+            </div>
+        </div>
+        {% if row.ai.justification %}
+        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem;">
+            <strong>Rationale:</strong> {{ row.ai.justification }}
+        </p>
+        {% endif %}
+        {% if row.ai.evidence_url %}
+        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem;">
+            <strong>Evidence URL:</strong>
+            <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
+            {% if row.ai.supplying_source %}
+            <span class="muted">(Source: {{ row.ai.supplying_source }})</span>
+            {% endif %}
+        </p>
+        {% endif %}
+        {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
+        <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background-color: rgba(0,0,0,0.03); border-radius: var(--radius-xs); font-size: 0.85rem;">
+            {% if row.ai.resolver_reasoning %}
+            <div><strong>Resolver Characterization:</strong> {{ row.ai.resolver_reasoning }}</div>
+            {% endif %}
+            {% if row.ai.unselected_position %}
+            <div class="muted" style="margin-top: 0.25rem;">
+                Alternative Position: <strong>{{ "Yes" if row.ai.unselected_position.answer else "No" }}</strong> (Confidence: {{ row.ai.unselected_position.confidence }}%) &mdash; <em>"{{ row.ai.unselected_position.justification }}"</em>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+    {% elif row.ai and not row.ai.suggested %}
+    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; background-color: var(--color-bg-surface-subtle); border-left: 3px solid var(--color-border-subtle);">
+        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
+        <span>{{ row.ai.reason_text or "No suggestion produced by AI prefill." }}</span>
+    </div>
+    {% else %}
+    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem;">
+        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
+        <span>No automated pre-fill available for this indicator. Please evaluate directly from the portal.</span>
+    </div>
+    {% endif %}
+
+    <!-- Assessor Previous Submission Summary -->
+    {% if row.mine %}
+    <div style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <strong style="color: var(--color-text-primary);">Your Current Submission:</strong>
+            {% if row.mine.answer %}
+            <span class="badge badge--yes">Yes</span>
+            {% else %}
+            <span class="badge badge--no">No</span>
+            {% endif %}
+        </div>
+        {% if row.mine.evidence_url %}
+        <div style="color: var(--color-text-secondary);">
+            Evidence URL: <a href="{{ row.mine.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.mine.evidence_url }}</a>
+        </div>
+        {% endif %}
+        {% if row.mine.notes %}
+        <div class="muted" style="margin-top: 0.25rem;">
+            Notes: <em>"{{ row.mine.notes }}"</em>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Submission Form -->
+    <form class="stack" method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/question/{{ row.question.question_id }}/submit" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-subtle);">
+        <input type="hidden" name="role" value="{{ role }}">
+        <input type="hidden" name="actor_id" value="{{ actor_id }}">
+        
+        <div class="grid-2" style="margin-bottom: 0;">
+            <div class="form-group">
+                <label for="answer_{{ row.question.question_id }}">Independent Determination *</label>
+                <select id="answer_{{ row.question.question_id }}" name="answer" required>
+                    <option value="">-- Select Answer --</option>
+                    <option value="true" {% if row.mine and row.mine.answer %}selected{% endif %}>Yes — Feature is present and findable</option>
+                    <option value="false" {% if row.mine and not row.mine.answer %}selected{% endif %}>No — Feature is absent or unresolvable</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="evidence_url_{{ row.question.question_id }}">Evidence / Deep-Link URL</label>
+                <input type="url" id="evidence_url_{{ row.question.question_id }}" name="evidence_url" value="{{ row.mine.evidence_url if row.mine else '' }}" placeholder="https://www.borger.dk/page-with-feature">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="notes_{{ row.question.question_id }}">Assessor Observations / Justification (Optional)</label>
+            <textarea id="notes_{{ row.question.question_id }}" name="notes" rows="2" placeholder="Detail any relevant observations, search terms used, or specific navigation steps...">{{ row.mine.notes if row.mine else '' }}</textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="primary btn-sm" type="submit">
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                <span>Save Answer for {{ row.question.question_id }}</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+    <p class="muted">No indicators configured for this survey cycle.</p>
+</div>
+{% endfor %}
+
+{% endblock %}

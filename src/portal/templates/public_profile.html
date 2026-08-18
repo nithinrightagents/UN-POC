@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ portal.display_name or portal.country_id if portal else portal_id }} — Scorecard | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/public">Public Knowledge Base</a>
+    <span>/</span>
+    <a href="/public/{{ cycle.cycle_id }}">{{ cycle.name }}</a>
+    <span>/</span>
+    <span>{{ portal.display_name or portal.country_id if portal else portal_id }}</span>
+</div>
+
+{% if record %}
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge--published">
+                <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+                Published Official Evaluation
+            </span>
+            <span class="badge badge--neutral">{{ cycle.name }}</span>
+        </div>
+        <h1>{{ portal.display_name or portal.country_id if portal else record.portal_id }}</h1>
+        <p class="lead">
+            Official Portal:
+            <a href="{{ portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600;">
+                {{ portal.resolved_url }}
+                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
+            </a>
+        </p>
+    </div>
+</div>
+
+<!-- Executive Scorecard Overview -->
+<div class="grid-3" style="margin-bottom: 2rem;">
+    <div class="stat-card" style="border-left: 4px solid var(--color-brand-primary);">
+        <div class="stat-icon" style="background-color: var(--color-brand-primary-subtle); color: var(--color-brand-primary);">
+            <svg class="icon-lg" aria-hidden="true"><use href="#icon-bar-chart"/></svg>
+        </div>
+        <div class="stat-content">
+            <span class="stat-label">Composite Maturity Score</span>
+            <span class="stat-value" style="color: var(--color-brand-primary);">
+                {{ "%.0f"|format(record.score * 100) }}%
+            </span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background-color: var(--color-success-bg); color: var(--color-success-text);">
+            <svg class="icon-lg" aria-hidden="true"><use href="#icon-check"/></svg>
+        </div>
+        <div class="stat-content">
+            <span class="stat-label">Verified Indicators</span>
+            <span class="stat-value">
+                {{ breakdown|length }}
+            </span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background-color: #f1f5f9; color: #475569;">
+            <svg class="icon-lg" aria-hidden="true"><use href="#icon-shield"/></svg>
+        </div>
+        <div class="stat-content">
+            <span class="stat-label">Publication Sign-off</span>
+            <span class="stat-value" style="font-size: 1rem; font-weight: 600;">
+                {{ record.published_by_actor_id }}
+            </span>
+            <span class="muted" style="font-size: 0.75rem;">{{ record.published_at }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Indicator Breakdown Section -->
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-file-text"/></svg>
+    <span>Indicator Performance Breakdown</span>
+</div>
+
+<div class="table-responsive">
+    <table class="data-table" aria-label="Indicator Performance Breakdown">
+        <thead>
+            <tr>
+                <th scope="col" style="width: 140px;">Indicator ID</th>
+                <th scope="col">Evaluation Criterion</th>
+                <th scope="col" style="width: 140px; text-align: center;">Assessment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in breakdown %}
+            <tr>
+                <td>
+                    <code class="question-code">{{ b.question_id }}</code>
+                </td>
+                <td style="font-weight: 500; color: var(--color-text-primary);">
+                    {{ b.question.text if b.question else b.question_id }}
+                </td>
+                <td style="text-align: center;">
+                    {% if b.answer %}
+                    <span class="badge badge--yes">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                        Feature Present (Yes)
+                    </span>
+                    {% else %}
+                    <span class="badge badge--no">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+                        Absent (No)
+                    </span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+    <h3>Unpublished Unit</h3>
+    <p class="muted">This country or municipal unit has not yet been published for this survey cycle.</p>
+</div>
+{% endif %}
+
+{% endblock %}

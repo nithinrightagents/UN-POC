@@ -1,0 +1,322 @@
+{
+  "module": "Technology",
+  "module_id": "2.5",
+  "source_pdf": "Module 2.5 Technology.pdf",
+  "total_questions": 14,
+  "questions": [
+    {
+      "question_id": "TECH-002",
+      "indicator_id": "#002",
+      "module": "Technology",
+      "title": "Government portal ease of ﬁnding",
+      "text": "Government portal ease of ﬁnding — Ease of finding the government portal is understood as being found on the first result page of the three most popular search engines used in the count",
+      "what": "Ease of finding the government portal is understood as being found on the first result page of the three most popular search engines used in the country, this can be checked by accessing http://gs.statcounter.com/browser-market-share to see which are the most popular search engines",
+      "why": "Most users rarely venture beyond the first page, this ensures easy access to vital information and services, enhancing user satisfaction, and fostering efficient civic engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Optimize Website Content: a. Use relevant keywords and phrases related to government services and location throughout the website content to enhance search engine optimization (SEO) 2. Mobile-Friendly Design: a. Ensure the website is responsive and mobile-friendly, as search engines prioritize mobile-friendly sites 3. Local SEO: a. Utilize local SEO techniques, including adding the country to meta titles, meta descriptions, and headers, to enhance visibility in searches. 4. Regular Content Updates: a. Keep the website content fresh and up-to-date, as search engines prefer websites that provide timely and relevant information. For the complete guide by the current author click here.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "🌐 For more information check out the Semrush Blog: or Google’s Developer guide",
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-004",
+      "indicator_id": "#004",
+      "module": "Technology",
+      "title": "Advanced search options",
+      "text": "Advanced search options — Advanced search options may include features that allow users to run custom searches with specific text, indicate unwanted words, specify date ranges,",
+      "what": "Advanced search options may include features that allow users to run custom searches with specific text, indicate unwanted words, specify date ranges, language options, etc. There can also be options available to refine the results after the search page.",
+      "why": "It allows users to refine their queries, enabling precise and efficient access to specific information or services, enhancing user satisfaction and usability.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Understand User Needs: a. Identify the specific search requirements of your users, 2. Select a Robust Search Engine: a. Choose a powerful search engine or software that supports advanced search functionalities 3. Faceted Search and Filters: a. Implement faceted search, allowing users to filter results by categories like departments, document types, dates, or other relevant attributes 4. Natural Language Processing (NLP): a. If feasible, integrate NLP technology to enable users to input queries in natural language 5. Continuous Improvement: a. Regularly assess user feedback and search analytics to identify areas for enhancement. For more information check out UXPin’s guide or HubSpot Tips",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s portal advanced search options",
+      "reference_links": [
+        "Canada’s portal advanced search options"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-005",
+      "indicator_id": "#005",
+      "module": "Technology",
+      "title": "Sitemap/Index",
+      "text": "Sitemap/Index — A sitemap or index has a list of pages of a web site accessible to users. It is a web page that lists all the available pages within the website, typi",
+      "what": "A sitemap or index has a list of pages of a web site accessible to users. It is a web page that lists all the available pages within the website, typically organized in a hierarchical fashion. This helps visitors and search engine bots find pages on the site.",
+      "why": "Crucial as it provides a structured, organized map of the website's content, making it easier for visitors and search engines to navigate and access relevant information efficiently.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Choose the Right Format: a. Decide between an XML sitemap (for search engines) and an HTML sitemap (for users). XML sitemaps are essential for search engines, while HTML sitemaps serve as user-friendly guides. 2. Link from Website Footer: a. Add a link to the HTML sitemap in the footer section of your website. 3. Submit XML Sitemap to Search Engines: a. Submit the XML sitemap to search engines like Google and Bing through their respective webmaster tools. This helps search engines crawl and index your site more effectively. 4. Update Sitemap Regularly: a. Keep the XML sitemap updated whenever you add new pages For more information check out Google’s guide.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Seychelle’s sitemap",
+      "reference_links": [
+        "Seychelle’s sitemap"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-008",
+      "indicator_id": "#008",
+      "module": "Technology",
+      "title": "Contact Details",
+      "text": "Contact Details — Commonly known as a “contact us” feature, it can come in a variety of formats (e.g. phone numbers, email addresses, physical addresses, and sometimes ",
+      "what": "Commonly known as a “contact us” feature, it can come in a variety of formats (e.g. phone numbers, email addresses, physical addresses, and sometimes online forms)",
+      "why": "Enables easy and direct communication between residents, businesses, and government officials, fostering transparency, accessibility, and efficient resolution of civic issues and inquiries.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Page: a. Design a clear and user-friendly webpage labeled \"Contact Us\" or \"Get in Touch\" Regular Updates and Maintenance: 2. Provide Comprehensive Information: a. Include phone numbers, email addresses, and physical addresses of government offices. 3. Include Operating Hours: a. Specify office hours and days of operation for each department to manage visitor expectations. 4. Prominent Placement: a. Feature the contact details prominently on the website, preferably in the header, footer, or a dedicated sidebar, ensuring high visibility. 5. Regular Updates: a. Keep contact information up-to-date, For more information check out Nielson Norman Group guide or US EPA guide.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Albania’s contact details page",
+      "reference_links": [
+        "Albania’s contact details page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-022",
+      "indicator_id": "#022",
+      "module": "Technology",
+      "title": "Accessibility by citizens/businesses to own data",
+      "text": "Accessibility by citizens/businesses to own data — Defined as the ability for users to access their own data (that government has on record), on the government portal, such as (but not limited to) data",
+      "what": "Defined as the ability for users to access their own data (that government has on record), on the government portal, such as (but not limited to) data on social security, vehicle registration, etc. This usually requires authentication with a digital ID.",
+      "why": "Ensures transparency, fosters public trust, and empowers people to access their own information, promoting accountability and civic engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Review Privacy Laws: a. Understand laws governing the accessibility and protection of personal/Business data. 2. Implement Secure Authentication: a. Require strong, multi-factor authentication for users accessing personal/business data. Use encrypted connections (SSL/TLS) to protect data in transit. 3. User Verification: a. Verify the identity of users before granting access to personal data. 4. Data Minimization: a. Only collect and display essential personal data necessary for government services. 5. Secure Storage: a. Store personal data in encrypted databases with regular security updates and patches. 6. Legal Disclaimer: a. Clearly state the terms of use and privacy policies on the website.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Germany’s information page on how users can access their data",
+      "reference_links": [
+        "Germany’s information page on how users can access their data"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-023",
+      "indicator_id": "#023",
+      "module": "Technology",
+      "title": "-025 Possibility for citizens/businesses to modify own data",
+      "text": "-025 Possibility for citizens/businesses to modify own data — Defined as the ability for users to modify part of their own data (that governments have on record). This usually requires authentication with a digit",
+      "what": "Defined as the ability for users to modify part of their own data (that governments have on record). This usually requires authentication with a digital ID.",
+      "why": "Vital for people to maintain accurate information, ensuring efficient communication, improved service delivery, and fostering a sense of control and ownership over their data.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. User Account Creation a. Registration Process: Design a simple registration form requiring essential details. b. Email Verification: Include an email verification step to authenticate user accounts. 2. Accessing Personal Profiles a. Provide a well-organized dashboard upon login, displaying categories like 'Personal Details.’ or 'Business Information’ b. Create an intuitive interface enabling easy navigation to personal data sections. 3. Modifying Data a. Data Categories: Categorize data into clear sections. b. Edit Functionality: Implement an 'Edit' button within each section, allowing users to modify relevant data. c. Data Validation: Ensure validation checks for accurate and complete information entry. d. Real-time Updates: Enable real-time saving of modifications to prevent data loss. For more information check out the current author’s guide.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Belgium’s dedicated business portal",
+      "reference_links": [
+        "Belgium’s dedicated business portal"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-071",
+      "indicator_id": "#071",
+      "module": "Technology",
+      "title": "Responsive web design",
+      "text": "Responsive web design — A responsive web design (RWD) when the portal displays and works well (is navigable and usable) when accessed through a mobile device (e.g., smartphon",
+      "what": "A responsive web design (RWD) when the portal displays and works well (is navigable and usable) when accessed through a mobile device (e.g., smartphone, tablet). The portal could be provided through a regular web browser (responsive/adaptive website) or through a mobile application.",
+      "why": "RWD is an approach to web design aimed at crafting sites to provide an optimal viewing experience — easy reading and navigation with a minimum of resizing, panning, and scrolling — across a wide range of devices.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Responsive Web Design: a. Implement a responsive web design adapting the layout and content based on the user's device 2. Mobile-Friendly Navigation: a. Simplify navigation for mobile users by using clear menus, intuitive icons, and a streamlined menu structure. 3. Readable Text and Images: a. Use legible font sizes and ensure images are appropriately sized for mobile screens. 4. Touch-Friendly Buttons: a. Design interactive elements, such as buttons and links, to be touch-friendly, ensuring they are large enough and well-spaced 5. Mobile Compatibility Testing: a. Regularly test the portal on different mobile devices and browsers to identify and address any issues related to display, functionality, or user experience.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "For more information check out the W3C’s Mobile Accessibility Guide or the US GSA’s guide.",
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-072",
+      "indicator_id": "#072",
+      "module": "Technology",
+      "title": "Evidence of being updated in the past month",
+      "text": "Evidence of being updated in the past month — Evidence of the national government portal being updated in the past month, with updates applicable as evidence.",
+      "what": "Evidence of the national government portal being updated in the past month, with updates applicable as evidence.",
+      "why": "Crucial to ensure people have access to timely and accurate information, fostering transparency and maintaining the portal's relevance.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Schedule Regular Updates: a. Establish a consistent schedule for portal updates, e.g., weekly or monthly. 2. Assign Responsibility: a. Designate specific personnel or teams to manage and update portal content. 3. Track Updates: a. Implement a system to monitor and record all changes made to the portal. 4. Review Content: a. Regularly review and refresh portal content to ensure accuracy and relevance. 5. Display Last Update Date: a. Clearly indicate the date of the last update on the portal for user reference.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The Netherlands’ Latest section",
+      "reference_links": [
+        "The Netherlands’ Latest section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-074",
+      "indicator_id": "#074",
+      "module": "Technology",
+      "title": "National portal(s) utilize HTTPS",
+      "text": "National portal(s) utilize HTTPS — Evidence of the national government portal using HTTPS, as seen in address bar.",
+      "what": "Evidence of the national government portal using HTTPS, as seen in address bar.",
+      "why": "Ensures secure and encrypted communication between users and the website, safeguarding sensitive data and enhancing user trust.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Assessment: a. Evaluate the current security measures and identify areas where HTTPS implementation is needed. 2. Procurement: a. Obtain SSL certificates from trusted certificate authorities to enable HTTPS encryption. 3. Implementation: a. Configure web servers to support HTTPS and update website URLs to use the secure protocol. 4. Testing: a. Conduct thorough testing to ensure that HTTPS implementation does not introduce any functionality or compatibility issues. 5. Monitoring: a. Regularly monitor website security and HTTPS configuration to address any vulnerabilities or issues promptly.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Jordan’s government portal address",
+      "reference_links": [
+        "US government CIO.GOV The HTTPS-Only Standard Guide"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-083",
+      "indicator_id": "#083",
+      "module": "Technology",
+      "title": "Save part of the transaction and access later",
+      "text": "Save part of the transaction and access later — Users have the ability to save and access later a transaction for a specific service that is initiated through the national portal(s) at any of the go",
+      "what": "Users have the ability to save and access later a transaction for a specific service that is initiated through the national portal(s) at any of the government portal(s",
+      "why": "Provides convenience and flexibility, enhancing user experience and facilitating seamless access to government services across different portals.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Implement a User Account System: a. Create user accounts where users can save transaction details and access them later. 2. Develop Save Transaction Feature: a. Integrate a feature that allows users to save ongoing transactions and resume them at a later time. 3. Ensure Data Security: a. Implement robust security measures to protect user transaction data stored on the portal. 4. Provide User Guidance: a. Offer clear instructions and guidance on how to save and access transactions to ensure user understanding and usability.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ Personalized and cohesive user experience page",
+      "reference_links": [
+        "the United Arab Emirates’ Personalized and cohesive user experience page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-087",
+      "indicator_id": "#087",
+      "module": "Technology",
+      "title": "Access to list of previous interactions/transactions",
+      "text": "Access to list of previous interactions/transactions — Users have the ability to access a list of her/his previous interactions/transactions in the national portal(s)at any of the government portal(s)",
+      "what": "Users have the ability to access a list of her/his previous interactions/transactions in the national portal(s)at any of the government portal(s)",
+      "why": "Enhances user convenience and transparency by allowing individuals to easily track and review their past interactions and transactions with the government across various portals.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. User Authentication: a. Implement a secure login system for user authentication. 2. Transaction History Dashboard: a. Develop a user-friendly dashboard interface for accessing transaction history. 3. Data Security Measures: a. Ensure robust data security protocols to protect user information. 4. User Support and Guidance: a. Provide clear instructions and assistance for users to navigate the transaction history feature effectively.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Panama’s See my Cases feature on its online complaint portal",
+      "reference_links": [
+        "Panama’s See my Cases feature on its online complaint portal"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-09a",
+      "indicator_id": "#09a",
+      "module": "Technology",
+      "title": "Availability of AI-enabled chat-bot functionality",
+      "text": "Availability of AI-enabled chat-bot functionality — Evidence of AI-enabled chatbot functionality or Generative AI on any of the government portal(s). Chatbots use natural language processing to understa",
+      "what": "Evidence of AI-enabled chatbot functionality or Generative AI on any of the government portal(s). Chatbots use natural language processing to understand user inquiries and provide relevant information or assistance. Generative AI takes this a step further by autonomously creating content, such as responses or recommendations, based on user interactions.",
+      "why": "Enhances user experience, streamline access to information and services, and enable more efficient engagement with government resources.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Assess Needs: a. Identify the specific services or information areas where AI-enabled chatbot functionality or Generative AI can enhance user experience and streamline interactions. 2. Select Technology: a. Choose appropriate AI platforms or solutions that align with the identified needs and integrate seamlessly with existing government portal infrastructure. 3. Customize and Train: a. Customize the AI functionality to suit the government portal's requirements and train the system. 4. Implement and Test: a. Integrate the AI features into the government portal and conduct thorough testing.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Japan’s customs chatbot",
+      "reference_links": [
+        "dacast’s guide or touchpoint"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-195",
+      "indicator_id": "#195",
+      "module": "Technology",
+      "title": "Compliant with W3C standards (CSS style sheet)",
+      "text": "Compliant with W3C standards (CSS style sheet) — Defined as compliant with the markup validity standards set by the World Wide Web Consortium (W3C). This can be verified via https://validator.w3.org/",
+      "what": "Defined as compliant with the markup validity standards set by the World Wide Web Consortium (W3C). This can be verified via https://validator.w3.org/ inserting the link of the government, using the default options and clicking \"\"check\"\". Evidence of “read timeout\" or \"errors\" by the tool indicates a lack of alignment.",
+      "why": "Ensures accessibility, interoperability, and a consistent user experience, promoting inclusivity and adherence to global web development best practices.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Use Valid HTML/CSS: a. Write well-structured, semantic HTML and CSS code. Validate the code using W3C's validation services 2. Responsive Design: a. Implement responsive design to ensure the portal is accessible and functions on all devices. 3. Alt Text for Images: a. Include descriptive alt text for images, enabling users with visual impairments to understand the content of the images through screen readers. 4. Color Contrast: a. Maintain sufficient color contrast between text and background colors to ensure readability. 5. Keyboard Accessibility: a. Ensure all interactive elements, such as links and buttons, are navigable and usable with a keyboard. 6. User Testing: a. Involve users with disabilities in usability testing to gain insights into their experiences.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "For more information check out W3C’s guide.",
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TECH-196",
+      "indicator_id": "#196",
+      "module": "Technology",
+      "title": "Compliant with W3C standards (markup validity)",
+      "text": "Compliant with W3C standards (markup validity) — Defined as compliant with the CSS style sheet standards set by the World Wide Web Consortium (W3C). Can be checked via https://jigsaw.w3.org/css-valid",
+      "what": "Defined as compliant with the CSS style sheet standards set by the World Wide Web Consortium (W3C). Can be checked via https://jigsaw.w3.org/css-validator/ and by pasting the link of the government using the default options and clicking \"check. Evidence of \"errors\" by the tool indicates a lack of alignment.",
+      "why": "Ensures consistent design, efficient maintenance, and seamless user experience across various devices, promoting accessibility and enhancing the site's credibility and professionalism.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Use External Style Sheets: a. Utilize external CSS files rather than inline styles. 2. Valid CSS Code: a. Write clean and valid CSS code. Validate your stylesheets using W3C's CSS Validation Service 3. Responsive Design: a. Implement responsive design techniques using media queries to ensure the website layout adjusts appropriately on different devices and screen sizes. 4. Semantic HTML: a. Use semantic HTML elements and apply CSS styles appropriately. 5. Testing Across Browsers: a. Regularly test the website's styles across various web browsers and devices. 6. Regular Updates: a. Stay updated with the latest CSS standards and best practices.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "For more information check out W3C’s guide.",
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    }
+  ]
+}
