@@ -29,6 +29,7 @@ class AIRuntime:
             settings.google_cloud_project,
             settings.google_cloud_location,
             settings.google_genai_use_vertexai,
+            settings.google_api_key,
         )
         self.limiter = RateLimiter(rate_per_sec=settings.rate_limit_per_domain_rps)
         self.browser = BrowserSession(settings.user_agent, self.limiter)

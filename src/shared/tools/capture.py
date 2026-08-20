@@ -30,6 +30,10 @@ async def capture_region(page, css_path: str, out_dir: str) -> str | None:
     pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
     ref = f"{out_dir}/{new_id('capture')}.png"
     try:
+        try:
+            await locator.scroll_into_view_if_needed(timeout=2000)
+        except Exception:
+            pass
         await locator.screenshot(path=ref, timeout=5000)
     except Exception:  # noqa: BLE001
         return None

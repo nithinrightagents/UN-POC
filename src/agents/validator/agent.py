@@ -44,13 +44,22 @@ assessment. You are NOT answering the question yourself -- you are checking whet
 THIS agent's answer, justification, and cited evidence hang together coherently.
 
 Question: {question_text}
+Answer type: {answer_type} -- the system enforces this format; a correctly-typed
+answer (e.g. a plain true/false for a "binary" answer type) is NEVER itself a gap,
+even if the question's wording sounds like it asks to "identify" or "list"
+something. Judge only whether the evidence and justification support THIS answer
+value, not whether a different response shape would have been more descriptive.
 Agent's answer: {answer}
 Agent's stated confidence: {confidence}/100
 Agent's justification: {justification}
 Cited evidence text: {evidence_text}
 
+Evaluation Rules:
+- For Positive answers (answer = true): The cited evidence must be concrete text/content that proves the feature exists.
+- For Negative answers (answer = false): Absence cannot be directly quoted; the assessor is required to cite the nearest relevant section heading or page title as an anchor showing where the search was conducted. For negative answers, evaluate whether this anchor location and the justification coherently support the negative finding on this page. A confidence score between 30 and 65 for an anchored negative finding is proportionate and expected.
+
 Assess:
-1. Does the cited evidence actually support the stated answer?
+1. Does the cited evidence (or anchor location for negative findings) support the stated answer?
 2. Is the justification consistent with both the answer and the evidence?
 3. Is the stated confidence proportionate to how strong this evidence actually is?
 
@@ -65,6 +74,7 @@ async def validate_agent_output(
     run_id: str,
     session_id: str,
     question_text: str,
+    answer_type: str = "binary",
     output: AssessorAgentOutput,
     element_reference: ElementReference | None,
     settings: Settings,
@@ -99,6 +109,7 @@ async def validate_agent_output(
         output.evidence.element_text,
         fetch_log,
         settings.verification_attempt_bound,
+        timeout_ms=settings.page_navigation_timeout_ms,
     )
 
     verified_at = utcnow() if verification_result.outcome == "confirmed" else None
@@ -135,6 +146,7 @@ async def validate_agent_output(
     # one agent's output (FR-079) and never forms its own answer (FR-090).
     prompt = _JUDGMENT_PROMPT.format(
         question_text=question_text,
+        answer_type=answer_type,
         answer=output.answer,
         confidence=output.confidence,
         justification=output.justification,
@@ -218,6 +230,7 @@ class ValidatorAgent(BaseAgent):
             run_id=input_data["run_id"],
             session_id=input_data["session_id"],
             question_text=input_data["question_text"],
+            answer_type=input_data.get("answer_type", "binary"),
             output=input_data["output"],
             element_reference=input_data.get("element_reference"),
             retry_number=input_data.get("retry_number", 0),

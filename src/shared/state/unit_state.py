@@ -14,11 +14,14 @@ from __future__ import annotations
 from .entities import TERMINAL_UNIT_STATES, UnitState
 
 # Allowed transitions: from_state -> set of legal to_states.
+# ASSESSING -> RESOLVING_LINK: bounded dead-link fallback -- every dispatched
+# agent reported the resolved URL as unreachable, so the unit retries link
+# resolution once more, excluding the source that supplied the dead link.
 _ALLOWED: dict[UnitState, set[UnitState]] = {
     UnitState.PENDING: {UnitState.RESOLVING_LINK},
     UnitState.RESOLVING_LINK: {UnitState.RESOLVED, UnitState.UNASSESSABLE},
     UnitState.RESOLVED: {UnitState.ASSESSING, UnitState.NO_SUGGESTION},
-    UnitState.ASSESSING: {UnitState.ADJUDICATING, UnitState.NO_SUGGESTION},
+    UnitState.ASSESSING: {UnitState.ADJUDICATING, UnitState.RESOLVING_LINK, UnitState.NO_SUGGESTION},
     UnitState.ADJUDICATING: {UnitState.DELIVERED, UnitState.NO_SUGGESTION},
     UnitState.RETRYING: {UnitState.ADJUDICATING, UnitState.NO_SUGGESTION},
     UnitState.DELIVERED: set(),

@@ -49,6 +49,7 @@ MODULE_CONFIGS = [
         "name": "E-Participation",
         "pdf_filename": "Module 2.4 E-Participation.pdf",
         "evidence_locus_default": "national_portal_only",
+        "legacy_extracted_filename": "module_2_4_eparticipation.json",
     },
     {
         "id": "2.5",
@@ -63,11 +64,40 @@ MODULE_CONFIGS = [
         "name": "E-Government Literacy",
         "pdf_filename": "Module 2.6 E-Government Literacy.pdf",
         "evidence_locus_default": "national_portal_only",
+        "legacy_extracted_filename": "module_2_6_egov_literacy.json",
     },
 ]
 
 # Sectors frequently expanded in UN indicators
 SECTORS = ["Health", "Education", "Employment and/or Labor", "Social Protection", "Environment", "Justice"]
+
+# Matches the enumerated six-sector run (e.g. "HEALTH, EDUCATION, EMPLOYMENT,
+# SOCIAL PROTECTION, ENVIRONMENT, JUSTICE" or "Health, Justice, Education,
+# Employment/ Labor, Social Protection and Environment") that source slides
+# repeat verbatim in `what` for every sector variant of a 6-sector indicator.
+# Left uncorrected, each per-sector question (e.g. SP-124 Employment) asks the
+# model to find evidence for ALL SIX sectors on one page instead of just its
+# own -- a near-guaranteed No, since no portal lists all six in one place.
+_SECTOR_KEYWORDS = [
+    r"Employment(?:\s*and/or\s*Labor|\s*/\s*Labou?r)?",
+    r"Health",
+    r"Education",
+    r"Social\s+Protection",
+    r"Environment",
+    r"Justice",
+]
+_SECTOR_ALT = "|".join(_SECTOR_KEYWORDS)
+_SECTOR_SEP = r"(?:\s*[,/&]\s*|\s+and\s+|\s+or\s+)+"
+_SECTOR_RUN_RE = re.compile(rf"(?:{_SECTOR_ALT})(?:{_SECTOR_SEP}(?:{_SECTOR_ALT}))+", re.IGNORECASE)
+
+
+def _localize_sector_text(text: str, sector: str) -> str:
+    """Replace a six-sector enumeration run in `text` with just `sector`.
+    Leaves `text` unchanged if no such run is present (most `what` fields
+    for non-6-sector indicators)."""
+    if not text:
+        return text
+    return _SECTOR_RUN_RE.sub(sector, text, count=1)
 
 
 def _clean_text(text: str) -> str:
@@ -76,6 +106,27 @@ def _clean_text(text: str) -> str:
     # Normalize multiple whitespace and line breaks
     text = re.sub(r"\s+", " ", text).strip()
     return text
+
+
+# Matches a full "(#095, 108, 124, ...)" style code-list annotation: the
+# leading code always has "#" (possibly with a stray space, "# 92"); the
+# siblings may or may not repeat it, can be separated by "," or "-"
+# (module 2.3's "(#062-063)"), and the list can wrap across a line break
+# after any separator.
+_CODE_LIST_RE = re.compile(r"\(\s*#\s*\d+[a-z]?(?:\s*[,-]\s*#?\s*\d+[a-z]?)*\s*\)")
+_CODE_TOKEN_RE = re.compile(r"(\d+)([a-z]?)")
+
+
+def _normalize_codes(text: str) -> list[str]:
+    """Pull every `<digits><optional letter>` token out of `text` and
+    zero-pad it to the catalog's 3-digit code convention (`92` -> `#092`),
+    deduplicating while preserving order."""
+    seen: list[str] = []
+    for num, suffix in _CODE_TOKEN_RE.findall(text):
+        code = f"#{num.zfill(3)}{suffix}"
+        if code not in seen:
+            seen.append(code)
+    return seen
 
 
 def parse_module_slides(pdf_path: pathlib.Path, module_cfg: dict) -> list[dict[str, Any]]:
@@ -101,12 +152,27 @@ def parse_module_slides(pdf_path: pathlib.Path, module_cfg: dict) -> list[dict[s
         if not (what_m and why_m):
             continue
 
-        codes = re.findall(r"#\d+[a-z]?", raw_text)
-        # Deduplicate codes while preserving order
-        unique_codes = []
-        for c in codes:
-            if c not in unique_codes:
-                unique_codes.append(c)
+        # The indicator's full code list lives in a "(#095, 108, 124, ...)"
+        # annotation next to its title. Only the first code is reliably
+        # "#"-prefixed -- siblings are often bare numbers ("108, 124") or
+        # separated by a mid-list line break, and occasionally the PDF's own
+        # text extraction drops the "#" onto its own token ("# 92"). A plain
+        # `#\d+` findall silently truncates every 6-sector indicator (and, for
+        # the "# 92" case, misses the slide's codes entirely -- see module
+        # 2.4's "Government expenditures for 6 sectors"), so the code list is
+        # parsed as one group first and only falls back to the naive scan
+        # when that finds fewer codes than scanning the whole page would.
+        code_list_match = _CODE_LIST_RE.search(raw_text)
+        codes_from_list = _normalize_codes(code_list_match.group(0)) if code_list_match else []
+
+        naive_codes = re.findall(r"#\d+[a-z]?", raw_text)
+        naive_unique: list[str] = []
+        for c in naive_codes:
+            if c not in naive_unique:
+                naive_unique.append(c)
+        codes_from_scan = _normalize_codes(" ".join(naive_unique))
+
+        unique_codes = codes_from_list if len(codes_from_list) > len(codes_from_scan) else codes_from_scan
 
         what_text = _clean_text(what_m.group(1))
         why_text = _clean_text(why_m.group(1))
@@ -114,19 +180,22 @@ def parse_module_slides(pdf_path: pathlib.Path, module_cfg: dict) -> list[dict[s
         case_text = _clean_text(cases_m.group(1)) if cases_m else ""
         ref_text = _clean_text(check_out_m.group(1)) if check_out_m else ""
 
-        # Extract title from first line or indicator line at the bottom
-        lines = [line.strip() for line in raw_text.split("\n") if line.strip()]
-        title = ""
-        # Look for indicator title pattern e.g., '1. #010 Organizational structure' or '14. Legislation... (#336)'
-        for line in lines:
-            m = re.match(r"^\d+\.\s*(?:#\d+[a-z]?\s*)?(.*?)(?:\(#\d+.*?\))?$", line)
-            if m and len(m.group(1).strip()) > 3:
-                title = m.group(1).strip()
-                # Clean up if title starts with codes
-                title = re.sub(r"^#\d+[a-z]?\s*", "", title).strip()
-                break
-        if not title and lines:
-            title = lines[0]
+        # The title's "N. " marker sits immediately before the code-list
+        # annotation -- but that annotation isn't always near the top of the
+        # page (module 2.1's sector slides put it after the Case Examples
+        # block), and the page can contain other "N. " markers earlier (e.g.
+        # numbered How-steps), so title extraction anchors off the code list
+        # itself: take the text between the *last* "N. " marker before it and
+        # the annotation, rather than pattern-matching a single line.
+        title_scope = raw_text[: code_list_match.start()] if code_list_match else raw_text
+        markers = list(re.finditer(r"(?:^|\n)\s*\d+\.\s*", title_scope))
+        title = _clean_text(title_scope[markers[-1].end():]) if markers else ""
+        if not title:
+            lines = [line.strip() for line in raw_text.split("\n") if line.strip()]
+            title = lines[0] if lines else ""
+        # A few slides repeat the code right after the "N." marker, before the
+        # title text itself (e.g. "1. #029 E-procurement platform (#029)").
+        title = re.sub(r"^#\d+[a-z]?\s*", "", title).strip()
 
         slides.append({
             "slide_number": idx + 1,
@@ -147,8 +216,14 @@ def build_questions_for_module(module_cfg: dict, slides: list[dict[str, Any]]) -
     locus_default = module_cfg["evidence_locus_default"]
     questions: list[dict[str, Any]] = []
 
-    # Map existing extracted json if available to cross-check locus and sector breakdowns
-    extracted_json_name = f"module_{module_cfg['id'].replace('.', '_')}_{module_name.lower().replace(' ', '_').replace('-', '_')}.json"
+    # Map existing extracted json if available to cross-check locus and sector breakdowns.
+    # A couple of the legacy filenames don't follow the derived naming convention
+    # (module_2_4_eparticipation.json, module_2_6_egov_literacy.json) -- an override
+    # avoids silently missing them and losing every sector breakdown in that module.
+    extracted_json_name = module_cfg.get(
+        "legacy_extracted_filename",
+        f"module_{module_cfg['id'].replace('.', '_')}_{module_name.lower().replace(' ', '_').replace('-', '_')}.json",
+    )
     legacy_file = DOCS_DIR / "_extracted" / extracted_json_name
     legacy_rows = []
     if legacy_file.exists():
@@ -188,7 +263,8 @@ def build_questions_for_module(module_cfg: dict, slides: list[dict[str, Any]]) -
                 bare = code.lstrip("#")
                 qid = f"{prefix}-{bare}"
                 q_title = f"{slide['title']} — {sector}" if slide['title'] else f"{module_name} {code} ({sector})"
-                text = f"{q_title} — {slide['what'][:150]}" if slide['what'] else q_title
+                sector_what = _localize_sector_text(slide["what"], sector)
+                text = f"{q_title} — {sector_what}" if sector_what else q_title
 
                 questions.append({
                     "question_id": qid,
@@ -196,7 +272,7 @@ def build_questions_for_module(module_cfg: dict, slides: list[dict[str, Any]]) -
                     "module": module_name,
                     "title": q_title,
                     "text": text,
-                    "what": slide["what"],
+                    "what": sector_what,
                     "why": slide["why"],
                     "how": how_dict,
                     "benchmark_case": slide["case_examples"],
@@ -211,7 +287,7 @@ def build_questions_for_module(module_cfg: dict, slides: list[dict[str, Any]]) -
             qid = f"{prefix}-{bare}"
             ind_id = codes[0] if len(codes) == 1 else ",".join(codes)
             q_title = slide["title"] or f"{module_name} {ind_id}"
-            text = f"{q_title} — {slide['what'][:150]}" if slide['what'] else q_title
+            text = f"{q_title} — {slide['what']}" if slide["what"] else q_title
 
             questions.append({
                 "question_id": qid,

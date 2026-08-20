@@ -24,11 +24,17 @@ scoped to this file if the production build requires it explicitly.
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 
 from google import genai
+from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 from langsmith import get_current_run_tree, traceable
+
+# Rate-limit backoff (429 only): fixed 30/60/90s waits, 4 attempts total
+# (1 immediate + 3 retries).
+RATE_LIMIT_BACKOFF_SECONDS = (30, 60, 90)
 
 
 @dataclass
@@ -42,18 +48,63 @@ class ModelResponse:
 class ModelProvider:
     """One call = one independent client. No state survives between calls."""
 
-    def __init__(self, project: str, location: str, use_vertexai: bool = True):
+    def __init__(
+        self,
+        project: str,
+        location: str,
+        use_vertexai: bool = True,
+        api_key: str = "",
+    ):
         self._project = project
         self._location = location
         self._use_vertexai = use_vertexai
+        self._api_key = api_key
 
     def _client(self) -> genai.Client:
         # A fresh client per call is deliberate -- see module docstring.
-        return genai.Client(
-            vertexai=self._use_vertexai,
-            project=self._project,
-            location=self._location,
-        )
+        # The Gemini Developer API (vertexai=False) rejects project/location
+        # entirely (ValueError), so they're only passed on the Vertex path.
+        if self._use_vertexai:
+            return genai.Client(
+                vertexai=True,
+                project=self._project,
+                location=self._location,
+            )
+        return genai.Client(vertexai=False, api_key=self._api_key or None)
+
+    async def _generate_with_retry(
+        self,
+        client: genai.Client,
+        model: str,
+        prompt: str,
+        config: genai_types.GenerateContentConfig,
+    ):
+        """Only a 429 (rate limit) is retried, with fixed 30/60/90s waits --
+        any other error (4xx, 5xx, network) surfaces immediately. Four
+        attempts total (1 immediate + 3 retries); if the last also 429s, the
+        error propagates and the caller (scheduler.process_unit) turns it
+        into an assessment_failure prefill rather than aborting the run."""
+        last_exc: genai_errors.APIError | None = None
+        for wait_seconds in (0, *RATE_LIMIT_BACKOFF_SECONDS):
+            if wait_seconds:
+                await asyncio.sleep(wait_seconds)
+            try:
+                return await client.aio.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=config,
+                )
+            except Exception as exc:
+                last_exc = exc
+                is_429 = (
+                    getattr(exc, "code", None) == 429
+                    or "429" in str(exc)
+                    or "RESOURCE_EXHAUSTED" in str(exc)
+                )
+                if not is_429:
+                    raise
+        assert last_exc is not None
+        raise last_exc
 
     # LangSmith tracing (FR-T-003): model_call span with input/output capture
     @traceable(run_type="llm", name="model_call")
@@ -74,16 +125,13 @@ class ModelProvider:
             config.response_mime_type = "application/json"
             config.response_schema = response_schema
 
-        response = await client.aio.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=config,
-        )
+        response = await self._generate_with_retry(client, model, prompt, config)
 
         usage = response.usage_metadata
         input_tokens = getattr(usage, "prompt_token_count", 0) or 0
         output_tokens = getattr(usage, "candidates_token_count", 0) or 0
-        model_identity = f"vertexai/{model}"
+        provider_label = "vertexai" if self._use_vertexai else "aistudio"
+        model_identity = f"{provider_label}/{model}"
 
         # LangSmith metadata enrichment (FR-T-003): tokens, cost, temperature
         try:

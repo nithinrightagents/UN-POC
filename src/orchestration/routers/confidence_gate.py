@@ -56,9 +56,54 @@ async def run_with_confidence_gate(
 
         # An authentication boundary means no answer was formed at all (A5) --
         # the confidence gate has nothing to evaluate; pass it straight through.
-        if output.auth_boundary_observed:
+        # Likewise a portal_unreachable fetch failure -- retrying assess_once
+        # re-fetches the same dead URL and will not change the outcome; the
+        # scheduler's link-resolution fallback is the mechanism that can help.
+        if output.auth_boundary_observed or output.portal_unreachable:
             return ConfidenceGateOutcome(
                 output=output, confidence_retry_count=retry_count, below_acceptance_threshold=False
+            )
+
+        # Evidence-location failure: the agent quoted text it believed was on
+        # the page, but the live re-search of the page (search_by_text)
+        # couldn't find it verbatim, so `evidence` came back None even though
+        # answer/confidence/justification were populated normally. Delivering
+        # this as-is guarantees a Validator Check-1 rejection ("required
+        # evidence component missing") without the Validator's judgment call
+        # ever running -- silently burning a full validation retry on
+        # something catchable right here. Retry with a targeted addendum
+        # instead, while retries remain; on exhaustion fall through unchanged
+        # (identical to today's behavior) rather than looping forever.
+        if (
+            output.evidence is None
+            and output.raw_evidence_quote
+            and output.evidence_located is False
+            and retry_count < retry_limit
+        ):
+            addendum = RetryAddendum(
+                kind="validation_gaps",
+                items=[
+                    f'Your quoted evidence ("{output.raw_evidence_quote}") could not be '
+                    "located verbatim on the page. Copy the exact text, in the same words "
+                    "and order, from a SINGLE contiguous span in PAGE CONTENT -- do not "
+                    "paraphrase, summarize, or combine text from two different parts of "
+                    "the page."
+                ],
+            )
+            retry_count += 1
+            continue
+
+        # A calibrated negative (No) answer is hard-capped at confidence <= 60
+        # by the agent's own negative-anchor calibration (agent.py), which
+        # sits below any reasonable acceptance threshold by construction --
+        # gating it the same way as a positive answer forced every single No
+        # through a retry it could never pass, doubling fetch/model cost on
+        # what is typically the majority answer across a real questionnaire.
+        if output.answer is False:
+            return ConfidenceGateOutcome(
+                output=output,
+                confidence_retry_count=retry_count,
+                below_acceptance_threshold=output.confidence < threshold,
             )
 
         gate = evaluate_confidence_gate(output.confidence, threshold, retry_count, retry_limit)

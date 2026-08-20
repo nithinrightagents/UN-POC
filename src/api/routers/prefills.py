@@ -118,6 +118,7 @@ def build_prefills_router(
                     confidence=p.confidence,
                     justification=p.justification,
                     evidence_url=p.evidence_url,
+                    capture_ref=p.capture_ref,
                     supplying_source=p.supplying_source,
                     agreement_outcome=p.agreement_outcome,
                     confidence_gap=p.confidence_gap,

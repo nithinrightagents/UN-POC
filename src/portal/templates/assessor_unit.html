@@ -184,12 +184,17 @@
                     Settled Dispute
                 </span>
                 {% endif %}
+                {% if row.ai.supplying_source_label %}
+                <span class="badge badge--neutral" style="font-size: 0.75rem;" title="Where the evidence link came from">
+                    Source: {{ row.ai.supplying_source_label }}
+                </span>
+                {% endif %}
             </div>
             <div class="ai-confidence-meter">
                 <span>Confidence:</span>
                 <span class="badge badge--neutral">{{ row.ai.confidence }}%</span>
-                {% if row.ai.confidence_gap %}
-                <span class="muted" style="font-size: 0.75rem;">(Gap: {{ row.ai.confidence_gap }})</span>
+                {% if row.ai.confidence_gap is not none %}
+                <span class="muted" style="font-size: 0.75rem; cursor: help;" title="Confidence delta between the two independent AI assessor agents. A small gap indicates strong agreement between both models.">(Agent Gap: {{ row.ai.confidence_gap }}%)</span>
                 {% endif %}
             </div>
         </div>
@@ -202,10 +207,19 @@
         <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem;">
             <strong>Evidence URL:</strong>
             <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
-            {% if row.ai.supplying_source %}
-            <span class="muted">(Source: {{ row.ai.supplying_source }})</span>
-            {% endif %}
         </p>
+        {% endif %}
+        {% if row.ai.capture_url %}
+        <div style="margin: 0.75rem 0; padding: 0.6rem 0.85rem; background: var(--color-bg-surface, #ffffff); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); max-width: 540px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">Visual Evidence Snapshot (Element Region)</span>
+                <a href="{{ row.ai.capture_url }}" target="_blank" rel="noopener noreferrer" style="font-size: 0.75rem; font-weight: 600;">View Full Image ↗</a>
+            </div>
+            <a href="{{ row.ai.capture_url }}" target="_blank" rel="noopener noreferrer" style="display: block;">
+                <img src="{{ row.ai.capture_url }}" alt="Region-scoped snapshot of the cited evidence"
+                     style="max-width: 100%; max-height: 240px; object-fit: contain; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs); display: block; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+            </a>
+        </div>
         {% endif %}
         {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
         <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background-color: rgba(0,0,0,0.03); border-radius: var(--radius-xs); font-size: 0.85rem;">

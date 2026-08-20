@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import sqlite3
+from dataclasses import replace
 
 import click
 
@@ -257,10 +258,8 @@ def run(
     conn = _connect(settings)
 
     from core.llm_factory import ModelProvider
-    from shared.state.entities import (
-        AssessmentSession, ConfigurationSnapshot, SessionMode, SessionStatus, new_id,
-    )
     from orchestration.scheduler import run_batch
+    from portal.common import ensure_session
     from shared.persistence.repositories import Repository
     from shared.tools.browser import BrowserSession
     from shared.ratelimit.token_bucket import RateLimiter
@@ -270,30 +269,28 @@ def run(
 
     repo = Repository(conn)
 
-    if resume or session_id_opt:
+    if session_id_opt:
+        # An explicit --session always wins, resume or not (e.g. targeting an
+        # ad-hoc benchmark session rather than the cycle's canonical one).
         session_id = session_id_opt
-        if not session_id:
-            row = conn.execute(
-                "SELECT session_id FROM assessment_sessions WHERE cycle_id = ? "
-                "ORDER BY created_at DESC LIMIT 1",
-                (cycle_id,),
-            ).fetchone()
-            if not row:
-                click.secho(f"No session found to resume for cycle {cycle_id!r}.", fg="red")
-                raise SystemExit(1)
-            session_id = row["session_id"]
+        click.echo(f"{'Resuming' if resume else 'Using'} session {session_id}")
+    elif resume:
+        row = conn.execute(
+            "SELECT session_id FROM assessment_sessions WHERE cycle_id = ? "
+            "ORDER BY created_at DESC LIMIT 1",
+            (cycle_id,),
+        ).fetchone()
+        if not row:
+            click.secho(f"No session found to resume for cycle {cycle_id!r}.", fg="red")
+            raise SystemExit(1)
+        session_id = row["session_id"]
         click.echo(f"Resuming session {session_id}")
     else:
-        snapshot = ConfigurationSnapshot(snapshot_id=new_id("cfg"), session_id="", values=settings.as_dict())
-        session = AssessmentSession(
-            session_id=new_id("session"), cycle_id=cycle_id, mode=SessionMode.PRODUCTION,
-            config_snapshot_id=snapshot.snapshot_id, status=SessionStatus.RUNNING,
-        )
-        snapshot.session_id = session.session_id
-        repo.insert_config_snapshot(snapshot)
-        repo.insert_session(session)
-        session_id = session.session_id
-        click.echo(f"Started session {session_id}")
+        # One long-lived session per cycle (portal.common.session_id_for_cycle):
+        # every AI pre-fill run and every human A/B submission for a cycle
+        # accumulates into it, so the portal can see what this CLI produces.
+        session_id = ensure_session(repo, cycle_id)
+        click.echo(f"Using session {session_id}")
 
     questions = repo.list_questions(cycle_id)
     if questions_filter:
@@ -313,7 +310,12 @@ def run(
 
     async def _run() -> None:
         limiter = RateLimiter(rate_per_sec=settings.rate_limit_per_domain_rps)
-        provider = ModelProvider(settings.google_cloud_project, settings.google_cloud_location, settings.google_genai_use_vertexai)
+        provider = ModelProvider(
+            settings.google_cloud_project,
+            settings.google_cloud_location,
+            settings.google_genai_use_vertexai,
+            settings.google_api_key,
+        )
         browser = BrowserSession(settings.user_agent, limiter)
         await browser.start()
         capture_dir = f"./data/captures/{session_id}"
@@ -419,6 +421,38 @@ def question_add_cmd(
         portals = repo.list_portals(cycle_id)
         enqueued = enqueue_custom_question(repo, session_id, q, portals)
         click.echo(f"Enqueued {len(enqueued)} units mid-run for session {session_id}.")
+
+
+@question.command("edit")
+@click.option("--question-id", required=True, help="Existing custom question identifier")
+@click.option("--text", required=True, help="Revised question text")
+@click.option("--editor", "revised_by", required=True, help="Actor ID making the edit")
+@click.pass_context
+def question_edit_cmd(ctx: click.Context, question_id: str, text: str, revised_by: str) -> None:
+    """Edit an existing custom question (default questionnaire questions are immutable)."""
+    settings: Settings = ctx.obj["settings"]
+    from shared.persistence.repositories import Repository
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    repo = Repository(conn)
+
+    existing = repo.get_question(question_id)
+    if existing is None:
+        click.secho(f"No such question: {question_id}", fg="red")
+        raise SystemExit(1)
+
+    updated = replace(existing, text=text)
+    try:
+        repo.update_question(updated, revised_by=revised_by)
+    except ValueError as exc:
+        click.secho(str(exc), fg="red")
+        raise SystemExit(1)
+
+    revision_count = repo.count_question_revisions(question_id)
+    click.secho(
+        f"Edited {question_id} (revision #{revision_count}, editor={revised_by})", fg="green"
+    )
 
 
 @main.group()

@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import json
 import pathlib
 
 import httpx
@@ -25,15 +24,14 @@ from portal.common import ensure_session
 from portal.msq import ingest_msq_pdf
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
+from shared.questionnaires.registry import load_question_set
 from shared.state.entities import (
     AgentRunState,
-    AnswerType,
     AssessorAgentRun,
     AssessorCompletion,
     AssessorRole,
     ElementReference,
     EvidenceArtifact,
-    EvidenceLocus,
     HumanAssessorSubmission,
     Prefill,
     ProjectType,
@@ -45,9 +43,6 @@ from shared.state.entities import (
 )
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
-_INDICATORS_PATH = _REPO_ROOT / "data" / "questionnaires" / "templates" / "un_osi_2024_master.json"
-if not _INDICATORS_PATH.exists():
-    _INDICATORS_PATH = _REPO_ROOT / "data" / "questions" / "msq_indicators.json"
 _DENMARK_MSQ_PATH = _REPO_ROOT / "understanding docs" / "Denmark - MS MSQ 2024.pdf"
 
 _NATIONAL_UNITS = [
@@ -63,33 +58,6 @@ _LOSI_UNITS = [
     ("MCR", "Manchester", "https://www.manchester.gov.uk"),
     ("EDI", "Edinburgh", "https://www.edinburgh.gov.uk"),
 ]
-
-
-def _load_indicator_questions(cycle_id: str) -> list[Question]:
-    """question_id is a global primary key in schema.py (shared with 001's
-    single-cycle-at-a-time CLI usage), so a cycle-local prefix keeps two
-    projects using the same indicator set from colliding. indicator_id stays
-    the bare PF-### -- that's what the heuristic checker's PrefillResult
-    keys on (agents/prefill/heuristic.py)."""
-    data = json.loads(_INDICATORS_PATH.read_text(encoding="utf-8"))
-    return [
-        Question(
-            question_id=f"{cycle_id}:{q['question_id']}",
-            cycle_id=cycle_id,
-            text=q["text"],
-            answer_type=AnswerType(q["answer_type"]),
-            evidence_locus=EvidenceLocus(q["evidence_locus"]),
-            indicator_id=q.get("indicator_id"),
-            question_class=q.get("module") or q.get("question_class"),
-            title=q.get("title"),
-            what=q.get("what"),
-            why=q.get("why"),
-            how=q.get("how"),
-            benchmark_case=q.get("benchmark_case"),
-            reference_links=q.get("reference_links", []),
-        )
-        for q in data["questions"]
-    ]
 
 
 async def _prefill_unit(
@@ -138,11 +106,11 @@ async def _prefill_unit(
 
 
 async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
-    questions_national = _load_indicator_questions("un-egov-2026")
+    questions_national = load_question_set("un_osi_2024_master", "un-egov-2026")
     for q in questions_national:
         if repo.get_question(q.question_id) is None:
             repo.insert_question(q)
-    questions_losi = _load_indicator_questions("losi-uk-2025")
+    questions_losi = load_question_set("un_osi_2024_master", "losi-uk-2025")
     for q in questions_losi:
         if repo.get_question(q.question_id) is None:
             repo.insert_question(q)
@@ -197,6 +165,21 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
     if _DENMARK_MSQ_PATH.exists():
         doc = ingest_msq_pdf(str(_DENMARK_MSQ_PATH), cycle_national.cycle_id, "DK", _DENMARK_MSQ_PATH.name)
         repo.insert_msq_document(doc)
+        if getattr(settings, "google_cloud_project", None):
+            try:
+                from core.llm_factory import ModelProvider
+                from portal.msq import match_msq_links
+                provider = ModelProvider(
+                    settings.google_cloud_project,
+                    settings.google_cloud_location,
+                    settings.google_genai_use_vertexai,
+                    settings.google_api_key,
+                )
+                candidates = await match_msq_links(doc, questions_national, provider, settings.validator_model)
+                for candidate in candidates:
+                    repo.insert_msq_link_candidate(candidate)
+            except Exception:
+                pass
 
     denmark = next(p for p in national_portals if p.country_id == "DK")
     usa = next(p for p in national_portals if p.country_id == "US")

@@ -98,7 +98,7 @@ class FakePage:
 
 
 class FakeBrowserSession:
-    async def fetch(self, url, caller_class, fetch_log=None):
+    async def fetch(self, url, caller_class, fetch_log=None, timeout_ms=15000):
         result = PageResult(
             url=url, final_url=url, html="<html><body>Some content.</body></html>",
             status=200, reachable=True,

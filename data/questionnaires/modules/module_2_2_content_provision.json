@@ -32,7 +32,7 @@
       "indicator_id": "#028",
       "module": "Content Provision",
       "title": "Procurement announcements",
-      "text": "Procurement announcements — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"t",
+      "text": "Procurement announcements — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead and may provide a link to the external platform used by the country.",
       "what": "A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead and may provide a link to the external platform used by the country.",
       "why": "Essential for promoting transparency, encouraging fair competition, and ensuring that businesses and contractors have equal access to opportunities, fostering accountability and trust within the country.",
       "how": {
@@ -54,8 +54,8 @@
       "question_id": "CP-030",
       "indicator_id": "#030",
       "module": "Content Provision",
-      "title": "Create a Dedicated Section:",
-      "text": "Create a Dedicated Section: — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"t",
+      "title": "Procurement results",
+      "text": "Procurement results — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
       "what": "A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
       "why": "Crucial for transparency, ensuring accountability, and fostering public trust by demonstrating fair and responsible use of taxpayer funds.",
       "how": {
@@ -101,7 +101,7 @@
       "indicator_id": "#117",
       "module": "Content Provision",
       "title": "Available scholarships or other funding",
-      "text": "Available scholarships or other funding — Information on the national government portal on available scholarships or other forms of government funding for Education purposes. This includes sch",
+      "text": "Available scholarships or other funding — Information on the national government portal on available scholarships or other forms of government funding for Education purposes. This includes scholarships, grants, loans, and other forms of financial assistance offered by the government to support individuals in their pursuit of education",
       "what": "Information on the national government portal on available scholarships or other forms of government funding for Education purposes. This includes scholarships, grants, loans, and other forms of financial assistance offered by the government to support individuals in their pursuit of education",
       "why": "Enhances transparency, accessibility, and equity in accessing educational resources, thereby facilitating the empowerment and advancement of individuals through education.",
       "how": {
@@ -124,7 +124,7 @@
       "indicator_id": "#129",
       "module": "Content Provision",
       "title": "Employment for youth",
-      "text": "Employment for youth — Presence of links and references for employment for youth on the national government portal. Youth\" refers to any person under the age of 26 (and over",
+      "text": "Employment for youth — Presence of links and references for employment for youth on the national government portal. Youth\" refers to any person under the age of 26 (and over the age of 18). These resources typically encompass job listings, career guidance services, vocational training programs, internship opportunities, and other forms of support.",
       "what": "Presence of links and references for employment for youth on the national government portal. Youth\" refers to any person under the age of 26 (and over the age of 18). These resources typically encompass job listings, career guidance services, vocational training programs, internship opportunities, and other forms of support.",
       "why": "Empowers young people with the tools and information needed to navigate the job market effectively, enhance their employability skills, and secure meaningful employment opportunities.",
       "how": {
@@ -147,7 +147,7 @@
       "indicator_id": "#131a",
       "module": "Content Provision",
       "title": "Workers' compensation beneﬁts",
-      "text": "Workers' compensation beneﬁts — Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of wor",
+      "text": "Workers' compensation beneﬁts — Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of work-related illnesses or injuries. This information typically includes detailed instructions on eligibility criteria, required documentation, and submitting an online application.",
       "what": "Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of work-related illnesses or injuries. This information typically includes detailed instructions on eligibility criteria, required documentation, and submitting an online application.",
       "why": "Facilitate access to support and assistance for individuals who have suffered work-related injuries or illnesses, ensuring they receive the compensation they are entitled to in a timely and efficient manner.",
       "how": {
@@ -170,7 +170,7 @@
       "indicator_id": "#150",
       "module": "Content Provision",
       "title": "Long term care",
-      "text": "Long term care — Information on how older persons can apply for term care (e.g. support to be able to stay at home or enter retirement housing facilities),this could e",
+      "text": "Long term care — Information on how older persons can apply for term care (e.g. support to be able to stay at home or enter retirement housing facilities),this could encompass detailed instructions on eligibility criteria, available support services, application procedures, and other options available for older individuals requiring long-term care.",
       "what": "Information on how older persons can apply for term care (e.g. support to be able to stay at home or enter retirement housing facilities),this could encompass detailed instructions on eligibility criteria, available support services, application procedures, and other options available for older individuals requiring long-term care.",
       "why": "Facilitates access to appropriate care and support services for older individuals, enabling them to maintain independence, dignity, and quality of life as they age.",
       "how": {

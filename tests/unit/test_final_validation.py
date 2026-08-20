@@ -73,7 +73,7 @@ class FakeBrowserSession:
     def __init__(self, reachable: bool = True):
         self.reachable = reachable
 
-    async def fetch(self, url, caller_class, fetch_log=None):
+    async def fetch(self, url, caller_class, fetch_log=None, timeout_ms=15000):
         return PageResult(
             url=url,
             final_url=url,

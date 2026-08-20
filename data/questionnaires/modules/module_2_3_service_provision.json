@@ -2,7 +2,7 @@
   "module": "Service Provision",
   "module_id": "2.3",
   "source_pdf": "Module 2.3 Service Provision.pdf",
-  "total_questions": 30,
+  "total_questions": 45,
   "questions": [
     {
       "question_id": "SP-029",
@@ -55,7 +55,7 @@
       "indicator_id": "#044",
       "module": "Service Provision",
       "title": "Value Added Tax, Goods & Services Tax",
-      "text": "Value Added Tax, Goods & Services Tax — The ability for businesses to submit online for: Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent on any of the national government por",
+      "text": "Value Added Tax, Goods & Services Tax — The ability for businesses to submit online for: Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent on any of the national government portals.",
       "what": "The ability for businesses to submit online for: Value Added Tax (VAT), Goods & Services Tax (GST) or equivalent on any of the national government portals.",
       "why": "Streamlines administrative processes, improves efficiency, and enhances transparency in tax administration for businesses, thereby promoting compliance and supporting the government's revenue collection efforts",
       "how": {
@@ -78,7 +78,7 @@
       "indicator_id": "#045",
       "module": "Service Provision",
       "title": "Entry or Transit Visa",
-      "text": "Entry or Transit Visa — This online process allows applicants to complete and submit visa forms, upload required documents, pay application fees, and schedule appointments wi",
+      "text": "Entry or Transit Visa — This online process allows applicants to complete and submit visa forms, upload required documents, pay application fees, and schedule appointments without the need for physical submission.",
       "what": "This online process allows applicants to complete and submit visa forms, upload required documents, pay application fees, and schedule appointments without the need for physical submission.",
       "why": "Streamlines the visa application process, enhances efficiency, and improves accessibility for travelers, reducing processing times and administrative burdens for both applicants and government authorities.",
       "how": {
@@ -101,7 +101,7 @@
       "indicator_id": "#046",
       "module": "Service Provision",
       "title": "Registration or renewal for a vehicle",
-      "text": "Registration or renewal for a vehicle — Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s). Users can access and complete registrat",
+      "text": "Registration or renewal for a vehicle — Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s). Users can access and complete registration forms, upload required documents, pay registration fees, and schedule appointments if necessary.",
       "what": "Registration or renewal for a vehicle (car, truck, motorcycle, and others) in any of the government portal(s). Users can access and complete registration forms, upload required documents, pay registration fees, and schedule appointments if necessary.",
       "why": "Streamlines administrative procedures, improves efficiency, and enhances accessibility for vehicle owners, thereby contributing to overall customer satisfaction and effective governance.",
       "how": {
@@ -190,10 +190,10 @@
     },
     {
       "question_id": "SP-050",
-      "indicator_id": "#050",
+      "indicator_id": "#050,#051,#052",
       "module": "Service Provision",
       "title": "Birth /Death / Marriage certiﬁcate",
-      "text": "Birth /Death / Marriage certiﬁcate — The ability to apply for a birth/death/marriage certificate online with i) information, or ii) full online application at any of the government portal",
+      "text": "Birth /Death / Marriage certiﬁcate — The ability to apply for a birth/death/marriage certificate online with i) information, or ii) full online application at any of the government portal(s).",
       "what": "The ability to apply for a birth/death/marriage certificate online with i) information, or ii) full online application at any of the government portal(s).",
       "why": "Streamlines the process for users, ensuring timely and accurate documentation, promoting efficiency, and enhancing overall citizen satisfaction.",
       "how": {
@@ -216,7 +216,7 @@
       "indicator_id": "#053",
       "module": "Service Provision",
       "title": "Personal Identity Cards",
-      "text": "Personal Identity Cards — The ability for users to apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government p",
+      "text": "Personal Identity Cards — The ability for users to apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government portal(s).",
       "what": "The ability for users to apply or request for a Personal Identity Cards with i) information, or ii) full online application at any of the government portal(s).",
       "why": "Streamlines administrative procedures, enhances accessibility, and improves efficiency in the issuance of personal identification documents,",
       "how": {
@@ -374,7 +374,7 @@
     },
     {
       "question_id": "SP-062",
-      "indicator_id": "#062",
+      "indicator_id": "#062,#063",
       "module": "Service Provision",
       "title": "Water utility/ Energy (electricity/gas) utility",
       "text": "Water utility/ Energy (electricity/gas) utility — The ability to pay for online expenses related to utilities (water and energy), either on public or non-public sectors website.",
@@ -400,7 +400,7 @@
       "indicator_id": "#079",
       "module": "Service Provision",
       "title": "Digital invoices",
-      "text": "Digital invoices — The ability to pay for digital invoices or \"e-invoicing” at any of the government portal(s). Users can manage their financial transactions with govern",
+      "text": "Digital invoices — The ability to pay for digital invoices or \"e-invoicing” at any of the government portal(s). Users can manage their financial transactions with government agencies, such as paying for services, taxes, fees, or fines, using secure online payment methods.",
       "what": "The ability to pay for digital invoices or \"e-invoicing” at any of the government portal(s). Users can manage their financial transactions with government agencies, such as paying for services, taxes, fees, or fines, using secure online payment methods.",
       "why": "Enhances transparency, streamlines administrative processes, reduces paperwork, and improves the overall efficiency",
       "how": {
@@ -420,10 +420,10 @@
     },
     {
       "question_id": "SP-080",
-      "indicator_id": "#080",
+      "indicator_id": "#080,#081",
       "module": "Service Provision",
       "title": "GIS data and/or online services",
-      "text": "GIS data and/or online services — The presence of GIS or other geospatial-related data and/or online services at any of the government portal(s). These can give access to spatial infor",
+      "text": "GIS data and/or online services — The presence of GIS or other geospatial-related data and/or online services at any of the government portal(s). These can give access to spatial information, maps, and related services for users, allowing users to visualize, analyze, and interpret geographic data for various purposes",
       "what": "The presence of GIS or other geospatial-related data and/or online services at any of the government portal(s). These can give access to spatial information, maps, and related services for users, allowing users to visualize, analyze, and interpret geographic data for various purposes",
       "why": "Enhances transparency, promotes evidence-based decision-making, improves public service delivery, and fosters innovation and collaboration",
       "how": {
@@ -446,7 +446,7 @@
       "indicator_id": "#082",
       "module": "Service Provision",
       "title": "Business tax ﬁling",
-      "text": "Business tax ﬁling — The ability for users to apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(",
+      "text": "Business tax ﬁling — The ability for users to apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(s).",
       "what": "The ability for users to apply or request for Business tax filing with i) information, or ii) full online application at any of the government portal(s).",
       "why": "Enhances efficiency, reduces paperwork, and ensures accurate and timely submissions, thereby simplifying the tax process for businesses and promoting fiscal responsibility within the country.",
       "how": {
@@ -469,7 +469,7 @@
       "indicator_id": "#131b",
       "module": "Service Provision",
       "title": "Transitioning people to retirement",
-      "text": "Transitioning people to retirement — The ability for users to apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the gov",
+      "text": "Transitioning people to retirement — The ability for users to apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the government portal(s). Allows individuals nearing retirement age to access information, resources, and assistance related to retirement planning and benefits entitlements, as well as to submit applications or requests for retirement benefits, pension schemes, or other retirement-related services.",
       "what": "The ability for users to apply or request for transitioning people to retirement with i) information, or ii) full online application at any of the government portal(s). Allows individuals nearing retirement age to access information, resources, and assistance related to retirement planning and benefits entitlements, as well as to submit applications or requests for retirement benefits, pension schemes, or other retirement-related services.",
       "why": "Enhances accessibility, streamline administrative processes, and improve the overall retirement experience for individuals",
       "how": {
@@ -491,9 +491,124 @@
       "question_id": "SP-095",
       "indicator_id": "#095",
       "module": "Service Provision",
-      "title": "Online services provision for six main sectors (#095,",
-      "text": "Online services provision for six main sectors (#095, — Evidence of a section on the national website where online services are listed for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUST",
-      "what": "Evidence of a section on the national website where online services are listed for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "title": "Online services provision for six main sectors — Health",
+      "text": "Online services provision for six main sectors — Health — Evidence of a section on the national website where online services are listed for Health",
+      "what": "Evidence of a section on the national website where online services are listed for Health",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-108",
+      "indicator_id": "#108",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors — Education",
+      "text": "Online services provision for six main sectors — Education — Evidence of a section on the national website where online services are listed for Education",
+      "what": "Evidence of a section on the national website where online services are listed for Education",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-124",
+      "indicator_id": "#124",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors — Employment",
+      "text": "Online services provision for six main sectors — Employment — Evidence of a section on the national website where online services are listed for Employment",
+      "what": "Evidence of a section on the national website where online services are listed for Employment",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-137",
+      "indicator_id": "#137",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors — Social Protection",
+      "text": "Online services provision for six main sectors — Social Protection — Evidence of a section on the national website where online services are listed for Social Protection",
+      "what": "Evidence of a section on the national website where online services are listed for Social Protection",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-166",
+      "indicator_id": "#166",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors — Environment",
+      "text": "Online services provision for six main sectors — Environment — Evidence of a section on the national website where online services are listed for Environment",
+      "what": "Evidence of a section on the national website where online services are listed for Environment",
+      "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish Sector-Specific Sections: a. Create dedicated sections or links to relevant ministries, on the government portal for each sector, such as health, education, employment, etc. 2. List Available Online Services: a. Compile a comprehensive list of online services offered within each sector, including descriptions and relevant links. 3. Provide Search Functionality: a. Implement a search feature to allow users to easily find specific online services within each sector. 4. Regular Updates: a. Maintain the portal with up-to-date information on available services and ensure links are functional and accurate.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Estonia’s online health services page",
+      "reference_links": [
+        "Estonia’s online health services page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-177",
+      "indicator_id": "#177",
+      "module": "Service Provision",
+      "title": "Online services provision for six main sectors — Justice",
+      "text": "Online services provision for six main sectors — Justice — Evidence of a section on the national website where online services are listed for Justice",
+      "what": "Evidence of a section on the national website where online services are listed for Justice",
       "why": "Enhance accessibility, transparency, and efficiency in accessing critical government services, promoting citizen engagement and empowerment.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -514,9 +629,124 @@
       "question_id": "SP-095a",
       "indicator_id": "#095a",
       "module": "Service Provision",
-      "title": "Mobile services for six main sectors (#095a, 108a, 124a, 137a,",
-      "text": "Mobile services for six main sectors (#095a, 108a, 124a, 137a, — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, J",
-      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "title": "Mobile services for six main sectors — Health",
+      "text": "Mobile services for six main sectors — Health — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Health",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Health",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-108a",
+      "indicator_id": "#108a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors — Education",
+      "text": "Mobile services for six main sectors — Education — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Education",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Education",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-124a",
+      "indicator_id": "#124a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors — Employment",
+      "text": "Mobile services for six main sectors — Employment — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Employment",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Employment",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-137a",
+      "indicator_id": "#137a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors — Social Protection",
+      "text": "Mobile services for six main sectors — Social Protection — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Social Protection",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Social Protection",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-166a",
+      "indicator_id": "#166a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors — Environment",
+      "text": "Mobile services for six main sectors — Environment — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Environment",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Environment",
+      "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Develop Mobile-Friendly Interface: a. Design the government portal to be responsive and compatible with mobile browsers, ensuring seamless access to services on smartphones and tablets. 2. Create Mobile Apps: a. Develop dedicated mobile applications for each sector to provide users with convenient access to services through their smartphones. 3. Offer Download Options: a. Provide clear instructions and download links for users to easily access and install the mobile apps. 4. Ensure Security and Privacy: a. Implement robust security measures to protect users' personal information and ensure data privacy when accessing services through mobile devices. 5. Promote Awareness: a. Advertise the availability of mobile services through various communication channels.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Canada’s mobile application page",
+      "reference_links": [
+        "the US DGA Guide or IBM’s guide."
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-177a",
+      "indicator_id": "#177a",
+      "module": "Service Provision",
+      "title": "Mobile services for six main sectors — Justice",
+      "text": "Mobile services for six main sectors — Justice — Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Justice",
+      "what": "Evidence of users’ ability to find mobile phone (i.e. browser or an app) services for Justice",
       "why": "Ensures convenient and accessible access to government services, meeting the diverse needs of residents, and promoting digital inclusion and engagement.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -537,9 +767,124 @@
       "question_id": "SP-095b",
       "indicator_id": "#095b",
       "module": "Service Provision",
-      "title": "SMS alert for six main sectors (#095b, 108b, 124b, 137b, 166b,",
-      "text": "SMS alert for six main sectors (#095b, 108b, 124b, 137b, 166b, — Evidence of users’ ability to receive SMS alerts for services in HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
-      "what": "Evidence of users’ ability to receive SMS alerts for services in HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE",
+      "title": "SMS alert for six main sectors — Health",
+      "text": "SMS alert for six main sectors — Health — Evidence of users’ ability to receive SMS alerts for services in Health",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Health",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-108b",
+      "indicator_id": "#108b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors — Education",
+      "text": "SMS alert for six main sectors — Education — Evidence of users’ ability to receive SMS alerts for services in Education",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Education",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-124b",
+      "indicator_id": "#124b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors — Employment",
+      "text": "SMS alert for six main sectors — Employment — Evidence of users’ ability to receive SMS alerts for services in Employment",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Employment",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-137b",
+      "indicator_id": "#137b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors — Social Protection",
+      "text": "SMS alert for six main sectors — Social Protection — Evidence of users’ ability to receive SMS alerts for services in Social Protection",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Social Protection",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-166b",
+      "indicator_id": "#166b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors — Environment",
+      "text": "SMS alert for six main sectors — Environment — Evidence of users’ ability to receive SMS alerts for services in Environment",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Environment",
+      "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Implement SMS Notification System: a. Develop a system that allows users to opt-in to receive SMS alerts for government services in the specified sectors. 2. Integrate with Service Offerings: a. Ensure that the SMS notification system is seamlessly integrated with existing online services in health, education, employment, social protection, environment, and justice sectors. 3. Provide Clear Instructions: a. Offer straightforward instructions on how users can subscribe to SMS alerts for specific services. 4. Ensure Privacy and Security: a. Implement robust data protection measures to safeguard users' personal information and ensure compliance with privacy regulations. 5. Monitor and Improve: a. Continuously monitor the effectiveness of the SMS notification system and gather user feedback.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Brunei Darussalam’s SMS Exam Results page",
+      "reference_links": [
+        "Brunei Darussalam’s SMS Exam Results page"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "SP-177b",
+      "indicator_id": "#177b",
+      "module": "Service Provision",
+      "title": "SMS alert for six main sectors — Justice",
+      "text": "SMS alert for six main sectors — Justice — Evidence of users’ ability to receive SMS alerts for services in Justice",
+      "what": "Evidence of users’ ability to receive SMS alerts for services in Justice",
       "why": "Crucial for ensuring timely notifications, improving accessibility, and enhancing citizen engagement with government services, especially for those with limited internet access or digital literacy",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -561,7 +906,7 @@
       "indicator_id": "#117,#118",
       "module": "Service Provision",
       "title": "Scholarships, fellowships or other forms of government funding",
-      "text": "Scholarships, fellowships or other forms of government funding — (#117) Information on available scholarships or other forms of government funding for EDUCATION and (#118) online application for government scholarsh",
+      "text": "Scholarships, fellowships or other forms of government funding — (#117) Information on available scholarships or other forms of government funding for EDUCATION and (#118) online application for government scholarships and fellowships with i) information, or ii) full online application at any of the government portal(s)",
       "what": "(#117) Information on available scholarships or other forms of government funding for EDUCATION and (#118) online application for government scholarships and fellowships with i) information, or ii) full online application at any of the government portal(s)",
       "why": "Crucial for promoting accessibility, transparency, and equity in education opportunities.",
       "how": {
@@ -581,10 +926,10 @@
     },
     {
       "question_id": "SP-143",
-      "indicator_id": "#143",
+      "indicator_id": "#143,#144,#145,#146,#147,#148",
       "module": "Service Provision",
       "title": "Speciﬁc Services/ Information available for vulnerable groups",
-      "text": "Speciﬁc Services/ Information available for vulnerable groups — Service or information for below vulnerable groups with i) information, or ii) full online application at any of the government portal(s). Vulnerable ",
+      "text": "Speciﬁc Services/ Information available for vulnerable groups — Service or information for below vulnerable groups with i) information, or ii) full online application at any of the government portal(s). Vulnerable groups: poor (below the poverty line) /persons with disabilities /older persons/immigrants, migrant workers, refugees, and internally displaced persons/women/youth",
       "what": "Service or information for below vulnerable groups with i) information, or ii) full online application at any of the government portal(s). Vulnerable groups: poor (below the poverty line) /persons with disabilities /older persons/immigrants, migrant workers, refugees, and internally displaced persons/women/youth",
       "why": "Ensures equitable access to government support and resources, fostering inclusivity and addressing the specific needs of marginalized populations.",
       "how": {
@@ -630,7 +975,7 @@
       "indicator_id": "#182",
       "module": "Service Provision",
       "title": "Aﬃdavit of criminal record/background clearance",
-      "text": "Aﬃdavit of criminal record/background clearance — Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the gover",
+      "text": "Aﬃdavit of criminal record/background clearance — Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the government portal(s)",
       "what": "Application for receiving an affidavit of criminal record/background clearance with i) information, or ii) full online application at any of the government portal(s)",
       "why": "Streamlines the process, enhances transparency, and facilitates individuals' access to vital legal documentation.",
       "how": {
@@ -653,7 +998,7 @@
       "indicator_id": "#183",
       "module": "Service Provision",
       "title": "Access to justice information",
-      "text": "Access to justice information — Access to justice information by i) retrieving information, ii) filing (open) online; iii) managing of court cases at any of the government portal(s).",
+      "text": "Access to justice information — Access to justice information by i) retrieving information, ii) filing (open) online; iii) managing of court cases at any of the government portal(s). Allows individuals to access vital legal resources, initiate legal actions conveniently, and monitor the progress of their cases.",
       "what": "Access to justice information by i) retrieving information, ii) filing (open) online; iii) managing of court cases at any of the government portal(s). Allows individuals to access vital legal resources, initiate legal actions conveniently, and monitor the progress of their cases.",
       "why": "Promotes legal empowerment, and facilitates individuals' participation in the judicial process through convenient online access to legal resources and services",
       "how": {
@@ -673,10 +1018,10 @@
     },
     {
       "question_id": "SP-184",
-      "indicator_id": "#184",
+      "indicator_id": "#184,#185,#189,#190,#191",
       "module": "Service Provision",
       "title": "Beneﬁts Application",
-      "text": "Beneﬁts Application — Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment",
+      "text": "Beneﬁts Application — Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment benefits through i) information, or ii) full online application at any of the government portal(s)",
       "what": "Apply or request for benefits due to illness and injury/ child benefits/ disability compensation benefits / maternal or newborn benefits/ unemployment benefits through i) information, or ii) full online application at any of the government portal(s)",
       "why": "Streamlines the process, improves accessibility, and provides timely support to individuals in need of assistance due to illness, injury, disability, maternity, newborn care, or unemployment.",
       "how": {

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 from dataclasses import dataclass, field
+from urllib.parse import urlparse
 
 import httpx
 
@@ -37,6 +38,7 @@ from shared.state import unit_state
 from shared.state.entities import (
     AgentRunState,
     AssessorAgentRun,
+    LinkSource,
     PrefillReason,
     Question,
     TargetPortal,
@@ -47,6 +49,7 @@ from shared.state.resume import remaining_work
 from shared.state.schemas import PortalInput, QuestionInput, RetryAddendum
 from shared.tools.browser import BrowserSession
 from shared.tools.linkresolution.chain import resolve_link
+from shared.tools.linkresolution.locus import evidence_permitted
 
 
 @dataclass
@@ -204,11 +207,19 @@ async def process_unit(
     effective_run_id = run_id or new_id("run")
     cycle_id = portal.cycle_id or getattr(question, "cycle_id", "default-cycle")
 
+    how = question.how if isinstance(question.how, dict) else {}
     question_dict = {
         "question_id": question.question_id,
         "text": question.text,
         "answer_type": question.answer_type.value,
         "evidence_locus": question.evidence_locus.value,
+        "title": question.title,
+        "what": question.what,
+        "why": question.why,
+        "criteria_for_yes": how.get("criteria_for_yes"),
+        "criteria_for_no": how.get("criteria_for_no"),
+        "scoring_guidance": how.get("scoring_guidance"),
+        "benchmark_case": question.benchmark_case,
     }
 
     existing = repo.get_unit(session_id, question.question_id, portal_id)
@@ -272,13 +283,69 @@ async def process_unit(
                         "url_resolution",
                         {"question_id": question.question_id, "portal_id": portal_id},
                     ):
+                        # Strict-first-try / relaxed-retry domain restriction
+                        # (2026-08-21): national_portal_only questions must
+                        # always resolve on the portal's own domain -- no
+                        # round ever relaxes that (FR-130). any_government_domain
+                        # questions are only this strict on the FIRST
+                        # resolution attempt (link_retry_count == 0); once a
+                        # link retry has kicked in, later attempts may land
+                        # on any recognized government domain, not just the
+                        # national portal.
+                        locus_value = question.evidence_locus.value
+                        is_first_attempt = unit_data.get("link_retry_count", 0) == 0
+                        restrict_to_portal = locus_value == "national_portal_only" or (
+                            locus_value == "any_government_domain" and is_first_attempt
+                        )
+                        restrict_domain = (
+                            urlparse(portal.resolved_url).netloc.lower()
+                            if restrict_to_portal and portal.resolved_url
+                            else None
+                        )
+                        # A search engine query built from the full question
+                        # `text` (a paragraph-length description) measurably
+                        # returns zero results on live DuckDuckGo where the
+                        # same topic phrased as the short `title` succeeds --
+                        # confirmed by direct comparison during diagnosis.
+                        # `title` is concise and keyword-rich by construction;
+                        # `text` is only a fallback for the rare question
+                        # without one, truncated to stay query-length-safe.
+                        search_topic = question.title or question.text[:120]
+                        if restrict_domain:
+                            # search_for_link already anchors this query to
+                            # `restrict_domain` via a `site:` operator --
+                            # wrapping the topic in portal-name/URL boilerplate
+                            # on top of that (2026-08-21 debugging pass:
+                            # reproduced live against Firecrawl) swamps
+                            # ranking so badly that unrelated questions
+                            # collapse onto the SAME generic top-level page
+                            # (e.g. four different questions all resolving to
+                            # usa.gov/about-the-us) instead of a topic-specific
+                            # one -- keep the query lean when domain-restricted.
+                            search_query = search_topic
+                        elif portal.resolved_url:
+                            search_query = (
+                                f"{portal.display_name or portal.country_id} government "
+                                f"portal ({portal.resolved_url}): {search_topic}"
+                            )
+                        else:
+                            search_query = (
+                                f"{portal.display_name or portal.country_id} government "
+                                f"portal: {search_topic}"
+                            )
                         result = await resolve_link(
                             repo,
                             http_client,
                             question.question_id,
                             portal.country_id,
-                            f"{portal.country_id} government portal: {question.text}",
+                            search_query,
                             settings,
+                            exclude_sources=set(unit_data.get("excluded_link_sources", [])),
+                            limiter=browser.search_limiter if browser else None,
+                            portal_url=portal.resolved_url,
+                            provider=provider,
+                            exclude_urls=set(unit_data.get("tried_urls", [])),
+                            restrict_domain=restrict_domain,
                         )
                     url_span.patch(
                         outputs={
@@ -289,7 +356,7 @@ async def process_unit(
                             "usable": result.resolved_url is not None,
                         }
                     )
-                unit_data["resolution_history"] = [
+                unit_data["resolution_history"] = unit_data.get("resolution_history", []) + [
                     {
                         "source": a.source.value,
                         "order": a.order,
@@ -324,7 +391,12 @@ async def process_unit(
             round_number = unit_data.get("round_number", 1)
 
             if current_state_ref[0] == UnitState.RESOLVED:
-                round_number = 1
+                # A fresh RESOLVED->ASSESSING transition starts a new round --
+                # normally round 1, but the dead-link fallback below re-enters
+                # here with round_number already at 1, so this must increment
+                # rather than reset to keep the retry's agent runs from
+                # colliding with (and being mistaken for) the first attempt's.
+                round_number = unit_data.get("round_number", 0) + 1
                 unit_data["round_number"] = round_number
                 advance(UnitState.ASSESSING, unit_data)
 
@@ -425,12 +497,64 @@ async def process_unit(
 
             validated_runs = [r for r in all_runs if r.state == AgentRunState.VALIDATED_PASS]
 
-            if len(validated_runs) < 2:
+            if len(validated_runs) < settings.assessor_agent_count:
                 if all_runs and all(r.auth_boundary_observed for r in all_runs):
                     return await no_suggestion(
                         PrefillReason.ACCESS_BOUNDARY,
                         {"reason": "every independent agent observed an authentication boundary"},
                     )
+
+                # Link-retry fallback (2026-08-20 goal): every dispatched agent
+                # either found the resolved URL unreachable, OR read it fine
+                # but flagged it as the WRONG page/link for this question
+                # (link_likely_wrong) -- e.g. an MSQ-supplied link that turns
+                # out to be a generic hub page. Re-resolves, excluding
+                # non-search sources that already proved dead/wrong once
+                # each (so a bad MSQ link falls through to web search), and
+                # excluding specific URLs already tried within this unit so
+                # search keeps surfacing new candidates -- bounded to
+                # MAX_LINK_RETRIES so a persistently-wrong search result
+                # can't retry forever.
+                MAX_LINK_RETRIES = 3
+                link_needs_retry = bool(all_runs) and all(
+                    getattr(r, "portal_unreachable", False) or getattr(r, "link_likely_wrong", False)
+                    for r in all_runs
+                )
+                retry_count = unit_data.get("link_retry_count", 0)
+                if link_needs_retry and retry_count < MAX_LINK_RETRIES:
+                    unit_data["link_retry_count"] = retry_count + 1
+                    excluded = set(unit_data.get("excluded_link_sources", []))
+                    dead_source = unit_data.get("supplying_source")
+                    # "search" is never excluded -- it's the fallback meant to
+                    # keep offering new candidates across retries; kb/msq
+                    # each get excluded once, on their first miss.
+                    if dead_source and dead_source != LinkSource.SEARCH.value:
+                        excluded.add(dead_source)
+                    unit_data["excluded_link_sources"] = list(excluded)
+                    tried_urls = set(unit_data.get("tried_urls", []))
+                    if unit_data.get("resolved_url"):
+                        tried_urls.add(unit_data["resolved_url"])
+                    unit_data["tried_urls"] = list(tried_urls)
+                    unit_data["resolved_url"] = None
+                    unit_data.pop("supplying_source", None)
+                    advance(UnitState.RESOLVING_LINK, unit_data)
+                    return await process_unit(
+                        repo=repo,
+                        settings=settings,
+                        session_id=session_id,
+                        provider=provider,
+                        browser=browser,
+                        http_client=http_client,
+                        fetch_log=fetch_log,
+                        stage_log=stage_log,
+                        cost_ledger=cost_ledger,
+                        capture_dir=capture_dir,
+                        question=question,
+                        portal=portal,
+                        adjudicate_results=adjudicate_results,
+                        run_id=run_id,
+                    )
+
                 return await no_suggestion(
                     PrefillReason.INSUFFICIENT_POSITIONS,
                     {"validated_run_count": len(validated_runs), "total_run_count": len(all_runs)},
@@ -516,6 +640,7 @@ async def process_unit(
                             if unselected_art and unselected_art.resolved_url
                             else resolved_url
                         ),
+                        "capture_ref": unselected_art.capture_ref if unselected_art else None,
                     }
 
                 candidate_answer = selected_run.answer
@@ -538,6 +663,27 @@ async def process_unit(
                 else resolved_url
             )
 
+            # --- Evidence Locus Enforcement (FR-129-FR-133) ------------------
+            # Domain restriction so far only shaped WHERE link resolution
+            # looked (see restrict_domain above); it never checked WHAT the
+            # delivered evidence actually landed on -- a national_portal_only
+            # question could still be delivered off-portal if evidence
+            # surfaced there via one-hop navigation or a resolver pick.
+            if portal.resolved_url:
+                locus_permitted, locus_reason = evidence_permitted(
+                    question.evidence_locus.value, evidence_url_val, portal.resolved_url
+                )
+                if not locus_permitted:
+                    return await no_suggestion(
+                        PrefillReason.NO_USABLE_EVIDENCE,
+                        {
+                            "candidate_run_id": selected_run.run_id,
+                            "candidate_answer": candidate_answer,
+                            "evidence_locus_violation": locus_reason,
+                        },
+                        position_run_ids=agreement.position_run_ids,
+                    )
+
             # --- Final Validation Gate (FR-PF-030) ---------------------------
             # Every candidate position (whether from agreement or resolver) passes
             # through the single-pass final validation gate before prefill delivery.
@@ -553,6 +699,7 @@ async def process_unit(
                             "run_id": selected_run.run_id,
                             "session_id": session_id,
                             "question_text": question.text,
+                            "answer_type": question.answer_type.value,
                             "output": candidate_output,
                             "element_reference": element_ref,
                             "retry_number": 0,
@@ -591,6 +738,7 @@ async def process_unit(
                 confidence=candidate_confidence,
                 justification=selected_run.justification,
                 evidence_url=evidence_url_val,
+                capture_ref=evidence_art.capture_ref if evidence_art else None,
                 supplying_source=unit_data.get("supplying_source"),
                 agreement_outcome=agreement_outcome_str,
                 confidence_gap=agreement.confidence_gap,

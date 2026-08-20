@@ -172,10 +172,9 @@ def start_assessment_job(
     Preconditions evaluation order:
     1. Cycle exists (404)
     2. Unit exists in cycle (404)
-    3. Unit has resolved_url (409 PreconditionFailed: unit_has_no_url)
-    4. Cycle has >= 1 question (409 PreconditionFailed: cycle_has_no_questions)
-    5. Already running job returns with already_running=True
-    6. Running job count < max_concurrent_assessment_runs (429 CapacityReached)
+    3. Cycle has >= 1 question (409 PreconditionFailed: cycle_has_no_questions)
+    4. Already running job returns with already_running=True
+    5. Running job count < max_concurrent_assessment_runs (429 CapacityReached)
     """
     # 1. Cycle exists
     cycle = repo.get_cycle(cycle_id)
@@ -190,14 +189,14 @@ def start_assessment_job(
             details={"portal_id": portal_id, "cycle_id": cycle_id},
         )
 
-    # 3. Unit has a non-empty resolved_url
-    if not portal.resolved_url:
-        raise PreconditionFailed(
-            f"Unit '{portal_id}' has no target portal URL configured.",
-            details={"reason": "unit_has_no_url", "portal_id": portal_id},
-        )
+    # portal.resolved_url is deliberately NOT gated here: the actual
+    # per-question link-resolution chain (resolve_link()) never reads it --
+    # it independently does prior_survey_kb -> msq -> search per question.
+    # Bulk-tagged units (e.g. all 193 NOSI countries) are created with no
+    # resolved_url at all, so gating on it here would make them permanently
+    # unassessable from the UI.
 
-    # 4. Cycle has >= 1 indicator
+    # 3. Cycle has >= 1 indicator
     questions = repo.list_questions(cycle_id)
     if not questions:
         raise PreconditionFailed(
@@ -207,7 +206,7 @@ def start_assessment_job(
 
     session_id = ensure_session(repo, cycle_id)
 
-    # 5 & 6 and insert inside BEGIN IMMEDIATE
+    # 4 & 5 and insert inside BEGIN IMMEDIATE
     with repo.begin_immediate():
         running_job = repo.running_assessment_job(portal_id)
         if running_job is not None:

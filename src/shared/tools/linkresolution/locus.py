@@ -12,17 +12,11 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
-from shared.tools.linkresolution.sources.search import is_government_domain
+from shared.tools.linkresolution.sources.search import is_government_domain, is_subdomain_of
 
 
 def _domain(url: str) -> str:
     return urlparse(url).netloc.lower()
-
-
-def is_subdomain_of(candidate_domain: str, portal_domain: str) -> bool:
-    candidate_domain = candidate_domain.lstrip("www.")
-    portal_domain = portal_domain.lstrip("www.")
-    return candidate_domain == portal_domain or candidate_domain.endswith("." + portal_domain)
 
 
 def evidence_permitted(evidence_locus: str, evidence_url: str, portal_url: str) -> tuple[bool, str | None]:

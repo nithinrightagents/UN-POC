@@ -381,7 +381,7 @@ def test_portal_and_api_share_one_dataset(client: TestClient, auth: dict[str, st
         data={
             "cycle_id": "portal-cycle",
             "name": "Portal Created Cycle",
-            "questionnaire_ref": "UN MSQ 2026 Indicator Set",
+            "question_set_id": "un_osi_2024_master",
             "project_type": "national_osi",
         },
         follow_redirects=False,

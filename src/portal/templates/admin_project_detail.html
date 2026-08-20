@@ -23,6 +23,28 @@
 </div>
 {% endif %}
 
+{% if msq_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>MSQ upload could not be read.</strong> The file may be scanned, encrypted, or not a text-based PDF.
+    Link resolution will fall through to search for this country until a readable MSQ is uploaded.
+</div>
+{% endif %}
+
+{% if assess_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Could not start AI assessment.</strong> {{ assess_error }}
+</div>
+{% endif %}
+
+{% if units|length > 10 %}
+<div class="alert-box warning">
+    <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+    <span><strong>{{ units|length }} target units in this project.</strong> AI assessment is billed per unit and is triggered one unit at a time &mdash; there is no bulk "assess all" action. Trigger runs deliberately to stay within budget.</span>
+</div>
+{% endif %}
+
 <div class="page-header">
     <div class="page-header-content">
         <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
@@ -254,10 +276,14 @@
             </div>
             <p class="muted">
                 Official Portal:
+                {% if row.portal.resolved_url %}
                 <a href="{{ row.portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 500; word-break: break-all;">
                     {{ row.portal.resolved_url }}
                     <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
                 </a>
+                {% else %}
+                <span>No URL configured &mdash; link resolution searches live per question</span>
+                {% endif %}
             </p>
         </div>
 

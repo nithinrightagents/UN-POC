@@ -27,13 +27,23 @@ def classify_agreement(
     gap_tolerance: int = 10,
 ) -> AgreementOutcome:
     """Classify agreement between validated assessor runs per contracts/prefill-pipeline.md §2."""
-    if len(validated_runs) < 2:
+    if len(validated_runs) == 0:
         return AgreementOutcome(
             kind="unresolved",
             answer=None,
             confidence=None,
             confidence_gap=0,
-            position_run_ids=[r.run_id for r in validated_runs],
+            position_run_ids=[],
+        )
+
+    if len(validated_runs) == 1:
+        single = validated_runs[0]
+        return AgreementOutcome(
+            kind="uncontested",
+            answer=single.answer,
+            confidence=single.confidence,
+            confidence_gap=0,
+            position_run_ids=[single.run_id],
         )
 
     position_run_ids = [r.run_id for r in validated_runs]

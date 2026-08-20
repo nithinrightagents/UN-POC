@@ -31,6 +31,7 @@ def write_prefill(
     confidence: int | None = None,
     justification: str | None = None,
     evidence_url: str | None = None,
+    capture_ref: str | None = None,
     supplying_source: LinkSource | str | None = None,
     agreement_outcome: str | None = None,
     confidence_gap: int | None = None,
@@ -44,6 +45,14 @@ def write_prefill(
     advance_state: bool = True,
 ) -> Prefill:
     """Write a prefill row and optionally transition the assessment unit to its terminal state."""
+    # A delivered prefill's own terminal_state must reflect DELIVERED
+    # regardless of whether this call also drives the unit-level transition
+    # (advance_state=False callers, e.g. the delivered path in
+    # scheduler.py, perform that transition separately) -- otherwise the
+    # record is stamped with the `terminal_state` default/param meant for
+    # the non-delivered case.
+    target_state = UnitState.DELIVERED if suggested else terminal_state
+
     prefill = Prefill(
         prefill_id=new_id("pf"),
         run_id=run_id,
@@ -56,6 +65,7 @@ def write_prefill(
         confidence=confidence,
         justification=justification,
         evidence_url=evidence_url,
+        capture_ref=capture_ref,
         supplying_source=supplying_source,
         agreement_outcome=agreement_outcome,
         confidence_gap=confidence_gap,
@@ -63,12 +73,11 @@ def write_prefill(
         unselected_position=unselected_position,
         position_run_ids=position_run_ids or [],
         reason=reason,
-        terminal_state=terminal_state,
+        terminal_state=target_state,
     )
     repo.insert_prefill(prefill)
 
     if advance_state:
-        target_state = UnitState.DELIVERED if suggested else terminal_state
         if current_state_ref is not None and len(current_state_ref) > 0:
             from_state = current_state_ref[0]
             if unit_state.can_transition(from_state, target_state):

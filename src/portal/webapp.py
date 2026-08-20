@@ -11,6 +11,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import logging
@@ -70,6 +71,12 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
     app.include_router(build_public_router(database_path, templates))
     app.mount("/review", build_review_app(database_path, settings))
 
+    # Serves evidence snapshots captured under ./data/captures/... (capture_ref
+    # values are stored as './data/captures/{session_id}/{id}.png'-style paths).
+    data_dir = Path(database_path).parent if Path(database_path).parent != Path("") else Path("./data")
+    (data_dir / "captures").mkdir(parents=True, exist_ok=True)
+    app.mount("/data", StaticFiles(directory=str(data_dir)), name="captures")
+
     @app.get("/", response_class=HTMLResponse)
     def landing(request: Request):
         r = repo()
@@ -77,3 +84,9 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         return templates.TemplateResponse(request, "landing.html", {"cycles": cycles})
 
     return app
+
+
+def create_app() -> FastAPI:
+    from shared.config.settings import load_settings
+    settings = load_settings()
+    return build_app(settings.database_path, settings)

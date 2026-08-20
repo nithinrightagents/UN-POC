@@ -59,29 +59,78 @@ _LOCATE_BY_SELECTOR_JS = """
 
 _SEARCH_BY_TEXT_JS = """
 (needle) => {
+    // The quote being searched for was read off a version of the page text
+    // that was flattened by joining all text nodes with plain spaces (see
+    // element_ref.normalize_text / the BeautifulSoup extraction the model's
+    // prompt is built from). A live element's innerText instead renders
+    // block-boundary line breaks as literal newlines (and uses non-breaking
+    // spaces verbatim), so a raw substring check against unnormalized
+    // innerText spuriously misses quotes that are visibly present but happen
+    // to cross a block boundary. Collapsing all whitespace runs to a single
+    // space before comparing -- matching normalize_text()'s \\s+ collapse on
+    // the Python side -- makes the two representations comparable again.
+    // A TreeWalker visits ancestors before their descendants (pre-order), so
+    // returning the first node satisfying the substring+6x bound biases
+    // toward the outermost qualifying wrapper -- often several nested divs
+    // whose innerText is identical because each has only one child, plus
+    // whichever ancestor first becomes "small enough" once the needle is
+    // long. That ancestor choice depends on the needle's own length: a short
+    // evidence_quote and the full captured element_text of the SAME element
+    // can satisfy the bound at different tree depths, so searching by one
+    // vs. the other can silently resolve to two different elements on an
+    // otherwise-unchanged page (observed concretely on a real government
+    // homepage: a short quote matched a precise 134-char div, while the
+    // full captured text of that exact div, used as the needle again,
+    // matched a 463-char outer wrapper instead -- a spurious text_mismatch
+    // with nothing on the page actually having changed). Scanning every
+    // candidate and keeping the SHORTEST match makes the result depend only
+    // on what is actually the tightest element containing the text, not on
+    // traversal order or needle length.
+    //
+    // The bound carries a flat +60-char allowance on top of the 6x multiple
+    // (2026-08-20 debugging pass): a pure multiple punishes SHORT quotes
+    // hardest, and short quotes are exactly what a negative answer's
+    // fill_gap_reason guidance asks for (quote "the most relevant heading"
+    // -- typically 2-4 words). A real heading is rarely alone in its
+    // tightest wrapping element -- a nav label, skip-link, or breadcrumb
+    // sharing that ancestor commonly pushes a 10-20 char quote's true
+    // container to 80-150 combined chars with nothing wrong with the match.
+    // Confirmed as the dominant cause of "required evidence component
+    // missing" validator rejections in that pass's live run: evidence was
+    // dropped entirely whenever this search returned null, even when the
+    // model's quote was correct and genuinely on the page.
+    const normalize = (s) => (s || '').replace(/\\s+/g, ' ').trim().toLowerCase();
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
-    const target = needle.trim().toLowerCase();
+    const target = normalize(needle);
     let node;
+    let best = null;
+    let bestText = null;
     while ((node = walker.nextNode())) {
-        const text = (node.innerText || node.textContent || '').trim().toLowerCase();
-        if (text && text.includes(target) && text.length < target.length * 3) {
-            function cssPath(e) {
-                const parts = [];
-                while (e && e.nodeType === 1 && e !== document.body) {
-                    let sel = e.tagName.toLowerCase();
-                    if (e.id) { sel += '#' + e.id; parts.unshift(sel); break; }
-                    let sib = e, nth = 1;
-                    while ((sib = sib.previousElementSibling)) {
-                        if (sib.tagName === e.tagName) nth++;
-                    }
-                    sel += `:nth-of-type(${nth})`;
-                    parts.unshift(sel);
-                    e = e.parentElement;
-                }
-                return parts.join(' > ');
+        const text = normalize(node.innerText || node.textContent || '');
+        if (text && text.includes(target) && text.length < target.length * 6 + 60) {
+            if (best === null || text.length < bestText.length) {
+                best = node;
+                bestText = text;
             }
-            return { cssPath: cssPath(node), text: node.innerText || node.textContent || '' };
         }
+    }
+    if (best) {
+        function cssPath(e) {
+            const parts = [];
+            while (e && e.nodeType === 1 && e !== document.body) {
+                let sel = e.tagName.toLowerCase();
+                if (e.id) { sel += '#' + e.id; parts.unshift(sel); break; }
+                let sib = e, nth = 1;
+                while ((sib = sib.previousElementSibling)) {
+                    if (sib.tagName === e.tagName) nth++;
+                }
+                sel += `:nth-of-type(${nth})`;
+                parts.unshift(sel);
+                e = e.parentElement;
+            }
+            return parts.join(' > ');
+        }
+        return { cssPath: cssPath(best), text: best.innerText || best.textContent || '' };
     }
     return null;
 }

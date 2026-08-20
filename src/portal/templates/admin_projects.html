@@ -109,9 +109,27 @@
         </div>
 
         <div class="form-group">
-            <label for="questionnaire_ref">Questionnaire Reference Bank</label>
-            <input type="text" id="questionnaire_ref" name="questionnaire_ref" value="UN MSQ 2026 Indicator Set">
-            <span class="form-help">Identifier of the indicator set used for evaluation.</span>
+            <label for="question_set_id">Questionnaire / Indicator Set</label>
+            <select id="question_set_id" name="question_set_id" required>
+                {% for s in question_sets %}
+                <option value="{{ s.set_id }}">{{ s.label }} ({{ s.question_count }} questions)</option>
+                {% endfor %}
+            </select>
+            <span class="form-help">Indicator set used for evaluation.</span>
+        </div>
+
+        <div class="form-group" id="nosi-note">
+            <span class="form-help">All {{ countries|length }} UN member states are automatically tagged as target units.</span>
+        </div>
+
+        <div class="form-group" id="losi-countries" style="display: none;">
+            <label for="country_ids">Countries to Include</label>
+            <select id="country_ids" name="country_ids" multiple size="8">
+                {% for c in countries %}
+                <option value="{{ c.code }}">{{ c.name }} — most populous city: {{ c.most_populous_city }}</option>
+                {% endfor %}
+            </select>
+            <span class="form-help">Each selected country's most-populous city is added as the initial unit; more cities can be added afterward.</span>
         </div>
 
         <div style="margin-top: 0.5rem;">
@@ -122,5 +140,22 @@
         </div>
     </form>
 </div>
+
+<script>
+(function () {
+    var typeSelect = document.getElementById("project_type");
+    var nosiNote = document.getElementById("nosi-note");
+    var losiCountries = document.getElementById("losi-countries");
+
+    function syncScopeFields() {
+        var isLosi = typeSelect.value === "losi_city";
+        nosiNote.style.display = isLosi ? "none" : "";
+        losiCountries.style.display = isLosi ? "" : "none";
+    }
+
+    typeSelect.addEventListener("change", syncScopeFields);
+    syncScopeFields();
+})();
+</script>
 
 {% endblock %}

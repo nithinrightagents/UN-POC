@@ -49,6 +49,7 @@ class LinkSource(str, Enum):
     PRIOR_SURVEY_KB = "prior_survey_kb"
     MSQ = "msq"
     SEARCH = "search"
+    PORTAL_DEFAULT = "portal_default"
 
 
 class UnitState(str, Enum):
@@ -279,9 +280,38 @@ class AssessorAgentRun:
     state: AgentRunState = AgentRunState.PENDING
     auth_boundary_observed: bool = False
     auth_boundary_url: str | None = None
+    portal_unreachable: bool = False
     model_identity: str | None = None
     below_acceptance_threshold: bool = False
     detected_language: str | None = None
+    # Debugging aid (2026-08-20 goal): the model's own account of what
+    # specifically blocked a Yes -- distinct from `justification`, which
+    # argues the answer; this names the blocker category so a batch of runs
+    # can be triaged (missing evidence vs. wrong page vs. format mismatch
+    # like "needs a diagram") without re-reading every justification by hand.
+    fill_gap_reason: str | None = None
+    # Link-resolution signal (2026-08-20 goal): true only when the model
+    # believes this exact resolved_url is the WRONG page/link for the
+    # question (a generic hub page, or content clearly about something
+    # else) -- as opposed to a correct page that legitimately lacks the
+    # feature (a real negative). Drives the scheduler's link-retry loop in
+    # orchestration/scheduler.py, distinct from portal_unreachable (which
+    # fires only when the page failed to load at all).
+    link_likely_wrong: bool = False
+    # Evidence-relocation observability (2026-08-20 goal): the model's quote
+    # verbatim, and whether search_by_text() (element_ref.py) could relocate
+    # it live -- kept even when relocation FAILS (unlike `evidence`, which is
+    # None in that case), since that failure was the single largest driver
+    # of validator "required evidence component missing" rejections and was
+    # previously invisible: nothing recorded what quote had been tried.
+    raw_evidence_quote: str | None = None
+    evidence_located: bool | None = None
+    # One-hop navigation (2026-08-20 debugging pass, phase 1): set when the
+    # assessor followed a same-domain link off the originally-resolved page
+    # because that page alone (a category/hub page) lacked enough content to
+    # answer confidently -- see agent.py's `_evaluate_page`/`follow_link_index`.
+    # None means the answer came from portal_url as originally resolved.
+    navigated_to_url: str | None = None
 
 
 @dataclass
@@ -471,6 +501,7 @@ class Prefill:
     confidence: int | None = None
     justification: str | None = None
     evidence_url: str | None = None
+    capture_ref: str | None = None
     supplying_source: LinkSource | str | None = None
     agreement_outcome: str | None = None
     confidence_gap: int | None = None

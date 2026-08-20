@@ -17,6 +17,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from portal.common import capture_url as _capture_url
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import recompute_portal_discrepancy
 from shared.config.settings import Settings
@@ -27,6 +28,21 @@ from shared.state.entities import (
     new_id,
 )
 from shared.state.reason_tags import prefill_reason_tag
+
+# Human-readable labels for LinkSource values (shared/state/entities.py),
+# shown to the assessor alongside the AI's evidence link.
+_SUPPLYING_SOURCE_LABELS = {
+    "prior_survey_kb": "Prior Questionnaire",
+    "msq": "MSQ",
+    "search": "Web",
+}
+
+
+def _supplying_source_label(source: str | None) -> str | None:
+    if not source:
+        return None
+    value = source.value if hasattr(source, "value") else str(source)
+    return _SUPPLYING_SOURCE_LABELS.get(value, value)
 
 
 def build_assessor_router(database_path: str, settings: Settings, templates: Jinja2Templates) -> APIRouter:
@@ -94,7 +110,9 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
                     "confidence": prefill.confidence,
                     "justification": prefill.justification,
                     "evidence_url": prefill.evidence_url,
+                    "capture_url": _capture_url(prefill.capture_ref),
                     "supplying_source": prefill.supplying_source,
+                    "supplying_source_label": _supplying_source_label(prefill.supplying_source),
                     "agreement_outcome": prefill.agreement_outcome,
                     "confidence_gap": prefill.confidence_gap,
                     "resolver_decision": prefill.resolver_decision,

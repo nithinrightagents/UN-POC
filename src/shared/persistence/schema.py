@@ -34,6 +34,21 @@ CREATE TABLE IF NOT EXISTS questions (
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Append-only. The default questionnaire (is_custom=0) is immutable once
+-- created; a custom question (is_custom=1) may be edited any number of
+-- times, and each edit snapshots the pre-edit state here before overwriting
+-- questions.data, so the edit history is never lost.
+CREATE TABLE IF NOT EXISTS question_revisions (
+    revision_id  TEXT PRIMARY KEY,
+    question_id  TEXT NOT NULL,
+    cycle_id     TEXT NOT NULL,
+    data         TEXT NOT NULL,   -- the Question snapshot as it was BEFORE this edit
+    revised_by   TEXT,
+    revised_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_question_revisions_lookup
+    ON question_revisions(question_id, revised_at DESC);
+
 CREATE TABLE IF NOT EXISTS target_portals (
     portal_id TEXT PRIMARY KEY,
     cycle_id TEXT NOT NULL,

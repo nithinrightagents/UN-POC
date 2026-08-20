@@ -34,6 +34,7 @@ from shared.state.entities import (
     SurveyCycle,
     TargetPortal,
     ValidationResult,
+    new_id,
 )
 
 from .serialization import from_json, to_json
@@ -117,6 +118,53 @@ class Repository:
             "SELECT data FROM questions WHERE question_id = ?", (question_id,)
         ).fetchone()
         return from_json(row["data"], Question) if row else None
+
+    def update_question(self, question: Question, revised_by: str | None = None) -> Question:
+        """Edit an existing custom question. The default questionnaire
+        (is_custom=0) is immutable once created -- admin edits only ever
+        produce a new custom question via insert_question, never a mutation
+        of a default one. A custom question may be edited any number of
+        times; each call snapshots the pre-edit row into question_revisions
+        (append-only) before overwriting it."""
+        existing = self.get_question(question.question_id)
+        if existing is None:
+            raise ValueError(f"Question '{question.question_id}' does not exist; use insert_question to create it.")
+        if not existing.is_custom:
+            raise ValueError(
+                f"Question '{question.question_id}' is part of the default questionnaire and cannot be edited. "
+                "Add a new custom question instead."
+            )
+        if not question.is_custom:
+            raise ValueError("A custom question cannot be converted into a default one via edit.")
+
+        self.conn.execute(
+            "INSERT INTO question_revisions (revision_id, question_id, cycle_id, data, revised_by) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (new_id("qrev"), existing.question_id, existing.cycle_id, to_json(existing), revised_by),
+        )
+        self.conn.execute(
+            "UPDATE questions SET data = ?, is_custom = 1 WHERE question_id = ?",
+            (to_json(question), question.question_id),
+        )
+        self.conn.commit()
+        return question
+
+    def count_question_revisions(self, question_id: str) -> int:
+        row = self.conn.execute(
+            "SELECT COUNT(*) AS n FROM question_revisions WHERE question_id = ?", (question_id,)
+        ).fetchone()
+        return int(row["n"]) if row else 0
+
+    def list_question_revisions(self, question_id: str) -> list[Question]:
+        """Oldest first: the sequence of pre-edit snapshots for a custom question."""
+        # revised_at has only second resolution (datetime('now')), so ties
+        # from same-second edits need rowid (insertion order) as a tiebreaker.
+        rows = self.conn.execute(
+            "SELECT data FROM question_revisions WHERE question_id = ? "
+            "ORDER BY revised_at ASC, rowid ASC",
+            (question_id,),
+        ).fetchall()
+        return [from_json(r["data"], Question) for r in rows]
 
     def list_questions(self, cycle_id: str, include_custom: bool = True) -> list[Question]:
         sql = "SELECT data FROM questions WHERE cycle_id = ?"
@@ -549,11 +597,16 @@ class Repository:
 
     def find_prior_survey_links(self, question_id: str, country_id: str) -> list[PriorSurveyLink]:
         rows = self.conn.execute(
-            "SELECT data FROM prior_survey_links WHERE question_id = ? AND country_id = ? "
+            "SELECT data FROM prior_survey_links WHERE country_id = ? "
             "ORDER BY created_at DESC",
-            (question_id, country_id),
+            (country_id,),
         ).fetchall()
-        return [from_json(r["data"], PriorSurveyLink) for r in rows]
+        indicator_code = question_id.split(":")[-1]
+        all_links = [from_json(r["data"], PriorSurveyLink) for r in rows]
+        exact = [l for l in all_links if l.question_id == question_id]
+        if exact:
+            return exact
+        return [l for l in all_links if l.question_id.split(":")[-1] == indicator_code]
 
     def insert_msq_link_candidate(self, candidate: MSQLinkCandidate) -> None:
         self.conn.execute(
@@ -565,11 +618,16 @@ class Repository:
 
     def find_msq_link_candidates(self, question_id: str, country_id: str) -> list[MSQLinkCandidate]:
         rows = self.conn.execute(
-            "SELECT data FROM msq_link_candidates WHERE question_id = ? AND country_id = ? "
+            "SELECT data FROM msq_link_candidates WHERE country_id = ? "
             "ORDER BY created_at DESC",
-            (question_id, country_id),
+            (country_id,),
         ).fetchall()
-        return [from_json(r["data"], MSQLinkCandidate) for r in rows]
+        indicator_code = question_id.split(":")[-1]
+        all_candidates = [from_json(r["data"], MSQLinkCandidate) for r in rows]
+        exact = [c for c in all_candidates if c.question_id == question_id]
+        if exact:
+            return exact
+        return [c for c in all_candidates if c.question_id.split(":")[-1] == indicator_code]
 
     # --- Answer Export --------------------------------------------------
 
@@ -823,6 +881,7 @@ class Repository:
             "confidence": prefill.confidence,
             "justification": prefill.justification,
             "evidence_url": prefill.evidence_url,
+            "capture_ref": prefill.capture_ref,
             "supplying_source": prefill.supplying_source,
             "agreement_outcome": prefill.agreement_outcome,
             "confidence_gap": prefill.confidence_gap,
@@ -854,34 +913,13 @@ class Repository:
     def latest_prefill(
         self, session_id: str, question_id: str, portal_id: str
     ) -> Prefill | None:
-        row_completed_job = self.conn.execute(
-            """
-            SELECT job_id FROM assessment_jobs
-            WHERE portal_id = ? AND state IN ('done', 'completed')
-            ORDER BY created_at DESC LIMIT 1
-            """,
-            (portal_id,),
-        ).fetchone()
-
-        if row_completed_job:
-            row = self.conn.execute(
-                """
-                SELECT * FROM prefills
-                WHERE run_id = ? AND question_id = ? AND portal_id = ?
-                ORDER BY created_at DESC LIMIT 1
-                """,
-                (row_completed_job["job_id"], question_id, portal_id),
-            ).fetchone()
-            if row:
-                return _row_to_prefill(row)
-
         row = self.conn.execute(
             """
             SELECT * FROM prefills
-            WHERE session_id = ? AND portal_id = ? AND question_id = ?
+            WHERE portal_id = ? AND question_id = ?
             ORDER BY created_at DESC LIMIT 1
             """,
-            (session_id, portal_id, question_id),
+            (portal_id, question_id),
         ).fetchone()
         if row:
             return _row_to_prefill(row)
@@ -954,6 +992,7 @@ def _row_to_prefill(row: sqlite3.Row) -> Prefill:
         confidence=data.get("confidence"),
         justification=data.get("justification"),
         evidence_url=data.get("evidence_url"),
+        capture_ref=data.get("capture_ref"),
         supplying_source=data.get("supplying_source"),
         agreement_outcome=data.get("agreement_outcome"),
         confidence_gap=data.get("confidence_gap"),

@@ -255,8 +255,11 @@ def test_trigger_preconditions_order_and_rejections(
     assert r3.status_code == 404
     assert r3.json()["error"]["code"] == "not_found"
 
-    # 4. Unit has no resolved URL -> 409 (PreconditionFailed)
-    # Insert portal directly with empty resolved_url
+    # 4. A unit with no resolved URL is NOT rejected for that reason -- it
+    # falls through to the next precondition (cycle_has_no_questions), since
+    # resolved_url is a leftover manual-entry field never read by the actual
+    # link-resolution chain (bulk-tagged NOSI/LOSI units are created with no
+    # resolved_url at all and must remain assessable).
     portal_nourl = TargetPortal(
         portal_id="portal-nourl",
         cycle_id="pre-c1",
@@ -268,15 +271,15 @@ def test_trigger_preconditions_order_and_rejections(
     r4 = client.post("/api/v1/cycles/pre-c1/units/portal-nourl/assessment", headers=auth)
     assert r4.status_code == 409
     assert r4.json()["error"]["code"] == "precondition_failed"
-    assert r4.json()["error"]["details"]["reason"] == "unit_has_no_url"
+    assert r4.json()["error"]["details"]["reason"] == "cycle_has_no_questions"
 
-    # 5. Cycle has no questions -> 409 (PreconditionFailed)
-    u_nourl = client.post(
-        "/api/v1/cycles/pre-c1/units",
-        json={"country_id": "C1U", "display_name": "Unit C1", "url": "https://c1.gov"},
+    # 5. Once the cycle has a question, the same no-URL unit can start an
+    # assessment -- proving the missing URL alone no longer blocks it.
+    client.post(
+        "/api/v1/cycles/pre-c1/questions",
+        json={"indicator_id": "P.1", "title": "Title", "what": "W", "why": "Y", "how": "H"},
         headers=auth,
-    ).json()["portal_id"]
-    r5 = client.post(f"/api/v1/cycles/pre-c1/units/{u_nourl}/assessment", headers=auth)
-    assert r5.status_code == 409
-    assert r5.json()["error"]["code"] == "precondition_failed"
-    assert r5.json()["error"]["details"]["reason"] == "cycle_has_no_questions"
+    )
+    r5 = client.post("/api/v1/cycles/pre-c1/units/portal-nourl/assessment", headers=auth)
+    assert r5.status_code == 202
+    assert r5.json()["already_running"] is False

@@ -36,10 +36,11 @@ async def verify_evidence(
     reference: ElementReference,
     expected_text: str,
     fetch_log: FetchLog,
+    timeout_ms: int = 45000,
 ) -> VerificationAttemptResult:
     """One verification attempt. Caller (validator.py) handles the
     attempt-bound retry loop for target_unreachable outcomes (FR-088)."""
-    page_result, page = await browser.fetch(resolved_url, "validator", fetch_log)
+    page_result, page = await browser.fetch(resolved_url, "validator", fetch_log, timeout_ms=timeout_ms)
 
     if not page_result.reachable or page is None:
         # FR-088: NOT a quality failure. Deferred/re-attempted by the caller.
@@ -102,6 +103,7 @@ async def verify_with_retry(
     expected_text: str,
     fetch_log: FetchLog,
     verification_attempt_bound: int,
+    timeout_ms: int = 45000,
 ) -> tuple[VerificationAttemptResult, int]:
     """Retries only on target_unreachable, up to the configured bound
     (FR-088). Returns (final_result, attempts_made)."""
@@ -109,7 +111,9 @@ async def verify_with_retry(
     result = None
     while attempts < verification_attempt_bound:
         attempts += 1
-        result = await verify_evidence(browser, resolved_url, reference, expected_text, fetch_log)
+        result = await verify_evidence(
+            browser, resolved_url, reference, expected_text, fetch_log, timeout_ms=timeout_ms
+        )
         if result.outcome != "target_unreachable":
             return result, attempts
     return result, attempts

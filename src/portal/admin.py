@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 import pathlib
 import tempfile
+from urllib.parse import quote
 
 from fastapi import APIRouter, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -22,11 +23,14 @@ from fastapi.templating import Jinja2Templates
 from api.finalize import final_answer, publication_readiness
 from api.identity import compose_question_id
 from api.jobs import job_status, start_assessment_job
+from api.schemas import ApiError
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import compute_portal_discrepancy
-from portal.msq import ingest_msq_pdf
+from portal.msq import ingest_msq_pdf, match_msq_links
 from review.escalations import dispose_escalation, list_escalation_queue
 from shared.config.settings import Settings
+from shared.questionnaires.registry import list_question_sets, load_question_set
+from shared.reference.countries import list_countries
 from shared.state.entities import (
     AnswerType,
     EvidenceLocus,
@@ -52,28 +56,74 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         r = repo()
         cycles = r.list_cycles()
         return templates.TemplateResponse(
-            request, "admin_projects.html", {"cycles": cycles}
+            request, "admin_projects.html",
+            {
+                "cycles": cycles,
+                "question_sets": list_question_sets(),
+                "countries": list_countries(),
+            },
         )
 
     @router.post("/admin/projects")
     def create_project(
         cycle_id: str = Form(...),
         name: str = Form(...),
-        questionnaire_ref: str = Form("UN MSQ 2026 Indicator Set"),
+        question_set_id: str = Form(...),
         project_type: str = Form("national_osi"),
+        country_ids: list[str] = Form([]),
     ):
         r = repo()
+        ptype = ProjectType(project_type)
+        all_countries = list_countries()
+
+        # NOSI auto-tags every UN member state; LOSI targets only the
+        # countries picked in the multi-select (each contributing its
+        # most-populous city as the initial unit -- more cities can be added
+        # afterward via the existing add-unit form).
+        if ptype is ProjectType.NATIONAL_OSI:
+            target_countries = all_countries
+        else:
+            selected = set(country_ids)
+            target_countries = [c for c in all_countries if c.code in selected]
+
+        question_set = next((s for s in list_question_sets() if s.set_id == question_set_id), None)
+        questionnaire_ref = question_set.label if question_set else question_set_id
+
         r.insert_cycle(
             SurveyCycle(
                 cycle_id=cycle_id, name=name, questionnaire_ref=questionnaire_ref,
-                country_set=[], project_type=ProjectType(project_type),
+                country_set=[c.code for c in target_countries], project_type=ptype,
             )
         )
         ensure_session(r, cycle_id)
+
+        for q in load_question_set(question_set_id, cycle_id):
+            r.insert_question(q)
+
+        # No resolved_url on bulk-tagged units: link resolution searches
+        # live per question (see api/jobs.py) rather than depending on a
+        # pre-fetched portal URL, and pre-verifying ~193 country URLs here
+        # would be an unreliable, slow synchronous step at creation time.
+        for c in target_countries:
+            if ptype is ProjectType.NATIONAL_OSI:
+                display_name = c.name
+                unit_type = "country"
+            else:
+                display_name = f"{c.most_populous_city}, {c.name}"
+                unit_type = "city"
+            r.insert_portal(
+                TargetPortal(
+                    portal_id=new_id("portal"), cycle_id=cycle_id, country_id=c.code,
+                    resolved_url=None, unit_type=unit_type, display_name=display_name,
+                )
+            )
+
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
     @router.get("/admin/projects/{cycle_id}", response_class=HTMLResponse)
-    def project_detail(request: Request, cycle_id: str):
+    def project_detail(
+        request: Request, cycle_id: str, msq_error: str | None = None, assess_error: str | None = None
+    ):
         r = repo()
         cycle = r.get_cycle(cycle_id)
         if cycle is None:
@@ -116,6 +166,8 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 "cycle": cycle, "questions": questions,
                 "units": unit_rows, "session_id": session_id,
                 "any_run_in_progress": any(row["run_in_progress"] for row in unit_rows),
+                "msq_error": msq_error,
+                "assess_error": assess_error,
             },
         )
 
@@ -189,34 +241,74 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/assess")
-    async def run_assessment(cycle_id: str, portal_id: str):
+    async def run_assessment(request: Request, cycle_id: str, portal_id: str):
         r = repo()
-        session_id = ensure_session(r, cycle_id)
-        start_assessment_job(
-            r,
-            settings,
-            session_id=session_id,
-            cycle_id=cycle_id,
-            portal_id=portal_id,
-            triggered_by="portal",
-            actor="admin",
-        )
-        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+        runtime = getattr(request.app.state, "ai_runtime", None)
+        assess_error = None
+        if runtime is None:
+            assess_error = "AI runtime is not configured on this server."
+        else:
+            try:
+                start_assessment_job(
+                    r,
+                    settings,
+                    runtime,
+                    cycle_id=cycle_id,
+                    portal_id=portal_id,
+                    triggered_by="portal",
+                    actor_id="admin",
+                )
+            except ApiError as exc:
+                # Surface the precondition (e.g. "unit has no URL", "cycle
+                # has no questions", or concurrency capacity reached) back to
+                # the admin page instead of a raw 500 -- same degrade-gracefully
+                # pattern as the MSQ upload handler below.
+                assess_error = exc.message
+        suffix = f"?assess_error={quote(assess_error)}" if assess_error else ""
+        return RedirectResponse(f"/admin/projects/{cycle_id}{suffix}", status_code=303)
 
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/msq")
-    async def upload_msq(cycle_id: str, portal_id: str, msq_file: UploadFile):
+    async def upload_msq(request: Request, cycle_id: str, portal_id: str, msq_file: UploadFile):
         r = repo()
         portal = r.get_portal(portal_id)
+        msq_error = None
         if portal:
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
                 tmp.write(await msq_file.read())
                 tmp_path = tmp.name
             try:
+                # A malformed, scanned, or encrypted PDF -- or one whose
+                # export layout parse_msq_text doesn't recognize -- must
+                # degrade to "as if no MSQ was uploaded" (link resolution
+                # falls through to search) rather than 500 the request and
+                # leave the unit stuck with no portal-visible feedback.
                 doc = ingest_msq_pdf(tmp_path, cycle_id, portal.country_id, msq_file.filename or "upload.pdf")
                 r.insert_msq_document(doc)
+                questions = r.list_questions(cycle_id)
+                runtime = getattr(request.app.state, "ai_runtime", None)
+                try:
+                    if runtime is None:
+                        raise RuntimeError("AI runtime unavailable; skipping MSQ link matching")
+                    candidates = await match_msq_links(
+                        doc, questions, runtime.provider, settings.validator_model
+                    )
+                    for candidate in candidates:
+                        r.insert_msq_link_candidate(candidate)
+                except Exception:
+                    _log.exception(
+                        "MSQ link matching failed for cycle=%s country=%s; document stored, "
+                        "no per-question candidates extracted", cycle_id, portal.country_id,
+                    )
+            except Exception:
+                _log.exception(
+                    "MSQ ingestion failed for cycle=%s country=%s file=%s; "
+                    "resolution will fall through to search", cycle_id, portal.country_id, msq_file.filename,
+                )
+                msq_error = "msq_unreadable"
             finally:
                 pathlib.Path(tmp_path).unlink(missing_ok=True)
-        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+        suffix = f"?msq_error={msq_error}" if msq_error else ""
+        return RedirectResponse(f"/admin/projects/{cycle_id}{suffix}", status_code=303)
 
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/publish")
     def publish_unit(

@@ -22,6 +22,18 @@ class QuestionInput(BaseModel):
     answer_type: Literal["binary", "scalar", "enum"]
     answer_options: list[str] | None = None
     evidence_locus: Literal["national_portal_only", "any_government_domain"]
+    # Scoring rubric (title/what/why/how/benchmark_case) carried from the
+    # source questionnaire so the assessor prompt can cite acceptance
+    # criteria instead of judging against a rubric it never saw -- these
+    # are catalog metadata, not another agent's output, so they don't
+    # weaken the closed-schema guarantee FR-010 exists to enforce.
+    title: str | None = None
+    what: str | None = None
+    why: str | None = None
+    criteria_for_yes: str | None = None
+    criteria_for_no: str | None = None
+    scoring_guidance: str | None = None
+    benchmark_case: str | None = None
 
 
 class PortalInput(BaseModel):
@@ -93,8 +105,14 @@ class AssessorAgentOutput(BaseModel):
     evidence: EvidenceOutput | None
     auth_boundary_observed: bool = False
     auth_boundary_url: str | None = None
+    portal_unreachable: bool = False
     model_identity: str = ""
     detected_language: str | None = None
+    fill_gap_reason: str | None = None
+    link_likely_wrong: bool = False
+    raw_evidence_quote: str | None = None
+    evidence_located: bool | None = None
+    navigated_to_url: str | None = None
 
     @model_validator(mode="after")
     def _auth_boundary_implies_no_answer(self) -> "AssessorAgentOutput":

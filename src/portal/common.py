@@ -14,6 +14,16 @@ from shared.state.entities import (
 )
 
 
+def capture_url(capture_ref: str | None) -> str | None:
+    """Convert a stored capture_ref (a filesystem path like
+    './data/captures/{session_id}/{id}.png') into a URL servable by the
+    '/data' static mount registered in webapp.py."""
+    if not capture_ref:
+        return None
+    normalized = capture_ref.lstrip("./").replace("\\", "/")
+    return f"/{normalized}"
+
+
 def session_id_for_cycle(cycle_id: str) -> str:
     """One long-lived assessment session per cycle -- every AI pre-fill run
     and every human A/B submission for a cycle accumulates into it.

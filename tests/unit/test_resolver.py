@@ -78,7 +78,7 @@ class FakeBrowserSession:
     def __init__(self, text: str = "Interactive portal exists."):
         self.text = text
 
-    async def fetch(self, url, caller_class, fetch_log=None):
+    async def fetch(self, url, caller_class, fetch_log=None, timeout_ms=15000):
         return PageResult(url=url, final_url=url, html=f"<div>{self.text}</div>", status=200, reachable=True), FakePage(self.text)
 
     async def close_page(self, page):

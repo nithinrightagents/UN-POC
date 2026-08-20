@@ -18,9 +18,19 @@ from bs4 import BeautifulSoup
 _LOGIN_URL_MARKERS = re.compile(
     r"(login|signin|sign-in|auth|sso|oauth|identity|account/login)", re.I
 )
-_LOGIN_CONTENT_MARKERS = [
+# "Sign in" / "Log in" alone are near-universal on public sites (an optional
+# account/personalization nav link -- e.g. eur-lex.europa.eu's fully public
+# legal-text pages carry a "Log in / Sign in / Register" header for the
+# unrelated "My EUR-Lex" feature). Counting them toward the co-occurrence
+# threshold below produced a confirmed false positive on exactly that kind
+# of page, so they are recorded for diagnostics but never counted as a hit.
+_LOGIN_CONTENT_MARKERS_GENERIC = [
     re.compile(r"\bsign in\b", re.I),
     re.compile(r"\blog ?in\b", re.I),
+]
+# These, by contrast, are specific enough that seeing two together in body
+# text is a real signal of a rendered login form (not just a nav link).
+_LOGIN_CONTENT_MARKERS = [
     re.compile(r"\bpassword\b", re.I),
     re.compile(r"\busername\b", re.I),
     re.compile(r"forgot.{0,15}password", re.I),
@@ -64,7 +74,9 @@ def check_structural_boundary(html: str) -> BoundaryCheck:
 
     login_hits = sum(1 for p in _LOGIN_CONTENT_MARKERS if p.search(text))
     if login_hits >= 2:
-        return BoundaryCheck(True, "structural", "multiple login-form content markers present")
+        return BoundaryCheck(
+            True, "structural", "multiple specific login-form content markers present"
+        )
 
     return BoundaryCheck(False)
 

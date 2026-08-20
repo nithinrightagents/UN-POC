@@ -81,7 +81,7 @@ class FakeBrowserSession:
     no evidence quote match, so the agent path exercised is the
     no-evidence-located branch (sufficient for isolation testing)."""
 
-    async def fetch(self, url, caller_class, fetch_log=None):
+    async def fetch(self, url, caller_class, fetch_log=None, timeout_ms=15000):
         from shared.tools.browser import PageResult
 
         result = PageResult(

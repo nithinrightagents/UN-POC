@@ -1,0 +1,476 @@
+=== PREFILLS in data/denmark_relaxed_sample_v2.db ===
+QID: denmark-relaxed-sample-v2-2026:IF-338 | suggested: 1 | answer: True | conf: 100 | reason: None
+QID: denmark-relaxed-sample-v2-2026:CP-030 | suggested: 1 | answer: True | conf: 95 | reason: None
+QID: denmark-relaxed-sample-v2-2026:SP-137b | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-108a | suggested: 0 | answer: None | conf: None | reason: failed_final_validation
+QID: denmark-relaxed-sample-v2-2026:CP-015 | suggested: 1 | answer: True | conf: 90 | reason: None
+QID: denmark-relaxed-sample-v2-2026:SP-043 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-124 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:IF-173 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:EGL-003 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:IF-340 | suggested: 1 | answer: True | conf: 100 | reason: None
+QID: denmark-relaxed-sample-v2-2026:IF-337 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:IF-336 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:TECH-022 | suggested: 1 | answer: True | conf: 95 | reason: None
+QID: denmark-relaxed-sample-v2-2026:SP-166 | suggested: 1 | answer: False | conf: 95 | reason: None
+QID: denmark-relaxed-sample-v2-2026:EP-170 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-095 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:EGL-321 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-062 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:EP-304 | suggested: 0 | answer: None | conf: None | reason: unsupported_language
+QID: denmark-relaxed-sample-v2-2026:EP-141 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-108 | suggested: 1 | answer: False | conf: 95 | reason: None
+QID: denmark-relaxed-sample-v2-2026:IF-011 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-166b | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:SP-048 | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+QID: denmark-relaxed-sample-v2-2026:EGL-036b | suggested: 0 | answer: None | conf: None | reason: insufficient_positions
+Total yes: 5, Total no/nosuggestion: 20
+
+=== ASSESSOR AGENT RUNS in data/denmark_relaxed_sample_v2.db ===
+[denmark-relaxed-sample-v2-2026:IF-338] ans=True conf=100 state=validated_pass nav_url=None raw_quote='Lov om supplerende bestemmelser til forordning om beskyttelse af fysiske personer i forbindelse med behandling af personoplysninger og om fri udveksling af sådanne oplysninger'
+    justification: The page explicitly contains the text of the Danish Data Protection Act (databeskyttelsesloven), which supplements and implements EU Regulation 2016/679 regarding the protection of personal data.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:SP-108a] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-137b] ans=False conf=90 state=assessed nav_url=None raw_quote='Accept cookies on lifeindenmark.dk'
+    justification: The page does not mention SMS alerts for the specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-108a] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-108a] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:CP-030] ans=True conf=95 state=validated_pass nav_url=None raw_quote='Søg tildelinger og kontraktændringer'
+    justification: The page includes a direct search option for procurement awards and contract modifications.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:SP-108a] ans=False conf=60 state=validated_pass nav_url=None raw_quote='Skole og uddannelse'
+    justification: The page provides information regarding education services, but there is no mention of mobile phone applications or browser-based mobile services for education or the other requested sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-124] ans=False conf=85 state=assessed nav_url=None raw_quote='Arbejde, dagpenge, ferie'
+    justification: The page lists various topics under employment, but does not present a comprehensive section listing online services for all six required sectors: health, education, employment, social protection, environment, and justice.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-043] ans=True conf=90 state=assessed nav_url=None raw_quote='Log på som borger'
+    justification: The page provides options to log in to personal tax services via 'Log på som borger' and mentions tax returns such as 'Årsopgørelse' and 'Forskudsopgørelse', indicating the availability of online personal income tax services.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:SP-137b] ans=False conf=90 state=assessed nav_url=None raw_quote='Accept cookies on lifeindenmark.dk'
+    justification: The page does not mention SMS alerts for the specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-137b] ans=False conf=90 state=validation_failed_terminal nav_url=None raw_quote='The official guide to life in Denmark'
+    justification: The page is a general portal homepage for life in Denmark and does not contain any feature providing SMS alerts for the six specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:CP-015] ans=True conf=90 state=validated_pass nav_url=None raw_quote='Цифрові послуги у Данії'
+    justification: The page content explicitly provides foreign language support with options such as Ukrainian as evidenced by the text Цифрові послуги у Данії.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:EGL-003] ans=True conf=90 state=assessed nav_url=None raw_quote='Søg på borger.dk'
+    justification: The page contains a search bar and interface explicitly labeled with 'Søg på borger.dk'.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:IF-173] ans=False conf=40 state=assessed nav_url=None raw_quote='Ministeriet'
+    justification: The page contains navigation menus and press releases, but does not provide a useful collection of sector-specific policy content or historical and current data related to justice policies.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-043] ans=True conf=85 state=assessed nav_url=None raw_quote='Log på som borger med MitID'
+    justification: The page provides direct login access and information regarding annual tax assessments and pre-tax assessments (Aarsopgoerelse and Forskudsopgoerelse), which allows residents to file and manage personal income tax online via TastSelv.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:SP-043] ans=False conf=40 state=validation_failed_terminal nav_url=None raw_quote='Årsopgørelse'
+    justification: The page mentions Årsopgørelse and Forskudsopgørelse but does not contain explicit functionality or instructions for filing online personal income tax directly on this portal page.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-124] ans=False conf=100 state=assessed nav_url=None raw_quote='Arbejde, dagpenge, ferie'
+    justification: The page only lists the 'Arbejde, dagpenge, ferie' section and does not list services for all six required sectors (health, education, employment, social protection, environment, justice).
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-124] ans=False conf=95 state=validation_failed_terminal nav_url=None raw_quote='Arbejde, dagpenge, ferie'
+    justification: The page does not list services for all six required sectors (HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUST). Only employment-related topics and a subset of general categories are present.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-173] ans=False conf=40 state=assessed nav_url=None raw_quote='Justitsvæsenet'
+    justification: The page contains navigation menus and press releases for the Ministry of Justice, but does not provide a collection of sector-specific policy documents and historical/current data for Justice.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-173] ans=False conf=0 state=validation_failed_terminal nav_url=None raw_quote='Justitsvæsenet'
+    justification: The page does not contain information on policies related to different sectors in the justice sector.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-003] ans=True conf=95 state=assessed nav_url=None raw_quote='Søg på borger.dk'
+    justification: The page contains an explicit search feature with a search bar and button labeled 'Søg'.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:EGL-003] ans=True conf=95 state=validation_failed_terminal nav_url=None raw_quote='Søg på borger.dk'
+    justification: The page contains an explicit search feature with a search bar labeled 'Søg på borger.dk'.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:IF-340] ans=True conf=100 state=validated_pass nav_url=None raw_quote='Lov om supplerende bestemmelser til forordningen om ENISA'
+    justification: The page explicitly contains the text of Lov om supplerende bestemmelser til forordningen om ENISA, om cybersikkerhedscertificering af informations- og kommunikationsteknologi og om ophævelse af forordning (EU) nr. 526/2013 (lov om cybersikkerhed), which directly establishes national legislation and regulations regarding cybersecurity.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:IF-337] ans=False conf=95 state=assessed nav_url=None raw_quote='Digitaliseringsstyrelsen'
+    justification: The page does not mention the name of the national Chief Information Officer or equivalent.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_403
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-336] ans=False conf=100 state=assessed nav_url=None raw_quote='Bekendtgørelse om tilladelse til udlejning af arealer til campering og om indretning og benyttelse af campingpladser'
+    justification: The examined page contains regulations regarding camping, permits, fire safety, and building regulations, but there is no mention of legislation or legal frameworks against misinformation, disinformation, or fake news.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-337] ans=False conf=90 state=assessed nav_url=None raw_quote='Digitaliseringsstyrelsen'
+    justification: The page does not contain the name of the national Chief Information Officer or equivalent.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-337] ans=False conf=95 state=validation_failed_terminal nav_url=None raw_quote='Om os'
+    justification: The page does not contain information regarding the name of the national Chief Information Officer or equivalent.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-170] ans=False conf=95 state=assessed nav_url=None raw_quote='Welcome to the official website of Denmark'
+    justification: The page is a general informational overview of Denmark and does not provide open government datasets for the environment or other sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-336] ans=False conf=100 state=assessed nav_url=None raw_quote='Bekendtgørelse om tilladelse til udlejning af arealer til campering og om indretning og benyttelse af campingpladser'
+    justification: The examined page contains regulations regarding camping sites and related administrative rules, but lacks any legal frameworks concerning misinformation, disinformation, or fake news.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-336] ans=False conf=100 state=validation_failed_terminal nav_url=None raw_quote='Campingreglementet'
+    justification: The page content is a Danish statutory regulation regarding camping and campsites (Campingreglementet) and contains no mention of legal frameworks against misinformation, disinformation, or fake news.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-095] ans=False conf=40 state=assessed nav_url=None raw_quote='Sundhed og sygdom'
+    justification: The page lists health online services and categories under Sundhed og sygdom, but does not list services for all six required sectors (Health, Education, Employment, Social Protection, Environment, Justice) on this single page.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-166] ans=False conf=95 state=validated_pass nav_url=None raw_quote='Miljø og energi'
+    justification: The page is a specific topic hub for 'Miljø og energi' and does not contain a comprehensive listing of online services across the six required main sectors (HEALTH, EDUCATION, EMPLOYMENT, SOCIAL PROTECTION, ENVIRONMENT, JUSTICE).
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:TECH-022] ans=True conf=95 state=validated_pass nav_url=None raw_quote='Se dine personlige oplysninger fra det offentlige på Mit Overblik'
+    justification: The page explicitly provides a feature to view personal information from public authorities via Mit Overblik, including income, tax, payments, and cases.
+    fill_gap: None
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-170] ans=False conf=90 state=assessed nav_url=None raw_quote='Welcome to the official website of Denmark'
+    justification: The page does not provide open government datasets for the environment or any other listed sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-170] ans=False conf=95 state=validation_failed_terminal nav_url=None raw_quote='Welcome to the official website of Denmark.'
+    justification: The page is a general informational overview of Denmark and does not provide open government datasets for sectors such as environment or health.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-321] ans=False conf=90 state=assessed nav_url=None raw_quote='Miljø og energi'
+    justification: The page is about environmental and energy topics on borger.dk and contains no mention of co-creation or co-production of e-services for health, education, employment, or social protection.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-095] ans=False conf=40 state=assessed nav_url=None raw_quote='Sundhed og sygdom'
+    justification: The page lists online services for health under the Sundhed og sygdom section, but it does not list online services for all six required sectors (Health, Education, Employment, Social protection, Environment, Justice) on this single page.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-095] ans=False conf=75 state=validation_failed_terminal nav_url=None raw_quote='Sundhed og sygdom'
+    justification: The page contains only health-related services and topics, lacking a section listing online services for all six required sectors (Health, Education, Employment, Social Protection, Environment, Justice).
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-062] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: stale_stub
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: stale_stub
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-141] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: stale_stub
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-108] ans=False conf=100 state=assessed nav_url=None raw_quote='Skole og uddannelse'
+    justification: The page only contains information and services related to the education sector and does not provide an overview listing online services for all six main sectors (health, education, employment, social protection, environment, and justice).
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-062] ans=False conf=90 state=assessed nav_url=None raw_quote='Pioneers in clean energy'
+    justification: The page discusses clean energy and digitalisation broadly, but does not provide the ability to pay for online expenses related to water or energy utilities.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-141] ans=False conf=90 state=assessed nav_url=None raw_quote='Welcome to the official website of Denmark'
+    justification: The page is a general overview and tourism/culture portal for Denmark and does not contain open government datasets for social protection or other specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-321] ans=False conf=90 state=assessed nav_url=None raw_quote='Miljø og energi'
+    justification: The page is an environmental sector hub and contains no evidence of co-creation or co-production initiatives for e-services in health, education, employment, or social protection.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-321] ans=False conf=90 state=validation_failed_terminal nav_url=None raw_quote='Miljø og energi'
+    justification: The page is about environment and energy topics and does not contain evidence of co-creation or co-production of e-services for health, education, employment, or social protection.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-062] ans=False conf=85 state=assessed nav_url=None raw_quote='Green thinking Pioneers in clean energy'
+    justification: The page does not contain any feature or mention regarding the ability to pay online expenses for water or energy utilities.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-062] ans=False conf=85 state=validation_failed_terminal nav_url=None raw_quote='Pioneers in clean energy'
+    justification: The page does not contain any feature or link enabling online payment of water or energy utility expenses.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-304] ans=False conf=10 state=assessed nav_url=None raw_quote=None
+    justification: The page content is completely empty, therefore no budget expenditure datasets for education are present.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-304] ans=False conf=10 state=assessed nav_url=None raw_quote=None
+    justification: The page content is empty and contains no datasets related to education budget expenditure.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-304] ans=False conf=10 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: The page content is completely empty, therefore no budget expenditure datasets for education are present.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-011] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-011] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-011] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EP-141] ans=False conf=90 state=assessed nav_url=None raw_quote='Welcome to the official website of Denmark'
+    justification: The page is a general tourism and country information portal and does not contain open government datasets for social protection or any other specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EP-141] ans=False conf=85 state=validation_failed_terminal nav_url=None raw_quote='SOCIETY'
+    justification: The page content does not contain open government datasets for health, education, employment, social protection, environment, or justice.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=False conf=90 state=assessed nav_url=None raw_quote='Miljø og energi'
+    justification: The page discusses environment and energy topics but contains no mention of SMS alerts for the six specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-011] ans=False conf=85 state=assessed nav_url=None raw_quote='Departementschefen'
+    justification: The page only mentions the Permanent Secretary (Departementschef Barbara Bertelsen) and lacks a comprehensive listing, section, or chart displaying the names, official titles, and contact information of all heads of department.
+    fill_gap: only a single department head is mentioned without a complete directory or contact details for heads of department
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-108] ans=False conf=95 state=assessed nav_url=None raw_quote='Skole og uddannelse'
+    justification: The page only provides information and links related to the education sector (Skole og uddannelse), lacking any comprehensive section listing online services for the other five required sectors: health, employment, social protection, environment, and justice.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-108] ans=False conf=95 state=validated_pass nav_url=None raw_quote='Skole og uddannelse'
+    justification: The page is a dedicated category page for education (Skole og uddannelse) and does not list online services for all six required main sectors such as health, employment, social protection, environment, and justice.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:IF-011] ans=False conf=95 state=assessed nav_url=None raw_quote='Departementschefen'
+    justification: The page mentions the Permanent Secretary (Departementschef Barbara Bertelsen) but does not display names, titles, and contact information for the wider heads of department across the ministry.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:IF-011] ans=False conf=95 state=validation_failed_terminal nav_url=None raw_quote='Departementschefen'
+    justification: The page discusses the Permanent Secretary (Departementschefen) Barbara Bertelsen, but does not display names, titles, and contact information for the heads of all departments.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=False conf=95 state=assessed nav_url=None raw_quote='Miljø og energi'
+    justification: The page is a generic portal hub for environment and energy topics on borger.dk and contains no mention of SMS alerts for the specified sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:SP-166b] ans=False conf=90 state=validation_failed_terminal nav_url=None raw_quote='Miljø og energi'
+    justification: The page does not mention SMS alerts for environment or any other sectors.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:SP-048] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=assessed nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=None conf=0 state=validation_failed_terminal nav_url=None raw_quote=None
+    justification: Portal unreachable: http_404
+    fill_gap: portal unreachable before content could be evaluated
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=False conf=95 state=assessed nav_url=None raw_quote='Quick Facts'
+    justification: The page lacks any information on the government provision of physical spaces for online services.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=False conf=90 state=assessed nav_url=None raw_quote='Digitalisation in Denmark'
+    justification: The page discusses general aspects of Denmark such as culture, digitalisation, and society, but contains no information regarding the government provision of physical spaces for accessing online services.
+    fill_gap: not present anywhere on this page
+[denmark-relaxed-sample-v2-2026:EGL-036b] ans=False conf=90 state=validation_failed_terminal nav_url=None raw_quote='Innovation and Design'
+    justification: The page does not contain information on government provision of physical spaces for online services.
+    fill_gap: not present anywhere on this page
+
+=== VALIDATION RESULTS in data/denmark_relaxed_sample_v2.db ===
+Run: run-b6a0976b6fd1 | passed: 1 | score: 1.0 | gaps: []
+Run: run-92a09eb122a0 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-edb29c151725 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-ab4c63eed229 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-b6a0976b6fd1 | passed: 1 | score: 1.0 | gaps: []
+Run: run-62dbafd6079b | passed: 1 | score: 1.0 | gaps: []
+Run: run-62dbafd6079b | passed: 1 | score: 1.0 | gaps: []
+Run: run-74eeae7983db | passed: 0 | score: 0.0 | gaps: ["The cited evidence consists solely of a cookie consent prompt ('Accept cookies on lifeindenmark.dk') and contains no substantive content to evaluate SMS alert capabilities.", 'A stated confidence of 90/100 is not supported by irrelevant evidence from a cookie banner.', 'cited evidence does not clearly support the stated answer', 'justification is not consistent with the answer and evidence', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-9c515b144dc0 | passed: 0 | score: 0.0 | gaps: ["The cited evidence is merely a cookie banner notice ('Accept cookies on lifeindenmark.dk') and does not provide substantive information about SMS alert availability or portal services.", 'The justification claims the page does not mention SMS alerts, but the cited evidence does not reflect page content beyond a cookie prompt.', 'A confidence score of 90/100 is disproportionately high given the lack of relevant evidence.', 'cited evidence does not clearly support the stated answer', 'justification is not consistent with the answer and evidence', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-d5301fd1a081 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is only a page tagline ('The official guide to life in Denmark') and does not substantiate the absence of SMS alert functionality across the relevant government services.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-45536f7aed68 | passed: 1 | score: 1.0 | gaps: []
+Run: run-45536f7aed68 | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence is limited to a single three-word Danish heading ('Skole og uddannelse') and does not contain enough context or page content to substantiate the claim that mobile services are absent.", 'cited evidence does not clearly support the stated answer']
+Run: run-33706ed09315 | passed: 1 | score: 1.0 | gaps: []
+Run: run-33706ed09315 | passed: 1 | score: 1.0 | gaps: []
+Run: run-248fee307128 | passed: 0 | score: 0.0 | gaps: ["The cited evidence ('Log på som borger' / 'Log in as citizen') does not mention income taxes or the ability to file taxes online.", "The justification relies on key terms ('Årsopgørelse' and 'Forskudsopgørelse') that are absent from the cited evidence text.", 'cited evidence does not clearly support the stated answer', 'justification is not consistent with the answer and evidence', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-968c321b9dcb | passed: 0 | score: 0.0 | gaps: ["The cited evidence ('Log på som borger med MitID') only demonstrates a generic citizen login option and does not reference personal income tax filing, assessments, or online tax services.", 'The justification references specific tax features and services (Aarsopgoerelse, Forskudsopgoerelse, and TastSelv) that are completely absent from the cited evidence text.', 'A confidence score of 85 is disproportionately high given the lack of supporting evidence directly connecting the portal to personal income tax filing.', 'cited evidence does not clearly support the stated answer', 'justification is not consistent with the answer and evidence', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-8ffd17df9deb | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence is merely a single term ('Årsopgørelse') and does not provide sufficient evidence to support a negative determination.", 'The justification limits its evaluation to a single portal page, whereas the indicator asks whether the service is available on any of the national government portals.', 'cited evidence does not clearly support the stated answer']
+Run: run-9b7ea6d28c29 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-0f3290b58079 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-9592ce9ecd12 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-4b0bac606c09 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is a minimal three-word navigation snippet ('Arbejde, dagpenge, ferie') that does not provide sufficient context to substantiate that online services are not listed.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-57636eb8327f | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence only shows the presence of the employment section ('Arbejde, dagpenge, ferie') and is insufficient to prove the absence of the other five sectors on the portal.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-0dbbee225a19 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists of only a three-word snippet ('Arbejde, dagpenge, ferie') and does not provide sufficient context or full-page navigation/structure to verify the absence of the other required sectors.", 'A confidence score of 95/100 is disproportionately high given the minimal evidence cited to prove the negative.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-094725acad20 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-b0f8035d05c9 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-ac8a7e9123c7 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-ae958078f53f | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence is only a single word ('Ministeriet'), which is insufficient to substantiate the claim that the portal lacks a useful collection of justice sector policies and data.", 'cited evidence does not clearly support the stated answer']
+Run: run-de62138bfe37 | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence consists solely of a single word ('Justitsvæsenet') and does not substantiate the justification's claims regarding navigation menus, press releases, or the absence of sector-specific policy collections.", 'cited evidence does not clearly support the stated answer']
+Run: run-aa624192e7fb | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence is merely a heading/term ('Justitsvæsenet') and does not substantiate the negative claim that the page lacks information on justice sector policies.", 'cited evidence does not clearly support the stated answer']
+Run: run-7c9a797bc5f3 | passed: 0 | score: 0.3333333333333333 | gaps: ['The question criteria require the search feature to be verified through a search using one word, but the cited evidence and justification only show the search bar label without demonstrating the search verification.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-596d687b37e5 | passed: 0 | score: 0.3333333333333333 | gaps: ['The cited evidence and justification show the existence of a search bar/label, but do not provide evidence of verification through performing a search using one word as specified in the criteria.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-aecf3600cb0e | passed: 0 | score: 0.3333333333333333 | gaps: ['The question requires the search feature to be verified through a search using one word, but the cited evidence and justification only demonstrate the presence/label of the search bar without verifying that a search was performed.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-72f56b2f8ecc | passed: 1 | score: 1.0 | gaps: []
+Run: run-72f56b2f8ecc | passed: 1 | score: 1.0 | gaps: []
+Run: run-6611edd3abc0 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-c7064f8269c2 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-c1bd907cb520 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-0a914ebe4881 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely the agency name ('Digitaliseringsstyrelsen') and does not demonstrate that the CIO or equivalent is absent from the page.", 'The high confidence score of 95/100 is disproportionate given the lack of evidence supporting the negative claim.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-d29987cba587 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely the name of an agency ('Digitaliseringsstyrelsen') and provides no context or content to demonstrate that the page lacks the name of a National CIO or equivalent.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-74c1ddc15013 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely a two-word phrase ('Om os') and does not adequately substantiate the negative finding.", 'A confidence score of 95/100 is disproportionately high given the lack of substantive evidence provided to confirm the absence of the requested information.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-00eb39b51e4b | passed: 0 | score: 0.3333333333333333 | gaps: ['The cited evidence is an executive order regarding camping site permits and regulations, which is irrelevant to misinformation legislation.', 'The absence of misinformation regulations on a specific camping law document does not support a general negative answer for the national legal framework.', 'A confidence score of 100/100 is disproportionately high given the reliance on a single, unrelated regulatory text.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-2436842f6a69 | passed: 0 | score: 0.3333333333333333 | gaps: ['Examining a single, unrelated regulation regarding camping sites is insufficient to determine whether national legislation or legal frameworks against misinformation/disinformation exist.', 'A confidence score of 100/100 is disproportionate given that only one unrelated document was assessed.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-4baf943a4d51 | passed: 0 | score: 0.3333333333333333 | gaps: ["Reviewing a single unrelated webpage/document concerning camping regulations ('Campingreglementet') is insufficient evidence to conclude with 100% confidence that no national legislation, law, or regulation against misinformation exists.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-e0b3bac36081 | passed: 1 | score: 1.0 | gaps: []
+Run: run-27b5db41480d | passed: 1 | score: 1.0 | gaps: []
+Run: run-27b5db41480d | passed: 1 | score: 1.0 | gaps: []
+Run: run-e0b3bac36081 | passed: 1 | score: 1.0 | gaps: []
+Run: run-b9c12763ab11 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('Welcome to the official website of Denmark.') is merely a greeting and does not demonstrate or prove the absence of open government datasets for the environment sector.", 'The confidence score of 95/100 is disproportionately high given that the cited evidence contains no substantive information about datasets or portal contents.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-2b13ae9cebff | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('Welcome to the official website of Denmark.') is merely a generic welcome statement and does not provide sufficient proof that environment datasets are absent.", 'A confidence score of 90/100 is disproportionately high given the minimal and non-substantive evidence cited.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-82ffdd0799b3 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists solely of a single welcome phrase ('Welcome to the official website of Denmark.'), which is insufficient to prove the absence of open government datasets across the portal.", 'The stated confidence of 95/100 is disproportionately high given the minimal evidence provided.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-2501dafe82e0 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-09ac650f8b00 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-01b364c94a24 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-3c2a2f7a9dd4 | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence consists solely of the phrase 'Sundhed og sygdom' and does not provide sufficient context to substantiate the claim that required online services are missing.", "The justification notes that health services are present under 'Sundhed og sygdom' but rejects the item because all six sectors are not on that single page, conflicting with the specific indicator scope for Health.", 'cited evidence does not clearly support the stated answer']
+Run: run-a3c2ff1b8534 | passed: 0 | score: 0.6666666666666666 | gaps: ["The cited evidence text only shows the snippet 'Sundhed og sygdom' (Health and illness) and does not provide evidence showing the absence of the other five required sectors on the page.", 'cited evidence does not clearly support the stated answer']
+Run: run-f5e5fd65646e | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists only of a three-word header ('Sundhed og sygdom') which is insufficient to demonstrate that the website lacks the required listings for online services across the specified sectors.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-b61073d24d77 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-a50e46d15157 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-c2015faac20c | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-11684b39a763 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-78952a573782 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-a76c62e7ad25 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-2e4d4e6fe6ce | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-fadacd5c8cc0 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-f34b03be94cf | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-2a2fae87761b | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely a category title ('Miljø og energi') and does not contain enough textual context or content to demonstrate the absence of co-creation/co-production initiatives.", 'A stated confidence of 90/100 is disproportionately high given that the cited evidence only shows a three-word header rather than substantive page content.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-98b09d99a00a | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists only of a brief header ('Miljø og energi') which is insufficient to prove the absence of co-creation or co-production initiatives.", 'A stated confidence of 90/100 is disproportionately high given the extremely sparse evidence provided.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-2e1a67eea054 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence contains only a three-word heading ('Miljø og energi') which is insufficient to substantiate the absence of co-creation/co-production across the evaluated scope.", 'A confidence score of 90/100 is disproportionately high given that only a minimal heading snippet is cited as evidence.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-d21ced143f55 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('Pioneers in clean energy') is a minimal fragment that does not demonstrate the absence of utility payment capabilities across the portal.", 'A confidence score of 90/100 is disproportionately high given the lack of comprehensive evidence showing that utility payment is unavailable.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-cc965fe0c6f6 | passed: 0 | score: 0.3333333333333333 | gaps: ['The cited evidence is merely a promotional snippet about clean energy and wind production in Denmark; it does not demonstrate or substantiate the absence of utility payment services across the website/portal.', 'The stated confidence (85/100) is not proportionate to the evidence provided, as an excerpt of an unrelated topic does not confirm the lack of a payment feature.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-3f305c3bd5d4 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('Pioneers in clean energy') is a brief phrase that does not support or substantiate the absence of online utility payment options.", 'A confidence score of 85/100 is disproportionately high given the lack of meaningful evidence demonstrating that utility payments cannot be made.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-c3c19986a6b4 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-1a5e073fc08d | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-0d8bea64e92a | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-25d5336413a2 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-f5f978b1eb9f | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-6e1bfe891b4a | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-31c15ea8ddce | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-498e8d478648 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-57e0a851d190 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-44f651e4b4f1 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is only a generic greeting ('Welcome to the official website of Denmark.') and does not provide sufficient proof to establish that open government datasets for social protection are absent.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-b38d2e9a56ba | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('Welcome to the official website of Denmark.') is only a greeting and does not provide sufficient proof or context to substantiate that open government datasets for social protection do not exist on the portal.", 'A confidence score of 90/100 is disproportionately high given the extremely minimal cited evidence.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-721e22e4b054 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists solely of the word 'SOCIETY', which does not adequately demonstrate or support the absence of open government datasets across the specified sectors.", 'The confidence score of 85 is disproportionately high given that the provided evidence is minimal and uninformative.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-ac31d7acc109 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-017a5d78fe57 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-efaada542030 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-2502beb43f93 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists of a single phrase ('Skole og uddannelse') which is insufficient to prove the absence of a portal section listing services across the six specified sectors.", 'A confidence score of 100/100 is disproportionately high given the minimal and inconclusive evidence provided.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-2e5982854953 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is limited to a single phrase ('Skole og uddannelse') and is insufficient to substantiate the claim that the portal lacks listings for the other required sectors.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-8982fd8100c3 | passed: 1 | score: 1.0 | gaps: []
+Run: run-0c0b36609ea7 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-e269fc6e3a2a | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-a46c7d971355 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-8982fd8100c3 | passed: 1 | score: 1.0 | gaps: []
+Run: run-94028d3a338b | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely the word 'Departementschefen' and does not provide sufficient context to substantiate the justification's claim that other heads of department and contact details are missing.", 'A confidence score of 85/100 is disproportionately high given the extremely fragmentary cited evidence.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-e27077951d9c | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is limited to a single word ('Departementschefen'), which does not contain the details referenced in the justification (e.g., Barbara Bertelsen) or sufficiently substantiate the absence of names, titles, and contact information across the department.", 'A stated confidence of 95/100 is disproportionately high given the extremely minimal cited evidence.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-97dab579f5eb | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is only a single word ('Departementschefen'), which is insufficient context to demonstrate the absence of department heads' names, titles, and contact information.", 'The stated confidence of 95/100 is disproportionately high relative to the minimal evidence provided.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-4a2f8b1965b0 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-853d1ba25a02 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-dc5aff96bb73 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-6f84f2d21c62 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-00ac99ec6180 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-4660e0629371 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-0a101a015434 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is only a section title ('Miljø og energi') and does not provide sufficient context or content to demonstrate the absence of SMS alert services.", 'A confidence score of 90/100 is disproportionately high given the extremely minimal evidence cited.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-68a91e2b1f03 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is only a short heading ('Miljø og energi') and does not provide enough page content to verify that SMS alerts are absent.", 'A confidence score of 95/100 is disproportionately high when relying on an isolated page title snippet to prove a negative.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-3ea79f13ab74 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence consists only of a category heading ('Miljø og energi') and does not provide sufficient context or content to demonstrate that SMS alerts are absent or unsupported across the portal.", 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-3c1caee1cb69 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-762e61219ca4 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-fb733056a3c6 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-6ca8307f631f | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-e409e8fac057 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-9bd33f928d0c | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-388b46300081 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-8b264e469dbf | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-0587b79946d3 | passed: 0 | score: 0.0 | gaps: ['required evidence component missing (capture, element reference, or text)']
+Run: run-1b6352c33f52 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('QUICK FACTS') is too minimal and does not substantiate the claim that the portal lacks information on physical spaces for online services.", 'A confidence score of 95/100 is disproportionately high given the lack of substantial supporting evidence.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-8e00768f89fa | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence is merely a three-word title ('Digitalisation in Denmark') rather than a substantive excerpt or comprehensive proof demonstrating the absence of information on the portal.", 'A confidence score of 90/100 is disproportionately high given the lack of sufficient evidence provided to substantiate the negative finding.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Run: run-cb7e62267155 | passed: 0 | score: 0.3333333333333333 | gaps: ["The cited evidence ('INNOVATION AND DESIGN') is merely a three-word heading fragment and does not provide sufficient proof or context to substantiate the claim that the portal lacks information on physical spaces.", 'A confidence score of 90/100 is disproportionately high given the lack of supporting evidence demonstrating that a comprehensive search or review of the portal was conducted.', 'cited evidence does not clearly support the stated answer', 'stated confidence is not proportionate to the observed evidence quality']
+Total val passed: 15, Total val failed: 102

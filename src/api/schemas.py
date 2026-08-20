@@ -333,6 +333,7 @@ class PrefillItem(BaseModel):
     confidence: int | None = None
     justification: str | None = None
     evidence_url: str | None = None
+    capture_ref: str | None = None
     supplying_source: str | None = None
     agreement_outcome: str | None = None
     confidence_gap: int | None = None

@@ -2,7 +2,7 @@
   "module": "E-Government Literacy",
   "module_id": "2.6",
   "source_pdf": "Module 2.6 E-Government Literacy.pdf",
-  "total_questions": 13,
+  "total_questions": 18,
   "questions": [
     {
       "question_id": "EGL-003",
@@ -32,7 +32,7 @@
       "indicator_id": "#006",
       "module": "E-Government Literacy",
       "title": "Help feature/FAQs section",
-      "text": "Help feature/FAQs section — Defined by a Help or 'Frequently Asked Questions (FAQs)’ feature available on the portal. This feature is intended to help the user navigate the site ",
+      "text": "Help feature/FAQs section — Defined by a Help or 'Frequently Asked Questions (FAQs)’ feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
       "what": "Defined by a Help or 'Frequently Asked Questions (FAQs)’ feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
       "why": "Provides instant, accurate, and accessible information, enhancing user experience, and promoting efficient communication between the government and people.",
       "how": {
@@ -78,7 +78,7 @@
       "indicator_id": "#009",
       "module": "E-Government Literacy",
       "title": "Live chat support with a person",
-      "text": "Live chat support with a person — The provision of \"live chat\" support functionality with government employees/officers in real time . This covers real-time interaction through a perso",
+      "text": "Live chat support with a person — The provision of \"live chat\" support functionality with government employees/officers in real time . This covers real-time interaction through a person via different channels \"click to chat\", webchat, WeChat, WhatsApp, text messaging, and other live support functions.",
       "what": "The provision of \"live chat\" support functionality with government employees/officers in real time . This covers real-time interaction through a person via different channels \"click to chat\", webchat, WeChat, WhatsApp, text messaging, and other live support functions.",
       "why": "Provides real-time assistance, enhances citizen engagement, and fosters transparent communication between residents and government employees/officers, improving overall public service accessibility and satisfaction.",
       "how": {
@@ -101,7 +101,7 @@
       "indicator_id": "#014",
       "module": "E-Government Literacy",
       "title": "Privacy policy",
-      "text": "Privacy policy — A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes",
+      "text": "Privacy policy — A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
       "what": "A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
       "why": "Essential for establishing trust with users, ensuring compliance with relevant privacy laws and regulations, and demonstrating the government’s commitment to protecting individuals’ privacy",
       "how": {
@@ -124,7 +124,7 @@
       "indicator_id": "#016",
       "module": "E-Government Literacy",
       "title": "Information on online services use",
-      "text": "Information on online services use — Defined by evidence that the portal offers guidance or tutorials to people in understanding and using online services, e.g. Help-Link. These can also ",
+      "text": "Information on online services use — Defined by evidence that the portal offers guidance or tutorials to people in understanding and using online services, e.g. Help-Link. These can also come under the form of training manuals and/or tutorials aimed at helping users to better understand how to access and use online services.",
       "what": "Defined by evidence that the portal offers guidance or tutorials to people in understanding and using online services, e.g. Help-Link. These can also come under the form of training manuals and/or tutorials aimed at helping users to better understand how to access and use online services.",
       "why": "Empowers people by providing clear instructions, fostering digital literacy, and ensuring that all residents can confidently access and utilize online services effectively.",
       "how": {
@@ -147,7 +147,7 @@
       "indicator_id": "#017",
       "module": "E-Government Literacy",
       "title": "Digital ID to access online services",
-      "text": "Digital ID to access online services — Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authenticatio",
+      "text": "Digital ID to access online services — Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to oﬀer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be veriﬁed when getting online.",
       "what": "Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to oﬀer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be veriﬁed when getting online.",
       "why": "It ensures that individuals interacting with the portal are genuine and authorized, safeguards sensitive government data and services, enhancing online security and user trust.",
       "how": {
@@ -193,7 +193,7 @@
       "indicator_id": "#036b",
       "module": "E-Government Literacy",
       "title": "Access to physical spaces for online services",
-      "text": "Access to physical spaces for online services — Information on the government portal of government provision of physical spaces i.e. community centers, post offices, libraries and personal assistanc",
+      "text": "Access to physical spaces for online services — Information on the government portal of government provision of physical spaces i.e. community centers, post offices, libraries and personal assistance to access online services in these locations.",
       "what": "Information on the government portal of government provision of physical spaces i.e. community centers, post offices, libraries and personal assistance to access online services in these locations.",
       "why": "Crucial for ensuring inclusive and equitable access to government services, fostering digital literacy, and enhancing engagement.",
       "how": {
@@ -216,7 +216,7 @@
       "indicator_id": "#038",
       "module": "E-Government Literacy",
       "title": "Open data metadata",
-      "text": "Open data metadata — The provision of relevant metadata, such as description, date, author, and other relevant information about each open data file by the government webs",
+      "text": "Open data metadata — The provision of relevant metadata, such as description, date, author, and other relevant information about each open data file by the government website.",
       "what": "The provision of relevant metadata, such as description, date, author, and other relevant information about each open data file by the government website.",
       "why": "Enhances data transparency, facilitates accurate understanding and usage, and allows users to assess the data's relevance and reliability, promoting informed decision-making and fostering trust in the government",
       "how": {
@@ -239,7 +239,7 @@
       "indicator_id": "#039",
       "module": "E-Government Literacy",
       "title": "Guidance on Open Government datasets",
-      "text": "Guidance on Open Government datasets — Evidence of guidance or toolkit on using Open Government datasets, e.g. training manuals and/or tutorials aimed at helping users to better understand ",
+      "text": "Guidance on Open Government datasets — Evidence of guidance or toolkit on using Open Government datasets, e.g. training manuals and/or tutorials aimed at helping users to better understand how to access and use open datasets. Open data means that the data can be readily and easily consulted and reused by anyone. Open data must fulfill the following conditions: 1) Machine-readable, 2) No legal barriers to access the data, 3) Free of charge, and 4) Available in widespread type of files or in open standards.",
       "what": "Evidence of guidance or toolkit on using Open Government datasets, e.g. training manuals and/or tutorials aimed at helping users to better understand how to access and use open datasets. Open data means that the data can be readily and easily consulted and reused by anyone. Open data must fulfill the following conditions: 1) Machine-readable, 2) No legal barriers to access the data, 3) Free of charge, and 4) Available in widespread type of files or in open standards.",
       "why": "Crucial to empower users with the knowledge and tools needed to access and utilize data effectively, fostering transparency, innovation, and informed decision-making.",
       "how": {
@@ -262,7 +262,7 @@
       "indicator_id": "#086",
       "module": "E-Government Literacy",
       "title": "Mark favorite/most used online services",
-      "text": "Mark favorite/most used online services — The ability for users to customize/personalize the national portal(s) to mark their favourite/most used online services through any of the government ",
+      "text": "Mark favorite/most used online services — The ability for users to customize/personalize the national portal(s) to mark their favourite/most used online services through any of the government portal(s)",
       "what": "The ability for users to customize/personalize the national portal(s) to mark their favourite/most used online services through any of the government portal(s)",
       "why": "Enhances user engagement and satisfaction, promoting a more user-centric approach to digital governance.",
       "how": {
@@ -284,12 +284,12 @@
       "question_id": "EGL-317",
       "indicator_id": "#317",
       "module": "E-Government Literacy",
-      "title": "Co-creation of e-services (#317,318,319,320,321,322)What Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors:",
-      "text": "Co-creation of e-services (#317,318,319,320,321,322)What Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "title": "Co-creation of e-services — HEALTH",
+      "text": "Co-creation of e-services — HEALTH — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
       "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -299,7 +299,122 @@
         "the United Arab Emirates’ co creation on e-services"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EGL-318",
+      "indicator_id": "#318",
+      "module": "E-Government Literacy",
+      "title": "Co-creation of e-services — EDUCATION",
+      "text": "Co-creation of e-services — EDUCATION — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EDUCATION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EDUCATION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "reference_links": [
+        "the United Arab Emirates’ co creation on e-services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EGL-319",
+      "indicator_id": "#319",
+      "module": "E-Government Literacy",
+      "title": "Co-creation of e-services — EMPLOYMENT",
+      "text": "Co-creation of e-services — EMPLOYMENT — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EMPLOYMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EMPLOYMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "reference_links": [
+        "the United Arab Emirates’ co creation on e-services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EGL-320",
+      "indicator_id": "#320",
+      "module": "E-Government Literacy",
+      "title": "Co-creation of e-services — SOCIAL PROTECTION",
+      "text": "Co-creation of e-services — SOCIAL PROTECTION — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: SOCIAL PROTECTION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: SOCIAL PROTECTION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "reference_links": [
+        "the United Arab Emirates’ co creation on e-services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EGL-321",
+      "indicator_id": "#321",
+      "module": "E-Government Literacy",
+      "title": "Co-creation of e-services — ENVIRONMENT",
+      "text": "Co-creation of e-services — ENVIRONMENT — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: ENVIRONMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: ENVIRONMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "reference_links": [
+        "the United Arab Emirates’ co creation on e-services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EGL-322",
+      "indicator_id": "#322",
+      "module": "E-Government Literacy",
+      "title": "Co-creation of e-services — JUSTICE",
+      "text": "Co-creation of e-services — JUSTICE — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "reference_links": [
+        "the United Arab Emirates’ co creation on e-services"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     }

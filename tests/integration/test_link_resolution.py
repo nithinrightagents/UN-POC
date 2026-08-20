@@ -168,3 +168,57 @@ async def test_no_source_yields_anything_produces_full_rejected_history(repo):
     assert len(result.history) == 3
     assert all(not a.usable for a in result.history)
     assert all(a.rejection_reason for a in result.history)
+
+
+@pytest.mark.asyncio
+async def test_cross_cycle_msq_candidate_matching(repo):
+    """MSQ candidate stored under a different cycle prefix (e.g. cycle1:IF-010)
+    must still match a query under a new cycle (e.g. cycle2:IF-010)."""
+    repo.insert_msq_link_candidate(
+        MSQLinkCandidate(
+            candidate_id=new_id("msq"),
+            submission_id="sub-dk",
+            question_id="cycle-alpha:IF-010",
+            country_id="DK",
+            url="https://www.borger.dk",
+        )
+    )
+
+    settings = Settings()
+    settings.url_resolution_mode = "historical_first"
+    client = httpx.AsyncClient(transport=_gov_search_transport(None))
+
+    result = await resolve_link(
+        repo, client, "cycle-beta:IF-010", "DK", "Denmark portal", settings
+    )
+
+    assert result.resolved_url == "https://www.borger.dk"
+    assert result.supplying_source.value == "msq"
+
+
+@pytest.mark.asyncio
+async def test_portal_default_fallback(repo):
+    """When all sources fail, portal_url is used as a fallback if it is a valid government domain."""
+    settings = Settings()
+    client = httpx.AsyncClient(transport=_gov_search_transport(None))
+
+    result = await resolve_link(
+        repo,
+        client,
+        "q-unfound",
+        "DK",
+        "Denmark query",
+        settings,
+        portal_url="https://www.borger.dk",
+    )
+
+    assert result.resolved_url == "https://www.borger.dk"
+    assert result.supplying_source.value == "portal_default"
+
+
+def test_bing_redirect_unwrap():
+    from shared.tools.linkresolution.sources.search import _unwrap_bing_redirect
+
+    # a1aHR0cHM6Ly9kZW5tYXJrLmRrLw == https://denmark.dk/
+    bing_url = "https://www.bing.com/ck/a?!&&p=abc&u=a1aHR0cHM6Ly9kZW5tYXJrLmRrLw&ntb=1"
+    assert _unwrap_bing_redirect(bing_url) == "https://denmark.dk/"

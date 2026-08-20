@@ -27,6 +27,9 @@ class Settings:
     google_genai_use_vertexai: bool = True
     google_cloud_project: str = ""
     google_cloud_location: str = "us-central1"
+    # Gemini Developer API key (used only when google_genai_use_vertexai is
+    # false -- e.g. for model lines not yet served on the Vertex AI endpoint).
+    google_api_key: str = ""
     agent_1_model: str = "gemini-2.5-flash"
     agent_2_model: str = "gemini-2.5-flash"
     agent_models: list[str] = field(default_factory=lambda: ["gemini-2.5-flash", "gemini-2.5-flash"])
@@ -71,7 +74,7 @@ class Settings:
     # normal structured response (agents/assessor/agent.py) and compared
     # against this allow-list in orchestration/scheduler.py -- no separate
     # detection package or pre-fetch step.
-    supported_languages: list[str] = field(default_factory=lambda: ["en"])
+    supported_languages: list[str] = field(default_factory=lambda: ["en", "da"])
     language_decision_window_hours: int = 48
 
     # --- Crawling / access policy ---
@@ -79,6 +82,16 @@ class Settings:
     unresponsive_portal_attempt_bound: int = 3
     verification_attempt_bound: int = 3
     user_agent: str = "EKAP-AIQ-PoC/0.1"
+    # 15s (the original hardcoded default) sits right at the observed
+    # domcontentloaded time for legitimately slow but reachable government
+    # sites (e.g. justitsministeriet.dk measured at ~13.7s); 25s (the next
+    # value tried) still isn't enough for every real site either -- a
+    # direct repro against opendata.dk timed out twice at 25s and needed
+    # ~44s on the attempt that did complete. Both are nondeterministic
+    # "unreachable: timeout" outcomes caused by real network/server latency
+    # on a genuinely live page, independent of which country's portal is
+    # being fetched -- not an outage, just a slow one.
+    page_navigation_timeout_ms: int = 45000
 
     # --- Persistence ---
     database_path: str = "./data/aiq.db"
@@ -95,6 +108,9 @@ class Settings:
     prefill_confidence_gap_tolerance: int = 10
     prefill_run_budget: float = 0.0
 
+    # --- Search / Firecrawl ---
+    firecrawl_api_key: str = ""
+
     @property
     def resolution_order(self) -> list[str]:
         """The three named modes (FR-003)."""
@@ -109,6 +125,8 @@ class Settings:
         d = {f.name: getattr(self, f.name) for f in fields(self)}
         if d.get("api_key"):
             d["api_key"] = "***"
+        if d.get("google_api_key"):
+            d["google_api_key"] = "***"
         return d
 
     @classmethod
@@ -120,6 +138,7 @@ _ENV_MAP = {
     "google_genai_use_vertexai": ("GOOGLE_GENAI_USE_VERTEXAI", _bool),
     "google_cloud_project": ("GOOGLE_CLOUD_PROJECT", str),
     "google_cloud_location": ("GOOGLE_CLOUD_LOCATION", str),
+    "google_api_key": ("GOOGLE_API_KEY", str),
     "agent_1_model": ("AIQ_AGENT_1_MODEL", str),
     "agent_2_model": ("AIQ_AGENT_2_MODEL", str),
     "agent_models": ("AIQ_AGENT_MODELS", _split_csv),
@@ -157,6 +176,7 @@ _ENV_MAP = {
     "unresponsive_portal_attempt_bound": ("AIQ_UNRESPONSIVE_PORTAL_ATTEMPT_BOUND", int),
     "verification_attempt_bound": ("AIQ_VERIFICATION_ATTEMPT_BOUND", int),
     "user_agent": ("AIQ_USER_AGENT", str),
+    "page_navigation_timeout_ms": ("AIQ_PAGE_NAVIGATION_TIMEOUT_MS", int),
     "database_path": ("AIQ_DATABASE_PATH", str),
     "serve_host": ("AIQ_SERVE_HOST", str),
     "serve_port": ("AIQ_SERVE_PORT", int),
@@ -164,6 +184,7 @@ _ENV_MAP = {
     "max_concurrent_assessment_runs": ("AIQ_MAX_CONCURRENT_ASSESSMENT_RUNS", int),
     "prefill_confidence_gap_tolerance": ("AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE", int),
     "prefill_run_budget": ("AIQ_PREFILL_RUN_BUDGET", float),
+    "firecrawl_api_key": ("FIRECRAWL_API_KEY", str),
 }
 
 

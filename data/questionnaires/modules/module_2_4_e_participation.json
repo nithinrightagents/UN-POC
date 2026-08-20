@@ -2,14 +2,14 @@
   "module": "E-Participation",
   "module_id": "2.4",
   "source_pdf": "Module 2.4 E-Participation.pdf",
-  "total_questions": 20,
+  "total_questions": 46,
   "questions": [
     {
       "question_id": "EP-021",
       "indicator_id": "#021",
       "module": "E-Participation",
       "title": "Corruption Reporting",
-      "text": "Corruption Reporting — The ability for users to report corruption by public servants or institutions on the national government portal. Either via a dedicated platform or me",
+      "text": "Corruption Reporting — The ability for users to report corruption by public servants or institutions on the national government portal. Either via a dedicated platform or mechanism for individuals to confidentially submit allegations or instances of corruption they have encountered",
       "what": "The ability for users to report corruption by public servants or institutions on the national government portal. Either via a dedicated platform or mechanism for individuals to confidentially submit allegations or instances of corruption they have encountered",
       "why": "Empowers people to hold government officials and institutions accountable, fosters transparency and integrity in governance, and contributes to the overall efforts to combat corruption within the public sector.",
       "how": {
@@ -32,7 +32,7 @@
       "indicator_id": "#033",
       "module": "E-Participation",
       "title": "Calendar on e-participation activities",
-      "text": "Calendar on e-participation activities — The provision of information about any upcoming e-participation activities. E-participation initiatives are initiatives offered to engage people in di",
+      "text": "Calendar on e-participation activities — The provision of information about any upcoming e-participation activities. E-participation initiatives are initiatives offered to engage people in discussions, decision-making and policy-making. These can be identified through announcement(s), a calendar, of upcoming online consultation, voting forums, surveys, polls, etc.",
       "what": "The provision of information about any upcoming e-participation activities. E-participation initiatives are initiatives offered to engage people in discussions, decision-making and policy-making. These can be identified through announcement(s), a calendar, of upcoming online consultation, voting forums, surveys, polls, etc.",
       "why": "Keeps people informed and engaged in decision-making, fostering transparency, inclusivity, and active civic involvement in shaping national policies and initiatives.",
       "how": {
@@ -55,11 +55,11 @@
       "indicator_id": "#034",
       "module": "E-Participation",
       "title": "Online tools for policy",
-      "text": "Online tools for policy — The provision of online tools available on the any government portal(s) to collect public opinion from people to inform policy deliberation processes.",
+      "text": "Online tools for policy — The provision of online tools available on the any government portal(s) to collect public opinion from people to inform policy deliberation processes. Possible tools include online fora, social media, online polls, online voting tools, online petition tools, chats, blogs.",
       "what": "The provision of online tools available on the any government portal(s) to collect public opinion from people to inform policy deliberation processes. Possible tools include online fora, social media, online polls, online voting tools, online petition tools, chats, blogs.",
       "why": "These tools facilitate active participation, ensuring diverse perspectives inform policy deliberations, fostering democratic governance and inclusive decision-making processes.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Select Online Forums: a. Host dedicated forums where people can discuss specific topics. 2. Social Media Platforms: a. Utilize social media channels to conduct polls and surveys. 3. Online Polls: a. Simple and quick, online polls on the government website can gauge public sentiment on various issues. 4. Online Voting Tools: a. Implement secure online voting systems for non-binding national decisions. 5. Online Petition Tools: a. Allow people to create and sign petitions online.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -69,7 +69,7 @@
         "UN DESA’ paper on E-participation or the OECD’s"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -78,11 +78,11 @@
       "indicator_id": "#037",
       "module": "E-Participation",
       "title": "Open government data portal",
-      "text": "Open government data portal — The provision of an open government data portal, on a national level portal or at any other government/ministry websites including Statistics offices.",
+      "text": "Open government data portal — The provision of an open government data portal, on a national level portal or at any other government/ministry websites including Statistics offices. Open Data Portal means a sub-website within the Government Website, where Government datasets are made available to the public in machine readable format.",
       "what": "The provision of an open government data portal, on a national level portal or at any other government/ministry websites including Statistics offices. Open Data Portal means a sub-website within the Government Website, where Government datasets are made available to the public in machine readable format.",
       "why": "Crucial for promoting transparency, empowering individuals, and fostering innovation by providing easy access to valuable government datasets in a machine-readable format.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Establish a Dedicated Portal: a. Create a separate section within the national government portal specifically or a dedicated government portal for hosting open government data. 2. Identify Relevant Datasets: a. Determine which government datasets are suitable for publication on the open data portal. 3. Ensure Data Accessibility: a. Publish datasets in machine-readable formats such as CSV, JSON, or XML to enable easy access. 4. Provide Metadata and Documentation: a. Accompany each dataset with comprehensive metadata and documentation, including descriptions, data dictionaries, and usage guidelines to enhance understanding and usability. 5. Implement Regular Updates: a. Commit to regularly updating and expanding the open data portal with new datasets and revisions.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -92,7 +92,7 @@
         "UNDP’s Open Government Data Policies and Practices with select country cases guide"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -105,7 +105,7 @@
       "what": "The ability for users to request new open datasets be made available online either on the data portal or elsewhere in government websites.",
       "why": "Essential for fostering collaboration between the government and individuals, promoting transparency, and ensuring that available data aligns with the needs and interests of the public.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Establish a Request Submission Mechanism: a. Implement a dedicated online form or portal section where users can submit requests for open datasets. 2. Define Submission Guidelines: a. Provide clear instructions on how users should submit their dataset requests. 3. Streamline Review and Approval Process: a. Develop a standardized procedure for reviewing and approving dataset requests, involving relevant government departments or agencies to assess feasibility and relevance. 4. Communicate Progress and Outcomes: a. Keep users informed about the status of their dataset requests, including updates on the review process, approvals, and timelines for dataset publication. 5. Act on User Feedback: a. Consider user feedback and requests as valuable input for prioritizing dataset releases and improving the overall openness and accessibility of government data.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -115,7 +115,7 @@
         "UNDP’s Open Government Data Policies and Practices with select country cases guide"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -124,7 +124,7 @@
       "indicator_id": "#042",
       "module": "E-Participation",
       "title": "Open Government Data events",
-      "text": "Open Government Data events — Information about the organization of competitions/hackathons/events around the use of open government data. This includes those that may not be organ",
+      "text": "Open Government Data events — Information about the organization of competitions/hackathons/events around the use of open government data. This includes those that may not be organized, but are promoted/encouraged, etc. by the government, e.g. technology parks.",
       "what": "Information about the organization of competitions/hackathons/events around the use of open government data. This includes those that may not be organized, but are promoted/encouraged, etc. by the government, e.g. technology parks.",
       "why": "Crucial for fostering innovation, collaboration, and engagement within the country, while promoting transparency and leveraging technology for social and economic development.",
       "how": {
@@ -147,11 +147,11 @@
       "indicator_id": "#078",
       "module": "E-Participation",
       "title": "Open Datasets on government expenditures",
-      "text": "Open Datasets on government expenditures — Provision of open datasets related to national expenditures (budget) in PDF or Word (machine non-readable), or in open format (machine-readable) at an",
+      "text": "Open Datasets on government expenditures — Provision of open datasets related to national expenditures (budget) in PDF or Word (machine non-readable), or in open format (machine-readable) at any of the government portal(s).",
       "what": "Provision of open datasets related to national expenditures (budget) in PDF or Word (machine non-readable), or in open format (machine-readable) at any of the government portal(s).",
       "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Select Centralize Information: a. Create a dedicated section on the national website to house budgetary information and policy docs. b. Organize the content into clear categories such as annual budgets, financial reports, policy documents. 2. Regularly Update Content: a. Keep the online repository up-to-date with the latest budgetary allocations, financial reports, and policy changes. 3. Interactive Data Visualization: a. Utilize interactive charts, graphs, and infographics to visually represent budgetary data. 4. Feedback Mechanism: a. Integrate a feedback system where residents can ask questions or request additional information. 5. Promote Transparency: a. Clearly outline the country’s financial priorities, expenditure breakdowns, and policy. b. Include narratives and visualizations to explain how taxpayer funds are allocated and utilized.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -161,7 +161,145 @@
         "Chile’s open data on government expenditures"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-092",
+      "indicator_id": "#092",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — HEALTH",
+      "text": "Government expenditures for 6 sectors — HEALTH — information on government expenditures (budget) on HEALTH. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on HEALTH. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-105",
+      "indicator_id": "#105",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — EDUCATION",
+      "text": "Government expenditures for 6 sectors — EDUCATION — information on government expenditures (budget) on EDUCATION. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on EDUCATION. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-121",
+      "indicator_id": "#121",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — EMPLOYMENT",
+      "text": "Government expenditures for 6 sectors — EMPLOYMENT — information on government expenditures (budget) on EMPLOYMENT. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on EMPLOYMENT. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-134",
+      "indicator_id": "#134",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — SOCIAL PROTECTION",
+      "text": "Government expenditures for 6 sectors — SOCIAL PROTECTION — information on government expenditures (budget) on SOCIAL PROTECTION. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on SOCIAL PROTECTION. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-163",
+      "indicator_id": "#163",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — ENVIRONMENT",
+      "text": "Government expenditures for 6 sectors — ENVIRONMENT — information on government expenditures (budget) on ENVIRONMENT. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on ENVIRONMENT. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-174",
+      "indicator_id": "#174",
+      "module": "E-Participation",
+      "title": "Government expenditures for 6 sectors — JUSTICE",
+      "text": "Government expenditures for 6 sectors — JUSTICE — information on government expenditures (budget) on JUSTICE. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "what": "information on government expenditures (budget) on JUSTICE. If the Ministry does not offer this, can be shown on general government expenditures.",
+      "why": "Crucial for transparency, enabling residents to access vital financial data and policy documents easily, fostering accountability, and promoting an informed and engaged community.",
+      "how": {
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "Indicative steps: 1. Establish Dedicated Budget Sections: a. Create separate sections within the government portal for each sector (health, education, employment, social protection, environment, justice) to provide detailed information on government expenditures. 2. Ensure Transparency: a. Publish comprehensive breakdowns of government expenditures, including allocations, spending categories, and beneficiaries, to promote transparency and accountability. 3. Offer User-Friendly Navigation: a. Design the portal interface for easy navigation, allowing users to access expenditure data quickly. 4. Provide Contextual Information: a. Accompany expenditure data with contextual information such as budgetary priorities, funding sources, and performance metrics to enhance understanding. 5. Regular Updates: a. Commit to regularly updating expenditure information",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out The United States budget expenditures page for their Environmental Protection Agency",
+      "reference_links": [
+        "The United States budget expenditures page for their Environmental Protection Agency"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -169,9 +307,124 @@
       "question_id": "EP-096",
       "indicator_id": "#096",
       "module": "E-Participation",
-      "title": "Online consultations for 6 sectors (#096,",
-      "text": "Online consultations for 6 sectors (#096, — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (HEALTH/ EDUCATION/ ",
-      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE)",
+      "title": "Online consultations for 6 sectors — HEALTH",
+      "text": "Online consultations for 6 sectors — HEALTH — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (HEALTH)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (HEALTH)",
+      "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish a Consultation Calendar: a. Create a dedicated section on the government portal to display an interactive calendar highlighting upcoming consultations in various sectors. 2. Provide Detailed Information: a. Include comprehensive details about each consultation, such as purpose, topics to be discussed, date, time, location, and how individuals can participate. 3. Enable Online Participation: a. Offer online registration and participation options for consultations 4. Promote Engagement: a. Utilize various communication channels, including social media, email newsletters, and press releases, to actively promote upcoming consultations and encourage citizen participation. 5. Collect Feedback: a. Provide mechanisms for collecting feedback and input from participants during and after consultations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-109",
+      "indicator_id": "#109",
+      "module": "E-Participation",
+      "title": "Online consultations for 6 sectors — EDUCATION",
+      "text": "Online consultations for 6 sectors — EDUCATION — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (EDUCATION)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (EDUCATION)",
+      "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish a Consultation Calendar: a. Create a dedicated section on the government portal to display an interactive calendar highlighting upcoming consultations in various sectors. 2. Provide Detailed Information: a. Include comprehensive details about each consultation, such as purpose, topics to be discussed, date, time, location, and how individuals can participate. 3. Enable Online Participation: a. Offer online registration and participation options for consultations 4. Promote Engagement: a. Utilize various communication channels, including social media, email newsletters, and press releases, to actively promote upcoming consultations and encourage citizen participation. 5. Collect Feedback: a. Provide mechanisms for collecting feedback and input from participants during and after consultations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-125",
+      "indicator_id": "#125",
+      "module": "E-Participation",
+      "title": "Online consultations for 6 sectors — EMPLOYMENT",
+      "text": "Online consultations for 6 sectors — EMPLOYMENT — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (EMPLOYMENT)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (EMPLOYMENT)",
+      "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish a Consultation Calendar: a. Create a dedicated section on the government portal to display an interactive calendar highlighting upcoming consultations in various sectors. 2. Provide Detailed Information: a. Include comprehensive details about each consultation, such as purpose, topics to be discussed, date, time, location, and how individuals can participate. 3. Enable Online Participation: a. Offer online registration and participation options for consultations 4. Promote Engagement: a. Utilize various communication channels, including social media, email newsletters, and press releases, to actively promote upcoming consultations and encourage citizen participation. 5. Collect Feedback: a. Provide mechanisms for collecting feedback and input from participants during and after consultations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-138",
+      "indicator_id": "#138",
+      "module": "E-Participation",
+      "title": "Online consultations for 6 sectors — SOCIAL PROTECTION",
+      "text": "Online consultations for 6 sectors — SOCIAL PROTECTION — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (SOCIAL PROTECTION)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (SOCIAL PROTECTION)",
+      "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish a Consultation Calendar: a. Create a dedicated section on the government portal to display an interactive calendar highlighting upcoming consultations in various sectors. 2. Provide Detailed Information: a. Include comprehensive details about each consultation, such as purpose, topics to be discussed, date, time, location, and how individuals can participate. 3. Enable Online Participation: a. Offer online registration and participation options for consultations 4. Promote Engagement: a. Utilize various communication channels, including social media, email newsletters, and press releases, to actively promote upcoming consultations and encourage citizen participation. 5. Collect Feedback: a. Provide mechanisms for collecting feedback and input from participants during and after consultations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-167",
+      "indicator_id": "#167",
+      "module": "E-Participation",
+      "title": "Online consultations for 6 sectors — ENVIRONMENT",
+      "text": "Online consultations for 6 sectors — ENVIRONMENT — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (ENVIRONMENT)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (ENVIRONMENT)",
+      "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Establish a Consultation Calendar: a. Create a dedicated section on the government portal to display an interactive calendar highlighting upcoming consultations in various sectors. 2. Provide Detailed Information: a. Include comprehensive details about each consultation, such as purpose, topics to be discussed, date, time, location, and how individuals can participate. 3. Enable Online Participation: a. Offer online registration and participation options for consultations 4. Promote Engagement: a. Utilize various communication channels, including social media, email newsletters, and press releases, to actively promote upcoming consultations and encourage citizen participation. 5. Collect Feedback: a. Provide mechanisms for collecting feedback and input from participants during and after consultations.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education",
+      "reference_links": [
+        "the United Kingdom of Great Britain and Northern Ireland’s online consultation hub for education"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-178",
+      "indicator_id": "#178",
+      "module": "E-Participation",
+      "title": "Online consultations for 6 sectors — JUSTICE",
+      "text": "Online consultations for 6 sectors — JUSTICE — Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (JUSTICE)",
+      "what": "Information based on announcements have been issued about upcoming consultations intended to involve people in the past 12 months (JUSTICE)",
       "why": "Crucial for promoting civic engagement, transparency, and participation in decision-making processes related to critical sectors such as health, education, employment, social protection, environment, and justice.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -192,9 +445,124 @@
       "question_id": "EP-098",
       "indicator_id": "#098",
       "module": "E-Participation",
-      "title": "Inclusion of voices in decision making in 6 sectors (#098,",
-      "text": "Inclusion of voices in decision making in 6 sectors (#098, — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (HEALTH/ ED",
-      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE). Looks to determine if the input of the people was actually used for policy decision making.",
+      "title": "Inclusion of voices in decision making in 6 sectors — HEALTH",
+      "text": "Inclusion of voices in decision making in 6 sectors — HEALTH — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (HEALTH). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (HEALTH). Looks to determine if the input of the people was actually used for policy decision making.",
+      "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated section on the government portal to showcase information about past online consultations, organized by sector. 2. Provide Detailed Reports: a. Offer detailed reports summarizing the outcomes of each online consultation, including key findings, participant feedback, and how the input influenced policy decisions. 3. Foster Accountability: a. Demonstrate the government's commitment to accountability by openly sharing how citizen input from online consultations has been utilized in policy-making processes. 4. Encourage Engagement: a. Encourage ongoing citizen engagement by actively promoting the availability of consultation reports and encouraging feedback on the outcomes.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s consultation portal with information on completed consultation results",
+      "reference_links": [
+        "Iceland’s consultation portal with information on completed consultation results"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-111",
+      "indicator_id": "#111",
+      "module": "E-Participation",
+      "title": "Inclusion of voices in decision making in 6 sectors — EDUCATION",
+      "text": "Inclusion of voices in decision making in 6 sectors — EDUCATION — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (EDUCATION). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (EDUCATION). Looks to determine if the input of the people was actually used for policy decision making.",
+      "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated section on the government portal to showcase information about past online consultations, organized by sector. 2. Provide Detailed Reports: a. Offer detailed reports summarizing the outcomes of each online consultation, including key findings, participant feedback, and how the input influenced policy decisions. 3. Foster Accountability: a. Demonstrate the government's commitment to accountability by openly sharing how citizen input from online consultations has been utilized in policy-making processes. 4. Encourage Engagement: a. Encourage ongoing citizen engagement by actively promoting the availability of consultation reports and encouraging feedback on the outcomes.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s consultation portal with information on completed consultation results",
+      "reference_links": [
+        "Iceland’s consultation portal with information on completed consultation results"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-127",
+      "indicator_id": "#127",
+      "module": "E-Participation",
+      "title": "Inclusion of voices in decision making in 6 sectors — EMPLOYMENT",
+      "text": "Inclusion of voices in decision making in 6 sectors — EMPLOYMENT — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (EMPLOYMENT). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (EMPLOYMENT). Looks to determine if the input of the people was actually used for policy decision making.",
+      "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated section on the government portal to showcase information about past online consultations, organized by sector. 2. Provide Detailed Reports: a. Offer detailed reports summarizing the outcomes of each online consultation, including key findings, participant feedback, and how the input influenced policy decisions. 3. Foster Accountability: a. Demonstrate the government's commitment to accountability by openly sharing how citizen input from online consultations has been utilized in policy-making processes. 4. Encourage Engagement: a. Encourage ongoing citizen engagement by actively promoting the availability of consultation reports and encouraging feedback on the outcomes.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s consultation portal with information on completed consultation results",
+      "reference_links": [
+        "Iceland’s consultation portal with information on completed consultation results"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-140",
+      "indicator_id": "#140",
+      "module": "E-Participation",
+      "title": "Inclusion of voices in decision making in 6 sectors — SOCIAL PROTECTION",
+      "text": "Inclusion of voices in decision making in 6 sectors — SOCIAL PROTECTION — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (SOCIAL PROTECTION). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (SOCIAL PROTECTION). Looks to determine if the input of the people was actually used for policy decision making.",
+      "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated section on the government portal to showcase information about past online consultations, organized by sector. 2. Provide Detailed Reports: a. Offer detailed reports summarizing the outcomes of each online consultation, including key findings, participant feedback, and how the input influenced policy decisions. 3. Foster Accountability: a. Demonstrate the government's commitment to accountability by openly sharing how citizen input from online consultations has been utilized in policy-making processes. 4. Encourage Engagement: a. Encourage ongoing citizen engagement by actively promoting the availability of consultation reports and encouraging feedback on the outcomes.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s consultation portal with information on completed consultation results",
+      "reference_links": [
+        "Iceland’s consultation portal with information on completed consultation results"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-169",
+      "indicator_id": "#169",
+      "module": "E-Participation",
+      "title": "Inclusion of voices in decision making in 6 sectors — ENVIRONMENT",
+      "text": "Inclusion of voices in decision making in 6 sectors — ENVIRONMENT — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (ENVIRONMENT). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (ENVIRONMENT). Looks to determine if the input of the people was actually used for policy decision making.",
+      "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated section on the government portal to showcase information about past online consultations, organized by sector. 2. Provide Detailed Reports: a. Offer detailed reports summarizing the outcomes of each online consultation, including key findings, participant feedback, and how the input influenced policy decisions. 3. Foster Accountability: a. Demonstrate the government's commitment to accountability by openly sharing how citizen input from online consultations has been utilized in policy-making processes. 4. Encourage Engagement: a. Encourage ongoing citizen engagement by actively promoting the availability of consultation reports and encouraging feedback on the outcomes.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Iceland’s consultation portal with information on completed consultation results",
+      "reference_links": [
+        "Iceland’s consultation portal with information on completed consultation results"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-180",
+      "indicator_id": "#180",
+      "module": "E-Participation",
+      "title": "Inclusion of voices in decision making in 6 sectors — JUSTICE",
+      "text": "Inclusion of voices in decision making in 6 sectors — JUSTICE — Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (JUSTICE). Looks to determine if the input of the people was actually used for policy decision making.",
+      "what": "Information about having held online consultations via forums, polls, questionnaires etc. intended to involve people in the past 12 months (JUSTICE). Looks to determine if the input of the people was actually used for policy decision making.",
       "why": "Crucial for fostering transparency and accountability, allowing people to assess if their input contributed to policy decision-making processes in key areas: health, education, employment, social protection, environment, and justice.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -215,9 +583,124 @@
       "question_id": "EP-099",
       "indicator_id": "#099",
       "module": "E-Participation",
-      "title": "Open government datasets for 6 sectors (#099,",
-      "text": "Open government datasets for 6 sectors (#099, — Provision of Open Government dataset(s) on HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ENVIRONMENT/ JUSTICE in either i) Not machine-readable (PD",
-      "what": "Provision of Open Government dataset(s) on HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ENVIRONMENT/ JUSTICE in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "title": "Open government datasets for 6 sectors — HEALTH",
+      "text": "Open government datasets for 6 sectors — HEALTH — Provision of Open Government dataset(s) on HEALTH in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on HEALTH in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Identify Relevant Datasets: a. Determine which datasets related to health, education, employment, social protection, environment, and justice are crucial for public access and decision-making. 2. Convert to Machine-Readable Formats: a. Convert non-machine-readable datasets, such as PDFs or scanned files, into machine-readable formats like CSV, JSON, or XML for enhanced accessibility and usability. 3. Develop Data Repository: a. Establish a centralized data repository within the government portal to host and manage the open government datasets. 4. Ensure Data Integrity: a. Implement measures to ensure the accuracy, completeness, and security of the datasets. 5. Promote Accessibility: a. Facilitate easy access to the datasets by organizing them logically, and offering clear instructions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's open government datasets filterable per section",
+      "reference_links": [
+        "Kazakhstan's open government datasets filterable per section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-112",
+      "indicator_id": "#112",
+      "module": "E-Participation",
+      "title": "Open government datasets for 6 sectors — EDUCATION",
+      "text": "Open government datasets for 6 sectors — EDUCATION — Provision of Open Government dataset(s) on EDUCATION in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on EDUCATION in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Identify Relevant Datasets: a. Determine which datasets related to health, education, employment, social protection, environment, and justice are crucial for public access and decision-making. 2. Convert to Machine-Readable Formats: a. Convert non-machine-readable datasets, such as PDFs or scanned files, into machine-readable formats like CSV, JSON, or XML for enhanced accessibility and usability. 3. Develop Data Repository: a. Establish a centralized data repository within the government portal to host and manage the open government datasets. 4. Ensure Data Integrity: a. Implement measures to ensure the accuracy, completeness, and security of the datasets. 5. Promote Accessibility: a. Facilitate easy access to the datasets by organizing them logically, and offering clear instructions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's open government datasets filterable per section",
+      "reference_links": [
+        "Kazakhstan's open government datasets filterable per section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-128",
+      "indicator_id": "#128",
+      "module": "E-Participation",
+      "title": "Open government datasets for 6 sectors — EMPLOYMENT",
+      "text": "Open government datasets for 6 sectors — EMPLOYMENT — Provision of Open Government dataset(s) on EMPLOYMENT in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on EMPLOYMENT in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Identify Relevant Datasets: a. Determine which datasets related to health, education, employment, social protection, environment, and justice are crucial for public access and decision-making. 2. Convert to Machine-Readable Formats: a. Convert non-machine-readable datasets, such as PDFs or scanned files, into machine-readable formats like CSV, JSON, or XML for enhanced accessibility and usability. 3. Develop Data Repository: a. Establish a centralized data repository within the government portal to host and manage the open government datasets. 4. Ensure Data Integrity: a. Implement measures to ensure the accuracy, completeness, and security of the datasets. 5. Promote Accessibility: a. Facilitate easy access to the datasets by organizing them logically, and offering clear instructions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's open government datasets filterable per section",
+      "reference_links": [
+        "Kazakhstan's open government datasets filterable per section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-141",
+      "indicator_id": "#141",
+      "module": "E-Participation",
+      "title": "Open government datasets for 6 sectors — SOCIAL PROTECTION",
+      "text": "Open government datasets for 6 sectors — SOCIAL PROTECTION — Provision of Open Government dataset(s) on SOCIAL PROTECTION in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on SOCIAL PROTECTION in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Identify Relevant Datasets: a. Determine which datasets related to health, education, employment, social protection, environment, and justice are crucial for public access and decision-making. 2. Convert to Machine-Readable Formats: a. Convert non-machine-readable datasets, such as PDFs or scanned files, into machine-readable formats like CSV, JSON, or XML for enhanced accessibility and usability. 3. Develop Data Repository: a. Establish a centralized data repository within the government portal to host and manage the open government datasets. 4. Ensure Data Integrity: a. Implement measures to ensure the accuracy, completeness, and security of the datasets. 5. Promote Accessibility: a. Facilitate easy access to the datasets by organizing them logically, and offering clear instructions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's open government datasets filterable per section",
+      "reference_links": [
+        "Kazakhstan's open government datasets filterable per section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-170",
+      "indicator_id": "#170",
+      "module": "E-Participation",
+      "title": "Open government datasets for 6 sectors — ENVIRONMENT",
+      "text": "Open government datasets for 6 sectors — ENVIRONMENT — Provision of Open Government dataset(s) on ENVIRONMENT in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on ENVIRONMENT in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "Indicative steps: 1. Identify Relevant Datasets: a. Determine which datasets related to health, education, employment, social protection, environment, and justice are crucial for public access and decision-making. 2. Convert to Machine-Readable Formats: a. Convert non-machine-readable datasets, such as PDFs or scanned files, into machine-readable formats like CSV, JSON, or XML for enhanced accessibility and usability. 3. Develop Data Repository: a. Establish a centralized data repository within the government portal to host and manage the open government datasets. 4. Ensure Data Integrity: a. Implement measures to ensure the accuracy, completeness, and security of the datasets. 5. Promote Accessibility: a. Facilitate easy access to the datasets by organizing them logically, and offering clear instructions.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Kazakhstan's open government datasets filterable per section",
+      "reference_links": [
+        "Kazakhstan's open government datasets filterable per section"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-181",
+      "indicator_id": "#181",
+      "module": "E-Participation",
+      "title": "Open government datasets for 6 sectors — JUSTICE",
+      "text": "Open government datasets for 6 sectors — JUSTICE — Provision of Open Government dataset(s) on JUSTICE in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Provision of Open Government dataset(s) on JUSTICE in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
       "why": "Essential for promoting transparency and enabling data-driven decision-making by providing access to information in both machine-readable and non-machine-readable formats.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -239,7 +722,7 @@
       "indicator_id": "#131",
       "module": "E-Participation",
       "title": "Labor laws violation report",
-      "text": "Labor laws violation report — Governments are encouraged to maintain a safe, secure, and inclusive work environment for all groups, including migrants, women, youth, and people of ",
+      "text": "Labor laws violation report — Governments are encouraged to maintain a safe, secure, and inclusive work environment for all groups, including migrants, women, youth, and people of disabilities. Evidence on a government website emphasizing decent work and inclusive work environment, and of gathering information, complaint process, and investigation procedures",
       "what": "Governments are encouraged to maintain a safe, secure, and inclusive work environment for all groups, including migrants, women, youth, and people of disabilities. Evidence on a government website emphasizing decent work and inclusive work environment, and of gathering information, complaint process, and investigation procedures",
       "why": "Ensures transparency and accountability in promoting decent work conditions and addressing grievances effectively for all demographics, including migrants, women, youth, and people with disabilities.",
       "how": {
@@ -262,7 +745,7 @@
       "indicator_id": "#193",
       "module": "E-Participation",
       "title": "Participatory budgeting",
-      "text": "Participatory budgeting — The provision of participation possibility to the user regarding participatory budgeting or similar mechanism. Many countries around the world are sta",
+      "text": "Participatory budgeting — The provision of participation possibility to the user regarding participatory budgeting or similar mechanism. Many countries around the world are starting to engage the people in the discussion of the country’s budget, known as \"participatory budgeting\".",
       "what": "The provision of participation possibility to the user regarding participatory budgeting or similar mechanism. Many countries around the world are starting to engage the people in the discussion of the country’s budget, known as \"participatory budgeting\".",
       "why": "Empowers people to engage in crucial discussions about the country’s financial allocations, fostering transparency, democratic decision-making, and people-driven development.",
       "how": {
@@ -285,11 +768,11 @@
       "indicator_id": "#302",
       "module": "E-Participation",
       "title": "E-participation portal(s)",
-      "text": "E-participation portal(s) — The provision of a dedicated e-participation portal available on any government website. This portal serves as a centralized hub where individuals can",
+      "text": "E-participation portal(s) — The provision of a dedicated e-participation portal available on any government website. This portal serves as a centralized hub where individuals can access information about ongoing consultations, provide feedback on policies and initiatives, participate in surveys or polls, and submit suggestions or ideas directly to government officials.",
       "what": "The provision of a dedicated e-participation portal available on any government website. This portal serves as a centralized hub where individuals can access information about ongoing consultations, provide feedback on policies and initiatives, participate in surveys or polls, and submit suggestions or ideas directly to government officials.",
       "why": "Promotes transparency, accountability, and democratic governance by direct citizen involvement in public affairs.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "Indicative steps: 1. Establishment of a dedicated portal: a. Create a separate section within the government website specifically designated for e-participation. 2. Interactive features: a. Integrate interactive features such as discussion forums, polls, surveys, and suggestion boxes to encourage citizen engagement. 3. Accessible information: a. Ensure that the portal provides clear and comprehensive information about ongoing consultations, policies, and initiatives open for public input. 4. Notification system: a. Implement a system to alert users about new consultations, updates, and opportunities for engagement. 5. Feedback mechanisms: a. Develop mechanisms for people to provide feedback, suggestions, and comments on proposed policies and initiatives directly through the portal. For more info, check UN DESA’s 2020 UN E-Government Survey, Chapter 5 on e-participation",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -299,7 +782,7 @@
         "Spain’s dedicated e-participation portal"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -308,7 +791,7 @@
       "indicator_id": "#303",
       "module": "E-Participation",
       "title": "Open data license",
-      "text": "Open data license — Evidence of information related to open data license on a national portal. A legal framework or agreement that governs the terms and conditions under ",
+      "text": "Open data license — Evidence of information related to open data license on a national portal. A legal framework or agreement that governs the terms and conditions under which data can be accessed, used, and distributed. It outlines the rights and responsibilities of both data providers and users regarding the sharing and reuse of data.",
       "what": "Evidence of information related to open data license on a national portal. A legal framework or agreement that governs the terms and conditions under which data can be accessed, used, and distributed. It outlines the rights and responsibilities of both data providers and users regarding the sharing and reuse of data.",
       "why": "Crucial in promoting transparency, accountability, and innovation by facilitating the free flow of data while ensuring legal clarity and protection for all parties involved.",
       "how": {
@@ -330,9 +813,124 @@
       "question_id": "EP-304",
       "indicator_id": "#304",
       "module": "E-Participation",
-      "title": "Budget expenditure datasets for 6 sectors",
-      "text": "Budget expenditure datasets for 6 sectors — Evidence of Open Government dataset(s) on budget/expenditure in EDUCATION/ EMPLOYMENT/ ENVIRONMENT/ HEALTH/ JUSTICE /SOCIAL PROTECTION, either i) Not ",
-      "what": "Evidence of Open Government dataset(s) on budget/expenditure in EDUCATION/ EMPLOYMENT/ ENVIRONMENT/ HEALTH/ JUSTICE /SOCIAL PROTECTION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "title": "Budget expenditure datasets for 6 sectors — EDUCATION",
+      "text": "Budget expenditure datasets for 6 sectors — EDUCATION — Evidence of Open Government dataset(s) on budget/expenditure in EDUCATION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in EDUCATION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Identify relevant datasets: a. Determine the specific budget and expenditure data relevant to each sector. 2. Ensure accessibility: a. Make sure the datasets are accessible to the public via the government portal. 3. Choose appropriate formats: a. Provide the data in both machine-readable and non-machine-readable formats to cater to different user needs. 4. Regular updates: a. Ensure that the datasets are regularly updated to maintain accuracy and relevance.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s budget datasets for education, culture and science",
+      "reference_links": [
+        "Finland’s budget datasets for education, culture and science"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-305",
+      "indicator_id": "#305",
+      "module": "E-Participation",
+      "title": "Budget expenditure datasets for 6 sectors — EMPLOYMENT",
+      "text": "Budget expenditure datasets for 6 sectors — EMPLOYMENT — Evidence of Open Government dataset(s) on budget/expenditure in EMPLOYMENT, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in EMPLOYMENT, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Identify relevant datasets: a. Determine the specific budget and expenditure data relevant to each sector. 2. Ensure accessibility: a. Make sure the datasets are accessible to the public via the government portal. 3. Choose appropriate formats: a. Provide the data in both machine-readable and non-machine-readable formats to cater to different user needs. 4. Regular updates: a. Ensure that the datasets are regularly updated to maintain accuracy and relevance.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s budget datasets for education, culture and science",
+      "reference_links": [
+        "Finland’s budget datasets for education, culture and science"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-306",
+      "indicator_id": "#306",
+      "module": "E-Participation",
+      "title": "Budget expenditure datasets for 6 sectors — ENVIRONMENT",
+      "text": "Budget expenditure datasets for 6 sectors — ENVIRONMENT — Evidence of Open Government dataset(s) on budget/expenditure in ENVIRONMENT, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in ENVIRONMENT, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Identify relevant datasets: a. Determine the specific budget and expenditure data relevant to each sector. 2. Ensure accessibility: a. Make sure the datasets are accessible to the public via the government portal. 3. Choose appropriate formats: a. Provide the data in both machine-readable and non-machine-readable formats to cater to different user needs. 4. Regular updates: a. Ensure that the datasets are regularly updated to maintain accuracy and relevance.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s budget datasets for education, culture and science",
+      "reference_links": [
+        "Finland’s budget datasets for education, culture and science"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-307",
+      "indicator_id": "#307",
+      "module": "E-Participation",
+      "title": "Budget expenditure datasets for 6 sectors — HEALTH",
+      "text": "Budget expenditure datasets for 6 sectors — HEALTH — Evidence of Open Government dataset(s) on budget/expenditure in HEALTH, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in HEALTH, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Identify relevant datasets: a. Determine the specific budget and expenditure data relevant to each sector. 2. Ensure accessibility: a. Make sure the datasets are accessible to the public via the government portal. 3. Choose appropriate formats: a. Provide the data in both machine-readable and non-machine-readable formats to cater to different user needs. 4. Regular updates: a. Ensure that the datasets are regularly updated to maintain accuracy and relevance.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s budget datasets for education, culture and science",
+      "reference_links": [
+        "Finland’s budget datasets for education, culture and science"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-308",
+      "indicator_id": "#308",
+      "module": "E-Participation",
+      "title": "Budget expenditure datasets for 6 sectors — JUSTICE",
+      "text": "Budget expenditure datasets for 6 sectors — JUSTICE — Evidence of Open Government dataset(s) on budget/expenditure in JUSTICE, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in JUSTICE, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Identify relevant datasets: a. Determine the specific budget and expenditure data relevant to each sector. 2. Ensure accessibility: a. Make sure the datasets are accessible to the public via the government portal. 3. Choose appropriate formats: a. Provide the data in both machine-readable and non-machine-readable formats to cater to different user needs. 4. Regular updates: a. Ensure that the datasets are regularly updated to maintain accuracy and relevance.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Check out Finland’s budget datasets for education, culture and science",
+      "reference_links": [
+        "Finland’s budget datasets for education, culture and science"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "EP-309",
+      "indicator_id": "#309",
+      "module": "E-Participation",
+      "title": "Budget expenditure datasets for 6 sectors — SOCIAL PROTECTION",
+      "text": "Budget expenditure datasets for 6 sectors — SOCIAL PROTECTION — Evidence of Open Government dataset(s) on budget/expenditure in SOCIAL PROTECTION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+      "what": "Evidence of Open Government dataset(s) on budget/expenditure in SOCIAL PROTECTION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
       "why": "Vital in fostering transparency, accountability, & informed decision-making with the national governance framework.",
       "how": {
         "evidence_locus": "national_portal_only",
@@ -354,7 +952,7 @@
       "indicator_id": "#310",
       "module": "E-Participation",
       "title": "Real time open government datasets",
-      "text": "Real time open government datasets — Evidence of real time open government dataset(s) in i) non-machine-readable (PDF, scanned files etc.) or ii) machine-readable (CSV, JSON, XML etc.). T",
+      "text": "Real time open government datasets — Evidence of real time open government dataset(s) in i) non-machine-readable (PDF, scanned files etc.) or ii) machine-readable (CSV, JSON, XML etc.). These datasets offer users timely insights into various aspects of government operations, policies, and services.",
       "what": "Evidence of real time open government dataset(s) in i) non-machine-readable (PDF, scanned files etc.) or ii) machine-readable (CSV, JSON, XML etc.). These datasets offer users timely insights into various aspects of government operations, policies, and services.",
       "why": "Enables transparency, accountability, and informed decision-making by allowing stakeholders to access and analyze relevant data in formats suitable for their needs.",
       "how": {
@@ -377,11 +975,11 @@
       "indicator_id": "#313",
       "module": "E-Participation",
       "title": "Online services for rural areas",
-      "text": "Online services for rural areas — Evidence of online government service available to the people living in rural area with i) information, or ii) full online application at any of the g",
+      "text": "Online services for rural areas — Evidence of online government service available to the people living in rural area with i) information, or ii) full online application at any of the government portal(s). Involves ensuring that people in rural communities have access to essential government services through digital platforms such as applying for permits, licenses, or benefits, accessing healthcare information, or participating in government programs",
       "what": "Evidence of online government service available to the people living in rural area with i) information, or ii) full online application at any of the government portal(s). Involves ensuring that people in rural communities have access to essential government services through digital platforms such as applying for permits, licenses, or benefits, accessing healthcare information, or participating in government programs",
       "why": "Ensures equitable access to government services for rural residents, promoting inclusivity and bridging the urban-rural digital divide.",
       "how": {
-        "evidence_locus": "national_portal_only",
+        "evidence_locus": "any_government_domain",
         "scoring_guidance": "1. Identify Services: a. Determine essential government services needed by rural residents. 2. Develop Processes: a. Create user-friendly online application processes for identified services. 3. Provide Information: a. Ensure availability of information tailored to rural areas on government services. 4. Test Accessibility: a. Verify functionality and accessibility of online services in rural settings. 5. Promote Awareness: a. Conduct targeted outreach campaigns in rural communities to raise awareness of online services. For more info, check out OECD’s Guide on Implementing the Rural Well-being Policy Framework",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
@@ -391,7 +989,7 @@
         "Japan’s Join portal linking rural areas with city services"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -400,7 +998,7 @@
       "indicator_id": "#323",
       "module": "E-Participation",
       "title": "E-petition",
-      "text": "E-petition — Evidence of e-petition or similar mechanism providing users with the opportunity to submit petitions, grievances, or requests for action electronicall",
+      "text": "E-petition — Evidence of e-petition or similar mechanism providing users with the opportunity to submit petitions, grievances, or requests for action electronically. These platforms allow people to voice their concerns, propose changes, or advocate for specific policies or initiatives directly to the government.",
       "what": "Evidence of e-petition or similar mechanism providing users with the opportunity to submit petitions, grievances, or requests for action electronically. These platforms allow people to voice their concerns, propose changes, or advocate for specific policies or initiatives directly to the government.",
       "why": "Promotes citizen engagement, transparency, and accountability by facilitating direct communication between the government and its constituents in a digital environment.",
       "how": {
@@ -420,10 +1018,10 @@
     },
     {
       "question_id": "EP-324",
-      "indicator_id": "#324",
+      "indicator_id": "#324,#325,#326,#327,#328,#329",
       "module": "E-Participation",
       "title": "Policy-decision making for vulnerable groups",
-      "text": "Policy-decision making for vulnerable groups — Evidence that people's voices were included, i.e. if their input was actually used in the policy decision-making on issues related to the following vu",
+      "text": "Policy-decision making for vulnerable groups — Evidence that people's voices were included, i.e. if their input was actually used in the policy decision-making on issues related to the following vulnerable groups (in the past 12 months), for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth.",
       "what": "Evidence that people's voices were included, i.e. if their input was actually used in the policy decision-making on issues related to the following vulnerable groups (in the past 12 months), for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth.",
       "why": "Vital for transparency and accountability, ensuring that government actions reflect the needs and perspectives of immigrants, older people, individuals living below the poverty line, persons with disabilities, women, and youth.",
       "how": {
@@ -443,10 +1041,10 @@
     },
     {
       "question_id": "EP-330",
-      "indicator_id": "#330",
+      "indicator_id": "#330,#331,#332,#333,#334,#335",
       "module": "E-Participation",
       "title": "Online consultations for vulnerable groups",
-      "text": "Online consultations for vulnerable groups — Information on online consultations via forums, polls, questionnaires etc. to involve people among vulnerable groups in the past 12 months (for immigr",
+      "text": "Online consultations for vulnerable groups — Information on online consultations via forums, polls, questionnaires etc. to involve people among vulnerable groups in the past 12 months (for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth), i.e. if actual consultations were held.",
       "what": "Information on online consultations via forums, polls, questionnaires etc. to involve people among vulnerable groups in the past 12 months (for immigrants, older people, persons living below poverty line, persons with disabilities, women, youth), i.e. if actual consultations were held.",
       "why": "Ensures transparency and accountability, indicating whether meaningful engagement occurred in policy discussions affecting these communities.",
       "how": {

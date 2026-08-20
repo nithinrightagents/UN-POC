@@ -62,9 +62,12 @@ def render_evidence_html(
 
     capture_html = ""
     if evidence.capture_ref:
+        # capture_ref is stored as a filesystem path like './data/captures/{id}.png';
+        # the '/data' static mount in portal/webapp.py serves it from there.
+        capture_src = "/" + evidence.capture_ref.lstrip("./").replace("\\", "/")
         capture_html = (
             f'<div style="margin: 0.75rem 0;">'
-            f'<img class="evidence__capture" src="/captures/{escape(evidence.capture_ref)}" '
+            f'<img class="evidence__capture" src="{escape(capture_src)}" '
             f'alt="Region-scoped capture of the cited page element" style="max-width: 100%; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm);">'
             f'</div>'
         )

@@ -19,10 +19,10 @@ class ConfigurationError(ValueError):
 def validate_settings(settings: Settings) -> None:
     errors: list[str] = []
 
-    # FR-009: agent count below 2 rejects outright.
-    if settings.assessor_agent_count < 2:
+    # Agent count below 1 rejects outright.
+    if settings.assessor_agent_count < 1:
         errors.append(
-            f"AIQ_ASSESSOR_AGENT_COUNT={settings.assessor_agent_count} must be >= 2 (FR-009)"
+            f"AIQ_ASSESSOR_AGENT_COUNT={settings.assessor_agent_count} must be >= 1"
         )
 
     # FR-API-014a: max concurrent assessment runs must be >= 1.
@@ -117,8 +117,13 @@ def validate_settings(settings: Settings) -> None:
 
     # Agents identical on every axis at once is rejected unconditionally --
     # at that point there is no divergence left for FR-011 to stand on.
+    # Exempted when there is only one assessor agent (2026-08-20 goal): FR-011
+    # independence is a cross-agent property, so with a single agent there is
+    # no second agent to diverge from and the check is vacuous rather than a
+    # real independence violation.
     if (
-        len(set(settings.agent_models)) == 1
+        settings.assessor_agent_count > 1
+        and len(set(settings.agent_models)) == 1
         and len(set(settings.agent_temperatures)) == 1
         and len(set(settings.agent_prompt_profiles)) == 1
     ):

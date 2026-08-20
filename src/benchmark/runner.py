@@ -62,6 +62,7 @@ async def run_benchmark_session(
             settings.google_cloud_project,
             settings.google_cloud_location,
             settings.google_genai_use_vertexai,
+            settings.google_api_key,
         )
 
     browser = BrowserSession(settings.user_agent, limiter)

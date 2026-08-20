@@ -57,7 +57,7 @@ class FakePage:
 
 
 class FakeBrowserSession:
-    async def fetch(self, url, caller_class, fetch_log=None):
+    async def fetch(self, url, caller_class, fetch_log=None, timeout_ms=15000):
         return PageResult(url=url, final_url=url, html="<div>Found verified evidence.</div>", status=200, reachable=True), FakePage()
 
     async def close_page(self, page):

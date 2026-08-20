@@ -99,6 +99,7 @@ async def run_validation_retry_loop(
                         "run_id": current_run.run_id,
                         "session_id": session_id,
                         "question_text": question["text"],
+                        "answer_type": question.get("answer_type", "binary"),
                         "output": output,
                         "element_reference": element_ref,
                         "retry_number": retry_number,
@@ -209,6 +210,7 @@ def _run_output_from_agent_run(run: AssessorAgentRun, evidence: EvidenceArtifact
         evidence=evidence_output,
         auth_boundary_observed=run.auth_boundary_observed,
         auth_boundary_url=run.auth_boundary_url,
+        portal_unreachable=run.portal_unreachable,
         model_identity=run.model_identity or "",
         detected_language=run.detected_language,
     )
