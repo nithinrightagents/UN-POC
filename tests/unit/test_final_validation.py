@@ -1,4 +1,14 @@
-"""Tests for the final validation gate guarding delivered prefills (spec 008 US5)."""
+"""Tests for the validator gate in the per-agent retry loop (spec 008 US5).
+
+The delivery-time final validation gate (FR-PF-030) was deleted in T018 because
+it re-ran validation on evidence that had already passed the per-agent loop,
+meaning it could only remove answers, never add them.
+
+These tests cover the per-agent VALIDATED_PASS loop in retry_loops.py, which is
+retained and unchanged. Tests that previously asserted FAILED_FINAL_VALIDATION
+from the delivery gate now assert DELIVERED — because once two agents both
+VALIDATED_PASS, a prefill is produced without a second gate.
+"""
 
 import json
 import sqlite3
@@ -137,7 +147,6 @@ def _insert_run_with_evidence(
     evidence = EvidenceArtifact(
         artifact_id=f"art-{run_id}",
         resolved_url="https://eesti.ee",
-        capture_ref="/captures/test.png",
         element_reference=ElementReference(css_path="#cert-verif", text_hash=text_hash("Online Verification Tool")),
         element_text="Online Verification Tool",
     )
@@ -162,7 +171,8 @@ def _insert_run_with_evidence(
 
 
 @pytest.mark.asyncio
-async def test_final_validation_passes_delivers_prefill():
+async def test_two_validated_pass_runs_delivers_prefill():
+    """Two VALIDATED_PASS runs agree → DELIVERED (no delivery-time gate, T018)."""
     repo, conn, settings, fetch_log, stage_log, cost_ledger, portal = _setup_env()
     provider = FakeValidatorProvider(should_pass=True)
     browser = FakeBrowserSession(reachable=True)
@@ -191,7 +201,6 @@ async def test_final_validation_passes_delivers_prefill():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-fv-job",
@@ -206,8 +215,11 @@ async def test_final_validation_passes_delivers_prefill():
 
 
 @pytest.mark.asyncio
-async def test_final_validation_fails_produces_no_suggestion():
+async def test_two_validated_pass_runs_delivers_even_with_failing_provider():
+    """T018: delivery-time gate is gone; a provider that would have failed the old gate
+    now has no effect — the two per-agent VALIDATED_PASS runs are enough to deliver."""
     repo, conn, settings, fetch_log, stage_log, cost_ledger, portal = _setup_env()
+    # Provider that would have rejected at the old delivery gate
     provider = FakeValidatorProvider(should_pass=False)
     browser = FakeBrowserSession(reachable=True)
 
@@ -215,7 +227,7 @@ async def test_final_validation_fails_produces_no_suggestion():
         question_id="c-fval:1.2",
         cycle_id="c-fval",
         indicator_id="1.2",
-        text="Feature fails final validation?",
+        text="Feature delivers despite old gate?",
         answer_type=AnswerType.BINARY,
         evidence_locus=EvidenceLocus.NATIONAL_PORTAL_ONLY,
     )
@@ -235,60 +247,12 @@ async def test_final_validation_fails_produces_no_suggestion():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-fv-job-2",
     )
 
-    assert outcome.final_state == UnitState.NO_SUGGESTION
-    assert outcome.detail == PrefillReason.FAILED_FINAL_VALIDATION.value
-    prefill = repo.latest_prefill("s-fval", q.question_id, portal.portal_id)
-    assert prefill is not None
-    assert prefill.suggested is False
-    assert prefill.answer is None
-    assert prefill.reason == PrefillReason.FAILED_FINAL_VALIDATION.value or prefill.reason == PrefillReason.FAILED_FINAL_VALIDATION
-
-
-@pytest.mark.asyncio
-async def test_final_validation_exception_produces_failed_final_validation():
-    repo, conn, settings, fetch_log, stage_log, cost_ledger, portal = _setup_env()
-    provider = FakeValidatorProvider(raise_error=True)
-    browser = FakeBrowserSession(reachable=True)
-
-    q = Question(
-        question_id="c-fval:1.3",
-        cycle_id="c-fval",
-        indicator_id="1.3",
-        text="Validator raises error?",
-        answer_type=AnswerType.BINARY,
-        evidence_locus=EvidenceLocus.NATIONAL_PORTAL_ONLY,
+    # T018: delivery gate gone → DELIVERED even when the old gate would have rejected
+    assert outcome.final_state == UnitState.DELIVERED, (
+        f"Expected DELIVERED after T018 removed the delivery gate, got {outcome.final_state}"
     )
-    repo.insert_question(q)
-    repo.upsert_unit("s-fval", q.question_id, portal.portal_id, UnitState.RESOLVED.value, {"resolved_url": portal.resolved_url})
-
-    _insert_run_with_evidence(repo, "s-fval", q.question_id, portal.portal_id, "run-fv-5", 0)
-    _insert_run_with_evidence(repo, "s-fval", q.question_id, portal.portal_id, "run-fv-6", 1)
-
-    outcome = await process_unit(
-        repo=repo,
-        settings=settings,
-        session_id="s-fval",
-        provider=provider,
-        browser=browser,
-        http_client=None,
-        fetch_log=fetch_log,
-        stage_log=stage_log,
-        cost_ledger=cost_ledger,
-        capture_dir="/tmp",
-        question=q,
-        portal=portal,
-        run_id="run-fv-job-3",
-    )
-
-    assert outcome.final_state == UnitState.NO_SUGGESTION
-    assert outcome.detail == PrefillReason.FAILED_FINAL_VALIDATION.value
-    prefill = repo.latest_prefill("s-fval", q.question_id, portal.portal_id)
-    assert prefill is not None
-    assert prefill.suggested is False
-    assert prefill.reason == PrefillReason.FAILED_FINAL_VALIDATION.value or prefill.reason == PrefillReason.FAILED_FINAL_VALIDATION

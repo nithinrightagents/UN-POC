@@ -28,7 +28,9 @@ from shared.tools.linkresolution.sources.search import (
     is_subdomain_of,
     search_for_link,
 )
-from shared.tools.linkresolution.usability import check_usable
+from shared.tools.linkresolution.sources.sitemap import resolve_from_sitemap
+from shared.tools.linkresolution.admissibility import check_admissible
+from shared.tools.linkresolution.relevance import choose_best
 from shared.persistence.repositories import Repository
 
 
@@ -50,8 +52,13 @@ async def resolve_link(
     limiter: RateLimiter | None = None,
     portal_url: str | None = None,
     provider: object | None = None,
+    model: str | None = None,
     exclude_urls: set[str] | None = None,
     restrict_domain: str | None = None,
+    relevance_text: str | None = None,
+    relevance_detail: str | None = None,
+    widened_query: str | None = None,
+    blocked_domains: set[str] | None = None,
 ) -> ChainResolutionResult:
     """FR-003: consultation order follows settings.resolution_order, one of
     the three named modes. FR-002/FR-122: a later source runs only if every
@@ -73,12 +80,19 @@ async def resolve_link(
     `restrict_domain` (2026-08-21 goal: strict-first-try / relaxed-retry
     resolution for any_government_domain questions -- national_portal_only
     questions stay portal-restricted at every round via the caller always
-    passing it) requires every candidate, from every source, to resolve
-    within that domain or a subdomain of it -- a candidate outside it is
-    rejected here even if the source itself reported it usable, so a
-    same-domain result further down that source's own list (or the next
-    source in the chain) still gets a chance instead of the loop returning
-    an off-domain link early.
+    passing it) scopes the sitemap to the portal domain. In Step 1 (T005-T007),
+    the sitemap runs portal-scoped while search runs unrestricted; choose_best()
+    then adjudicates between both winners with portal as tie-break.
+
+    `widened_query` is the phrasing to use once the search leaves the
+    portal behind; it falls back to `search_query`.
+
+    `relevance_detail` is the question's longer explanation, ranked at a
+    discount -- it expands the title's acronyms but is phrased in
+    boilerplate shared across indicators.
+
+    `relevance_text` is the question's own wording, used to rank candidates
+    by how well they match what is being asked.
     """
     history: list[ResolutionAttempt] = []
     order = 0
@@ -98,37 +112,128 @@ async def resolve_link(
             order += 1
             attempt = resolve_from_msq(repo, question_id, country_id, order)
         elif source_name == "search":
+            # T005 / T006 / T007: Run sitemap (portal-scoped) and search (unrestricted),
+            # then adjudicate between the two winners using choose_best() with portal as tie-break.
+            sitemap_attempt: ResolutionAttempt | None = None
+            if portal_url:
+                order += 1
+                sitemap_attempt = await resolve_from_sitemap(
+                    http_client,
+                    portal_url,
+                    order,
+                    relevance_text or search_query,
+                    relevance_detail=relevance_detail,
+                    exclude_urls=exclude_urls,
+                )
+                if sitemap_attempt.usable:
+                    adm = check_admissible(sitemap_attempt.returned)
+                    if not adm.admissible:
+                        sitemap_attempt = ResolutionAttempt(
+                            source=sitemap_attempt.source,
+                            order=sitemap_attempt.order,
+                            returned=sitemap_attempt.returned,
+                            usable=False,
+                            rejection_reason=adm.reason,
+                        )
+                history.append(sitemap_attempt)
+
             order += 1
             if limiter is not None:
                 await limiter.acquire(DDG_SEARCH_URL, "search")
-            attempt = await search_for_link(
+
+            search_query_effective = widened_query or search_query
+            search_attempt = await search_for_link(
                 http_client,
-                search_query,
+                search_query_effective,
                 order,
                 country_id=country_id,
                 provider=provider,
-                model=getattr(settings, "validator_model", "gemini-2.5-flash"),
+                model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
                 portal_url=portal_url,
                 exclude_urls=exclude_urls,
                 firecrawl_api_key=getattr(settings, "firecrawl_api_key", None),
-                restrict_domain=restrict_domain,
+                restrict_domain=None,  # T007: search runs unrestricted
+                relevance_text=relevance_text,
+                relevance_detail=relevance_detail,
+                blocked_domains=blocked_domains,
             )
+            if search_attempt.usable:
+                adm = check_admissible(search_attempt.returned)
+                if not adm.admissible:
+                    search_attempt = ResolutionAttempt(
+                        source=search_attempt.source,
+                        order=search_attempt.order,
+                        returned=search_attempt.returned,
+                        usable=False,
+                        rejection_reason=adm.reason,
+                    )
+            history.append(search_attempt)
+
+            # Adjudicate winners (T006)
+            sitemap_ok = sitemap_attempt is not None and sitemap_attempt.usable
+            search_ok = search_attempt.usable
+
+            if sitemap_ok and search_ok:
+                if sitemap_attempt.returned == search_attempt.returned:
+                    return ChainResolutionResult(
+                        resolved_url=sitemap_attempt.returned,
+                        supplying_source=sitemap_attempt.source,
+                        history=history,
+                    )
+
+                candidates = [
+                    {"url": sitemap_attempt.returned, "title": relevance_text or search_query, "snippet": ""},
+                    {"url": search_attempt.returned, "title": relevance_text or search_query, "snippet": ""},
+                ]
+                chosen_idx = None
+                if provider is not None:
+                    chosen_idx = await choose_best(
+                        provider=provider,
+                        model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
+                        question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                        candidates=candidates,
+                    )
+
+                # Tie-break: portal/sitemap wins unless judge explicitly chose search (index 1)
+                if chosen_idx == 1:
+                    winning_attempt = search_attempt
+                else:
+                    winning_attempt = sitemap_attempt
+
+                return ChainResolutionResult(
+                    resolved_url=winning_attempt.returned,
+                    supplying_source=winning_attempt.source,
+                    history=history,
+                )
+
+            elif sitemap_ok:
+                return ChainResolutionResult(
+                    resolved_url=sitemap_attempt.returned,
+                    supplying_source=sitemap_attempt.source,
+                    history=history,
+                )
+
+            elif search_ok:
+                return ChainResolutionResult(
+                    resolved_url=search_attempt.returned,
+                    supplying_source=search_attempt.source,
+                    history=history,
+                )
+
+            continue
         else:
             continue
 
         # FR-005: an explicit usability test is applied to whatever the
         # source returned, in addition to the source's own usable flag.
-        usability = check_usable(attempt.returned)
-        if attempt.usable and not usability.usable:
+        admissibility = check_admissible(attempt.returned)
+        if attempt.usable and not admissibility.admissible:
             attempt = ResolutionAttempt(
                 source=attempt.source, order=attempt.order, returned=attempt.returned,
-                usable=False, rejection_reason=usability.reason,
+                usable=False, rejection_reason=admissibility.reason,
             )
 
-        # Defense in depth for the non-search sources (msq, prior_survey_kb),
-        # which return a single stored candidate with no domain check of
-        # their own -- search's own candidates are already filtered inside
-        # search_for_link via restrict_domain, so this is a no-op for it.
+        # Defense in depth for non-search sources (msq, prior_survey_kb)
         if attempt.usable and restrict_domain and not is_subdomain_of(
             urlparse(attempt.returned).netloc.lower(), restrict_domain
         ):
@@ -150,8 +255,8 @@ async def resolve_link(
 
     # Fallback to portal base URL if registered and usable on a government domain
     if portal_url and is_government_domain(portal_url, country_id):
-        usability = check_usable(portal_url)
-        if usability.usable:
+        usability = check_admissible(portal_url)
+        if usability.admissible:
             order += 1
             fallback_attempt = ResolutionAttempt(
                 source=LinkSource.PORTAL_DEFAULT,

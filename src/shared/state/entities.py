@@ -49,6 +49,10 @@ class LinkSource(str, Enum):
     PRIOR_SURVEY_KB = "prior_survey_kb"
     MSQ = "msq"
     SEARCH = "search"
+    # The portal's own sitemap. Ranked ahead of SEARCH for portal-restricted
+    # questions: it enumerates the site's real deep links directly, where a
+    # `site:` search only sees whatever the engine chose to index.
+    SITEMAP = "sitemap"
     PORTAL_DEFAULT = "portal_default"
 
 
@@ -89,6 +93,11 @@ class PrefillReason(str, Enum):
     FAILED_FINAL_VALIDATION = "failed_final_validation"
     ASSESSMENT_FAILURE = "assessment_failure"
     BUDGET_REACHED = "budget_reached"
+    # A resolved link plus a confident answer exists, but validation could
+    # not fully confirm it (mechanical check failure or a judgment dispute).
+    # Delivered anyway, confidence-capped, for a human to decide -- see
+    # PrefillReason.NEEDS_HUMAN_REVIEW's use in orchestration/scheduler.py.
+    NEEDS_HUMAN_REVIEW = "needs_human_review"
 
 
 
@@ -115,6 +124,11 @@ class VerificationOutcome(str, Enum):
     ELEMENT_ABSENT = "element_absent"
     TEXT_MISMATCH = "text_mismatch"
     TARGET_UNREACHABLE = "target_unreachable"
+    # element_absent on a page the assessor's own output flagged as
+    # truncated (FR-LD-027) -- the quote may simply have fallen past the
+    # 15,000-char cutoff, not have been fabricated. Not a quality failure;
+    # see validator/agent.py.
+    TRUNCATED_UNVERIFIABLE = "truncated_unverifiable"
 
 
 class EscalationReason(str, Enum):
@@ -253,7 +267,6 @@ class ElementReference:
 class EvidenceArtifact:
     artifact_id: str
     resolved_url: str
-    capture_ref: str
     element_reference: ElementReference
     element_text: str
     element_text_original_language: str | None = None
@@ -281,6 +294,7 @@ class AssessorAgentRun:
     auth_boundary_observed: bool = False
     auth_boundary_url: str | None = None
     portal_unreachable: bool = False
+    unreachable_reason: str | None = None  # e.g. "http_403", "timeout", "interstitial"
     model_identity: str | None = None
     below_acceptance_threshold: bool = False
     detected_language: str | None = None
@@ -306,6 +320,9 @@ class AssessorAgentRun:
     # previously invisible: nothing recorded what quote had been tried.
     raw_evidence_quote: str | None = None
     evidence_located: bool | None = None
+    # Truncation observability (FR-LD-027): records if page text exceeded 15,000 chars
+    page_text_truncated: bool = False
+    page_text_excess_chars: int = 0
     # One-hop navigation (2026-08-20 debugging pass, phase 1): set when the
     # assessor followed a same-domain link off the originally-resolved page
     # because that page alone (a category/hub page) lacked enough content to
@@ -432,6 +449,13 @@ class GroundTruthAnswer:
     label_source: str
     assigned_by: str
     question_class: str | None = None
+    reference_url: str | None = None
+    no_valid_link: bool = False
+    accepted_alternatives: list[str] = field(default_factory=list)
+    confidence: str = "authoritative"
+    verified_on: str | None = None
+    origin: str | None = None
+    note: str | None = None
 
 
 @dataclass
@@ -501,22 +525,30 @@ class Prefill:
     confidence: int | None = None
     justification: str | None = None
     evidence_url: str | None = None
-    capture_ref: str | None = None
     supplying_source: LinkSource | str | None = None
     agreement_outcome: str | None = None
     confidence_gap: int | None = None
     resolver_decision: dict | None = None
     unselected_position: dict | None = None
     position_run_ids: list[str] = field(default_factory=list)
+    unreachable_reason: str | None = None
     reason: PrefillReason | str | None = None
     terminal_state: UnitState | str = UnitState.DELIVERED
     created_at: datetime | str = field(default_factory=utcnow)
 
     def __post_init__(self) -> None:
         if self.suggested:
-            if self.answer is None or self.reason is not None:
+            if self.answer is None:
+                raise ValueError("When suggested=True, answer must be non-null")
+            # NEEDS_HUMAN_REVIEW is the one deliberate exception: a delivered
+            # (suggested=True) prefill that is ALSO flagged, because
+            # validation could not fully confirm it (T023, deliver-don't-
+            # discard). Every other reason describes why NOTHING was
+            # suggested and must never appear alongside a real answer.
+            allowed_reasons = (None, PrefillReason.NEEDS_HUMAN_REVIEW, PrefillReason.NEEDS_HUMAN_REVIEW.value)
+            if self.reason not in allowed_reasons:
                 raise ValueError(
-                    "When suggested=True, answer must be non-null and reason must be None"
+                    "When suggested=True, reason must be None or NEEDS_HUMAN_REVIEW"
                 )
         else:
             if self.answer is not None or self.reason is None:

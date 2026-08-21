@@ -8,6 +8,7 @@ from core.telemetry.hygiene import scan_for_credentials, scan_for_ground_truth
 from core.telemetry.langsmith_tracing import (
     adjudication_trace,
     agent_trace,
+    batch_trace,
     confidence_gate_trace,
     is_tracing_enabled,
     safe_trace,
@@ -28,6 +29,7 @@ __all__ = [
     "get_telemetry_summary",
     "is_tracing_enabled",
     "safe_trace",
+    "batch_trace",
     "unit_trace",
     "agent_trace",
     "confidence_gate_trace",

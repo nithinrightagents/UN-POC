@@ -54,6 +54,7 @@ PREFILL_REASON_TAGS: dict[PrefillReason, str] = {
     PrefillReason.FAILED_FINAL_VALIDATION: "No suggestion: resolved position failed final validation",
     PrefillReason.ASSESSMENT_FAILURE: "No suggestion: assessment execution failed",
     PrefillReason.BUDGET_REACHED: "No suggestion: the run's budget was reached before this indicator",
+    PrefillReason.NEEDS_HUMAN_REVIEW: "Needs review: a resolved link and a confident answer exist, but validation could not fully confirm it",
 }
 
 

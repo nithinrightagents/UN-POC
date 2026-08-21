@@ -57,6 +57,7 @@ Cited evidence text: {evidence_text}
 Evaluation Rules:
 - For Positive answers (answer = true): The cited evidence must be concrete text/content that proves the feature exists.
 - For Negative answers (answer = false): Absence cannot be directly quoted; the assessor is required to cite the nearest relevant section heading or page title as an anchor showing where the search was conducted. For negative answers, evaluate whether this anchor location and the justification coherently support the negative finding on this page. A confidence score between 30 and 65 for an anchored negative finding is proportionate and expected.
+- Heading sufficiency (T023): A section heading, navigation label, page title, or link text that directly names the feature IS sufficient evidence that the feature exists. Do NOT fail `evidence_supports_answer` or `confidence_proportionate` solely because the quote is a heading without surrounding body text. A heading such as "File Your Taxes Online" or "Apply for Benefits" unambiguously names the service; brevity is not a gap.
 
 Assess:
 1. Does the cited evidence (or anchor location for negative findings) support the stated answer?
@@ -87,8 +88,8 @@ async def validate_agent_output(
     gaps: list[str] = []
 
     # Check 1 (FR-021): every required evidence component present.
-    if output.evidence is None or output.evidence.capture_ref is None or element_reference is None:
-        gaps.append("required evidence component missing (capture, element reference, or text)")
+    if output.evidence is None or element_reference is None:
+        gaps.append("required evidence component missing (element reference or text)")
         return ValidationResult(
             validation_id=new_id("val"),
             run_id=run_id,
@@ -125,6 +126,30 @@ async def validate_agent_output(
             passed=False,
             retry_number=retry_number,
             verification_outcome=VerificationOutcome.TARGET_UNREACHABLE,
+            verification_attempts=attempts,
+        )
+
+    if verification_result.outcome == "element_absent" and output.page_text_truncated:
+        # The assessor's own page fetch exceeded the 15,000-char cutoff
+        # (FR-LD-027) before this quote could have been read in full -- the
+        # quote may simply sit past the truncation point, not have been
+        # fabricated. Scoring this as a quality failure and burning retries
+        # on a deterministically-truncated page cannot improve the outcome;
+        # the caller treats this the same as target_unreachable above --
+        # not a quality failure -- and stops retrying immediately.
+        gaps.append(
+            f"verification element_absent on truncated page ({output.page_text_excess_chars} chars past cutoff): "
+            f"{verification_result.detail}"
+        )
+        return ValidationResult(
+            validation_id=new_id("val"),
+            run_id=run_id,
+            session_id=session_id,
+            quality_score=0.0,
+            gaps=gaps,
+            passed=False,
+            retry_number=retry_number,
+            verification_outcome=VerificationOutcome.TRUNCATED_UNVERIFIABLE,
             verification_attempts=attempts,
         )
 
@@ -178,6 +203,8 @@ async def validate_agent_output(
         ]
     )
     quality_score = checks_passed / 3.0
+    # quality_score is checks_passed/3: 1/3=0.333, 2/3=0.667, 3/3=1.0.
+    # threshold=0.60 means two-of-three must pass; threshold=0.70 would require all three.
     passed = quality_score >= settings.validation_quality_threshold
 
     if not judgment.get("evidence_supports_answer", False):

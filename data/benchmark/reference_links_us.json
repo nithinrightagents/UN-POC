@@ -1,0 +1,500 @@
+{
+  "benchmark_set_id": "bm-reference-links-us",
+  "name": "USA Link Resolution Reference Set",
+  "description": "Curated reference links and expected answers for 13 seeded US indicators established via live web validation.",
+  "country_id": "US",
+  "entries": [
+    {
+      "question_id": "CP-030",
+      "indicator_id": "#030",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usaspending.gov/search",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://sam.gov",
+        "https://sam.gov/content/home",
+        "https://www.usaspending.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "US federal contract awards and procurement results on USASpending.gov and SAM.gov"
+    },
+    {
+      "question_id": "SP-043",
+      "indicator_id": "#043",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.irs.gov/filing/free-file-do-your-federal-taxes-for-free",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.irs.gov/freefile",
+        "https://www.irs.gov/individuals/file-your-taxes-for-free"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "IRS Free File and online income tax filing services"
+    },
+    {
+      "question_id": "SP-045",
+      "indicator_id": "#045",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://ceac.state.gov/genniv/",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://travel.state.gov/content/travel/en/us-visas.html",
+        "https://www.usa.gov/visas"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "DS-160 online nonimmigrant visa application on CEAC State Department portal"
+    },
+    {
+      "question_id": "SP-054",
+      "indicator_id": "#054",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://www.usa.gov/renew-drivers-license",
+        "https://www.usa.gov/"
+      ],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "US driver's licences are issued subnationally by states; no national online license issuance exists"
+    },
+    {
+      "question_id": "SP-055",
+      "indicator_id": "#055",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://www.usa.gov/"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "Land title and deed recording is managed at county level; no national portal exists"
+    },
+    {
+      "question_id": "EP-092",
+      "indicator_id": "#092",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usaspending.gov/search",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usaspending.gov",
+        "https://fiscaldata.treasury.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "US federal health expenditure data on USASpending.gov and Fiscal Data Treasury"
+    },
+    {
+      "question_id": "SP-095",
+      "indicator_id": "#095",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/health",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usa.gov/health-insurance",
+        "https://www.hhs.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "usa.gov/health topic section covers health insurance, mental health, and health services"
+    },
+    {
+      "question_id": "SP-108",
+      "indicator_id": "#108",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/education",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.ed.gov",
+        "https://studentaid.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "usa.gov/education topic section covers financial aid, schooling, and higher education"
+    },
+    {
+      "question_id": "IF-336",
+      "indicator_id": "#336",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://www.usa.gov/"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "US has no federal statute against misinformation due to First Amendment constitutional protections"
+    },
+    {
+      "question_id": "IF-337",
+      "indicator_id": "#337",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.cio.gov/about/leadership/",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.cio.gov",
+        "https://www.cio.gov/about/"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "US Federal CIO leadership and OMB Office of the Federal CIO at CIO.gov"
+    },
+    {
+      "question_id": "IF-339",
+      "indicator_id": "#339",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.foia.gov/",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usa.gov/foia",
+        "https://www.justice.gov/oip"
+      ],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "Known target is a thin generic page rather than the right-to-information page the indicator asks for"
+    },
+    {
+      "question_id": "IF-340",
+      "indicator_id": "#340",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.cisa.gov/topics/cybersecurity-best-practices",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.cisa.gov",
+        "https://www.cisa.gov/cybersecurity-governance"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "FISMA and Cybersecurity Information Sharing Act information at CISA.gov"
+    },
+    {
+      "question_id": "IF-341",
+      "indicator_id": "#341",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://resources.data.gov/",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://data.gov",
+        "https://data.gov/open-gov/"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 50Q run diagnosis & live web validation",
+      "note": "OPEN Government Data Act (Title II of Foundations for Evidence-Based Policymaking Act) at resources.data.gov"
+    },
+    {
+      "question_id": "CP-015",
+      "indicator_id": "#015",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/official-language-of-us",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usa.gov/learn-english"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "usa.gov/official-language-of-us states English is the official language of the US government"
+    },
+    {
+      "question_id": "EGL-003",
+      "indicator_id": "#003",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/search-gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://search.gov",
+        "https://www.usa.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "usa.gov/search-gov and search.gov provide the federal government search capability"
+    },
+    {
+      "question_id": "EGL-036b",
+      "indicator_id": "#036b",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/libraries",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.imls.gov",
+        "https://careeronestop.org"
+      ],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "US public libraries (IMLS) and American Job Centers (CareerOneStop/DOL) serve as physical e-gov access points; pipeline found usa.gov/libraries"
+    },
+    {
+      "question_id": "EGL-321",
+      "indicator_id": "#321",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.citizenscience.gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.challenge.gov",
+        "https://www.epa.gov/innovation/participatory-science"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "citizenscience.gov and challenge.gov are live federal platforms for co-creation; pipeline incorrectly retrieved a 2021 frozen archive"
+    },
+    {
+      "question_id": "EP-141",
+      "indicator_id": "#141",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://catalog.data.gov/dataset?organization=social-security-administration",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.ssa.gov/open",
+        "https://data.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "catalog.data.gov and ssa.gov/open host hundreds of open datasets for social protection"
+    },
+    {
+      "question_id": "EP-170",
+      "indicator_id": "#170",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://catalog.data.gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.epa.gov/data",
+        "https://data.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "catalog.data.gov and epa.gov/data host thousands of open environmental datasets"
+    },
+    {
+      "question_id": "EP-304",
+      "indicator_id": "#304",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usaspending.gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://catalog.data.gov",
+        "https://www2.ed.gov/about/overview/budget/index.html"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "usaspending.gov, catalog.data.gov, and ed.gov provide US education budget datasets"
+    },
+    {
+      "question_id": "IF-011",
+      "indicator_id": "#011",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.whitehouse.gov/administration/cabinet",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usa.gov/executive-departments",
+        "https://www.usa.gov/agency-index"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "whitehouse.gov/administration/cabinet lists all Cabinet department heads by name and title"
+    },
+    {
+      "question_id": "IF-173",
+      "indicator_id": "#173",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.justice.gov/olp/policy-initiatives",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.justice.gov/about/strategic-plan",
+        "https://www.justice.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "justice.gov/olp/policy-initiatives and justice.gov/about/strategic-plan detail national justice policies"
+    },
+    {
+      "question_id": "IF-338",
+      "indicator_id": "#338",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.justice.gov/opcl",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.hhs.gov/hipaa/index.html",
+        "https://www.ftc.gov/legal-library/browse/statutes"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "Privacy Act of 1974 (5 U.S.C. 552a) administered by DOJ OPCL; usa.gov/privacy is only the site notice, not the legislative page"
+    },
+    {
+      "question_id": "SP-048",
+      "indicator_id": "#048",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/change-address",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usps.com/manage/forward-mail-change-of-address.htm"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "usa.gov/change-address provides the national address change service via USPS"
+    },
+    {
+      "question_id": "SP-062",
+      "indicator_id": "#062,#063",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://www.usa.gov/help-with-utility-bills"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "T006/T007: US residential water/electricity utility billing is strictly municipal, regional, or private — no national utility payment portal exists; the D4 no_valid_link case. Every national candidate is therefore wrong."
+    },
+    {
+      "question_id": "SP-108a",
+      "indicator_id": "#108a",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://studentaid.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "T006: Federal education mobile app (myStudentAid) was retired in 2022 in favour of responsive web StudentAid.gov; no standalone mobile app exists"
+    },
+    {
+      "question_id": "SP-124",
+      "indicator_id": "#124",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/jobs",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usajobs.gov",
+        "https://www.dol.gov/general/topic/unemployment-insurance"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "usa.gov/jobs and usajobs.gov explicitly provide online unemployment and job search services; pipeline dropped this via validator heading-only citation rejection"
+    },
+    {
+      "question_id": "SP-137b",
+      "indicator_id": "#137b",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.ssa.gov/myaccount",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.ssa.gov",
+        "https://www.benefits.gov/news/alerts"
+      ],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "SSA provides SMS/text notifications via opt-in at ssa.gov/myaccount; pipeline incorrectly hit FEMA ready.gov/alerts instead"
+    },
+    {
+      "question_id": "SP-166",
+      "indicator_id": "#166",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.epa.gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://echo.epa.gov",
+        "https://www.epa.gov/e-manifest",
+        "https://ejscreen.epa.gov"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "EPA hosts ECHO, e-Manifest, e-permitting, and EJSCREEN as online environment services; pipeline hit 403 on state.gov/environment"
+    },
+    {
+      "question_id": "SP-166b",
+      "indicator_id": "#166b",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.enviroflash.info",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.airnow.gov",
+        "https://www.epa.gov/enviroflash"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "EnviroFlash (EPA) and AirNow.gov provide automated air quality SMS/email alerts; pipeline incorrectly escalated to FEMA ready.gov/alerts"
+    },
+    {
+      "question_id": "TECH-022",
+      "indicator_id": "#022,#024",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.login.gov",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.ssa.gov/myaccount",
+        "https://www.irs.gov/payments/your-online-account"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "USA 25Q gap analysis 2026-08-21",
+      "note": "login.gov, ssa.gov/myaccount, and irs.gov/payments/your-online-account provide citizen access to own data; pipeline confused accessibility (Section 508) with data access"
+    }
+  ]
+}

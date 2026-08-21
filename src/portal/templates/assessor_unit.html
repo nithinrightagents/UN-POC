@@ -209,18 +209,6 @@
             <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
         </p>
         {% endif %}
-        {% if row.ai.capture_url %}
-        <div style="margin: 0.75rem 0; padding: 0.6rem 0.85rem; background: var(--color-bg-surface, #ffffff); border: 1px solid var(--color-border-default); border-radius: var(--radius-sm); max-width: 540px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">Visual Evidence Snapshot (Element Region)</span>
-                <a href="{{ row.ai.capture_url }}" target="_blank" rel="noopener noreferrer" style="font-size: 0.75rem; font-weight: 600;">View Full Image ↗</a>
-            </div>
-            <a href="{{ row.ai.capture_url }}" target="_blank" rel="noopener noreferrer" style="display: block;">
-                <img src="{{ row.ai.capture_url }}" alt="Region-scoped snapshot of the cited evidence"
-                     style="max-width: 100%; max-height: 240px; object-fit: contain; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs); display: block; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-            </a>
-        </div>
-        {% endif %}
         {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
         <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background-color: rgba(0,0,0,0.03); border-radius: var(--radius-xs); font-size: 0.85rem;">
             {% if row.ai.resolver_reasoning %}

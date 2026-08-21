@@ -1,0 +1,51 @@
+{
+  "benchmark_set_id": "bm-reference-minimal",
+  "name": "Minimal Reference Test Fixture",
+  "description": "Minimal fixture for unit tests with authoritative, provisional, and no_valid_link entries.",
+  "country_id": "US",
+  "entries": [
+    {
+      "question_id": "SP-095",
+      "indicator_id": "#095",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.usa.gov/health",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.usa.gov/health-insurance"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-08-21",
+      "origin": "test-origin",
+      "note": "Authoritative health service entry"
+    },
+    {
+      "question_id": "IF-339",
+      "indicator_id": "#339",
+      "country_id": "US",
+      "expected_answer": true,
+      "reference_url": "https://www.foia.gov/",
+      "no_valid_link": false,
+      "accepted_alternatives": [],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "test-origin",
+      "note": "Provisional FOIA entry"
+    },
+    {
+      "question_id": "SP-054",
+      "indicator_id": "#054",
+      "country_id": "US",
+      "expected_answer": false,
+      "reference_url": null,
+      "no_valid_link": true,
+      "accepted_alternatives": [
+        "https://www.usa.gov/"
+      ],
+      "confidence": "provisional",
+      "verified_on": "2026-08-21",
+      "origin": "test-origin",
+      "note": "Driver's license subnational entry"
+    }
+  ]
+}

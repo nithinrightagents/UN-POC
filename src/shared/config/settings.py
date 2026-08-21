@@ -45,13 +45,26 @@ class Settings:
     batch_size: int = 50
     adjudication_retry_limit: int = 2  # Deprecated in spec 008 (intra-run retries superseded by resolver); kept for backwards compatibility
     validation_retry_limit: int = 2
-    validation_quality_threshold: float = 0.70
+    validation_quality_threshold: float = 0.60  # score is computed over exactly 3 booleans: 1/3=0.333, 2/3=0.667, 3/3=1.0 — 0.70 meant all-three-must-pass (effectively 100%); 0.60 means two-of-three-must-pass
     per_question_confidence_threshold: int = 10
+    # T016: minimum number of VALIDATED_PASS runs required before a position is delivered.
+    # assessor_agent_count=2 agents still both run; this controls how many must survive
+    # validation, not how many run. 1 means one validated position is sufficient.
+    min_validated_positions: int = 1
 
     # --- Confidence acceptance gate ---
-    confidence_acceptance_threshold: int = 75
+    confidence_acceptance_threshold: int = 60  # lowered from 75: a well-evidenced answer the model honestly scores 60-74 now proceeds (T021)
     confidence_retry_limit: int = 1
-    best_effort_confidence_ceiling: int = 74
+    best_effort_confidence_ceiling: int = 55
+    # A negative (No) answer that PASSED validation -- a second model
+    # confirmed the anchor supports it -- is more trustworthy than the raw
+    # evidence-weight number reads, since thin-evidence calibration
+    # (prompts/profiles.py) scores every anchored negative in the 30-65
+    # range regardless of how well it was confirmed. Applied only to
+    # validated negatives at prefill-write time (never in the prompt, never
+    # for best-effort/needs_human_review rows) so it can't push an
+    # unconfirmed answer above best_effort_confidence_ceiling.
+    validated_negative_confidence_floor: int = 55
 
     # --- Portal-level discrepancy ---
     portal_differing_answer_rate_threshold: float = 0.10
@@ -130,8 +143,8 @@ class Settings:
         return d
 
     @classmethod
-    def defaults(cls) -> dict:
-        return cls().as_dict()
+    def defaults(cls) -> Settings:
+        return cls()
 
 
 _ENV_MAP = {
@@ -152,9 +165,11 @@ _ENV_MAP = {
     "validation_retry_limit": ("AIQ_VALIDATION_RETRY_LIMIT", int),
     "validation_quality_threshold": ("AIQ_VALIDATION_QUALITY_THRESHOLD", float),
     "per_question_confidence_threshold": ("AIQ_PER_QUESTION_CONFIDENCE_THRESHOLD", int),
+    "min_validated_positions": ("AIQ_MIN_VALIDATED_POSITIONS", int),
     "confidence_acceptance_threshold": ("AIQ_CONFIDENCE_ACCEPTANCE_THRESHOLD", int),
     "confidence_retry_limit": ("AIQ_CONFIDENCE_RETRY_LIMIT", int),
     "best_effort_confidence_ceiling": ("AIQ_BEST_EFFORT_CONFIDENCE_CEILING", int),
+    "validated_negative_confidence_floor": ("AIQ_VALIDATED_NEGATIVE_CONFIDENCE_FLOOR", int),
     "portal_differing_answer_rate_threshold": (
         "AIQ_PORTAL_DIFFERING_ANSWER_RATE_THRESHOLD",
         float,
@@ -188,11 +203,43 @@ _ENV_MAP = {
 }
 
 
+def _sync_langsmith_env(env_vars: dict[str, str | None]) -> None:
+    """Ensure LangSmith environment variables in os.environ are consistently set and normalized."""
+    tracing_val = env_vars.get("LANGCHAIN_TRACING_V2") or env_vars.get("LANGSMITH_TRACING")
+    if tracing_val:
+        normalized_tracing = "true" if tracing_val.strip().lower() in ("true", "1", "yes", "on") else "false"
+        os.environ.setdefault("LANGCHAIN_TRACING_V2", normalized_tracing)
+        if os.environ.get("LANGCHAIN_TRACING_V2") != normalized_tracing:
+            os.environ["LANGCHAIN_TRACING_V2"] = normalized_tracing
+
+    api_key = env_vars.get("LANGSMITH_API_KEY")
+    if api_key:
+        os.environ.setdefault("LANGSMITH_API_KEY", api_key.strip())
+
+    project = env_vars.get("LANGSMITH_PROJECT") or env_vars.get("LANGCHAIN_PROJECT")
+    if project:
+        os.environ.setdefault("LANGSMITH_PROJECT", project.strip())
+
+    endpoint = env_vars.get("LANGCHAIN_ENDPOINT") or env_vars.get("LANGSMITH_ENDPOINT")
+    if endpoint:
+        os.environ.setdefault("LANGCHAIN_ENDPOINT", endpoint.strip())
+
+    try:
+        from langsmith.utils import get_env_var
+        get_env_var.cache_clear()
+    except Exception:
+        pass
+
+
 def load_settings(env_path: str = ".env") -> Settings:
     """Load settings from .env (if present) then process environment, falling
     back to dataclass defaults. Env vars take precedence over .env file, which
     takes precedence over the coded default (FR-072, FR-073)."""
     file_values = dotenv_values(env_path) if os.path.exists(env_path) else {}
+
+    # Sync tracing variables to os.environ for LangSmith SDK
+    _sync_langsmith_env(file_values)
+
     settings = Settings()
 
     # Check for individual agent model env vars (AIQ_AGENT_1_MODEL / AIQ_AGENT1_MODEL, etc.)

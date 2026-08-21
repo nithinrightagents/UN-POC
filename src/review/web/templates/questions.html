@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="breadcrumb">
-    <a href="/?session={{ session_id }}">&larr; All Portals</a>
+    <a href="/review/?session={{ session_id }}">&larr; All Portals</a>
     <span>/</span>
     <span>{{ portal.country_id }}</span>
 </div>
@@ -42,7 +42,7 @@
                         <code style="font-weight: 700; color: var(--color-brand-primary);">{{ q.question_id }}</code>
                     </td>
                     <td>
-                        <a href="/portal/{{ portal.portal_id }}/question/{{ q.question_id }}?session={{ session_id }}" style="font-weight: 500;">
+                        <a href="/review/portal/{{ portal.portal_id }}/question/{{ q.question_id }}?session={{ session_id }}" style="font-weight: 500;">
                             {{ q.text }}
                         </a>
                     </td>
@@ -54,7 +54,7 @@
                         {% endif %}
                     </td>
                     <td style="text-align: right;">
-                        <a href="/portal/{{ portal.portal_id }}/question/{{ q.question_id }}?session={{ session_id }}" class="btn btn-sm">
+                        <a href="/review/portal/{{ portal.portal_id }}/question/{{ q.question_id }}?session={{ session_id }}" class="btn btn-sm">
                             Inspect &rarr;
                         </a>
                     </td>

@@ -13,6 +13,7 @@ an anonymised disagreement addendum, up to adjudication_retry_limit.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from agents.adjudicator.agent import AdjudicationDecision, AdjudicatorAgent, build_adjudication_result
 from agents.adjudicator.node import adjudicator_node
@@ -28,6 +29,7 @@ from shared.state.entities import (
     ElementReference,
     EvidenceArtifact,
     ValidationResult,
+    VerificationOutcome,
     new_id,
     utcnow,
 )
@@ -61,10 +63,10 @@ async def run_validation_retry_loop(
     fetch_log: FetchLog,
     stage_log: StageEventLog,
     cost_ledger: CostLedger,
-    capture_dir: str,
     initial_run: AssessorAgentRun,
     initial_evidence: EvidenceArtifact | None,
     portal_id: str | None = None,
+    parent: Any = None,
 ) -> ValidationLoopResult:
     """FR-081: the validation retry loop operates strictly per agent --
     retrying agent_index never touches any other agent's run."""
@@ -89,7 +91,7 @@ async def run_validation_retry_loop(
         output = _run_output_from_agent_run(current_run, current_evidence)
 
         # LangSmith tracing (FR-T-002, FR-T-004): validation_attempt child span
-        async with validation_trace(retry_number, agent_index, round_number) as val_span:
+        async with validation_trace(retry_number, agent_index, round_number, parent=parent) as val_span:
             with stage_log.timed(
                 "validation", {"question_id": question["question_id"], "portal_id": stable_portal_id},
                 agent_index=agent_index, round_number=round_number,
@@ -131,7 +133,16 @@ async def run_validation_retry_loop(
                 attempted_validations=attempted_validations,
             )
 
-        if retry_number >= settings.validation_retry_limit:
+        # A truncated page is a deterministic failure -- the quote sits past
+        # the same 15,000-char cutoff every time, so re-running this agent
+        # against the same page cannot change the outcome. Stop immediately
+        # rather than spending the full validation_retry_limit on a retry
+        # that cannot succeed; the scheduler's best-effort delivery path
+        # (T023) is the mechanism that can still make use of this run.
+        if (
+            validation.verification_outcome == VerificationOutcome.TRUNCATED_UNVERIFIABLE
+            or retry_number >= settings.validation_retry_limit
+        ):
             # FR-082: not admitted to adjudication. Terminal.
             current_run.state = AgentRunState.VALIDATION_FAILED_TERMINAL
             current_run.validation_retry_count = retry_number
@@ -145,7 +156,30 @@ async def run_validation_retry_loop(
 
         # FR-080: re-run this agent only, with the gaps as an addendum.
         retry_number += 1
-        addendum = RetryAddendum(kind="validation_gaps", items=validation.gaps)
+        # A mechanical failure (evidence absent / text mismatch on live
+        # re-fetch) means the ANSWER was never in question -- only whether
+        # the quote can be independently relocated. Asking the agent to
+        # "address the gaps" in that case reads as an invitation to
+        # reconsider the answer itself, which is how a correct answer gets
+        # flipped by a retry that should only have re-anchored the evidence
+        # (see EGL-036b). A judgment-level failure (evidence_supports_answer /
+        # justification_consistent / confidence_proportionate) is the only
+        # case where reconsidering the answer is actually the right move.
+        if validation.verification_outcome in (
+            VerificationOutcome.ELEMENT_ABSENT,
+            VerificationOutcome.TEXT_MISMATCH,
+        ):
+            addendum = RetryAddendum(
+                kind="validation_gaps",
+                items=[
+                    "Your previous evidence quote could not be independently relocated on the "
+                    "page. Your ANSWER is not in question -- re-read the page and copy a new, "
+                    "exact quote in the same words and order from a single contiguous span that "
+                    "supports the SAME answer you already gave. Do not change your answer."
+                ],
+            )
+        else:
+            addendum = RetryAddendum(kind="validation_gaps", items=validation.gaps)
 
         new_run = await assessor_node(
             {
@@ -156,7 +190,8 @@ async def run_validation_retry_loop(
             },
             agent_index, round_number, assessor_agent,
             settings=settings, fetch_log=fetch_log, stage_log=stage_log,
-            cost_ledger=cost_ledger, capture_dir=capture_dir,
+            cost_ledger=cost_ledger,
+            parent=parent,
         )
         new_run.validation_retry_count = retry_number
         current_run = new_run
@@ -177,7 +212,6 @@ def materialize_evidence_artifact(run: AssessorAgentRun) -> EvidenceArtifact | N
     return EvidenceArtifact(
         artifact_id=new_id("ev"),
         resolved_url=pending.resolved_url,
-        capture_ref=pending.capture_ref or "",
         element_reference=ElementReference(**pending.element_reference.model_dump())
         if pending.element_reference
         else ElementReference(css_path="", text_hash=""),
@@ -197,7 +231,6 @@ def _run_output_from_agent_run(run: AssessorAgentRun, evidence: EvidenceArtifact
     if evidence:
         evidence_output = EvidenceOutput(
             resolved_url=evidence.resolved_url,
-            capture_ref=evidence.capture_ref,
             element_reference=ElementReferenceOutput(**evidence.element_reference.__dict__),
             element_text=evidence.element_text,
             element_text_original_language=evidence.element_text_original_language,
@@ -213,6 +246,8 @@ def _run_output_from_agent_run(run: AssessorAgentRun, evidence: EvidenceArtifact
         portal_unreachable=run.portal_unreachable,
         model_identity=run.model_identity or "",
         detected_language=run.detected_language,
+        page_text_truncated=run.page_text_truncated,
+        page_text_excess_chars=run.page_text_excess_chars,
     )
 
 
@@ -239,6 +274,7 @@ async def run_adjudication_retry_loop(
     starting_round: int,
     run_full_agent_and_validation_loop,
     portal_id: str | None = None,
+    parent: Any = None,
 ) -> AdjudicationLoopResult:
     """FR-030: on a flagged discrepancy below the retry limit, re-run every
     agent in the round with an anonymised addendum. FR-033: still
@@ -247,7 +283,7 @@ async def run_adjudication_retry_loop(
 
     `run_full_agent_and_validation_loop(agent_index, round_number, addendum)`
     is injected by the caller (orchestration/scheduler.py), which closes
-    over the provider/browser/fetch_log/cost_ledger/capture_dir this needs,
+    over the provider/browser/fetch_log/cost_ledger this needs,
     since it must run BOTH the confidence gate and the validation retry
     loop per agent -- this module only owns the adjudication-level decision
     and retry count.
@@ -261,7 +297,7 @@ async def run_adjudication_retry_loop(
 
     while True:
         # LangSmith tracing (FR-T-002, FR-T-004): adjudication child span
-        async with adjudication_trace(round_number, is_retry=(retry_count > 0)) as adj_span:
+        async with adjudication_trace(round_number, is_retry=(retry_count > 0), parent=parent) as adj_span:
             started = utcnow()
             decision = await adjudicator_node(
                 {"validated_runs": current_runs}, adjudicator_agent,

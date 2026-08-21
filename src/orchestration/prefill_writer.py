@@ -31,7 +31,6 @@ def write_prefill(
     confidence: int | None = None,
     justification: str | None = None,
     evidence_url: str | None = None,
-    capture_ref: str | None = None,
     supplying_source: LinkSource | str | None = None,
     agreement_outcome: str | None = None,
     confidence_gap: int | None = None,
@@ -65,7 +64,6 @@ def write_prefill(
         confidence=confidence,
         justification=justification,
         evidence_url=evidence_url,
-        capture_ref=capture_ref,
         supplying_source=supplying_source,
         agreement_outcome=agreement_outcome,
         confidence_gap=confidence_gap,
@@ -85,15 +83,14 @@ def write_prefill(
                 current_state_ref[0] = target_state
 
         ctx = dict(unit_context or {})
+        if reason:
+            reason_val = reason.value if hasattr(reason, "value") else str(reason)
+            ctx["prefill_reason"] = reason_val
         if suggested:
             ctx["consensus_answer"] = answer
             ctx["consensus_confidence"] = confidence
             if agreement_outcome:
                 ctx["agreement_outcome"] = agreement_outcome
-        else:
-            if reason:
-                reason_val = reason.value if hasattr(reason, "value") else str(reason)
-                ctx["prefill_reason"] = reason_val
 
         repo.upsert_unit(
             session_id=session_id,

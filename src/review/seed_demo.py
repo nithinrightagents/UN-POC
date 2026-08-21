@@ -106,7 +106,6 @@ def seed_demo_review(conn: sqlite3.Connection) -> dict:
     evidence = EvidenceArtifact(
         artifact_id=new_id("ev"),
         resolved_url=portal.resolved_url,
-        capture_ref="demo-capture-010.png",
         element_reference=ElementReference(
             css_path="main > section:nth-of-type(2) > div.org-chart", text_hash="abc123", sibling_index=0
         ),

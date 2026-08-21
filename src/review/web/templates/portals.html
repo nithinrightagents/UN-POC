@@ -5,16 +5,28 @@
 <div class="breadcrumb">
     <a href="/">Portal Home</a>
     <span>/</span>
-    <span>AI Review</span>
+    <a href="/review">AI Review</a>
     <span>/</span>
     <span>Session {{ session_id }}</span>
 </div>
 
-<div class="page-header">
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
     <div>
         <h1>Session Review Workspace</h1>
         <p class="lead">{{ portals|length }} target portal(s) in scope for session <code>{{ session_id }}</code>.</p>
     </div>
+    {% if available_sessions and available_sessions|length > 1 %}
+    <div>
+        <label for="session-select" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary); display: block; margin-bottom: 0.25rem;">Switch Session:</label>
+        <select id="session-select" onchange="if (this.value) window.location.href='/review/?session=' + encodeURIComponent(this.value);" style="padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle); background-color: var(--color-bg-surface); color: var(--color-text-primary); font-size: 0.9rem;">
+            {% for s in available_sessions %}
+            <option value="{{ s.session_id }}" {% if s.session_id == session_id %}selected{% endif %}>
+                {{ s.session_id }} ({{ s.cycle_id or s.mode }})
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
 </div>
 
 <div class="section-title">
@@ -26,7 +38,7 @@
     <div class="card" style="border-left: 4px solid {% if p.unlocked %}var(--color-success-border){% else %}var(--color-warning-border){% endif %};">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
             <h2 style="font-size: 1.35rem; margin-bottom: 0;">
-                <a href="/portal/{{ p.portal_id }}?session={{ session_id }}">{{ p.country_id }}</a>
+                <a href="/review/portal/{{ p.portal_id }}?session={{ session_id }}">{{ p.country_id }}</a>
             </h2>
             {% if p.unlocked %}
             <span class="badge badge--verified">Ready for Review</span>
@@ -45,7 +57,7 @@
         </div>
         {% endif %}
 
-        <a href="/portal/{{ p.portal_id }}?session={{ session_id }}" class="btn btn-sm btn-primary">
+        <a href="/review/portal/{{ p.portal_id }}?session={{ session_id }}" class="btn btn-sm btn-primary">
             <span>Review Questions &rarr;</span>
         </a>
     </div>

@@ -85,7 +85,6 @@ class EvidenceOutput(BaseModel):
     model_config = {"extra": "forbid"}
 
     resolved_url: str
-    capture_ref: str | None = None
     element_reference: ElementReferenceOutput | None = None
     element_text: str
     element_text_original_language: str | None = None
@@ -106,12 +105,15 @@ class AssessorAgentOutput(BaseModel):
     auth_boundary_observed: bool = False
     auth_boundary_url: str | None = None
     portal_unreachable: bool = False
+    unreachable_reason: str | None = None  # e.g. "http_403", "timeout", "interstitial" — from PageResult.reason
     model_identity: str = ""
     detected_language: str | None = None
     fill_gap_reason: str | None = None
     link_likely_wrong: bool = False
     raw_evidence_quote: str | None = None
     evidence_located: bool | None = None
+    page_text_truncated: bool = False
+    page_text_excess_chars: int = 0
     navigated_to_url: str | None = None
 
     @model_validator(mode="after")

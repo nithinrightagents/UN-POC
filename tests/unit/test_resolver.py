@@ -138,7 +138,6 @@ def _insert_run(
     evidence = EvidenceArtifact(
         artifact_id=f"art-{run_id}",
         resolved_url="https://norge.no",
-        capture_ref="/captures/test.png",
         element_reference=ElementReference(css_path="#feat", text_hash=text_hash(justification)),
         element_text=justification,
     )
@@ -234,7 +233,6 @@ async def test_scenario_2_resolver_settles_dispute():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-s2-job",
@@ -285,7 +283,6 @@ async def test_scenario_3_resolver_undetermined():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-s3-job",

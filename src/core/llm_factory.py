@@ -28,13 +28,22 @@ import asyncio
 from dataclasses import dataclass
 
 from google import genai
-from google.genai import errors as genai_errors
 from google.genai import types as genai_types
 from langsmith import get_current_run_tree, traceable
 
 # Rate-limit backoff (429 only): fixed 30/60/90s waits, 4 attempts total
 # (1 immediate + 3 retries).
 RATE_LIMIT_BACKOFF_SECONDS = (30, 60, 90)
+
+# A fresh genai.Client() is constructed per call (see module docstring),
+# which means an OAuth2 token-refresh handshake against
+# oauth2.googleapis.com happens far more often than with a shared client --
+# a dropped connection there (TransportError) is transient, not an API
+# error, and a retry moments later routinely succeeds (2026-08-21: observed
+# live, one dropped handshake turned an otherwise-valid unit into an
+# assessment_failure no_suggestion). Short backoff since this is a network
+# blip, not something that needs minutes to clear like a real rate limit.
+NETWORK_ERROR_BACKOFF_SECONDS = (2, 5, 10)
 
 
 @dataclass
@@ -79,13 +88,18 @@ class ModelProvider:
         prompt: str,
         config: genai_types.GenerateContentConfig,
     ):
-        """Only a 429 (rate limit) is retried, with fixed 30/60/90s waits --
-        any other error (4xx, 5xx, network) surfaces immediately. Four
-        attempts total (1 immediate + 3 retries); if the last also 429s, the
-        error propagates and the caller (scheduler.process_unit) turns it
-        into an assessment_failure prefill rather than aborting the run."""
-        last_exc: genai_errors.APIError | None = None
-        for wait_seconds in (0, *RATE_LIMIT_BACKOFF_SECONDS):
+        """A 429 (rate limit) is retried with fixed 30/60/90s waits, and a
+        transient network/transport error (e.g. a dropped OAuth2
+        token-refresh handshake) is separately retried with a short 2/5/10s
+        backoff -- any other error (4xx, 5xx that isn't a rate limit)
+        surfaces immediately. If retries are exhausted, the error propagates
+        and the caller (scheduler.process_unit) turns it into an
+        assessment_failure prefill rather than aborting the run."""
+        last_exc: Exception | None = None
+        rate_limit_waits = list(RATE_LIMIT_BACKOFF_SECONDS)
+        network_error_waits = list(NETWORK_ERROR_BACKOFF_SECONDS)
+        wait_seconds = 0
+        while True:
             if wait_seconds:
                 await asyncio.sleep(wait_seconds)
             try:
@@ -96,14 +110,32 @@ class ModelProvider:
                 )
             except Exception as exc:
                 last_exc = exc
+                text = str(exc)
                 is_429 = (
                     getattr(exc, "code", None) == 429
-                    or "429" in str(exc)
-                    or "RESOURCE_EXHAUSTED" in str(exc)
+                    or "429" in text
+                    or "RESOURCE_EXHAUSTED" in text
                 )
-                if not is_429:
-                    raise
-        assert last_exc is not None
+                if is_429 and rate_limit_waits:
+                    wait_seconds = rate_limit_waits.pop(0)
+                    continue
+                is_transient_network_error = any(
+                    marker in text
+                    for marker in (
+                        "TransportError",
+                        "ConnectionError",
+                        "ConnectionResetError",
+                        "Max retries exceeded",
+                        "Connection aborted",
+                        "Connection reset",
+                        "Temporary failure in name resolution",
+                    )
+                )
+                if is_transient_network_error and network_error_waits:
+                    wait_seconds = network_error_waits.pop(0)
+                    continue
+                raise
+        assert last_exc is not None  # pragma: no cover -- loop only exits via return/raise
         raise last_exc
 
     # LangSmith tracing (FR-T-003): model_call span with input/output capture
@@ -137,13 +169,19 @@ class ModelProvider:
         try:
             run_tree = get_current_run_tree()
             if run_tree is not None:
-                run_tree.patch(metadata={
+                meta = {
                     "input_tokens": input_tokens,
                     "output_tokens": output_tokens,
                     "cost_usd": estimate_cost(model_identity, input_tokens, output_tokens),
                     "model_identity": model_identity,
                     "temperature": temperature,
-                })
+                }
+                if hasattr(run_tree, "add_metadata"):
+                    run_tree.add_metadata(meta)
+                elif hasattr(run_tree, "metadata") and isinstance(run_tree.metadata, dict):
+                    run_tree.metadata.update(meta)
+                elif hasattr(run_tree, "extra") and isinstance(run_tree.extra, dict):
+                    run_tree.extra.setdefault("metadata", {}).update(meta)
         except Exception:
             pass
 

@@ -1,8 +1,15 @@
 """The batch scheduler (spec 001, spec 008 prefill pipeline).
 
-Ties link resolution, N independent Assessor Agents (each running its own
-confidence gate and validation retry loop), agreement classification, and
-the prefill writer into one per-unit headless pipeline.
+Architecture & Live Path:
+With AIQ_ASSESSOR_AGENT_COUNT=1 (default), the live pipeline consists of four stages:
+  resolve_link -> assessor x1 -> confidence gate -> validator (+2 retries) -> prefill
+
+Dormant components pending AIQ_ASSESSOR_AGENT_COUNT=2:
+  - AdjudicatorAgent / adjudicator_node (re-exported in agents/__init__.py)
+  - run_adjudication_retry_loop (dormant adjudication loop)
+  - PortalAdjudicatorAgent
+  - ResolverAgent (reachable only when 2 agents disagree)
+Note: Do not delete these components; they support the 2-agent configuration.
 """
 
 from __future__ import annotations
@@ -10,9 +17,13 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 from dataclasses import dataclass, field
+import logging
+from typing import Any
 from urllib.parse import urlparse
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 from agents.adjudicator.agreement import classify_agreement
 from agents.assessor.agent import AssessorAgent
@@ -23,7 +34,7 @@ from agents.validator.node import validator_node
 from core.llm_factory import ModelProvider
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
-from core.telemetry.langsmith_tracing import safe_trace, unit_trace
+from core.telemetry.langsmith_tracing import batch_trace, safe_trace, unit_trace
 from core.telemetry.stage_events import StageEventLog
 from orchestration.prefill_writer import write_prefill
 from orchestration.routers.retry_loops import (
@@ -81,6 +92,10 @@ class BatchRunSummary:
         return sum(1 for o in self.outcomes if o.final_state == UnitState.UNASSESSABLE)
 
     @property
+    def resolved(self) -> int:
+        return sum(1 for o in self.outcomes if o.final_state == UnitState.RESOLVED)
+
+    @property
     def in_progress(self) -> int:
         return (
             len(self.outcomes)
@@ -88,6 +103,7 @@ class BatchRunSummary:
             - self.escalated
             - self.no_suggestion
             - self.unassessable
+            - self.resolved
         )
 
 
@@ -102,12 +118,23 @@ async def run_batch(
     fetch_log: FetchLog,
     stage_log: StageEventLog,
     cost_ledger: CostLedger,
-    capture_dir: str,
     questions: list[Question],
     portals: list[TargetPortal],
     adjudicate_results: bool = True,
     run_id: str | None = None,
+    resolve_only: bool = False,
 ) -> BatchRunSummary:
+    logger.info(
+        "[run_batch] Effective config: "
+        "validation_quality_threshold=%s, "
+        "confidence_acceptance_threshold=%s, "
+        "min_validated_positions=%s, "
+        "assessor_agent_count=%s",
+        settings.validation_quality_threshold,
+        settings.confidence_acceptance_threshold,
+        settings.min_validated_positions,
+        settings.assessor_agent_count,
+    )
     summary = BatchRunSummary()
     semaphore = asyncio.Semaphore(max(1, settings.batch_size))
     units = [(q, p) for p in portals for q in questions]
@@ -170,17 +197,45 @@ async def run_batch(
                 fetch_log=fetch_log,
                 stage_log=stage_log,
                 cost_ledger=cost_ledger,
-                capture_dir=capture_dir,
                 question=question,
                 portal=portal,
                 adjudicate_results=adjudicate_results,
                 run_id=run_id,
+                resolve_only=resolve_only,
+                batch_run=batch_span.run_tree,
             )
             summary.outcomes.append(outcome)
 
-    async with asyncio.TaskGroup() as tg:
-        for question, portal in units:
-            tg.create_task(bounded(question, portal))
+    async with batch_trace(
+        session_id=session_id,
+        portal_count=len(portals),
+        question_count=len(questions),
+        run_id=run_id,
+        portal_ids=[p.portal_id for p in portals],
+        question_ids=[q.question_id for q in questions],
+    ) as batch_span:
+        async with asyncio.TaskGroup() as tg:
+            for question, portal in units:
+                tg.create_task(bounded(question, portal))
+
+        batch_span.patch(
+            metadata={
+                "delivered": summary.delivered,
+                "escalated": summary.escalated,
+                "no_suggestion": summary.no_suggestion,
+                "unassessable": summary.unassessable,
+                "resolved": summary.resolved,
+                "total_units": len(summary.outcomes),
+            },
+            outputs={
+                "delivered": summary.delivered,
+                "escalated": summary.escalated,
+                "no_suggestion": summary.no_suggestion,
+                "unassessable": summary.unassessable,
+                "resolved": summary.resolved,
+                "total": len(summary.outcomes),
+            },
+        )
 
     return summary
 
@@ -196,11 +251,12 @@ async def process_unit(
     fetch_log: FetchLog,
     stage_log: StageEventLog,
     cost_ledger: CostLedger,
-    capture_dir: str,
     question: Question,
     portal: TargetPortal,
     adjudicate_results: bool = True,
     run_id: str | None = None,
+    resolve_only: bool = False,
+    batch_run: Any = None,
 ) -> UnitOutcome:
     """Runs (or resumes) exactly one question x portal unit end to end into a prefill record."""
     portal_id = portal.portal_id
@@ -238,7 +294,8 @@ async def process_unit(
     current_state_ref = [current_state]
 
     async with unit_trace(
-        session_id, question.question_id, portal_id, question.text, unit_data.get("resolved_url", "")
+        session_id, question.question_id, portal_id, question.text, unit_data.get("resolved_url", ""),
+        parent=batch_run,
     ) as root_run:
 
         async def no_suggestion(
@@ -292,11 +349,10 @@ async def process_unit(
                         # link retry has kicked in, later attempts may land
                         # on any recognized government domain, not just the
                         # national portal.
-                        locus_value = question.evidence_locus.value
                         is_first_attempt = unit_data.get("link_retry_count", 0) == 0
-                        restrict_to_portal = locus_value == "national_portal_only" or (
-                            locus_value == "any_government_domain" and is_first_attempt
-                        )
+                        # T032: Portal is preferred on first attempt for all questions;
+                        # escalates to any national government domain on first retry.
+                        restrict_to_portal = is_first_attempt
                         restrict_domain = (
                             urlparse(portal.resolved_url).netloc.lower()
                             if restrict_to_portal and portal.resolved_url
@@ -311,27 +367,46 @@ async def process_unit(
                         # `text` is only a fallback for the rare question
                         # without one, truncated to stay query-length-safe.
                         search_topic = question.title or question.text[:120]
+                        # Ranking sees more of the question than the query
+                        # does, in two tiers. The title names the topic but
+                        # is written for brevity and often abbreviates the
+                        # very term the target page spells out -- #337 asks
+                        # for the "National CIO" while the page it needs is
+                        # the "Chief Information Officers Council", sharing
+                        # no word with the title at all. `what` supplies
+                        # that expansion.
+                        #
+                        # It stays a separate tier rather than being
+                        # concatenated, because `what` is also where the
+                        # questionnaire's shared boilerplate lives
+                        # ("complete and submit forms, upload documents, pay
+                        # fees"). Merged into one bag of words it outvoted
+                        # the title: the visa indicator resolved to
+                        # /visa-application-rejected over /visas on the
+                        # strength of "application".
+                        relevance_detail = question.what or question.text[:400]
                         if restrict_domain:
-                            # search_for_link already anchors this query to
-                            # `restrict_domain` via a `site:` operator --
-                            # wrapping the topic in portal-name/URL boilerplate
-                            # on top of that (2026-08-21 debugging pass:
-                            # reproduced live against Firecrawl) swamps
-                            # ranking so badly that unrelated questions
-                            # collapse onto the SAME generic top-level page
-                            # (e.g. four different questions all resolving to
-                            # usa.gov/about-the-us) instead of a topic-specific
-                            # one -- keep the query lean when domain-restricted.
+                            # search_for_link anchors this query to
+                            # `restrict_domain` itself -- wrapping the topic
+                            # in portal-name/URL boilerplate on top of that
+                            # (2026-08-21 debugging pass: reproduced live
+                            # against Firecrawl) swamps ranking so badly that
+                            # unrelated questions collapse onto the SAME
+                            # generic top-level page (e.g. four different
+                            # questions all resolving to usa.gov/about-the-us)
+                            # instead of a topic-specific one -- keep the
+                            # query lean when domain-restricted.
                             search_query = search_topic
-                        elif portal.resolved_url:
-                            search_query = (
-                                f"{portal.display_name or portal.country_id} government "
-                                f"portal ({portal.resolved_url}): {search_topic}"
-                            )
                         else:
+                            # Relaxed retry: any government domain is allowed,
+                            # so the country name is the one piece of context
+                            # worth adding. The portal's raw URL used to be
+                            # interpolated here too and is deliberately gone --
+                            # a bare URL in the query text is not a term the
+                            # engine can rank on, it just crowds out the topic.
                             search_query = (
                                 f"{portal.display_name or portal.country_id} government "
-                                f"portal: {search_topic}"
+                                f"{search_topic}"
                             )
                         result = await resolve_link(
                             repo,
@@ -345,7 +420,23 @@ async def process_unit(
                             portal_url=portal.resolved_url,
                             provider=provider,
                             exclude_urls=set(unit_data.get("tried_urls", [])),
+                            blocked_domains=set(unit_data.get("blocked_domains", [])),
                             restrict_domain=restrict_domain,
+                            # Ranking must score candidates against what the
+                            # question ASKS, not against the query string,
+                            # which carries domain hints and country names
+                            # that every page on the portal matches equally.
+                            relevance_text=search_topic,
+                            relevance_detail=relevance_detail,
+                            # Used only if the portal turns up nothing and
+                            # the search widens: off the portal the topic
+                            # needs the country back, or an indicator title
+                            # like "National CIO or equivalent" retrieves
+                            # trade press instead of the government.
+                            widened_query=(
+                                f"{portal.display_name or portal.country_id} government "
+                                f"{search_topic}"
+                            ),
                         )
                     url_span.patch(
                         outputs={
@@ -377,6 +468,15 @@ async def process_unit(
                     result.supplying_source.value if result.supplying_source else None
                 )
                 advance(UnitState.RESOLVED, unit_data)
+
+            if resolve_only:
+                outcome = UnitOutcome(
+                    question.question_id, portal_id, UnitState.RESOLVED, "resolved_only"
+                )
+                root_run.patch(
+                    outputs={"outcome": outcome.final_state.value, "detail": outcome.detail}
+                )
+                return outcome
 
             resolved_url = unit_data["resolved_url"]
 
@@ -429,7 +529,7 @@ async def process_unit(
                     fetch_log=fetch_log,
                     stage_log=stage_log,
                     cost_ledger=cost_ledger,
-                    capture_dir=capture_dir,
+                    parent=root_run.run_tree,
                 )
                 initial_evidence = materialize_evidence_artifact(initial_run)
                 if initial_evidence:
@@ -449,10 +549,10 @@ async def process_unit(
                     fetch_log=fetch_log,
                     stage_log=stage_log,
                     cost_ledger=cost_ledger,
-                    capture_dir=capture_dir,
                     initial_run=initial_run,
                     initial_evidence=initial_evidence,
                     portal_id=portal_id,
+                    parent=root_run.run_tree,
                 )
 
                 for i, run in enumerate(loop_result.attempted_runs):
@@ -497,7 +597,7 @@ async def process_unit(
 
             validated_runs = [r for r in all_runs if r.state == AgentRunState.VALIDATED_PASS]
 
-            if len(validated_runs) < settings.assessor_agent_count:
+            if len(validated_runs) < settings.min_validated_positions:
                 if all_runs and all(r.auth_boundary_observed for r in all_runs):
                     return await no_suggestion(
                         PrefillReason.ACCESS_BOUNDARY,
@@ -532,9 +632,27 @@ async def process_unit(
                         excluded.add(dead_source)
                     unit_data["excluded_link_sources"] = list(excluded)
                     tried_urls = set(unit_data.get("tried_urls", []))
+                    blocked_domains = set(unit_data.get("blocked_domains", []))
                     if unit_data.get("resolved_url"):
                         tried_urls.add(unit_data["resolved_url"])
+                        # T025: If every run was blocked by an HTTP error or interstitial,
+                        # record the host so chain.py skips it on the next retry instead
+                        # of hammering it three more times.
+                        _BLOCK_REASONS = ("http_4xx", "http_403", "interstitial")
+                        all_unreachable = all_runs and all(
+                            getattr(r, "portal_unreachable", False) for r in all_runs
+                        )
+                        any_block_reason = any(
+                            (getattr(r, "unreachable_reason", None) or "").startswith(("http_4", "interstitial"))
+                            for r in all_runs
+                        )
+                        if all_unreachable and any_block_reason:
+                            from urllib.parse import urlparse as _urlparse
+                            _host = _urlparse(unit_data["resolved_url"]).netloc
+                            if _host:
+                                blocked_domains.add(_host)
                     unit_data["tried_urls"] = list(tried_urls)
+                    unit_data["blocked_domains"] = list(blocked_domains)
                     unit_data["resolved_url"] = None
                     unit_data.pop("supplying_source", None)
                     advance(UnitState.RESOLVING_LINK, unit_data)
@@ -548,12 +666,90 @@ async def process_unit(
                         fetch_log=fetch_log,
                         stage_log=stage_log,
                         cost_ledger=cost_ledger,
-                        capture_dir=capture_dir,
                         question=question,
                         portal=portal,
                         adjudicate_results=adjudicate_results,
                         run_id=run_id,
+                        resolve_only=resolve_only,
+                        batch_run=batch_run,
                     )
+
+                # --- Best-effort delivery (deliver, don't discard) ------------
+                # Validation could not fully confirm any position, but if a
+                # link resolved and at least one agent formed an actual
+                # answer, that is still more useful to a reviewer than
+                # nothing -- discarding it as INSUFFICIENT_POSITIONS throws
+                # away a resolved link and a real answer over a validator
+                # objection a human could weigh in seconds. Deliver the
+                # strongest candidate, confidence-capped, explicitly flagged
+                # for human review rather than presented as confirmed.
+                best_effort_candidates = [
+                    r
+                    for r in all_runs
+                    if r.answer is not None
+                    and not r.auth_boundary_observed
+                    and not r.portal_unreachable
+                ]
+                if best_effort_candidates:
+                    best_run = max(best_effort_candidates, key=lambda r: r.confidence or 0)
+                    # The evidence artifact's own resolved_url -- not the
+                    # unit-level portal URL -- reflects one-hop navigation
+                    # (AssessorAgentRun.navigated_to_url), so it points at the
+                    # actual page the answer came from, not just the portal
+                    # the chain resolved to.
+                    best_evidence = (
+                        repo.get_evidence(best_run.evidence_artifact_id)
+                        if best_run.evidence_artifact_id
+                        else None
+                    )
+                    best_evidence_url = (
+                        best_evidence.resolved_url
+                        if best_evidence and best_evidence.resolved_url
+                        else resolved_url
+                    )
+                    best_validations = repo.list_validation_results(best_run.run_id)
+                    validator_gaps = best_validations[-1].gaps if best_validations else []
+
+                    write_prefill(
+                        repo=repo,
+                        session_id=session_id,
+                        cycle_id=cycle_id,
+                        portal_id=portal_id,
+                        question_id=question.question_id,
+                        run_id=effective_run_id,
+                        suggested=True,
+                        answer=bool(best_run.answer),
+                        confidence=min(best_run.confidence or 0, settings.best_effort_confidence_ceiling),
+                        justification=best_run.justification,
+                        evidence_url=best_evidence_url,
+                        supplying_source=unit_data.get("supplying_source"),
+                        reason=PrefillReason.NEEDS_HUMAN_REVIEW,
+                        position_run_ids=[r.run_id for r in all_runs],
+                        unit_context={"validator_gaps": validator_gaps},
+                        advance_state=False,
+                    )
+                    unit_data["consensus_answer"] = best_run.answer
+                    unit_data["consensus_confidence"] = min(
+                        best_run.confidence or 0, settings.best_effort_confidence_ceiling
+                    )
+                    # ASSESSING can only reach DELIVERED via ADJUDICATING
+                    # (unit_state.py's transition table) -- picking the
+                    # strongest candidate among failed-validation runs is
+                    # itself an adjudication-shaped decision, so this is the
+                    # correct state to route through, not a workaround.
+                    advance(UnitState.ADJUDICATING, unit_data)
+                    advance(UnitState.DELIVERED, unit_data)
+                    outcome = UnitOutcome(
+                        question.question_id,
+                        portal_id,
+                        UnitState.DELIVERED,
+                        PrefillReason.NEEDS_HUMAN_REVIEW.value,
+                    )
+                    root_run.patch(
+                        metadata={"prefill_reason": PrefillReason.NEEDS_HUMAN_REVIEW.value},
+                        outputs={"outcome": outcome.final_state.value, "detail": outcome.detail},
+                    )
+                    return outcome
 
                 return await no_suggestion(
                     PrefillReason.INSUFFICIENT_POSITIONS,
@@ -640,7 +836,6 @@ async def process_unit(
                             if unselected_art and unselected_art.resolved_url
                             else resolved_url
                         ),
-                        "capture_ref": unselected_art.capture_ref if unselected_art else None,
                     }
 
                 candidate_answer = selected_run.answer
@@ -651,6 +846,20 @@ async def process_unit(
                 )
                 agreement_outcome_str = "resolved_dispute"
                 resolver_decision_dict = resolver_decision.__dict__
+
+            # A validated negative -- a second model independently confirmed
+            # the anchor supports "No" -- is more trustworthy than the raw
+            # evidence-weight number reads, since thin-evidence calibration
+            # (prompts/profiles.py) scores every anchored negative in the
+            # 30-65 range regardless of how well it was confirmed. Floor it
+            # here, at delivery time, rather than in the prompt (which would
+            # inflate unvalidated answers too) or by raising the acceptance
+            # threshold (which the confidence gate never even applies to a
+            # No answer -- see confidence_gate.py).
+            if candidate_answer is False:
+                candidate_confidence = max(
+                    candidate_confidence or 0, settings.validated_negative_confidence_floor
+                )
 
             evidence_art = (
                 repo.get_evidence(selected_run.evidence_artifact_id)
@@ -669,9 +878,17 @@ async def process_unit(
             # delivered evidence actually landed on -- a national_portal_only
             # question could still be delivered off-portal if evidence
             # surfaced there via one-hop navigation or a resolver pick.
+            #
+            # The one sanctioned way off the portal is the resolver's own
+            # escalation, which fires only after the portal was searched and
+            # had nothing; that is what `portal_exhausted` reports. Evidence
+            # that wandered off-portal any other way is still rejected.
             if portal.resolved_url:
                 locus_permitted, locus_reason = evidence_permitted(
-                    question.evidence_locus.value, evidence_url_val, portal.resolved_url
+                    question.evidence_locus.value,
+                    evidence_url_val,
+                    portal.resolved_url,
+                    country_id=portal.country_id,
                 )
                 if not locus_permitted:
                     return await no_suggestion(
@@ -683,48 +900,6 @@ async def process_unit(
                         },
                         position_run_ids=agreement.position_run_ids,
                     )
-
-            # --- Final Validation Gate (FR-PF-030) ---------------------------
-            # Every candidate position (whether from agreement or resolver) passes
-            # through the single-pass final validation gate before prefill delivery.
-            validator_agent = ValidatorAgent()
-            candidate_output = _run_output_from_agent_run(selected_run, evidence_art)
-            element_ref = evidence_art.element_reference if evidence_art else None
-
-            final_validation_passed = True
-            if provider and browser:
-                try:
-                    final_validation = await validator_node(
-                        {
-                            "run_id": selected_run.run_id,
-                            "session_id": session_id,
-                            "question_text": question.text,
-                            "answer_type": question.answer_type.value,
-                            "output": candidate_output,
-                            "element_reference": element_ref,
-                            "retry_number": 0,
-                        },
-                        validator_agent,
-                        settings=settings,
-                        provider=provider,
-                        browser=browser,
-                        fetch_log=fetch_log,
-                        cost_ledger=cost_ledger,
-                    )
-                    repo.insert_validation_result(final_validation)
-                    final_validation_passed = final_validation.passed
-                except Exception:
-                    final_validation_passed = False
-
-            if not final_validation_passed:
-                return await no_suggestion(
-                    PrefillReason.FAILED_FINAL_VALIDATION,
-                    {
-                        "candidate_run_id": selected_run.run_id,
-                        "candidate_answer": candidate_answer,
-                    },
-                    position_run_ids=agreement.position_run_ids,
-                )
 
             write_prefill(
                 repo=repo,
@@ -738,7 +913,6 @@ async def process_unit(
                 confidence=candidate_confidence,
                 justification=selected_run.justification,
                 evidence_url=evidence_url_val,
-                capture_ref=evidence_art.capture_ref if evidence_art else None,
                 supplying_source=unit_data.get("supplying_source"),
                 agreement_outcome=agreement_outcome_str,
                 confidence_gap=agreement.confidence_gap,

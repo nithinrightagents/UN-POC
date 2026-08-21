@@ -1,0 +1,1256 @@
+[
+  {
+    "question_id": "CP-030",
+    "title": "Procurement results",
+    "what": "A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
+    "evidence_locus": "any_government_domain",
+    "reference_url": "https://www.usaspending.gov/search",
+    "accepted_alternatives": [
+      "https://sam.gov",
+      "https://sam.gov/content/home",
+      "https://www.usaspending.gov"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://sam.gov/fpds",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://sam.gov/fpds",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-edcd0a9c6a8c",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 40,
+        "justification": "The page contains search filters and domain selection for federal data, but no explicit procurement results, tenders, or contract outcomes are shown.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-1639d090ba7f",
+        "run_id": "run-edcd0a9c6a8c",
+        "passed": 1,
+        "quality_score": 1.0,
+        "gaps": [],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "EGL-036b",
+    "title": "Access to physical spaces for online services",
+    "what": "Information on the government portal of government provision of physical spaces i.e. community centers, post offices, libraries and personal assistance to access online services in these locations.",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.usa.gov/libraries",
+    "accepted_alternatives": [
+      "https://www.imls.gov",
+      "https://careeronestop.org"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://www.usa.gov/libraries",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.usa.gov/libraries",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-6c5cc7a3d6b8",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 90,
+        "justification": "The page provides information on local public libraries, noting that they have computer stations and experts who can help you find the resources you need.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-a34c960e7cb6",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 75,
+        "justification": "The page mentions public libraries having computer stations and experts who can help find resources, but it does not provide information on government provision of physical spaces specifically dedicated to accessing online services accompanied by personal assistance for that purpose as outlined in the criteria.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-98af7746f890",
+        "run_id": "run-6c5cc7a3d6b8",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-e953fe8f6175",
+        "run_id": "run-a34c960e7cb6",
+        "passed": 1,
+        "quality_score": 0.6666666666666666,
+        "gaps": [
+          "The stated confidence score of 75 is higher than the expected proportionate range (30-65) for an anchored negative finding.",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "EGL-321",
+    "title": "Co-creation of e-services — ENVIRONMENT",
+    "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: ENVIRONMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+    "evidence_locus": "any_government_domain",
+    "reference_url": "https://www.citizenscience.gov",
+    "accepted_alternatives": [
+      "https://www.challenge.gov",
+      "https://www.epa.gov/innovation/participatory-science"
+    ],
+    "expected_answer": true,
+    "delivered_answer": "WITHHELD",
+    "prefill_reason": "insufficient_positions",
+    "unit_state": "no_suggestion",
+    "supplying_source": "search",
+    "resolved_url": "https://www.epa.gov/citizen-science",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.epa.gov/citizen-science",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-dd0960f8fc06",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 90,
+        "justification": "The page provides evidence of participatory science initiatives and citizen collaborations with the EPA in the environment sector, including StoryMaps, equipment loan programs, quality assurance toolkits, and project directories.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-44c54ec70156",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page provides extensive evidence of citizen and public collaboration with the EPA in environmental science and data collection through participatory science initiatives, equipment loan programs, and project listings.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-d58b910ed98b",
+        "state": "validation_failed_terminal",
+        "answer": true,
+        "confidence": 90,
+        "justification": "The page provides evidence of participatory science and collaboration with the public on environmental protection initiatives, including tools, equipment loan programs, and project exploration.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-4e122228b81d",
+        "run_id": "run-44c54ec70156",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "The cited evidence and justification describe participatory science and public data collection for environmental research, but do not provide evidence of collaborating with people to develop or enhance online services (e-services).",
+          "cited evidence does not clearly support the stated answer",
+          "justification is not consistent with the answer and evidence",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-f646447f9399",
+        "run_id": "run-d58b910ed98b",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "The cited evidence describes participatory/citizen science initiatives involving scientific research and data collection, but does not provide evidence of co-creation, co-production, or collaborative development of e-services (online services).",
+          "cited evidence does not clearly support the stated answer",
+          "justification is not consistent with the answer and evidence",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-87639f9665f2",
+        "run_id": "run-dd0960f8fc06",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "The cited evidence describes participatory and citizen science initiatives (public involvement in data collection and scientific research), but does not demonstrate co-creation or co-development of e-services (online public services) with citizens as asked by the question.",
+          "The justification lists items (such as StoryMaps, equipment loan programs, quality assurance toolkits, and project directories) that are not present in the cited evidence text.",
+          "cited evidence does not clearly support the stated answer",
+          "justification is not consistent with the answer and evidence",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "EP-141",
+    "title": "Open government datasets for 6 sectors — SOCIAL PROTECTION",
+    "what": "Provision of Open Government dataset(s) on SOCIAL PROTECTION in either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://catalog.data.gov/dataset?organization=social-security-administration",
+    "accepted_alternatives": [
+      "https://www.ssa.gov/open",
+      "https://data.gov"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://catalog.data.gov/",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://catalog.data.gov/",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-0d1f56db2f7b",
+        "state": "assessed",
+        "answer": false,
+        "confidence": 95,
+        "justification": "The page discusses disability compensation recipients which is not social protection datasets as specified.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-4799491beddc",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 90,
+        "justification": "The page discusses disability compensation recipients which falls under veterans affairs rather than general social protection datasets as specified by the indicator.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-f4164afbd2d2",
+        "run_id": "run-0d1f56db2f7b",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "The cited evidence ('FY 2025 Disability Compensation Recipients by County') appears to reference a dataset directly related to social protection, contradicting the negative answer.",
+          "The justification incorrectly claims that disability compensation data is not related to social protection without valid explanation.",
+          "The confidence score of 95/100 is disproportionately high for a negative finding, where a score between 30 and 65 is expected.",
+          "cited evidence does not clearly support the stated answer",
+          "justification is not consistent with the answer and evidence",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-126e1f385e4c",
+        "run_id": "run-4799491beddc",
+        "passed": 1,
+        "quality_score": 0.6666666666666666,
+        "gaps": [
+          "The stated confidence of 90/100 is disproportionately high for an anchored negative finding, which is expected to be between 30 and 65.",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "EP-304",
+    "title": "Budget expenditure datasets for 6 sectors — EDUCATION",
+    "what": "Evidence of Open Government dataset(s) on budget/expenditure in EDUCATION, either i) Not machine-readable (PDF, scanned files etc.) or ii) Machine-readable (CSV, JSON, XML etc.)",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.usaspending.gov",
+    "accepted_alternatives": [
+      "https://catalog.data.gov",
+      "https://www2.ed.gov/about/overview/budget/index.html"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://fiscaldata.treasury.gov/americas-finance-guide/federal-spending/",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": "https://www.usa.gov/education",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://fiscaldata.treasury.gov/americas-finance-guide/federal-spending/",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-59f378a0d82e",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 95,
+        "justification": "The page provides the Monthly Treasury Statement dataset containing government receipts, outlays, and financing reports, but there is no mention of budget or expenditure datasets specific to education.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 20762
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-2b491f326717",
+        "run_id": "run-59f378a0d82e",
+        "passed": 1,
+        "quality_score": 0.6666666666666666,
+        "gaps": [
+          "The confidence score of 95 is disproportionately high for an anchored negative finding, where a score between 30 and 65 is expected.",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "IF-011",
+    "title": "Names and titles of heads of department",
+    "what": "A section, chart or webpage displaying the names, oﬃcial titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.whitehouse.gov/administration/cabinet",
+    "accepted_alternatives": [
+      "https://www.usa.gov/executive-departments",
+      "https://www.usa.gov/agency-index"
+    ],
+    "expected_answer": true,
+    "delivered_answer": "WITHHELD",
+    "prefill_reason": "insufficient_positions",
+    "unit_state": "no_suggestion",
+    "supplying_source": "search",
+    "resolved_url": "https://www.whitehouse.gov/administration/cabinet/",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.whitehouse.gov/administration/cabinet/",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-cfd5ee12ea20",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page provides a dedicated section listing government department heads along with their official titles and biographical/contact background details.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 19539
+      },
+      {
+        "run_id": "run-707b24296823",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page displays the names and official titles of heads of various departments and ministries such as the Secretary of the Treasury, Attorney General, Secretary of the Interior, and Director of National Intelligence.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 19539
+      },
+      {
+        "run_id": "run-81cda216b8a0",
+        "state": "validation_failed_terminal",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page explicitly provides a section displaying the names, official titles, and biographies of heads of various government departments and ministries, such as Scott Bessent, Secretary of the Treasury.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 19539
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-35f8e59733cd",
+        "run_id": "run-707b24296823",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-5d0d78aadc86",
+        "run_id": "run-81cda216b8a0",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-4d4f4e123694",
+        "run_id": "run-cfd5ee12ea20",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "IF-338",
+    "title": "Legislation/law/policy/regulation on personal data protection",
+    "what": "Evidence of legislation on data privacy and protection refers to laws enacted by governments to safeguard personal information, ensuring its secure and responsible handling by organizations.",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.justice.gov/opcl",
+    "accepted_alternatives": [
+      "https://www.hhs.gov/hipaa/index.html",
+      "https://www.ftc.gov/legal-library/browse/statutes"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "sitemap",
+    "resolved_url": "https://www.usa.gov/privacy",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": "https://www.usa.gov/privacy",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.commerce.gov/opog/privacy/privacy-laws-policies-and-guidance",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": "https://www.usa.gov/privacy",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.ftc.gov/business-guidance/privacy-security",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-b3b97df75843",
+        "state": "assessed",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_403",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_403",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-7422061a8dc1",
+        "state": "assessed",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_403",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_403",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-b0a1cc9f1ba5",
+        "state": "validation_failed_terminal",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_403",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_403",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-bddc94ac7290",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 40,
+        "justification": "The page discusses privacy and security policies of the USA.gov website, but does not provide legislation or laws on personal data protection.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-f8c83c992f2d",
+        "run_id": "run-7422061a8dc1",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-71506529d3bd",
+        "run_id": "run-b0a1cc9f1ba5",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-5b5134ec870a",
+        "run_id": "run-b3b97df75843",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-025beda12ff0",
+        "run_id": "run-bddc94ac7290",
+        "passed": 1,
+        "quality_score": 1.0,
+        "gaps": [],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "IF-340",
+    "title": "Legislation/law/policy/regulation on cybersecurity",
+    "what": "Evidence of legislation on cybersecurity refers to laws enacted by governments to safeguard digital infrastructure, data, and systems from cyber threats and attacks.",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.cisa.gov/topics/cybersecurity-best-practices",
+    "accepted_alternatives": [
+      "https://www.cisa.gov",
+      "https://www.cisa.gov/cybersecurity-governance"
+    ],
+    "expected_answer": true,
+    "delivered_answer": "WITHHELD",
+    "prefill_reason": "insufficient_positions",
+    "unit_state": "no_suggestion",
+    "supplying_source": "search",
+    "resolved_url": "https://www.gsa.gov/technology/government-it-initiatives/cybersecurity/cybersecurity-programs-and-policy",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.gsa.gov/technology/government-it-initiatives/cybersecurity/cybersecurity-programs-and-policy",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-1a0258c0477b",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page cites specific federal legislation and policies on cybersecurity, including the Federal Information Security Modernization Act of 2014.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 22963
+      },
+      {
+        "run_id": "run-e2776f021fb9",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page provides explicit evidence of cybersecurity legislation, laws, and policies, including the Federal Information Security Modernization Act of 2014 (FISMA 2014) — Public Law No: 113-283 and various OMB circulars and executive orders.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 22963
+      },
+      {
+        "run_id": "run-e30b1c1a7443",
+        "state": "validation_failed_terminal",
+        "answer": true,
+        "confidence": 100,
+        "justification": "The page explicitly lists relevant cybersecurity policies and legislation, including the Federal Information Security Modernization Act of 2014 (FISMA 2014).",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": true,
+        "page_text_excess_chars": 22963
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-f9c5eacca61f",
+        "run_id": "run-1a0258c0477b",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-456b91ff1cb2",
+        "run_id": "run-e2776f021fb9",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-7c661d771499",
+        "run_id": "run-e30b1c1a7443",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "SP-166",
+    "title": "Online services provision for six main sectors — Environment",
+    "what": "Evidence of a section on the national website where online services are listed for Environment",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.epa.gov",
+    "accepted_alternatives": [
+      "https://echo.epa.gov",
+      "https://www.epa.gov/e-manifest",
+      "https://ejscreen.epa.gov"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://www.epa.gov/home",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.epa.gov/home",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-c15b3b49e50e",
+        "state": "assessed",
+        "answer": true,
+        "confidence": 95,
+        "justification": "The page provides a dedicated section for environmental topics and resources with specific tools and links to search data, localized information, and programs related to the environment.",
+        "fill_gap_reason": null,
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-0484adaf8bfd",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 40,
+        "justification": "The page discusses general environmental topics and local data search tools, but it does not provide a specific list or catalog of dedicated online services for the Environment sector.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-b074fe395511",
+        "run_id": "run-0484adaf8bfd",
+        "passed": 1,
+        "quality_score": 1.0,
+        "gaps": [],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-92ca80ceee97",
+        "run_id": "run-c15b3b49e50e",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "SP-166b",
+    "title": "SMS alert for six main sectors — Environment",
+    "what": "Evidence of users’ ability to receive SMS alerts for services in Environment",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.enviroflash.info",
+    "accepted_alternatives": [
+      "https://www.airnow.gov",
+      "https://www.epa.gov/enviroflash"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "search",
+    "resolved_url": "https://www.ready.gov/alerts",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no page among 1531 sitemap URLs matched the question's terms"
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.ready.gov/alerts",
+        "usable": true,
+        "rejection_reason": null
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-9ea8aba5af29",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 75,
+        "justification": "The page discusses general emergency and weather alerts like Wireless Emergency Alerts and the Emergency Alert System, but does not provide specific evidence of SMS alerts for the Environment sector.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-28dfc9536565",
+        "run_id": "run-9ea8aba5af29",
+        "passed": 1,
+        "quality_score": 0.6666666666666666,
+        "gaps": [
+          "The confidence score of 75/100 is higher than the expected range (30-65) for an anchored negative finding.",
+          "stated confidence is not proportionate to the observed evidence quality"
+        ],
+        "feedback": null
+      }
+    ]
+  },
+  {
+    "question_id": "TECH-022",
+    "title": "Accessibility by citizens/businesses to own data",
+    "what": "Defined as the ability for users to access their own data (that government has on record), on the government portal, such as (but not limited to) data on social security, vehicle registration, etc. This usually requires authentication with a digital ID.",
+    "evidence_locus": "national_portal_only",
+    "reference_url": "https://www.login.gov",
+    "accepted_alternatives": [
+      "https://www.ssa.gov/myaccount",
+      "https://www.irs.gov/payments/your-online-account"
+    ],
+    "expected_answer": true,
+    "delivered_answer": false,
+    "prefill_reason": null,
+    "unit_state": "delivered",
+    "supplying_source": "sitemap",
+    "resolved_url": "https://www.usa.gov/social-security-report-a-death",
+    "resolution_history": [
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": "https://www.usa.gov/social-security-report-a-death",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": "https://www.usa.gov/privacy-act",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "prior_survey_kb",
+        "order": 1,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no prior-cycle link on record"
+      },
+      {
+        "source": "msq",
+        "order": 2,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no MSQ submission contained a link for this question"
+      },
+      {
+        "source": "sitemap",
+        "order": 3,
+        "returned": "https://www.usa.gov/social-security-report-a-death",
+        "usable": true,
+        "rejection_reason": null
+      },
+      {
+        "source": "search",
+        "order": 4,
+        "returned": null,
+        "usable": false,
+        "rejection_reason": "no admissible government-domain result among the top candidates: https://www.americanbar.org/groups/business_law/resources/business-law-today/2025-august/digital-accessibility-under-title-iii-ada/: not on a government domain; https://www.audioeye.com/post/us-accessibility-laws/: not on a government domain; https://www.levelaccess.com/blog/ada-title-ii-updates-what-to-know-about-the-dojs-proposed-revisions/: not on a government domain; https://www.youtube.com/watch?v=hkhIGSvJC2o: not on a government domain; https://vispero.com/resources/us-accessibility-laws-standards/: not on a government domain"
+      }
+    ],
+    "runs": [
+      {
+        "run_id": "run-3ae575a0d6b6",
+        "state": "assessed",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_404",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_404",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-550c711a9d1f",
+        "state": "assessed",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_404",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_404",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-ab567948670a",
+        "state": "validation_failed_terminal",
+        "answer": null,
+        "confidence": 0,
+        "justification": "Portal unreachable: http_404",
+        "fill_gap_reason": "portal unreachable before content could be evaluated",
+        "evidence": null,
+        "unreachable_reason": "http_404",
+        "portal_unreachable": true,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      },
+      {
+        "run_id": "run-63e6956a11cd",
+        "state": "validated_pass",
+        "answer": false,
+        "confidence": 40,
+        "justification": "The page provides information on how to get, replace, or correct a Social Security card, but does not provide an online portal or authenticated feature for citizens to access or view their own personal Social Security data records on the portal.",
+        "fill_gap_reason": "not present anywhere on this page",
+        "evidence": null,
+        "unreachable_reason": null,
+        "portal_unreachable": false,
+        "link_likely_wrong": false,
+        "page_text_truncated": false,
+        "page_text_excess_chars": 0
+      }
+    ],
+    "validations": [
+      {
+        "validation_id": "val-bc3229356b8c",
+        "run_id": "run-3ae575a0d6b6",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-d99c88b386f4",
+        "run_id": "run-550c711a9d1f",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-f094c5cf9b7c",
+        "run_id": "run-63e6956a11cd",
+        "passed": 1,
+        "quality_score": 1.0,
+        "gaps": [],
+        "feedback": null
+      },
+      {
+        "validation_id": "val-e547a8f3f499",
+        "run_id": "run-ab567948670a",
+        "passed": 0,
+        "quality_score": 0.0,
+        "gaps": [
+          "required evidence component missing (element reference or text)"
+        ],
+        "feedback": null
+      }
+    ]
+  }
+]

@@ -77,7 +77,6 @@ async def _prefill_unit(
         evidence = EvidenceArtifact(
             artifact_id=new_id("ev"),
             resolved_url=res.evidence_url,
-            capture_ref="",
             element_reference=ElementReference(
                 css_path="(heuristic-check)",
                 text_hash=hashlib.sha256(res.snippet.encode()).hexdigest()[:12],

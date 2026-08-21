@@ -126,13 +126,13 @@ async def test_two_agents_use_distinct_model_and_temperature():
         session_id="s1", question=question, portal_url="https://example.gov",
         agent_index=0, round_number=1, settings=settings, provider=provider0,
         browser=browser, fetch_log=fetch_log, stage_log=stage_log,
-        cost_ledger=cost_ledger, capture_dir="/tmp/captures",
+        cost_ledger=cost_ledger,
     )
     run1 = await run_assessor_agent(
         session_id="s1", question=question, portal_url="https://example.gov",
         agent_index=1, round_number=1, settings=settings, provider=provider1,
         browser=browser, fetch_log=fetch_log, stage_log=stage_log,
-        cost_ledger=cost_ledger, capture_dir="/tmp/captures",
+        cost_ledger=cost_ledger,
     )
 
     assert provider0.calls[0]["model"] == "model-a"
@@ -164,7 +164,7 @@ async def test_agent_provider_calls_carry_no_reference_to_other_agent():
         session_id="s1", question=question, portal_url="https://example.gov",
         agent_index=0, round_number=1, settings=settings, provider=provider0,
         browser=browser, fetch_log=fetch_log, stage_log=stage_log,
-        cost_ledger=cost_ledger, capture_dir="/tmp/captures",
+        cost_ledger=cost_ledger,
     )
 
     prompt = provider0.calls[0]["prompt"]
@@ -199,7 +199,7 @@ async def test_disagreement_addendum_never_attributes_a_position_to_an_agent():
         session_id="s1", question=question, portal_url="https://example.gov",
         agent_index=0, round_number=2, settings=settings, provider=provider,
         browser=browser, fetch_log=fetch_log, stage_log=stage_log,
-        cost_ledger=cost_ledger, capture_dir="/tmp/captures", addendum=addendum,
+        cost_ledger=cost_ledger, addendum=addendum,
     )
 
     prompt = provider.calls[0]["prompt"]

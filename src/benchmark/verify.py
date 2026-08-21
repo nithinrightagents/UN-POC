@@ -35,6 +35,15 @@ def verify_benchmark_isolation(
         gt_list = [from_json(r["data"], GroundTruthAnswer) for r in rows]
 
     gt_values = {str(gt.correct_answer).strip().lower() for gt in gt_list if gt.correct_answer is not None}
+    gt_urls = {
+        gt.reference_url.strip().lower()
+        for gt in gt_list
+        if gt.reference_url and gt.reference_url.strip()
+    }
+    for gt in gt_list:
+        for alt in gt.accepted_alternatives:
+            if alt and alt.strip():
+                gt_urls.add(alt.strip().lower())
 
     findings = []
     invocations_checked = 0
@@ -43,9 +52,8 @@ def verify_benchmark_isolation(
     runs = repo.list_all_agent_runs_for_session(session_id)
     for run in runs:
         invocations_checked += 1
-        # Input to agent: model prompt / question text / etc. Ground truth must not be present
-        input_data_str = str(run.justification or "") + str(run.answer or "")
-        # Ground truth answers are not in input_data. (Agents produce answer, they don't consume ground truth)
+        # Input to agent: model prompt / question text / etc. Ground truth must not be present in inputs
+        input_data_str = (str(run.justification or "") + str(run.answer or "")).lower()
 
     # 2. Check Validator results
     validations = repo.list_validation_results(session_id) if hasattr(repo, "list_validation_results") else []
@@ -56,6 +64,13 @@ def verify_benchmark_isolation(
     adjudications = repo.list_all_adjudication_results_for_session(session_id)
     for adj in adjudications:
         invocations_checked += 1
+
+    # 4. Check that units did not receive injected ground truth
+    units = repo.list_units(session_id)
+    for u in units:
+        invocations_checked += 1
+        if isinstance(u.data, dict) and "ground_truth" in u.data:
+            findings.append(f"Unit {u.unit_id} contains injected ground truth data")
 
     # Check that no benchmark Repo table was imported by agents (tested statically via AST in test_benchmark_isolation.py)
     clean = len(findings) == 0

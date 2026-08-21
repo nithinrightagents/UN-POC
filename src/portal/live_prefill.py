@@ -54,8 +54,6 @@ async def run_live_prefill(
         return BatchRunSummary()
 
     await runtime.ensure_browser()
-    capture_dir = f"./data/captures/{session_id}"
-    pathlib.Path(capture_dir).mkdir(parents=True, exist_ok=True)
 
     budget = RunBudget(limit=getattr(settings, "prefill_run_budget", 0.0))
     cost_ledger = CostLedger(conn, session_id, budget=budget)
@@ -71,7 +69,6 @@ async def run_live_prefill(
             fetch_log=FetchLog(conn, session_id),
             stage_log=StageEventLog(conn, session_id),
             cost_ledger=cost_ledger,
-            capture_dir=capture_dir,
             questions=questions,
             portals=[portal],
             adjudicate_results=True,

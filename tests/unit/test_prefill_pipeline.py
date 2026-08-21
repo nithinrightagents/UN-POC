@@ -117,7 +117,6 @@ def _insert_validated_run(
     evidence = EvidenceArtifact(
         artifact_id=f"art-{run_id}",
         resolved_url="https://borger.dk",
-        capture_ref="/captures/test.png",
         element_reference=ElementReference(css_path="#feat", text_hash=text_hash("Found verified evidence.")),
         element_text="Found verified evidence.",
     )
@@ -171,7 +170,6 @@ async def test_unanimous_agreement_writes_delivered_prefill():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-pipe-1",
@@ -218,7 +216,6 @@ async def test_differing_answers_write_unresolved_disagreement():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-pipe-2",
@@ -275,7 +272,6 @@ async def test_pipeline_headless_invariants_scenario_1():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         questions=[q1, q2],
         portals=[portal],
         run_id="job-pipe-batch",

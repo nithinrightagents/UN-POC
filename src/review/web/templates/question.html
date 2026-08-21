@@ -3,9 +3,9 @@
 {% block content %}
 
 <div class="breadcrumb">
-    <a href="/?session={{ session_id }}">All Portals</a>
+    <a href="/review/?session={{ session_id }}">All Portals</a>
     <span>/</span>
-    <a href="/portal/{{ view.portal_id }}?session={{ session_id }}">{{ view.portal_id }}</a>
+    <a href="/review/portal/{{ view.portal_id }}?session={{ session_id }}">{{ view.portal_id }}</a>
     <span>/</span>
     <span>{{ view.question_id }}</span>
 </div>
@@ -88,7 +88,7 @@
 <div class="grid-3">
     <!-- Approve Form -->
     {% if view.system_proposed_answer is not none %}
-    <form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/approve?session={{ session_id }}">
+    <form class="actions" method="post" action="/review/portal/{{ view.portal_id }}/question/{{ view.question_id }}/approve?session={{ session_id }}">
         <input type="hidden" name="actor_id" value="demo-assessor">
         <h3>Approve Consensus</h3>
         <p class="muted">Accept the system-proposed answer and verified evidence into the official record.</p>
@@ -99,7 +99,7 @@
     {% endif %}
 
     <!-- Edit Form -->
-    <form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/edit?session={{ session_id }}">
+    <form class="actions" method="post" action="/review/portal/{{ view.portal_id }}/question/{{ view.question_id }}/edit?session={{ session_id }}">
         <input type="hidden" name="actor_id" value="demo-assessor">
         <h3>Edit Answer</h3>
         <label for="edited_answer">Revised Answer Value</label>
@@ -110,7 +110,7 @@
     </form>
 
     <!-- Reject & Override Form -->
-    <form class="actions" method="post" action="/portal/{{ view.portal_id }}/question/{{ view.question_id }}/reject?session={{ session_id }}">
+    <form class="actions" method="post" action="/review/portal/{{ view.portal_id }}/question/{{ view.question_id }}/reject?session={{ session_id }}">
         <input type="hidden" name="actor_id" value="demo-assessor">
         <h3>Reject &amp; Override</h3>
         <label for="override_answer">Override Value</label>

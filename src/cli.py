@@ -318,10 +318,6 @@ def run(
         )
         browser = BrowserSession(settings.user_agent, limiter)
         await browser.start()
-        capture_dir = f"./data/captures/{session_id}"
-        import pathlib
-
-        pathlib.Path(capture_dir).mkdir(parents=True, exist_ok=True)
 
         import httpx
 
@@ -331,7 +327,7 @@ def run(
                     repo=repo, settings=settings, session_id=session_id, provider=provider,
                     browser=browser, http_client=http_client,
                     fetch_log=FetchLog(conn, session_id), stage_log=StageEventLog(conn, session_id),
-                    cost_ledger=CostLedger(conn, session_id), capture_dir=capture_dir,
+                    cost_ledger=CostLedger(conn, session_id),
                     questions=questions, portals=portals, adjudicate_results=not no_adjudicate,
                 )
         finally:
@@ -637,6 +633,84 @@ def verify_no_credentials_cmd(ctx: click.Context) -> None:
         click.secho("No-credentials check FAILED.", fg="red")
         for f in report.findings:
             click.echo(f"  - {f}")
+        raise SystemExit(1)
+
+
+@main.group()
+def diagnose() -> None:
+    """Link resolution diagnostics and regression checks (spec 009)."""
+
+
+@diagnose.command("run")
+@click.option("--cycle", "cycle_id", default="usa-test-2026", help="Survey cycle id under test")
+@click.option("--questions", "questions_filter", default=None, help="Comma-separated question or indicator IDs")
+@click.option("--reference-set", "reference_set_id", default="bm-reference-links-us", help="Benchmark reference set ID")
+@click.option("--fixture", "fixture_path", default="data/benchmark/reference_links_us.json", help="Reference links fixture path")
+@click.option("--resolve-only", is_flag=True, default=False, help="Stop after link resolution; skip assessor model calls")
+@click.option("--check-staleness", is_flag=True, default=False, help="Verify reference URLs are still live")
+@click.pass_context
+def diagnose_run_cmd(
+    ctx: click.Context,
+    cycle_id: str,
+    questions_filter: str | None,
+    reference_set_id: str,
+    fixture_path: str,
+    resolve_only: bool,
+    check_staleness: bool,
+) -> None:
+    """Run link resolution diagnostics over reference set and output report."""
+    import asyncio
+    from shared.persistence.repositories import Repository
+    from benchmark.diagnostics import run_diagnostic
+    from benchmark.report import render_diagnostic_report
+
+    settings: Settings = ctx.obj["settings"]
+    conn = _connect(settings)
+    repo = Repository(conn)
+
+    q_filter = [q.strip() for q in questions_filter.split(",") if q.strip()] if questions_filter else None
+
+    result = asyncio.run(
+        run_diagnostic(
+            repo=repo,
+            settings=settings,
+            benchmark_set_id=reference_set_id,
+            cycle_id=cycle_id,
+            reference_fixture_path=fixture_path,
+            question_filter=q_filter,
+            resolve_only=resolve_only,
+            check_staleness=check_staleness,
+        )
+    )
+
+    report_text = render_diagnostic_report(result)
+    click.echo(report_text)
+
+
+@diagnose.command("compare")
+@click.argument("session_a")
+@click.argument("session_b")
+@click.option("--fail-on-regression", is_flag=True, default=False, help="Exit non-zero if any indicator regressed")
+@click.pass_context
+def diagnose_compare_cmd(
+    ctx: click.Context,
+    session_a: str,
+    session_b: str,
+    fail_on_regression: bool,
+) -> None:
+    """Compare two diagnostic runs and surface regressions."""
+    from shared.persistence.repositories import Repository
+    from benchmark.compare import compare_diagnostic_runs
+
+    settings: Settings = ctx.obj["settings"]
+    conn = _connect(settings)
+    repo = Repository(conn)
+
+    report = compare_diagnostic_runs(repo, session_a, session_b)
+    click.echo(report.summary)
+
+    if fail_on_regression and report.has_regression:
+        click.secho("Regression detected in link resolution diagnostics!", fg="red", err=True)
         raise SystemExit(1)
 
 

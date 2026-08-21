@@ -43,11 +43,35 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         return Repository(get_conn())
 
     @app.get("/", response_class=HTMLResponse)
-    def portals_page(request: Request, session: str):
+    def portals_page(request: Request, session: str | None = None):
         r = repo()
+        if not session:
+            rows = r.conn.execute(
+                "SELECT session_id FROM assessment_sessions ORDER BY created_at DESC"
+            ).fetchall()
+            if rows:
+                session = rows[0]["session_id"]
+            else:
+                unit_rows = r.conn.execute("SELECT DISTINCT session_id FROM units LIMIT 1").fetchall()
+                if unit_rows:
+                    session = unit_rows[0]["session_id"]
+                else:
+                    return templates.TemplateResponse(
+                        request, "portals.html", {
+                            "session_id": "No Sessions Found",
+                            "portals": [],
+                            "available_sessions": [],
+                        }
+                    )
+
+        all_session_rows = r.conn.execute(
+            "SELECT DISTINCT session_id, cycle_id, mode FROM assessment_sessions ORDER BY created_at DESC"
+        ).fetchall()
+        available_sessions = [dict(row) for row in all_session_rows]
+
         session_obj = r.get_session(session)
         cycle_id = session_obj.cycle_id if session_obj else None
-        portal_rows = r.list_portals(cycle_id) if cycle_id else []
+        portal_rows = r.list_portals(cycle_id) if cycle_id else r.list_portals()
         questions = r.list_questions(cycle_id) if cycle_id else []
         qids = [q.question_id for q in questions]
 
@@ -57,14 +81,24 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
             portals.append({**asdict(p), **asdict(status)})
 
         return templates.TemplateResponse(
-            request, "portals.html", {"session_id": session, "portals": portals}
+            request, "portals.html", {
+                "session_id": session,
+                "portals": portals,
+                "available_sessions": available_sessions,
+            }
         )
 
     @app.get("/portal/{portal_id}", response_class=HTMLResponse)
-    def questions_page(request: Request, portal_id: str, session: str):
+    def questions_page(request: Request, portal_id: str, session: str | None = None):
         r = repo()
+        if not session:
+            rows = r.conn.execute(
+                "SELECT session_id FROM assessment_sessions ORDER BY created_at DESC"
+            ).fetchall()
+            session = rows[0]["session_id"] if rows else ""
+
         portal = r.get_portal(portal_id)
-        questions = r.list_questions(portal.cycle_id) if portal else []
+        questions = r.list_questions(portal.cycle_id) if portal and portal.cycle_id else []
         qids = [q.question_id for q in questions]
         status = portal_review_status(r, session, portal_id, qids)
 
@@ -79,8 +113,14 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         )
 
     @app.get("/portal/{portal_id}/question/{question_id}", response_class=HTMLResponse)
-    def question_page(request: Request, portal_id: str, question_id: str, session: str):
+    def question_page(request: Request, portal_id: str, question_id: str, session: str | None = None):
         r = repo()
+        if not session:
+            rows = r.conn.execute(
+                "SELECT session_id FROM assessment_sessions ORDER BY created_at DESC"
+            ).fetchall()
+            session = rows[0]["session_id"] if rows else ""
+
         view = build_question_review(
             r, session, question_id, portal_id, settings.confidence_acceptance_threshold
         )
@@ -108,7 +148,7 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         )
         actions.approve(r, session, question_id, portal_id, view.system_proposed_answer, actor_id)
         return RedirectResponse(
-            f"/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
+            f"/review/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
         )
 
     @app.post("/portal/{portal_id}/question/{question_id}/edit")
@@ -125,7 +165,7 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
         )
         actions.edit(r, session, question_id, portal_id, view.system_proposed_answer, edited_answer, actor_id)
         return RedirectResponse(
-            f"/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
+            f"/review/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
         )
 
     @app.post("/portal/{portal_id}/question/{question_id}/reject")
@@ -146,7 +186,7 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
             view.system_proposed_answer, override_answer, rejection_reason, actor_id,
         )
         return RedirectResponse(
-            f"/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
+            f"/review/portal/{portal_id}/question/{question_id}?session={session}", status_code=303
         )
 
     return app

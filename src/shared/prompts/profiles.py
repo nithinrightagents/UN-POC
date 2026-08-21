@@ -59,9 +59,11 @@ the score, and a high score resting on a thin quote will be rejected.
 be copied VERBATIM (same words, same order, same casing where practical) from a
 SINGLE contiguous run of text as it appears in PAGE CONTENT below -- do not combine,
 paraphrase, or summarize text that came from two different parts of the page (e.g. a
-heading plus a separate paragraph) into one quote. Keep it short: one sentence or
-phrase (under ~15 words) is enough to prove the evidence exists; your fuller
-reasoning belongs in `justification`, not in the quote.
+heading plus a paragraph that does not immediately follow it) into one quote. Keep
+quotes focused: roughly 40 words or fewer is enough in most cases, though a heading
+immediately followed by its first sentence may be taken as a single span when you
+need both to make the meaning clear. Your fuller reasoning belongs in `justification`,
+not in the quote.
 
 `justification` will be checked for consistency against `evidence_quote` alone -- an
 independent reviewer sees ONLY the quote, not the rest of the page. Do not write
@@ -201,13 +203,13 @@ def _extract_target_sector(title: str | None) -> str | None:
 
 
 def render_rubric_section(
-    title: str | None,
-    what: str | None,
-    why: str | None,
-    criteria_for_yes: str | None,
-    criteria_for_no: str | None,
-    scoring_guidance: str | None,
-    benchmark_case: str | None,
+    title: str | None = None,
+    what: str | None = None,
+    why: str | None = None,
+    criteria_for_yes: str | None = None,
+    criteria_for_no: str | None = None,
+    scoring_guidance: str | None = None,
+    benchmark_case: str | None = None,
 ) -> str:
     """Renders the questionnaire's own scoring rubric (What/Why/How,
     acceptance criteria, a worked example) into the prompt. Without this,
@@ -237,6 +239,16 @@ def render_rubric_section(
         lines.append(f"Scoring guidance (indicative, not a strict checklist): {scoring_guidance}")
     if benchmark_case:
         lines.append(f"Reference example of qualifying evidence (from a different country): {benchmark_case}")
+
+    # T034: Level-of-government rubric rule
+    lines.append(
+        "Level of government: Judge the level of government against the service, not the domain; "
+        "a nationally-delivered service should be evidenced on a national government site; "
+        "a service constitutionally delivered by states or municipalities (driving licences, "
+        "vehicle registration, water and electricity billing, local property records) is "
+        "correctly evidenced by a state or municipal portal, or by the national portal's page "
+        "directing citizens to it; never answer No merely because the service is not run federally."
+    )
 
     if not lines:
         return ""
@@ -274,3 +286,10 @@ def build_prompt(
         links_section=render_links_section(available_links),
         page_text=page_text[:15000],  # bound prompt size
     )
+
+
+def check_truncation(page_text: str, limit: int = 15000) -> tuple[bool, int]:
+    """Check if page_text exceeds prompt length bound and return (is_truncated, excess_chars)."""
+    if len(page_text) > limit:
+        return True, len(page_text) - limit
+    return False, 0

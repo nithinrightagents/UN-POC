@@ -163,7 +163,7 @@ async def _run(repo, settings, provider) -> "UnitOutcome":
     return await process_unit(
         repo=repo, settings=settings, session_id="s1", provider=provider,
         browser=FakeBrowserSession(), http_client=None, fetch_log=fetch_log,
-        stage_log=stage_log, cost_ledger=cost_ledger, capture_dir="/tmp/captures",
+        stage_log=stage_log, cost_ledger=cost_ledger,
         question=_question(), portal=_portal(), adjudicate_results=True,
     )
 

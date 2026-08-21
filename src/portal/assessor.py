@@ -17,7 +17,6 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from portal.common import capture_url as _capture_url
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import recompute_portal_discrepancy
 from shared.config.settings import Settings
@@ -110,7 +109,6 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
                     "confidence": prefill.confidence,
                     "justification": prefill.justification,
                     "evidence_url": prefill.evidence_url,
-                    "capture_url": _capture_url(prefill.capture_ref),
                     "supplying_source": prefill.supplying_source,
                     "supplying_source_label": _supplying_source_label(prefill.supplying_source),
                     "agreement_outcome": prefill.agreement_outcome,

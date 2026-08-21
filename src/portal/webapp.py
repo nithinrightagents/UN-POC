@@ -71,11 +71,10 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
     app.include_router(build_public_router(database_path, templates))
     app.mount("/review", build_review_app(database_path, settings))
 
-    # Serves evidence snapshots captured under ./data/captures/... (capture_ref
-    # values are stored as './data/captures/{session_id}/{id}.png'-style paths).
+    # Serves static assets/exports under ./data/...
     data_dir = Path(database_path).parent if Path(database_path).parent != Path("") else Path("./data")
-    (data_dir / "captures").mkdir(parents=True, exist_ok=True)
-    app.mount("/data", StaticFiles(directory=str(data_dir)), name="captures")
+    data_dir.mkdir(parents=True, exist_ok=True)
+    app.mount("/data", StaticFiles(directory=str(data_dir)), name="data")
 
     @app.get("/", response_class=HTMLResponse)
     def landing(request: Request):

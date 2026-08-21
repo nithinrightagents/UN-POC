@@ -131,7 +131,6 @@ def export_cycle_answers(
                     evidence_refs.append({
                         "artifact_id": ev_art.artifact_id,
                         "resolved_url": ev_art.resolved_url,
-                        "capture_ref": ev_art.capture_ref,
                         "element_reference": {
                             "css_path": ev_art.element_reference.css_path,
                             "text_hash": ev_art.element_reference.text_hash,

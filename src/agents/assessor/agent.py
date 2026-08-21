@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import re
+from typing import Any
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
@@ -37,7 +38,6 @@ from shared.config.settings import Settings
 from shared.state.entities import AgentRunState, AssessorAgentRun, new_id, utcnow
 from shared.tools.boundaries import check_authentication_boundary
 from shared.tools.browser import BrowserSession
-from shared.tools.capture import capture_region
 from shared.tools.element_ref import build_reference, search_by_text
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
@@ -128,9 +128,9 @@ async def run_assessor_agent(
     fetch_log: FetchLog,
     stage_log: StageEventLog,
     cost_ledger: CostLedger,
-    capture_dir: str,
     addendum: RetryAddendum | None = None,
     portal_id: str | None = None,
+    parent: Any = None,
 ) -> AssessorAgentRun:
     """Runs one full Assessor Agent attempt (including the confidence gate's
     internal retries) and returns a persisted-ready AssessorAgentRun.
@@ -155,7 +155,7 @@ async def run_assessor_agent(
     unit_ref = {"question_id": question["question_id"], "portal_id": portal_url}
 
     # LangSmith tracing (FR-T-002, FR-T-005): assessor_agent child span
-    async with agent_trace(agent_index, round_number, model, temperature, profile) as agent_span:
+    async with agent_trace(agent_index, round_number, model, temperature, profile, parent=parent) as agent_span:
         async def assess_once(current_addendum: RetryAddendum | None) -> AssessorAgentOutput:
             with stage_log.timed("assessor_run", unit_ref, agent_index=agent_index, round_number=round_number):
                 page_result, page = await browser.fetch(
@@ -170,6 +170,7 @@ async def run_assessor_agent(
                         justification=f"Portal unreachable: {page_result.reason}",
                         evidence=None,
                         portal_unreachable=True,
+                        unreachable_reason=str(page_result.reason) if page_result.reason else None,
                         model_identity=f"vertexai/{model}",
                         fill_gap_reason="portal unreachable before content could be evaluated",
                     )
@@ -191,7 +192,7 @@ async def run_assessor_agent(
 
                     output, follow_url = await _evaluate_page(
                         page_result, page, question, profile, current_addendum,
-                        provider, model, temperature, capture_dir, cost_ledger, agent_index,
+                        provider, model, temperature, cost_ledger, agent_index,
                         allow_navigation=True,
                     )
 
@@ -215,7 +216,7 @@ async def run_assessor_agent(
                                 if not nav_boundary.is_authentication_boundary:
                                     nav_output, _ = await _evaluate_page(
                                         nav_result, nav_page, question, profile, current_addendum,
-                                        provider, model, temperature, capture_dir, cost_ledger, agent_index,
+                                        provider, model, temperature, cost_ledger, agent_index,
                                         allow_navigation=False,
                                     )
                                     nav_output.navigated_to_url = follow_url
@@ -233,7 +234,8 @@ async def run_assessor_agent(
                     await browser.close_page(page)
 
         outcome: ConfidenceGateOutcome = await run_with_confidence_gate(
-            assess_once, settings.confidence_acceptance_threshold, settings.confidence_retry_limit
+            assess_once, settings.confidence_acceptance_threshold, settings.confidence_retry_limit,
+            parent=agent_span.run_tree,
         )
 
         output = outcome.output
@@ -255,6 +257,7 @@ async def run_assessor_agent(
             auth_boundary_observed=output.auth_boundary_observed,
             auth_boundary_url=output.auth_boundary_url,
             portal_unreachable=output.portal_unreachable,
+            unreachable_reason=output.unreachable_reason,
             model_identity=output.model_identity,
             below_acceptance_threshold=outcome.below_acceptance_threshold,
             detected_language=output.detected_language,
@@ -262,6 +265,8 @@ async def run_assessor_agent(
             link_likely_wrong=output.link_likely_wrong,
             raw_evidence_quote=output.raw_evidence_quote,
             evidence_located=output.evidence_located,
+            page_text_truncated=output.page_text_truncated,
+            page_text_excess_chars=output.page_text_excess_chars,
             navigated_to_url=output.navigated_to_url,
         )
         # Stash the raw evidence output for the caller (persistence needs a
@@ -327,34 +332,54 @@ async def _extract_same_domain_links(page, base_url: str) -> list[dict]:
     return candidates[:_MAX_LINK_CANDIDATES]
 
 
+def _link_matching_quote(
+    links: list[dict], raw_quote: str | None, current_url: str
+) -> str | None:
+    """If the assessor's cited "evidence" is itself just a link/heading label
+    present on the page (e.g. quoting "Jobs, labor laws and unemployment"
+    instead of actual descriptive text under it), that's a hub-page
+    shallow-quote regardless of how confident the model's answer was --
+    2026-08-21 debugging pass found SP-043/SP-124 repeatedly re-quoting the
+    same nav label across every retry at 90-95 confidence, because the
+    confidence-gated trigger below never ran for a confident True answer.
+    Checked unconditionally so it can fire even when the model is (wrongly)
+    sure of itself."""
+    if not links or not raw_quote:
+        return None
+
+    curr_parsed = urlparse(current_url)
+    curr_path = curr_parsed.path.rstrip("/").lower()
+
+    q_norm = raw_quote.strip().lower()
+    if len(q_norm) < 3:
+        return None
+    for l in links:
+        l_text = l["text"].strip().lower()
+        l_href = l["href"]
+        l_path = urlparse(l_href).path.rstrip("/").lower()
+        if l_path == curr_path:
+            continue
+        if q_norm == l_text or q_norm in l_text or (len(l_text) >= 5 and l_text in q_norm):
+            return l_href
+    return None
+
+
 def _find_best_navigation_link(
-    links: list[dict], raw_quote: str | None, question: dict, current_url: str
+    links: list[dict], question: dict, current_url: str
 ) -> str | None:
     """Programmatic navigation trigger (2026-08-20 debugging pass): if the
     model did not self-nominate a link, but the landing page is a category
-    hub where the raw evidence quote matches a link label, or where sub-topic
-    links strongly match the question's target keywords, automatically
-    follow the most relevant deep link rather than stopping at the hub."""
+    hub where sub-topic links strongly match the question's target keywords,
+    automatically follow the most relevant deep link rather than stopping at
+    the hub. (The raw-quote-matches-a-link-label case is handled separately
+    by `_link_matching_quote`, unconditionally -- see there for why.)"""
     if not links:
         return None
 
     curr_parsed = urlparse(current_url)
     curr_path = curr_parsed.path.rstrip("/").lower()
 
-    # 1. Match against raw quote (if assessor quoted a link label or nav item)
-    if raw_quote:
-        q_norm = raw_quote.strip().lower()
-        if len(q_norm) >= 3:
-            for l in links:
-                l_text = l["text"].strip().lower()
-                l_href = l["href"]
-                l_path = urlparse(l_href).path.rstrip("/").lower()
-                if l_path == curr_path:
-                    continue
-                if q_norm == l_text or q_norm in l_text or (len(l_text) >= 5 and l_text in q_norm):
-                    return l_href
-
-    # 2. Keyword relevance scoring against question title and text
+    # Keyword relevance scoring against question title and text
     q_title = str(question.get("title") or "")
     q_text = str(question.get("text") or "")
     target_terms = set(re.findall(r"\w{3,}", (q_title + " " + q_text).lower()))
@@ -396,7 +421,6 @@ async def _evaluate_page(
     provider: ModelProvider,
     model: str,
     temperature: float,
-    capture_dir: str,
     cost_ledger: CostLedger,
     agent_index: int,
     *,
@@ -462,10 +486,8 @@ async def _evaluate_page(
         evidence_located = located is not None
         if located:
             ref = build_reference(located["css_path"], located["text"])
-            capture_ref = await capture_region(page, located["css_path"], capture_dir)
             evidence = EvidenceOutput(
                 resolved_url=page_result.final_url,
-                capture_ref=capture_ref,
                 element_reference=ElementReferenceOutput(**ref.__dict__),
                 element_text=located["text"],
             )
@@ -474,10 +496,6 @@ async def _evaluate_page(
 
     raw_answer = bool(parsed.get("answer", False)) if question["answer_type"] == "binary" else parsed.get("answer")
     raw_conf = max(0, min(100, int(parsed.get("confidence", 0))))
-
-    # Hard confidence calibration for negative / anchor findings
-    if not raw_answer and raw_conf > 60:
-        raw_conf = 60
 
     output = AssessorAgentOutput(
         answer=raw_answer,
@@ -490,6 +508,8 @@ async def _evaluate_page(
         link_likely_wrong=bool(parsed.get("link_likely_wrong", False)),
         raw_evidence_quote=raw_quote,
         evidence_located=evidence_located,
+        page_text_truncated=len(page_text) > 15000,
+        page_text_excess_chars=max(0, len(page_text) - 15000),
     )
 
     follow_url = None
@@ -501,9 +521,17 @@ async def _evaluate_page(
         if 0 <= idx < len(links):
             follow_url = links[idx]["href"]
 
-        # Programmatic trigger: if model did not pick a link, but answered False or low confidence
+        # Programmatic trigger 1: the cited evidence is itself a link/heading
+        # label present on this page -- unconditional, since a confident
+        # answer built on a shallow nav-label quote is exactly the failure
+        # this exists to catch (see _link_matching_quote docstring).
+        if not follow_url:
+            follow_url = _link_matching_quote(links, raw_quote, page_result.final_url)
+
+        # Programmatic trigger 2: model did not pick a link and answered
+        # False or low confidence -- fall back to keyword relevance scoring.
         if not follow_url and (not output.answer or output.confidence < 70):
-            auto_url = _find_best_navigation_link(links, raw_quote, question, page_result.final_url)
+            auto_url = _find_best_navigation_link(links, question, page_result.final_url)
             if auto_url:
                 follow_url = auto_url
 
@@ -544,7 +572,7 @@ class AssessorAgent(BaseAgent[AssessorAgentInput, AssessorAgentRun]):
         fetch_log = kwargs["fetch_log"]
         stage_log = kwargs["stage_log"]
         cost_ledger = kwargs["cost_ledger"]
-        capture_dir = kwargs["capture_dir"]
+        parent = kwargs.get("parent")
 
         return await run_assessor_agent(
             session_id=input_data.session_id,
@@ -558,8 +586,8 @@ class AssessorAgent(BaseAgent[AssessorAgentInput, AssessorAgentRun]):
             fetch_log=fetch_log,
             stage_log=stage_log,
             cost_ledger=cost_ledger,
-            capture_dir=capture_dir,
             addendum=input_data.addendum,
             portal_id=input_data.portal.portal_id,
+            parent=parent,
         )
 

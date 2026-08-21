@@ -18,6 +18,15 @@ class UsabilityCheck:
     reason: str | None = None
 
 
+# Raw data-export formats (2026-08-21: search started surfacing
+# analytics.usa.gov/**/*.csv as a "usable" resolved link) have no browsable
+# page content for the Assessor to evaluate -- traversing one yields an
+# empty/garbled page, silently starving the agreement step of a valid
+# position. PDF is deliberately excluded: many portals legitimately publish
+# their primary evidence (policies, regulations) as a PDF page.
+_NON_PAGE_EXTENSIONS = (".csv", ".json", ".xml", ".zip", ".xls", ".xlsx", ".tsv")
+
+
 def check_usable(url: str | None) -> UsabilityCheck:
     if not url:
         return UsabilityCheck(False, "no candidate URL")
@@ -35,5 +44,10 @@ def check_usable(url: str | None) -> UsabilityCheck:
 
     if "." not in parsed.netloc:
         return UsabilityCheck(False, "host has no domain suffix")
+
+    path = parsed.path.lower()
+    if path.endswith(_NON_PAGE_EXTENSIONS):
+        ext = path.rsplit(".", 1)[-1]
+        return UsabilityCheck(False, f"URL points to a raw data file ({ext}), not a browsable page")
 
     return UsabilityCheck(True)

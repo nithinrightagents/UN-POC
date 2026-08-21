@@ -97,6 +97,16 @@ class Repository:
         ).fetchone()
         return from_json(row["data"], AssessmentSession) if row else None
 
+    def update_session_status(self, session_id: str, status: SessionStatus) -> None:
+        session = self.get_session(session_id)
+        if session:
+            session.status = status
+            self.conn.execute(
+                "UPDATE assessment_sessions SET data = ? WHERE session_id = ?",
+                (to_json(session), session_id),
+            )
+            self.conn.commit()
+
     # --- Question --------------------------------------------------------
 
     def insert_question(self, question: Question) -> None:
@@ -167,12 +177,20 @@ class Repository:
         return [from_json(r["data"], Question) for r in rows]
 
     def list_questions(self, cycle_id: str, include_custom: bool = True) -> list[Question]:
-        sql = "SELECT data FROM questions WHERE cycle_id = ?"
+        sql = "SELECT question_id, cycle_id, is_custom, data FROM questions WHERE cycle_id = ?"
         params: list = [cycle_id]
         if not include_custom:
             sql += " AND is_custom = 0"
         rows = self.conn.execute(sql, params).fetchall()
-        return [from_json(r["data"], Question) for r in rows]
+        out = []
+        for r in rows:
+            d = json.loads(r["data"])
+            if "cycle_id" not in d:
+                d["cycle_id"] = r["cycle_id"]
+            if "question_id" not in d:
+                d["question_id"] = r["question_id"]
+            out.append(from_json(json.dumps(d), Question))
+        return out
 
     # --- Target Portal -----------------------------------------------------
 
@@ -277,16 +295,18 @@ class Repository:
 
         if state:
             rows = self.conn.execute(
-                "SELECT state, data FROM units WHERE session_id = ? AND state = ?",
+                "SELECT question_id, portal_id, state, data FROM units WHERE session_id = ? AND state = ?",
                 (session_id, state),
             ).fetchall()
         else:
             rows = self.conn.execute(
-                "SELECT state, data FROM units WHERE session_id = ?", (session_id,)
+                "SELECT question_id, portal_id, state, data FROM units WHERE session_id = ?", (session_id,)
             ).fetchall()
         out = []
         for r in rows:
             d = json.loads(r["data"])
+            d["question_id"] = r["question_id"]
+            d["portal_id"] = r["portal_id"]
             d["state"] = r["state"]
             out.append(d)
         return out
@@ -881,7 +901,6 @@ class Repository:
             "confidence": prefill.confidence,
             "justification": prefill.justification,
             "evidence_url": prefill.evidence_url,
-            "capture_ref": prefill.capture_ref,
             "supplying_source": prefill.supplying_source,
             "agreement_outcome": prefill.agreement_outcome,
             "confidence_gap": prefill.confidence_gap,
@@ -992,7 +1011,6 @@ def _row_to_prefill(row: sqlite3.Row) -> Prefill:
         confidence=data.get("confidence"),
         justification=data.get("justification"),
         evidence_url=data.get("evidence_url"),
-        capture_ref=data.get("capture_ref"),
         supplying_source=data.get("supplying_source"),
         agreement_outcome=data.get("agreement_outcome"),
         confidence_gap=data.get("confidence_gap"),

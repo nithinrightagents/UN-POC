@@ -11,6 +11,7 @@ from core.telemetry.langsmith_tracing import (
     NoOpRunHandle,
     adjudication_trace,
     agent_trace,
+    batch_trace,
     confidence_gate_trace,
     is_tracing_enabled,
     safe_trace,
@@ -92,3 +93,37 @@ async def test_adjudication_trace_returns_noop_when_disabled(monkeypatch):
     monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
     async with adjudication_trace(1, is_retry=False) as handle:
         assert isinstance(handle, NoOpRunHandle)
+
+
+def test_is_tracing_enabled_case_insensitive(monkeypatch):
+    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "True")
+    monkeypatch.setenv("LANGSMITH_API_KEY", "lsv2_pt_test")
+    assert is_tracing_enabled()
+
+
+def test_safe_run_handle_patch_and_end():
+    from unittest.mock import MagicMock
+    from core.telemetry.langsmith_tracing import SafeRunHandle
+
+    mock_run = MagicMock()
+    handle = SafeRunHandle(mock_run)
+
+    # Calling patch with outputs and metadata must not raise TypeError
+    handle.patch(metadata={"key": "val"}, outputs={"answer": "yes"})
+    mock_run.add_metadata.assert_called_once_with({"key": "val"})
+    mock_run.add_outputs.assert_called_once_with({"answer": "yes"})
+    mock_run.patch.assert_called_once()
+
+    # Calling end
+    handle.end(outputs={"final": 1}, metadata={"meta": 2})
+    mock_run.end.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_batch_trace_returns_noop_when_disabled(monkeypatch):
+    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
+    async with batch_trace("sess_1", 1, 5, "run_1", ["P1"], ["Q1", "Q2"]) as handle:
+        assert isinstance(handle, NoOpRunHandle)
+        handle.patch(metadata={"done": True}, outputs={"total": 5})
+
+

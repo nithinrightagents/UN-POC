@@ -45,16 +45,25 @@ class BenchmarkStore:
 
         b_set = BenchmarkSet(set_id=set_id, name=set_name, labelled_by_class=True)
         labels = []
-        for item in data.get("pairs", []):
+        raw_items = data.get("entries") or data.get("pairs", [])
+        for item in raw_items:
+            correct_ans = item.get("expected_answer") if "expected_answer" in item else item.get("correct_answer")
             truth = GroundTruthAnswer(
                 truth_id=new_id("gt"),
                 set_id=set_id,
                 question_id=item["question_id"],
                 country_id=item["country_id"],
-                correct_answer=item["correct_answer"],
-                label_source=item.get("label_source", "published_survey"),
+                correct_answer=correct_ans,
+                label_source=item.get("label_source", item.get("origin", "published_survey")),
                 assigned_by=item.get("assigned_by", "expert_assessor"),
                 question_class=item.get("question_class", "default"),
+                reference_url=item.get("reference_url"),
+                no_valid_link=item.get("no_valid_link", False),
+                accepted_alternatives=item.get("accepted_alternatives", []),
+                confidence=item.get("confidence", "authoritative"),
+                verified_on=item.get("verified_on"),
+                origin=item.get("origin"),
+                note=item.get("note"),
             )
             labels.append(truth)
 

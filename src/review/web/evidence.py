@@ -60,18 +60,6 @@ def render_evidence_html(
 
     original_text = evidence.element_text_original_language or evidence.element_text
 
-    capture_html = ""
-    if evidence.capture_ref:
-        # capture_ref is stored as a filesystem path like './data/captures/{id}.png';
-        # the '/data' static mount in portal/webapp.py serves it from there.
-        capture_src = "/" + evidence.capture_ref.lstrip("./").replace("\\", "/")
-        capture_html = (
-            f'<div style="margin: 0.75rem 0;">'
-            f'<img class="evidence__capture" src="{escape(capture_src)}" '
-            f'alt="Region-scoped capture of the cited page element" style="max-width: 100%; border: 1px solid var(--color-border-default); border-radius: var(--radius-sm);">'
-            f'</div>'
-        )
-
     return f"""
     <div class="evidence" role="region" aria-label="Evidence Artifact Viewer" style="margin: 1.25rem 0;">
         <div class="evidence__meta" style="margin-bottom: 0.75rem;">
@@ -86,7 +74,6 @@ def render_evidence_html(
                 {lang_badge}
             </div>
         </div>
-        {capture_html}
         <div style="background: rgba(255,255,255,0.8); padding: 0.75rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-subtle); margin: 0.5rem 0;">
             <span class="muted" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Original Cited Text:</span>
             <p class="evidence__element-text" lang="" style="margin-top: 0.25rem; font-style: italic; color: var(--color-text-primary);">{escape(original_text)}</p>

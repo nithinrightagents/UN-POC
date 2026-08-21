@@ -13,7 +13,7 @@ only the retry decision, the addendum content, and the retry counter.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Awaitable, Callable
+from typing import Any, Awaitable, Callable
 
 from shared.state.schemas import AssessorAgentOutput, RetryAddendum
 from shared.state.confidence import evaluate_confidence_gate
@@ -34,6 +34,7 @@ async def run_with_confidence_gate(
     assess_once: AssessOnce,
     threshold: int,
     retry_limit: int,
+    parent: Any = None,
 ) -> ConfidenceGateOutcome:
     """FR-134: >= threshold -> proceed unchanged.
     FR-135/FR-137: < threshold, retries remain -> re-run with a
@@ -50,6 +51,7 @@ async def run_with_confidence_gate(
             retry_count,
             has_addendum=addendum is not None,
             addendum_kind=addendum.kind if addendum else None,
+            parent=parent,
         ) as gate_span:
             output = await assess_once(addendum)
             gate_span.patch(outputs={"confidence": output.confidence, "auth_boundary_observed": output.auth_boundary_observed})

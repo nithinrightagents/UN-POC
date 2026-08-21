@@ -195,7 +195,6 @@ async def test_exhausted_cascade_dispatches_neither_assessor_agent():
         fetch_log=fetch_log,
         stage_log=stage_log,
         cost_ledger=cost_ledger,
-        capture_dir="/tmp",
         question=q,
         portal=portal,
         run_id="run-exh",
