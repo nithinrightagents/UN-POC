@@ -33,12 +33,10 @@
             {% endif %}
             <span class="badge badge--neutral">{{ rows|length }} Indicators</span>
             <span class="badge badge--neutral">Blind Evaluation Mode</span>
-            {% if is_complete %}
-            <span class="badge badge--yes" style="font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+            <span class="badge badge--yes" id="badge-declared-complete" style="font-size: 0.85rem; padding: 0.35rem 0.75rem; display: {{ 'inline-flex' if is_complete else 'none' }};">
                 <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
-                Assessment Complete & Declared
+                Assessment Complete &amp; Declared
             </span>
-            {% endif %}
         </div>
         <h1>{{ portal.display_name or portal.country_id }}</h1>
         <p class="lead">
@@ -51,27 +49,31 @@
         </p>
 
         <!-- Progress and Completion Section -->
-        <div style="margin-top: 1rem; padding: 1rem; background-color: var(--color-bg-surface-subtle); border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+        <div id="assessment-progress-panel" style="margin-top: 1rem; padding: 1rem; background-color: var(--color-bg-surface-subtle); border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div>
+                <div style="flex: 1; min-width: 250px;">
                     <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem;">
-                        Assessment Progress: {{ answered_count }} / {{ total_questions }} Answered
+                        Assessment Progress: <span id="progress-text-count">{{ answered_count }} / {{ total_questions }}</span> Answered
+                        (<span id="progress-text-percent">{{ "%.0f"|format(answered_count / total_questions * 100) if total_questions > 0 else 0 }}%</span>)
                     </div>
-                    {% if outstanding_question_ids %}
-                    <div class="muted" style="font-size: 0.85rem;">
-                        Outstanding ({{ outstanding_question_ids|length }}): {{ outstanding_question_ids[:5]|join(', ') }}{% if outstanding_question_ids|length > 5 %}...{% endif %}
+                    
+                    <div class="progress-bar-track" style="margin: 0.4rem 0 0.5rem 0;">
+                        <div class="progress-bar-fill" id="progress-bar-fill" style="width: {{ (answered_count / total_questions * 100) if total_questions > 0 else 0 }}%;"></div>
                     </div>
-                    {% else %}
-                    <div style="color: var(--color-brand-success, #16a34a); font-size: 0.85rem; font-weight: 600;">
-                        All indicators answered.
+
+                    <div id="outstanding-summary" class="muted" style="font-size: 0.85rem; display: {{ 'block' if outstanding_question_ids else 'none' }};">
+                        Outstanding (<span id="outstanding-count">{{ outstanding_question_ids|length }}</span>): 
+                        <span id="outstanding-list">{{ outstanding_question_ids[:5]|join(', ') }}{% if outstanding_question_ids|length > 5 %}...{% endif %}</span>
                     </div>
-                    {% endif %}
+                    <div id="all-completed-msg" style="color: var(--color-brand-success, #16a34a); font-size: 0.85rem; font-weight: 600; display: {{ 'block' if not outstanding_question_ids else 'none' }};">
+                        All indicators answered. Ready to declare completion.
+                    </div>
                 </div>
 
-                <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/complete">
+                <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/complete" id="complete-assessment-form">
                     <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="actor_id" value="{{ actor_id }}">
-                    <button type="submit" class="primary" {% if not can_complete %}disabled title="Answer all indicators before declaring completion"{% endif %}>
+                    <button type="submit" id="btn-complete-assessment" class="primary" {% if not can_complete %}disabled title="Answer all indicators before declaring completion"{% endif %}>
                         <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
                         <span>Declare Assessment Complete</span>
                     </button>
@@ -93,14 +95,66 @@
     </div>
 </div>
 
-<!-- Indicator List -->
+<!-- Fast Navigation & Controls Sticky Bar -->
+<div class="assessor-sticky-bar" id="sticky-bar">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <!-- Filter Tabs -->
+        <div class="filter-tab-group" role="tablist" aria-label="Indicator filters">
+            <button type="button" class="filter-tab active" data-filter="all" id="tab-all" role="tab" aria-selected="true">
+                All (<span id="count-all">{{ rows|length }}</span>)
+            </button>
+            <button type="button" class="filter-tab" data-filter="pending" id="tab-pending" role="tab" aria-selected="false">
+                <span class="badge-dot" style="background-color: #f59e0b;"></span>
+                Unsubmitted (<span id="count-pending">{{ outstanding_question_ids|length }}</span>)
+            </button>
+            <button type="button" class="filter-tab" data-filter="submitted" id="tab-submitted" role="tab" aria-selected="false">
+                <span class="badge-dot" style="background-color: #10b981;"></span>
+                Submitted (<span id="count-submitted">{{ answered_count }}</span>)
+            </button>
+        </div>
+
+        <!-- Search & Quick Navigation Actions -->
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <div style="position: relative;">
+                <input type="text" id="indicator-search" placeholder="Search indicators..." style="font-size: 0.825rem; padding: 0.35rem 0.6rem 0.35rem 1.85rem; width: 180px; height: 32px; border-radius: var(--radius-xs);">
+                <svg class="icon" aria-hidden="true" style="position: absolute; left: 0.5rem; top: 50%; transform: translateY(-50%); width: 0.9rem; height: 0.9rem; color: var(--color-text-muted); pointer-events: none;"><use href="#icon-search"/></svg>
+            </div>
+
+            <button type="button" class="btn btn-sm" id="btn-next-unsubmitted" style="background-color: var(--color-brand-primary); color: #ffffff; border-color: var(--color-brand-primary); font-weight: 600; white-space: nowrap; height: 32px;" title="Jump directly to next unsubmitted indicator">
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                <span>Next Unsubmitted</span>
+            </button>
+
+            <button type="button" class="btn btn-sm" id="btn-toggle-matrix" style="white-space: nowrap; height: 32px;" title="Toggle indicator grid mini-map">
+                <svg class="icon" aria-hidden="true"><use href="#icon-bar-chart"/></svg>
+                <span>Grid View</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Collapsible Indicator Matrix Grid -->
+    <div class="indicator-matrix" id="indicator-matrix" style="display: none;">
+        {% for row in rows %}
+        <a href="#q_{{ row.question.question_id }}" 
+           class="matrix-chip {{ 'matrix-chip--submitted' if row.mine else 'matrix-chip--pending' }}" 
+           id="chip_{{ row.question.question_id }}"
+           data-qid="{{ row.question.question_id }}"
+           title="{{ row.question.indicator_id or row.question.question_id }}: {{ row.question.title or row.question.text }}">
+            {{ row.question.indicator_id or row.question.question_id }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Indicator List Header -->
 <div class="section-title">
     <svg class="icon" aria-hidden="true"><use href="#icon-file-text"/></svg>
     <span>Indicator Questionnaire Intake</span>
 </div>
 
+<div id="question-list">
 {% for row in rows %}
-<div class="question-card" id="q_{{ row.question.question_id }}">
+<div class="question-card" id="q_{{ row.question.question_id }}" data-status="{{ 'submitted' if row.mine else 'pending' }}" data-qid="{{ row.question.question_id }}">
     <div class="question-card-header">
         <div style="display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap;">
             <code class="question-code">{{ row.question.indicator_id or row.question.question_id }}</code>
@@ -113,14 +167,14 @@
         </div>
         <div>
             {% if row.mine %}
-            <span class="badge badge--yes">
+            <span class="badge badge--yes" id="badge_{{ row.question.question_id }}">
                 <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
-                Submitted
+                <span class="badge-label">Submitted</span>
             </span>
             {% else %}
-            <span class="badge badge--pending">
+            <span class="badge badge--pending" id="badge_{{ row.question.question_id }}">
                 <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
-                Pending Intake
+                <span class="badge-label">Pending Intake</span>
             </span>
             {% endif %}
         </div>
@@ -185,7 +239,8 @@
                 </span>
                 {% endif %}
                 {% if row.ai.supplying_source_label %}
-                <span class="badge badge--neutral" style="font-size: 0.75rem;" title="Where the evidence link came from">
+                <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Where the evidence link came from">
+                    <span class="badge-dot"></span>
                     Source: {{ row.ai.supplying_source_label }}
                 </span>
                 {% endif %}
@@ -204,9 +259,15 @@
         </p>
         {% endif %}
         {% if row.ai.evidence_url %}
-        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem;">
+        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
             <strong>Evidence URL:</strong>
             <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
+            {% if row.ai.supplying_source_label %}
+            <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Source link origin: {{ row.ai.supplying_source_label }}">
+                <span class="badge-dot"></span>
+                {{ row.ai.supplying_source_label }}
+            </span>
+            {% endif %}
         </p>
         {% endif %}
         {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
@@ -221,6 +282,20 @@
             {% endif %}
         </div>
         {% endif %}
+
+        <!-- Quick 1-Click Adopt AI Suggestion Button -->
+        <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-sm btn-ai-fill" 
+                    data-qid="{{ row.question.question_id }}"
+                    data-answer="{{ 'true' if row.ai.answer else 'false' }}"
+                    data-evidence="{{ row.ai.evidence_url or '' }}"
+                    data-notes="Adopted findings: {{ row.ai.justification|e if row.ai.justification else '' }}"
+                    style="font-size: 0.775rem; background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd;"
+                    title="Pre-fill form fields with AI suggested answer and evidence URL">
+                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-sparkles"/></svg>
+                <span>Use AI Suggestion</span>
+            </button>
+        </div>
     </div>
     {% elif row.ai and not row.ai.suggested %}
     <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; background-color: var(--color-bg-surface-subtle); border-left: 3px solid var(--color-border-subtle);">
@@ -234,32 +309,34 @@
     </div>
     {% endif %}
 
-    <!-- Assessor Previous Submission Summary -->
-    {% if row.mine %}
-    <div style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-            <strong style="color: var(--color-text-primary);">Your Current Submission:</strong>
-            {% if row.mine.answer %}
-            <span class="badge badge--yes">Yes</span>
-            {% else %}
-            <span class="badge badge--no">No</span>
+    <!-- Assessor Previous Submission Summary Container -->
+    <div id="summary_container_{{ row.question.question_id }}">
+        {% if row.mine %}
+        <div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <strong style="color: var(--color-text-primary);">Your Current Submission:</strong>
+                {% if row.mine.answer %}
+                <span class="badge badge--yes">Yes</span>
+                {% else %}
+                <span class="badge badge--no">No</span>
+                {% endif %}
+            </div>
+            {% if row.mine.evidence_url %}
+            <div style="color: var(--color-text-secondary);">
+                Evidence URL: <a href="{{ row.mine.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.mine.evidence_url }}</a>
+            </div>
             {% endif %}
-        </div>
-        {% if row.mine.evidence_url %}
-        <div style="color: var(--color-text-secondary);">
-            Evidence URL: <a href="{{ row.mine.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.mine.evidence_url }}</a>
-        </div>
-        {% endif %}
-        {% if row.mine.notes %}
-        <div class="muted" style="margin-top: 0.25rem;">
-            Notes: <em>"{{ row.mine.notes }}"</em>
+            {% if row.mine.notes %}
+            <div class="muted" style="margin-top: 0.25rem;">
+                Notes: <em>"{{ row.mine.notes }}"</em>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
-    {% endif %}
 
     <!-- Submission Form -->
-    <form class="stack" method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/question/{{ row.question.question_id }}/submit" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-subtle);">
+    <form class="stack assessor-submit-form" method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/question/{{ row.question.question_id }}/submit" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-subtle);" data-qid="{{ row.question.question_id }}">
         <input type="hidden" name="role" value="{{ role }}">
         <input type="hidden" name="actor_id" value="{{ actor_id }}">
         
@@ -284,10 +361,14 @@
             <textarea id="notes_{{ row.question.question_id }}" name="notes" rows="2" placeholder="Detail any relevant observations, search terms used, or specific navigation steps...">{{ row.mine.notes if row.mine else '' }}</textarea>
         </div>
 
-        <div style="display: flex; justify-content: flex-end;">
-            <button class="primary btn-sm" type="submit">
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-sm btn-save-stay" type="submit" name="stay" value="1" title="Save this answer and remain on this indicator">
                 <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
-                <span>Save Answer for {{ row.question.question_id }}</span>
+                <span>Save</span>
+            </button>
+            <button class="primary btn-sm btn-save-next" type="submit" name="next" value="1" title="Save this answer and advance directly to the next unsubmitted indicator">
+                <svg class="icon" aria-hidden="true"><use href="#icon-arrow-right"/></svg>
+                <span>Save &amp; Next Unsubmitted</span>
             </button>
         </div>
     </form>
@@ -297,5 +378,438 @@
     <p class="muted">No indicators configured for this survey cycle.</p>
 </div>
 {% endfor %}
+</div>
+
+<!-- Floating Action Button: Quick Jump to Next Unsubmitted -->
+<button type="button" id="fab-next-unsubmitted" class="fab-next-btn" style="display: none;" title="Jump directly to the next unsubmitted indicator">
+    <svg class="icon" aria-hidden="true" style="width: 1.1rem; height: 1.1rem;"><use href="#icon-arrow-right"/></svg>
+    <span>Jump to Next Unsubmitted (<strong id="fab-count">{{ outstanding_question_ids|length }}</strong> left)</span>
+</button>
+
+<!-- Floating Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Client-side Interactive Navigation & Live Save Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var activeFilter = "all";
+    var toastContainer = document.getElementById("toast-container");
+    var matrixContainer = document.getElementById("indicator-matrix");
+    var toggleMatrixBtn = document.getElementById("btn-toggle-matrix");
+    var nextUnsubmittedBtn = document.getElementById("btn-next-unsubmitted");
+    var fabBtn = document.getElementById("fab-next-unsubmitted");
+    var fabCount = document.getElementById("fab-count");
+    var searchInput = document.getElementById("indicator-search");
+    var progressBarFill = document.getElementById("progress-bar-fill");
+    var progressTextCount = document.getElementById("progress-text-count");
+    var progressTextPercent = document.getElementById("progress-text-percent");
+    var countAllEl = document.getElementById("count-all");
+    var countPendingEl = document.getElementById("count-pending");
+    var countSubmittedEl = document.getElementById("count-submitted");
+    var outstandingSummaryEl = document.getElementById("outstanding-summary");
+    var outstandingCountEl = document.getElementById("outstanding-count");
+    var outstandingListEl = document.getElementById("outstanding-list");
+    var allCompletedMsgEl = document.getElementById("all-completed-msg");
+    var completeBtn = document.getElementById("btn-complete-assessment");
+    var declaredBadge = document.getElementById("badge-declared-complete");
+
+    // Toast Alert Helper
+    function showToast(message, type) {
+        if (!toastContainer) return;
+        var toast = document.createElement("div");
+        toast.className = "toast " + (type === "success" ? "toast--success" : "toast--info");
+        toast.innerHTML = '<svg class="icon" aria-hidden="true" style="width: 1.1rem; height: 1.1rem;"><use href="' + 
+            (type === "success" ? "#icon-check" : "#icon-sparkles") + 
+            '"/></svg><span>' + message + '</span>';
+        toastContainer.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateY(10px) scale(0.95)";
+            toast.style.transition = "all 0.3s ease";
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 3200);
+    }
+
+    // Smooth Scroll with Header Offset & Focus to Card
+    function scrollToQuestion(qid) {
+        var card = document.getElementById("q_" + qid);
+        if (!card) return;
+
+        // If card is currently hidden by active filter, reveal it
+        if (card.style.display === "none") {
+            setFilter("all", false);
+        }
+
+        // Highlight active matrix chip
+        document.querySelectorAll(".matrix-chip").forEach(function(c) {
+            c.classList.remove("current-active");
+        });
+        var chip = document.getElementById("chip_" + qid);
+        if (chip) chip.classList.add("current-active");
+
+        // Calculate offset accounting for sticky headers
+        var stickyBar = document.getElementById("sticky-bar");
+        var headerOffset = stickyBar ? (stickyBar.offsetHeight + 90) : 150;
+        var cardRect = card.getBoundingClientRect();
+        var targetPosition = window.pageYOffset + cardRect.top - headerOffset;
+
+        window.scrollTo({
+            top: targetPosition,
+            behavior: "smooth"
+        });
+
+        // Add highlight pulse
+        card.classList.remove("highlight-focus");
+        void card.offsetWidth; // trigger reflow
+        card.classList.add("highlight-focus");
+
+        // Focus answer input if not filled
+        var select = document.getElementById("answer_" + qid);
+        if (select && !select.value) {
+            setTimeout(function() { select.focus(); }, 350);
+        }
+    }
+
+    // Find Next Unsubmitted Question
+    function getNextUnsubmittedQuestionId(afterQid) {
+        var cards = Array.from(document.querySelectorAll(".question-card"));
+        if (!cards.length) return null;
+
+        var cardQids = cards.map(function(c) { return c.getAttribute("data-qid"); });
+        var pendingQids = cards
+            .filter(function(c) { return c.getAttribute("data-status") === "pending"; })
+            .map(function(c) { return c.getAttribute("data-qid"); });
+
+        if (!pendingQids.length) return null;
+
+        if (afterQid) {
+            var currIndex = cardQids.indexOf(afterQid);
+            var nextInOrder = cardQids.slice(currIndex + 1).find(function(qid) {
+                return pendingQids.includes(qid);
+            });
+            if (nextInOrder) return nextInOrder;
+        }
+
+        return pendingQids[0];
+    }
+
+    function updateFloatingActionState() {
+        var pendingCards = document.querySelectorAll(".question-card[data-status='pending']");
+        if (fabBtn && fabCount) {
+            if (pendingCards.length > 0) {
+                fabBtn.style.display = "inline-flex";
+                fabCount.textContent = pendingCards.length;
+            } else {
+                fabBtn.style.display = "none";
+            }
+        }
+    }
+
+    // Toggle Matrix Overview
+    if (toggleMatrixBtn && matrixContainer) {
+        toggleMatrixBtn.addEventListener("click", function() {
+            var isHidden = matrixContainer.style.display === "none";
+            matrixContainer.style.display = isHidden ? "grid" : "none";
+            toggleMatrixBtn.classList.toggle("active", isHidden);
+        });
+    }
+
+    // Next Unsubmitted Button Click
+    if (nextUnsubmittedBtn) {
+        nextUnsubmittedBtn.addEventListener("click", function() {
+            var nextQid = getNextUnsubmittedQuestionId();
+            if (nextQid) {
+                scrollToQuestion(nextQid);
+            } else {
+                showToast("All indicators have been submitted!", "success");
+                var panel = document.getElementById("assessment-progress-panel");
+                if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        });
+    }
+
+    // Floating Button Click
+    if (fabBtn) {
+        fabBtn.addEventListener("click", function() {
+            var nextQid = getNextUnsubmittedQuestionId();
+            if (nextQid) {
+                scrollToQuestion(nextQid);
+            }
+        });
+    }
+
+    // Matrix Chip Clicks
+    document.querySelectorAll(".matrix-chip").forEach(function(chip) {
+        chip.addEventListener("click", function(e) {
+            e.preventDefault();
+            var qid = this.getAttribute("data-qid");
+            if (qid) scrollToQuestion(qid);
+        });
+    });
+
+    // 1-Click AI Suggestion Fill
+    document.querySelectorAll(".btn-ai-fill").forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            var qid = this.getAttribute("data-qid");
+            var answer = this.getAttribute("data-answer");
+            var evidence = this.getAttribute("data-evidence");
+            var notes = this.getAttribute("data-notes");
+
+            var answerSelect = document.getElementById("answer_" + qid);
+            var evidenceInput = document.getElementById("evidence_url_" + qid);
+            var notesTextarea = document.getElementById("notes_" + qid);
+
+            if (answerSelect) answerSelect.value = answer;
+            if (evidenceInput && evidence) evidenceInput.value = evidence;
+            if (notesTextarea && notes && !notesTextarea.value) notesTextarea.value = notes;
+
+            showToast("Populated AI suggestion for " + qid, "info");
+
+            if (answerSelect) {
+                answerSelect.focus();
+                answerSelect.style.borderColor = "var(--color-brand-primary)";
+                setTimeout(function() { answerSelect.style.borderColor = ""; }, 1200);
+            }
+        });
+    });
+
+    // Filter Logic
+    function applyFilters() {
+        var query = (searchInput ? searchInput.value : "").trim().toLowerCase();
+        var cards = document.querySelectorAll(".question-card");
+
+        cards.forEach(function(card) {
+            var status = card.getAttribute("data-status");
+            var qid = card.getAttribute("data-qid") || "";
+            var text = card.textContent.toLowerCase();
+
+            var matchesFilter = (activeFilter === "all") || (activeFilter === status);
+            var matchesSearch = !query || qid.toLowerCase().includes(query) || text.includes(query);
+
+            if (matchesFilter && matchesSearch) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    }
+
+    function setFilter(filterName, persist) {
+        activeFilter = filterName;
+        if (persist !== false) {
+            try { localStorage.setItem("ekap_assessor_filter", filterName); } catch(e) {}
+        }
+        document.querySelectorAll(".filter-tab").forEach(function(tab) {
+            var isCurrent = tab.getAttribute("data-filter") === filterName;
+            tab.classList.toggle("active", isCurrent);
+            tab.setAttribute("aria-selected", isCurrent ? "true" : "false");
+        });
+        applyFilters();
+    }
+
+    document.querySelectorAll(".filter-tab").forEach(function(tab) {
+        tab.addEventListener("click", function() {
+            setFilter(this.getAttribute("data-filter"), true);
+        });
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener("input", applyFilters);
+    }
+
+    // Live AJAX Form Submissions
+    document.querySelectorAll(".assessor-submit-form").forEach(function(form) {
+        var lastClickedSubmitter = null;
+
+        form.querySelectorAll("button[type='submit']").forEach(function(btn) {
+            btn.addEventListener("click", function() {
+                lastClickedSubmitter = this;
+            });
+        });
+
+        form.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            var qid = form.getAttribute("data-qid");
+            var card = document.getElementById("q_" + qid);
+            var isNextAction = !lastClickedSubmitter || lastClickedSubmitter.classList.contains("btn-save-next");
+
+            // Disable buttons temporarily
+            var submitButtons = form.querySelectorAll("button[type='submit']");
+            submitButtons.forEach(function(b) { b.disabled = true; });
+
+            var formData = new FormData(form);
+
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Accept": "application/json, text/html, */*",
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(async function(res) {
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                var contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    return res.json();
+                }
+                // Fallback handling when server responds with HTML or redirect
+                var formAnswer = formData.get("answer") === "true";
+                var formEvidence = formData.get("evidence_url") || "";
+                var formNotes = formData.get("notes") || "";
+                return {
+                    status: "success",
+                    saved_question_id: qid,
+                    answer: formAnswer,
+                    evidence_url: formEvidence,
+                    notes: formNotes,
+                    fallback: true
+                };
+            })
+            .then(function(data) {
+                // Re-enable buttons
+                submitButtons.forEach(function(b) { b.disabled = false; });
+
+                // Update Card State
+                if (card) {
+                    card.setAttribute("data-status", "submitted");
+
+                    // Update Badge in Header
+                    var badge = document.getElementById("badge_" + qid);
+                    if (badge) {
+                        badge.className = "badge badge--yes";
+                        badge.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span class="badge-label">Submitted</span>';
+                    }
+
+                    // Update Summary Box
+                    var summaryContainer = document.getElementById("summary_container_" + qid);
+                    if (summaryContainer) {
+                        var answerBadge = data.answer 
+                            ? '<span class="badge badge--yes">Yes</span>' 
+                            : '<span class="badge badge--no">No</span>';
+                        var evidenceHtml = data.evidence_url 
+                            ? '<div style="color: var(--color-text-secondary);">Evidence URL: <a href="' + data.evidence_url + '" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">' + data.evidence_url + '</a></div>' 
+                            : '';
+                        var notesHtml = data.notes 
+                            ? '<div class="muted" style="margin-top: 0.25rem;">Notes: <em>"' + data.notes + '"</em></div>' 
+                            : '';
+
+                        summaryContainer.innerHTML = '<div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">' +
+                            '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;"><strong style="color: var(--color-text-primary);">Your Current Submission:</strong> ' + answerBadge + '</div>' +
+                            evidenceHtml + notesHtml + '</div>';
+                    }
+                }
+
+                // Update Matrix Chip
+                var chip = document.getElementById("chip_" + qid);
+                if (chip) {
+                    chip.className = "matrix-chip matrix-chip--submitted";
+                }
+
+                // Recalculate counts locally
+                var allCards = Array.from(document.querySelectorAll(".question-card"));
+                var totalCount = allCards.length;
+                var remainingPendingCards = allCards.filter(function(c) { return c.getAttribute("data-status") === "pending"; });
+                var pendingCount = remainingPendingCards.length;
+                var submittedCount = totalCount - pendingCount;
+
+                if (progressTextCount) progressTextCount.textContent = submittedCount + " / " + totalCount;
+                var pct = totalCount > 0 ? Math.round((submittedCount / totalCount) * 100) : 0;
+                if (progressTextPercent) progressTextPercent.textContent = pct + "%";
+                if (progressBarFill) progressBarFill.style.width = pct + "%";
+
+                if (countPendingEl) countPendingEl.textContent = pendingCount;
+                if (countSubmittedEl) countSubmittedEl.textContent = submittedCount;
+
+                if (outstandingSummaryEl && allCompletedMsgEl) {
+                    if (pendingCount > 0) {
+                        outstandingSummaryEl.style.display = "block";
+                        allCompletedMsgEl.style.display = "none";
+                        if (outstandingCountEl) outstandingCountEl.textContent = pendingCount;
+                        if (outstandingListEl) {
+                            var pendingList = remainingPendingCards.map(function(c) { return c.getAttribute("data-qid"); });
+                            var previewList = pendingList.slice(0, 5).join(", ");
+                            if (pendingList.length > 5) previewList += "...";
+                            outstandingListEl.textContent = previewList;
+                        }
+                    } else {
+                        outstandingSummaryEl.style.display = "none";
+                        allCompletedMsgEl.style.display = "block";
+                    }
+                }
+
+                if (completeBtn) {
+                    completeBtn.disabled = pendingCount > 0;
+                    if (pendingCount === 0) completeBtn.removeAttribute("title");
+                }
+
+                updateFloatingActionState();
+
+                // Show Success Toast
+                showToast("Saved answer for " + qid + " (" + (data.answer ? "Yes" : "No") + ")", "success");
+
+                // Auto-advance or Re-filter
+                if (activeFilter === "pending") {
+                    // Hide the newly submitted card smoothly
+                    if (card) {
+                        card.style.transition = "opacity 0.2s ease, transform 0.2s ease";
+                        card.style.opacity = "0";
+                        card.style.transform = "scale(0.98)";
+                        setTimeout(function() {
+                            card.style.display = "none";
+                            card.style.opacity = "";
+                            card.style.transform = "";
+                        }, 200);
+                    }
+                }
+
+                if (isNextAction || activeFilter === "pending") {
+                    var nextQid = getNextUnsubmittedQuestionId(qid);
+                    if (nextQid) {
+                        setTimeout(function() {
+                            scrollToQuestion(nextQid);
+                        }, 120);
+                    } else if (pendingCount === 0) {
+                        showToast("All indicators completed! Ready to declare completion.", "success");
+                        var panel = document.getElementById("assessment-progress-panel");
+                        if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }
+            })
+            .catch(function(err) {
+                submitButtons.forEach(function(b) { b.disabled = false; });
+                console.error("Save error:", err);
+                showToast("Could not save answer. Please check connection.", "info");
+            });
+        });
+    });
+
+    // Auto-scroll on initial load:
+    // 1. If hash exists, jump to it.
+    // 2. If no hash, find first UNANSWERED question and jump to it!
+    var initialTargetQid = null;
+    if (window.location.hash) {
+        var targetId = window.location.hash.substring(1);
+        if (targetId.startsWith("q_")) {
+            initialTargetQid = targetId.replace("q_", "");
+        }
+    }
+    
+    if (!initialTargetQid) {
+        initialTargetQid = getNextUnsubmittedQuestionId();
+    }
+
+    if (initialTargetQid) {
+        setTimeout(function() {
+            scrollToQuestion(initialTargetQid);
+        }, 250);
+    }
+
+    updateFloatingActionState();
+});
+</script>
 
 {% endblock %}

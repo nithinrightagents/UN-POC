@@ -63,6 +63,12 @@ def check_admissible(url: str | None) -> AdmissibilityCheck:
             False, f"{label!r} subdomain serves data/assets, not browsable content"
         )
 
+    # Frozen web archives and historical snapshots (e.g. 19january2021snapshot.epa.gov).
+    if any("snapshot" in l or "archive" in l for l in labels):
+        return AdmissibilityCheck(
+            False, f"{host} is a frozen archive/snapshot, not live content"
+        )
+
     usability = check_usable(url)
     if not usability.usable:
         return AdmissibilityCheck(False, usability.reason)

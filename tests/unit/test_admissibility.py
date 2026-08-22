@@ -31,6 +31,12 @@ from shared.tools.linkresolution.admissibility import (
         # Shorteners GSA retired in 2020, still ranking in search indexes.
         ("https://go.usa.gov/xsb6a", "shortener"),
         ("http://1.usa.gov/1oZYWbv", "shortener"),
+        # Frozen web archives and historical snapshots (e.g. 19january2021snapshot.epa.gov).
+        (
+            "https://19january2021snapshot.epa.gov/e-enterprise/about-e-enterprise-environment_.html",
+            "snapshot",
+        ),
+        ("https://webarchive.nationalarchives.gov.uk/ukgwa/search", "archive"),
     ],
 )
 def test_rejects_pages_that_are_not_evidence(url: str, reason_fragment: str) -> None:

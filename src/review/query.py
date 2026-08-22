@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 
 from shared.state.confidence import is_below_acceptance_threshold
 from shared.state.entities import EvidenceArtifact
-from shared.state.reason_tags import ReasonTag, is_blocked, reason_tag
+from shared.state.reason_tags import ReasonTag, is_blocked, prefill_reason_tag, reason_tag
 from shared.persistence.repositories import Repository
 
 
@@ -51,6 +51,7 @@ class QuestionReviewView:
     question_text: str
     delivered_answer: object
     system_proposed_answer: object
+    answer_category: str
     consensus_confidence: int | None
     below_acceptance_threshold: bool
     justification: str
@@ -118,10 +119,30 @@ def build_question_review(
     # answer, full stop -- it must never be derived from a prior human decision.
     # A human decision changes what is *delivered*, never what was *proposed*.
     # For a blocked unit there is no adjudicated consensus, so both stay None
-    # (FR-BF-002) until a human decision is recorded below.
-    system_proposed_answer = latest_adj.consensus_answer if latest_adj else None
+    prefill = repo.latest_prefill(session_id, question_id, portal_id)
+    if latest_adj:
+        system_proposed_answer = latest_adj.consensus_answer
+        consensus_confidence = latest_adj.consensus_confidence
+        answer_category = "yes" if system_proposed_answer else "no"
+    elif prefill and prefill.suggested:
+        system_proposed_answer = prefill.answer
+        consensus_confidence = prefill.confidence
+        answer_category = prefill.answer_category()
+    elif not escalated and "consensus_answer" in unit_data:
+        system_proposed_answer = unit_data.get("consensus_answer")
+        consensus_confidence = unit_data.get("consensus_confidence")
+        # write_prefill persists this directly; fall back to a plain
+        # yes/no read of the raw answer only for pre-Step-5 unit rows
+        # that predate the field.
+        answer_category = unit_data.get(
+            "answer_category", "yes" if system_proposed_answer else "no"
+        )
+    else:
+        system_proposed_answer = None
+        consensus_confidence = None
+        answer_category = "maybe"
+
     delivered_answer = system_proposed_answer
-    consensus_confidence = latest_adj.consensus_confidence if latest_adj else None
 
     decision = repo.latest_assessor_decision(session_id, question_id, portal_id)
     provenance = "system_proposed"
@@ -160,7 +181,11 @@ def build_question_review(
             if language_decisions:
                 resolution_manner = language_decisions[-1].resolution_manner
         tag = reason_tag(escalation_reason, unit_data, resolution_manner=resolution_manner)
+    elif prefill and prefill.reason:
+        reason_val = prefill.reason.value if hasattr(prefill.reason, "value") else str(prefill.reason)
+        tag = prefill_reason_tag(reason_val, unit_data)
 
+    if escalated or (prefill and prefill.reason):
         points_of_disagreement = [adj.flag_reason for adj in adjudications if adj.flag_reason]
         verification_attempt_counts = [
             v.verification_attempts for run in runs for v in repo.list_validation_results(run.run_id)
@@ -187,6 +212,7 @@ def build_question_review(
         question_text=question.text,
         delivered_answer=delivered_answer,
         system_proposed_answer=system_proposed_answer,
+        answer_category=answer_category,
         consensus_confidence=consensus_confidence,
         below_acceptance_threshold=below_threshold,
         justification=agent_views[0].justification if agent_views else "",

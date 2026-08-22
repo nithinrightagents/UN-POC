@@ -56,6 +56,27 @@ class LinkSource(str, Enum):
     PORTAL_DEFAULT = "portal_default"
 
 
+LINK_SOURCE_LABELS: dict[str, str] = {
+    LinkSource.PRIOR_SURVEY_KB.value: "Previous KB",
+    LinkSource.MSQ.value: "MSQ",
+    LinkSource.SEARCH.value: "Internet Searched",
+    LinkSource.SITEMAP.value: "Government Portal",
+    LinkSource.PORTAL_DEFAULT.value: "Government Portal",
+    "govt_portal": "Government Portal",
+}
+
+
+
+
+def link_source_display_name(source: LinkSource | str | None) -> str | None:
+    """Return a human-readable indicator label for a link source."""
+    if not source:
+        return None
+    value = source.value if hasattr(source, "value") else str(source)
+    return LINK_SOURCE_LABELS.get(value, value.replace("_", " ").title())
+
+
+
 class UnitState(str, Enum):
     """The unit state machine. Exactly four terminal states — see data-model.md §3."""
 
@@ -555,6 +576,30 @@ class Prefill:
                 raise ValueError(
                     "When suggested=False, answer must be None and reason must be non-null"
                 )
+
+    def answer_category(self) -> str:
+        """The reviewer-facing three-way outcome: 'yes', 'maybe', or 'no'
+        (spec 011 Step 5). There is no fourth bucket -- a unit that never
+        formed any answer (`suggested=False`) reads the same as a flagged
+        one (`NEEDS_HUMAN_REVIEW`): both are "found nothing confirmed",
+        just at different points on the same spectrum. Only a clean,
+        unflagged answer earns a hard 'yes' or 'no'.
+        """
+        return prefill_answer_category(self.suggested, self.answer, self.reason)
+
+
+def prefill_answer_category(
+    suggested: bool, answer: bool | None, reason: "PrefillReason | str | None"
+) -> str:
+    """Free-standing form of `Prefill.answer_category()` for callers that only
+    have the raw fields (e.g. a `units` row's stored context), not a `Prefill`
+    object."""
+    if not suggested:
+        return "maybe"
+    reason_val = reason.value if hasattr(reason, "value") else reason
+    if reason_val == PrefillReason.NEEDS_HUMAN_REVIEW.value:
+        return "maybe"
+    return "yes" if answer else "no"
 
 
 @dataclass

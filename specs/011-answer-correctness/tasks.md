@@ -26,7 +26,26 @@
 - [x] T016 Include per-source correctness breakdown (sitemap vs search vs portal_default) in `results-step1.md`
 - [x] T017 Validate that true negatives (`SP-108a`, `IF-336`, `SP-062`) did not flip to false positives
 
-## Phase 5: Post-Gate Exploration & Refinements
+## Phase 5: Step 4 — Link Delivery & Validation Recovery
+- [x] T022 Fix config invariant: `AIQ_BEST_EFFORT_CONFIDENCE_CEILING=55` in `.env` and `settings.py` (below threshold 60)
+- [x] T023 Deliver resolved link + confident answer on validation gap as best-effort flagged (`PrefillReason.NEEDS_HUMAN_REVIEW`) in `scheduler.py`
+- [x] T024 Handle DOM truncation in validator via `VerificationOutcome.TRUNCATED_UNVERIFIABLE` and propagate flags
+- [x] T025 Prevent retry loop answer flips by providing targeted re-cite addendum for mechanical validation failures
+- [x] T026 Add regression test coverage in `test_best_effort_delivery.py`, `test_truncated_validation.py`, `test_retry_addendum_wording.py`
+- [x] T027 Add `validated_negative_confidence_floor = 55` for validated negatives
+- [x] T028 Fallback in `review/query.py` (`build_question_review`) to `repo.latest_prefill(...)` when no adjudication records exist
+
+## Phase 6: Step 5 — Asymmetric Evidence & False Negative Elimination
+- [x] T040 Allow one-hop navigation in `src/agents/assessor/agent.py` to cross to same-country government domains passing admissibility and rank same-domain first
+- [x] T041 Implement negative recheck in `src/orchestration/scheduler.py`: unanimous `No` must survive second look before delivery
+- [x] T042 Formulate negative recheck query in `scheduler.py` from `question.what` rather than `question.title` to break keyword traps
+- [x] T043 Reject frozen archive snapshots (`*snapshot*`, `*archive*`) in `src/shared/tools/linkresolution/admissibility.py`
+- [x] T044 Add guard benchmark checks for true negative retention and false negative recovery in `test_negative_recheck_and_gate.py`
+- [x] T046 Implement negative delivery gate in `scheduler.py`: require >= 2 distinct pages & >= 2 queries for clean floored negative; otherwise deliver flagged `NEEDS_HUMAN_REVIEW`
+- [x] T047 Attach negative provenance (`pages_examined`, `queries_used`, `blocked_domains`) to prefill `unit_context` in `scheduler.py`
+- [x] T048 Verify test suite (307 passing tests) across all components
+
+## Phase 7: Post-Gate Exploration & Refinements
 - [x] T018 Test and note single-agent vs multi-agent configuration
 - [x] T019 Audit `EGL-321` validator reasoning and record note in fixture
 - [x] T020 Audit `SP-166b` domain reference and record note / alternative

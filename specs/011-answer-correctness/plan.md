@@ -292,7 +292,176 @@ belongs in 30-65 (`profiles.py:47-56`). Two ways to lift it:
 > answer more right, and raising it on an unvalidated answer is just laundering. The correctness
 > gain in this step is T023 + T024. Report the two separately.
 
-- [ ] T028 **GATE** Re-run and record. **Blocked on a pre-existing, separate gap found while implementing T023**: the review portal (`review/query.py`'s `build_question_review`) reads `delivered_answer`/`system_proposed_answer`/`consensus_confidence` exclusively from the `adjudication_results` table via `repo.list_adjudication_results(...)`. Grepping the real pipeline (`scheduler.py`) for `insert_adjudication_result(` finds **zero call sites** — only `review/seed_demo.py` ever writes that table. This means the portal currently cannot render a delivered answer for ANY unit from a real run, not just `needs_human_review` ones — it only works against seeded demo data. This predates today's changes and is out of scope for the "simplify" ask; flagging it rather than silently expanding scope. Fixing it means teaching `query.py` to fall back to `repo.latest_prefill(...)` when no adjudication result exists.
+- [x] T028 **GATE** Review portal fallback implemented: `review/query.py` (`build_question_review`) now falls back to `repo.latest_prefill(...)` when no adjudication result exists. Verified with unit tests.
+
+---
+
+## Step 5 — Fill rate is nearly maxed; the remaining gain is all in false negatives
+
+### The measurement that reframes the goal
+
+From `data/usa_sample.db` (25-question USA sample, seed 42):
+
+| | count | note |
+|---|---|---|
+| Delivered | 22 / 25 (**88%**) | 11 `True`, 11 `False` |
+| `no_suggestion` | 3 / 25 | all `insufficient_positions` — **T023 already recovers these** |
+
+So raw fill rate goes to ~100% with Step 4 alone. **There is almost no withheld-answer problem left.**
+
+Cross-referencing the 18 non-`True` answers against `USA_25Q_GAP_ANALYSIS.md`:
+
+| verdict | count | meaning |
+|---|---|---|
+| **False negative** | **11** | the service exists, on a page the pipeline never looked at |
+| True negative | 3 | `#336` (First Amendment), `#062/#063` (utilities are municipal), `#108a` (app retired 2022) |
+| Borderline | 1 | `#036b` |
+| Validator drop | 3 | `#124`, `#166`, `#166b` — Step 4 addresses |
+
+Correct today ≈ **10/25 (40%)**. Ceiling if the 11 flip ≈ **21/25 (84%)**.
+Every remaining point is a false negative. Nothing else is worth touching first.
+
+### The single root cause
+
+`scheduler.py:619` gates the entire second-look mechanism:
+
+```python
+link_needs_retry = bool(all_runs) and all(
+    r.portal_unreachable or r.link_likely_wrong for r in all_runs
+)
+```
+
+An assessor that reads `usa.gov/agency-index` fine and confidently answers *"No — this A-Z index
+lists websites and phone numbers but omits leader names"* sets **neither** flag. No retry fires.
+That answer is validated, delivered, and wrong — the Cabinet list is one click away on
+`whitehouse.gov`.
+
+Two pieces of the codebase already admit this in their own comments:
+
+- `profiles.py:162` — "`link_likely_wrong` was built to catch this and **never fired once in 50
+  questions**." The retry gate is therefore live only for `portal_unreachable`.
+- `profiles.py:176` — one-hop navigation was the replacement, but its prompt says report `-1`
+  "whenever you already found … a confident, well-evidenced No, on THIS page." **A confident No is
+  defined as terminal.**
+
+**Negative evidence is asymmetric.** Finding the service proves `Yes`. Not finding it on one page
+proves nothing at all. The pipeline currently treats both as equally conclusive, and that single
+asymmetry error accounts for all 11 false negatives.
+
+> The corollary sets the whole design rule for this step: **do not lower the bar for `Yes`.** A
+> `Yes` still needs an anchored quote that survives validation. We are only refusing to accept an
+> *unexamined* `No`. Any change that makes `Yes` cheaper buys accuracy on paper and loses it in
+> reality — that is Finding 2's mistake repeated.
+
+### Recovering these eleven is not the same as preventing the next eleven
+
+T040–T043 are **recovery**: each is aimed at a failure we can point to in a 25-question sample
+someone hand-checked against real-world search. That is exactly the wrong basis for the general
+case. On the next country there is no gap analysis, no Antigravity column, and no list of which
+`No`s are wrong — and a false negative is **invisible by construction**: it arrives as a confident,
+validated, well-justified answer that looks identical to a correct one. Nothing in the record
+distinguishes *"searched hard, genuinely absent"* from *"looked once at the wrong page"*.
+
+So the step needs a rule that holds without a ground-truth column, and it follows directly from the
+asymmetry above:
+
+> **A `No` may only be delivered as a confident `No` if it can show it went looking.**
+> Otherwise it is not a finding, it is an absence of evidence — and Step 4 already built the right
+> place to put that: `NEEDS_HUMAN_REVIEW`.
+
+This reuses machinery that exists rather than adding a tier: the flagged-delivery path, the
+confidence ceiling, the `validator_gaps` context, and the portal's `reason_tag` banner all landed in
+T023. An unearned `No` is precisely the case that path was built for — a real answer nobody could
+confirm.
+
+**Honest tension, stated up front:** this trades *clean* fill rate for correctness. Some answers
+that ship today as confident `No`s will ship as flagged `No`s instead. That is the intended
+direction — a wrong answer a reviewer trusts is worse than a right answer a reviewer checks — but it
+means T048 must report flagged and clean deliveries as separate numbers, or the step will look like
+a regression.
+
+### Tasks
+
+- [x] T040 **Let one-hop navigation cross domains — it is currently stricter than our own policy.**
+  `_extract_same_domain_links()` (`agents/assessor/agent.py:306`) hard-drops every link where
+  `urlparse(href).netloc != base_domain`. But T030 (spec 010) already relaxed `evidence_permitted()`
+  so that *any* same-country government domain is admissible. The extractor is enforcing a rule the
+  locus layer no longer has. Widen it to any host passing `is_government_domain(href, country_id)`
+  **and** `check_admissible(href)`, keeping same-domain links ranked first. This is a
+  consistency fix, not a new capability. Directly reachable: `#011` (`usa.gov` links to
+  `whitehouse.gov/administration/cabinet`), `#337`, `#338`, `#022/#024`. **Do this first — it is the
+  smallest diff with the clearest justification.**
+
+- [x] T041 **A unanimous `No` must survive a second look before it is delivered.** Extend the
+  `link_needs_retry` condition: also retry when every run answered `False` **and** a
+  negative-recheck has not yet been spent for this unit (track `negative_recheck_done` in
+  `unit_data`, budgeted separately from `MAX_LINK_RETRIES = 3` so it cannot be starved by earlier
+  unreachable-retries). The existing machinery already does the rest — `tried_urls` makes search
+  surface a different candidate, and the recursion at `scheduler.py:660` is unchanged. Outcomes:
+  second page says `Yes` ⇒ deliver `Yes`; second page also says `No` ⇒ deliver `No`, now genuinely
+  earned. This is the lever for ~10 of the 11.
+
+- [x] T042 **Make the second look ask a different question, or T041 buys nothing.** Re-resolving
+  with the same `search_query` and one URL excluded returns the next page on the *same wrong topic* —
+  `#022/#024` would walk `usa.gov/accessibility` → the next Section 508 page, never reaching
+  `login.gov`. On a negative recheck, build the query from the question's `what` criteria rather
+  than its `title` (both are on the question record; `chain.py` already accepts `widened_query`,
+  `relevance_text`, and `relevance_detail`). This is what breaks the keyword traps the gap analysis
+  named — "accessibility", "privacy", "education".
+
+- [x] T043 **Reject frozen archive snapshots.** `#321` resolved to
+  `19january2021snapshot.epa.gov/…`, a 2021 archive, and was judged as if it were live. Add a host
+  pattern check to `check_admissible()` (`linkresolution/admissibility.py`) alongside the existing
+  `_DEAD_SHORTENER_HOSTS` / `_NON_CONTENT_SUBDOMAIN_LABELS` rules. Narrow, mechanical, one question.
+
+- [x] T044 **Guard both directions explicitly — one number cannot see either failure.** The risk of
+  T041/T042 is trading 11 false negatives for some number of false *positives*, and the risk of T046
+  is flagging negatives that were fine. Assert both as named benchmark checks, not as an aggregate:
+  **(a)** `#336`, `#062/#063`, `#108a` are known-correct `No`s and must still be `No` — and must
+  still be *unflagged* — after a second look; **(b)** the 11 known false negatives must flip to
+  `Yes` or, failing that, to flagged. An accuracy number that improves while (a) flips is a
+  regression wearing a better number.
+
+- [x] T046 **The negative delivery gate — the one rule that generalises past this sample.** At the
+  point a `No` is about to be written as a confident prefill (`scheduler.py`, the adjudicated-
+  delivery path where T027's floor now applies), require that the unit can show it looked: at least
+  **two distinct admissible pages examined**, under at least **two distinct queries** (T042 supplies
+  the second). A `No` meeting that bar delivers as today, floored by
+  `validated_negative_confidence_floor`. A `No` that does **not** — one page, one query, nothing
+  followed — delivers via the T023 path instead: `suggested=True`, `reason=NEEDS_HUMAN_REVIEW`,
+  capped at `best_effort_confidence_ceiling`, with the reason text saying plainly that the answer
+  rests on a single page. No new state, no new reason code, no new UI concept. Note the ordering
+  dependency: this gate is only meaningful **after** T041/T042 exist to supply a second page — before
+  them it would flag nearly every negative.
+
+- [x] T047 **Record what the negative actually looked at, so the next false negative is findable.**
+  A false negative currently leaves no trace distinguishing it from a true one. The unit already
+  accumulates `tried_urls`, `blocked_domains`, `link_retry_count`, and per-run
+  `navigated_to_url`; none of it survives onto the prefill. Carry a compact negative-provenance
+  record (pages examined, queries used, domains blocked) into `unit_context` beside T023's
+  `validator_gaps`. This is what makes T046's gate auditable rather than a magic threshold, gives
+  the reviewer the "we checked these three pages" line that makes a flagged `No` actionable, and
+  turns the next country's false negatives into something greppable instead of something that needs
+  a hand-built gap analysis to discover.
+
+- [x] T048 **GATE** Re-run the 25-question sample and record **six** numbers separately — an
+  aggregate hides every failure this step is about: (1) fill rate split into **clean vs flagged**
+  deliveries, (2) correct-answer rate, (3) true-negative retention (T044a), (4) false-negative
+  recovery (T044b), (5) **flagging precision** — of the negatives T046 flagged, how many were
+  actually wrong; if that is near zero the gate is miscalibrated and costs reviewer trust, and
+  (6) **cost/latency delta**. T041 roughly doubles assessor work on negative units — in this sample
+  ~11 units gain a full resolve+assess+validate round. That is the price of the step and it should
+  be stated, not discovered.
+
+### Explicitly not doing in this step
+
+- **`#030` (`sam.gov/fpds`)** — a client-side-rendered search widget with no pre-rendered rows.
+  Fixing it means executing the widget's query, which is a scraping capability, not a resolution
+  fix. One question; revisit only if the pattern recurs across countries.
+- **Raising the prompt's confidence band** — see the Step 4 caveat. Confidence is presentation.
+- **Per-country domain allow-lists** (`data.gov`, `cio.gov`, …) — recommendation 1 of the gap
+  analysis, now obsolete: T030 (spec 010) already admits any same-country government domain, so a
+  hand-maintained alias list per federated country would add upkeep for no additional reach.
 
 ---
 

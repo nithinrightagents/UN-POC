@@ -25,16 +25,12 @@
         <div>
             <span class="muted" style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">System Proposed Answer:</span>
             <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-primary); margin-top: 0.25rem;">
-                {% if view.delivered_answer is not none %}
-                    {% if view.delivered_answer == True or view.delivered_answer == "True" or view.delivered_answer == "true" %}
-                    <span class="badge badge--pass" style="font-size: 1rem; padding: 0.35rem 0.75rem;">Yes — Feature Present</span>
-                    {% elif view.delivered_answer == False or view.delivered_answer == "False" or view.delivered_answer == "false" %}
-                    <span class="badge badge--fail" style="font-size: 1rem; padding: 0.35rem 0.75rem;">No — Feature Absent</span>
-                    {% else %}
-                    <span>{{ view.delivered_answer }}</span>
-                    {% endif %}
+                {% if view.answer_category == "yes" %}
+                <span class="badge badge--pass" style="font-size: 1rem; padding: 0.35rem 0.75rem;">Yes — Feature Present</span>
+                {% elif view.answer_category == "no" %}
+                <span class="badge badge--fail" style="font-size: 1rem; padding: 0.35rem 0.75rem;">No — Feature Absent</span>
                 {% else %}
-                <em class="muted">Not yet determined</em>
+                <span class="badge badge--neutral" style="font-size: 1rem; padding: 0.35rem 0.75rem;">Inconclusive</span>
                 {% endif %}
             </div>
         </div>

@@ -203,7 +203,18 @@ async def test_validated_negative_is_floored_at_delivery():
         evidence_locus=EvidenceLocus.NATIONAL_PORTAL_ONLY,
     )
     repo.insert_question(q)
-    repo.upsert_unit("s-best", q.question_id, portal.portal_id, UnitState.RESOLVED.value, {"resolved_url": portal.resolved_url})
+    repo.upsert_unit(
+        "s-best",
+        q.question_id,
+        portal.portal_id,
+        UnitState.RESOLVED.value,
+        {
+            "resolved_url": portal.resolved_url,
+            "negative_recheck_done": True,
+            "pages_examined": [portal.resolved_url, "https://borger.dk/p2"],
+            "queries_used": ["q1", "q2"],
+        },
+    )
 
     # Two independent agents both validated a "No" at the prompt's thin-
     # evidence calibration level (40) -- below the floor.
@@ -240,7 +251,13 @@ async def test_best_effort_delivery_does_not_apply_negative_floor():
         evidence_locus=EvidenceLocus.NATIONAL_PORTAL_ONLY,
     )
     repo.insert_question(q)
-    repo.upsert_unit("s-best", q.question_id, portal.portal_id, UnitState.RESOLVED.value, {"resolved_url": portal.resolved_url})
+    repo.upsert_unit(
+        "s-best",
+        q.question_id,
+        portal.portal_id,
+        UnitState.RESOLVED.value,
+        {"resolved_url": portal.resolved_url, "negative_recheck_done": True},
+    )
 
     _insert_run(repo, q.question_id, portal.portal_id, "run-bn-1", 0, False, 30, AgentRunState.VALIDATION_FAILED_TERMINAL)
     _insert_run(repo, q.question_id, portal.portal_id, "run-bn-2", 1, False, 20, AgentRunState.VALIDATION_FAILED_TERMINAL)

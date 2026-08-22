@@ -13,7 +13,9 @@ from api.schemas import (
 from portal.common import ensure_session
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
+from shared.state.entities import link_source_display_name
 from shared.state.reason_tags import prefill_reason_tag
+
 
 
 def build_prefills_router(
@@ -71,14 +73,16 @@ def build_prefills_router(
 
             if p.run_id:
                 found_runs.add(p.run_id)
-            if p.generated_at:
+            ts_val = getattr(p, "created_at", getattr(p, "generated_at", None))
+            if ts_val:
                 p_ts = (
-                    p.generated_at.isoformat()
-                    if hasattr(p.generated_at, "isoformat")
-                    else str(p.generated_at)
+                    ts_val.isoformat()
+                    if hasattr(ts_val, "isoformat")
+                    else str(ts_val)
                 )
                 if latest_ts is None or p_ts > latest_ts:
                     latest_ts = p_ts
+
 
             reason_str = None
             reason_text_val = None
@@ -112,13 +116,14 @@ def build_prefills_router(
             items.append(
                 PrefillItem(
                     question_id=q.question_id,
-                    indicator_id=q.indicator_id,
+                    indicator_id=q.indicator_id or q.question_id,
                     suggested=p.suggested,
                     answer=p.answer,
                     confidence=p.confidence,
                     justification=p.justification,
                     evidence_url=p.evidence_url,
                     supplying_source=p.supplying_source,
+                    supplying_source_label=link_source_display_name(p.supplying_source),
                     agreement_outcome=p.agreement_outcome,
                     confidence_gap=p.confidence_gap,
                     unselected_position=unselected_dict,
@@ -127,6 +132,8 @@ def build_prefills_router(
                     reason_text=reason_text_val,
                 )
             )
+
+
 
         resp_run_id = (
             run_id

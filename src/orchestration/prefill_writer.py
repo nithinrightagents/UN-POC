@@ -16,6 +16,7 @@ from shared.state.entities import (
     PrefillReason,
     UnitState,
     new_id,
+    prefill_answer_category,
 )
 
 
@@ -83,6 +84,7 @@ def write_prefill(
                 current_state_ref[0] = target_state
 
         ctx = dict(unit_context or {})
+        ctx["answer_category"] = prefill_answer_category(suggested, answer, reason)
         if reason:
             reason_val = reason.value if hasattr(reason, "value") else str(reason)
             ctx["prefill_reason"] = reason_val

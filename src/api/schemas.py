@@ -334,12 +334,14 @@ class PrefillItem(BaseModel):
     justification: str | None = None
     evidence_url: str | None = None
     supplying_source: str | None = None
+    supplying_source_label: str | None = None
     agreement_outcome: str | None = None
     confidence_gap: int | None = None
     unselected_position: dict[str, Any] | None = None
     resolver_reasoning: str | None = None
     reason: str | None = None
     reason_text: str | None = None
+
 
 
 class PrefillsResponse(BaseModel):

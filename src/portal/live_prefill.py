@@ -1,15 +1,10 @@
-"""Runs the real spec-001 pipeline -- link resolution (prior-survey KB ->
+"""Runs the spec-001 pipeline -- link resolution (prior-survey KB ->
 MSQ -> internet search, shared/tools/linkresolution/chain.py) into N >= 2
 independent live Vertex AI assessor agents, a validator, and an adjudicator
 (orchestration/scheduler.py) -- against one unit, in the background, for the
 admin's "Run AI Assessment" button (spec 005).
-
-This replaces the old heuristic stand-in (agents/prefill/heuristic.py) for
-admin-triggered assessment now that Vertex AI credentials are configured.
-The heuristic itself is untouched and still used by portal/seed.py -- the
-demo seed needs to stay fast and free; a real run of 8 seeded portals x 157
-questions x N agents would be neither.
 """
+
 
 from __future__ import annotations
 

@@ -347,9 +347,8 @@ async def process_unit(
                         # questions are only this strict on the FIRST
                         # resolution attempt (link_retry_count == 0); once a
                         # link retry has kicked in, later attempts may land
-                        # on any recognized government domain, not just the
-                        # national portal.
-                        is_first_attempt = unit_data.get("link_retry_count", 0) == 0
+                        is_negative_recheck = bool(unit_data.get("negative_recheck_active"))
+                        is_first_attempt = (unit_data.get("link_retry_count", 0) == 0 and not is_negative_recheck)
                         # T032: Portal is preferred on first attempt for all questions;
                         # escalates to any national government domain on first retry.
                         restrict_to_portal = is_first_attempt
@@ -366,7 +365,14 @@ async def process_unit(
                         # `title` is concise and keyword-rich by construction;
                         # `text` is only a fallback for the rare question
                         # without one, truncated to stay query-length-safe.
-                        search_topic = question.title or question.text[:120]
+                        if is_negative_recheck:
+                            # T042: On a negative recheck, build query from the question's `what` criteria
+                            # rather than its `title`, breaking keyword traps (e.g. accessibility, privacy).
+                            search_topic = question.what or question.title or question.text[:120]
+                            relevance_detail = question.what or question.text[:400]
+                        else:
+                            search_topic = question.title or question.text[:120]
+                            relevance_detail = question.what or question.text[:400]
                         # Ranking sees more of the question than the query
                         # does, in two tiers. The title names the topic but
                         # is written for brevity and often abbreviates the
@@ -384,30 +390,15 @@ async def process_unit(
                         # the title: the visa indicator resolved to
                         # /visa-application-rejected over /visas on the
                         # strength of "application".
-                        relevance_detail = question.what or question.text[:400]
                         if restrict_domain:
-                            # search_for_link anchors this query to
-                            # `restrict_domain` itself -- wrapping the topic
-                            # in portal-name/URL boilerplate on top of that
-                            # (2026-08-21 debugging pass: reproduced live
-                            # against Firecrawl) swamps ranking so badly that
-                            # unrelated questions collapse onto the SAME
-                            # generic top-level page (e.g. four different
-                            # questions all resolving to usa.gov/about-the-us)
-                            # instead of a topic-specific one -- keep the
-                            # query lean when domain-restricted.
                             search_query = search_topic
                         else:
-                            # Relaxed retry: any government domain is allowed,
-                            # so the country name is the one piece of context
-                            # worth adding. The portal's raw URL used to be
-                            # interpolated here too and is deliberately gone --
-                            # a bare URL in the query text is not a term the
-                            # engine can rank on, it just crowds out the topic.
                             search_query = (
                                 f"{portal.display_name or portal.country_id} government "
                                 f"{search_topic}"
                             )
+                        # Record query for negative provenance (T047)
+                        unit_data["queries_used"] = list(set(unit_data.get("queries_used", []) + [search_query]))
                         result = await resolve_link(
                             repo,
                             http_client,
@@ -416,7 +407,7 @@ async def process_unit(
                             search_query,
                             settings,
                             exclude_sources=set(unit_data.get("excluded_link_sources", [])),
-                            limiter=browser.search_limiter if browser else None,
+                            limiter=getattr(browser, "search_limiter", None),
                             portal_url=portal.resolved_url,
                             provider=provider,
                             exclude_urls=set(unit_data.get("tried_urls", [])),
@@ -438,6 +429,8 @@ async def process_unit(
                                 f"{search_topic}"
                             ),
                         )
+                        if result.resolved_url:
+                            unit_data["pages_examined"] = list(set(unit_data.get("pages_examined", []) + [result.resolved_url]))
                     url_span.patch(
                         outputs={
                             "resolved_url": result.resolved_url,
@@ -597,6 +590,53 @@ async def process_unit(
 
             validated_runs = [r for r in all_runs if r.state == AgentRunState.VALIDATED_PASS]
 
+            # Track pages examined from runs (T047)
+            for r in all_runs:
+                if getattr(r, "navigated_to_url", None):
+                    unit_data["pages_examined"] = list(set(unit_data.get("pages_examined", []) + [r.navigated_to_url]))
+
+            # Negative recheck (T041): a unanimous "No" must survive a second look before it is delivered.
+            # Triggers if every agent that formed an answer reported False, and negative recheck has not yet run.
+            has_formed_runs = [
+                r for r in all_runs
+                if r.answer is not None and not getattr(r, "portal_unreachable", False) and not getattr(r, "auth_boundary_observed", False)
+            ]
+            unanimous_negative = bool(has_formed_runs) and all(r.answer is False for r in has_formed_runs)
+            negative_recheck_needed = unanimous_negative and not unit_data.get("negative_recheck_done", False)
+
+            if negative_recheck_needed:
+                unit_data["negative_recheck_done"] = True
+                unit_data["negative_recheck_active"] = True
+                tried_urls = set(unit_data.get("tried_urls", []))
+                blocked_domains = set(unit_data.get("blocked_domains", []))
+                if unit_data.get("resolved_url"):
+                    tried_urls.add(unit_data["resolved_url"])
+                for r in all_runs:
+                    if getattr(r, "navigated_to_url", None):
+                        tried_urls.add(r.navigated_to_url)
+                unit_data["tried_urls"] = list(tried_urls)
+                unit_data["blocked_domains"] = list(blocked_domains)
+                unit_data["resolved_url"] = None
+                unit_data.pop("supplying_source", None)
+                advance(UnitState.RESOLVING_LINK, unit_data)
+                return await process_unit(
+                    repo=repo,
+                    settings=settings,
+                    session_id=session_id,
+                    provider=provider,
+                    browser=browser,
+                    http_client=http_client,
+                    fetch_log=fetch_log,
+                    stage_log=stage_log,
+                    cost_ledger=cost_ledger,
+                    question=question,
+                    portal=portal,
+                    adjudicate_results=adjudicate_results,
+                    run_id=run_id,
+                    resolve_only=resolve_only,
+                    batch_run=batch_run,
+                )
+
             if len(validated_runs) < settings.min_validated_positions:
                 if all_runs and all(r.auth_boundary_observed for r in all_runs):
                     return await no_suggestion(
@@ -710,6 +750,23 @@ async def process_unit(
                     best_validations = repo.list_validation_results(best_run.run_id)
                     validator_gaps = best_validations[-1].gaps if best_validations else []
 
+                    distinct_pages = set(unit_data.get("pages_examined", []))
+                    if resolved_url:
+                        distinct_pages.add(resolved_url)
+                    for r in all_runs:
+                        if getattr(r, "navigated_to_url", None):
+                            distinct_pages.add(r.navigated_to_url)
+                    distinct_queries = set(unit_data.get("queries_used", []))
+                    negative_provenance = {
+                        "pages_examined": list(distinct_pages),
+                        "queries_used": list(distinct_queries),
+                        "blocked_domains": list(set(unit_data.get("blocked_domains", []))),
+                    }
+
+                    unit_ctx = {"validator_gaps": validator_gaps}
+                    if best_run.answer is False:
+                        unit_ctx["negative_provenance"] = negative_provenance
+
                     write_prefill(
                         repo=repo,
                         session_id=session_id,
@@ -725,7 +782,7 @@ async def process_unit(
                         supplying_source=unit_data.get("supplying_source"),
                         reason=PrefillReason.NEEDS_HUMAN_REVIEW,
                         position_run_ids=[r.run_id for r in all_runs],
-                        unit_context={"validator_gaps": validator_gaps},
+                        unit_context=unit_ctx,
                         advance_state=False,
                     )
                     unit_data["consensus_answer"] = best_run.answer
@@ -847,19 +904,34 @@ async def process_unit(
                 agreement_outcome_str = "resolved_dispute"
                 resolver_decision_dict = resolver_decision.__dict__
 
-            # A validated negative -- a second model independently confirmed
-            # the anchor supports "No" -- is more trustworthy than the raw
-            # evidence-weight number reads, since thin-evidence calibration
-            # (prompts/profiles.py) scores every anchored negative in the
-            # 30-65 range regardless of how well it was confirmed. Floor it
-            # here, at delivery time, rather than in the prompt (which would
-            # inflate unvalidated answers too) or by raising the acceptance
-            # threshold (which the confidence gate never even applies to a
-            # No answer -- see confidence_gate.py).
+            distinct_pages = set(unit_data.get("pages_examined", []))
+            if resolved_url:
+                distinct_pages.add(resolved_url)
+            for r in all_runs:
+                if getattr(r, "navigated_to_url", None):
+                    distinct_pages.add(r.navigated_to_url)
+            distinct_queries = set(unit_data.get("queries_used", []))
+
+            negative_provenance = {
+                "pages_examined": list(distinct_pages),
+                "queries_used": list(distinct_queries),
+                "blocked_domains": list(set(unit_data.get("blocked_domains", []))),
+            }
+
+            prefill_reason = None
             if candidate_answer is False:
-                candidate_confidence = max(
-                    candidate_confidence or 0, settings.validated_negative_confidence_floor
-                )
+                # T046: The negative delivery gate -- require at least two distinct pages
+                # and two distinct queries to deliver as a confident floored negative.
+                if len(distinct_pages) >= 2 and len(distinct_queries) >= 2:
+                    candidate_confidence = max(
+                        candidate_confidence or 0, settings.validated_negative_confidence_floor
+                    )
+                else:
+                    # Single-source unconfirmed negative -> deliver via NEEDS_HUMAN_REVIEW
+                    candidate_confidence = min(
+                        candidate_confidence or 0, settings.best_effort_confidence_ceiling
+                    )
+                    prefill_reason = PrefillReason.NEEDS_HUMAN_REVIEW
 
             evidence_art = (
                 repo.get_evidence(selected_run.evidence_artifact_id)
@@ -901,6 +973,14 @@ async def process_unit(
                         position_run_ids=agreement.position_run_ids,
                     )
 
+            unit_ctx = {}
+            if candidate_answer is False:
+                unit_ctx["negative_provenance"] = negative_provenance
+                if prefill_reason == PrefillReason.NEEDS_HUMAN_REVIEW:
+                    unit_ctx["validator_gaps"] = [
+                        "Negative finding based on single examined page without multi-query confirmation."
+                    ]
+
             write_prefill(
                 repo=repo,
                 session_id=session_id,
@@ -914,21 +994,27 @@ async def process_unit(
                 justification=selected_run.justification,
                 evidence_url=evidence_url_val,
                 supplying_source=unit_data.get("supplying_source"),
+                reason=prefill_reason,
                 agreement_outcome=agreement_outcome_str,
                 confidence_gap=agreement.confidence_gap,
                 resolver_decision=resolver_decision_dict,
                 unselected_position=unselected_pos_dict,
                 position_run_ids=agreement.position_run_ids,
+                unit_context=unit_ctx,
                 advance_state=False,
             )
             unit_data["consensus_answer"] = candidate_answer
             unit_data["consensus_confidence"] = candidate_confidence
             advance(UnitState.DELIVERED, unit_data)
             outcome = UnitOutcome(
-                question.question_id, portal_id, UnitState.DELIVERED, "delivered"
+                question.question_id,
+                portal_id,
+                UnitState.DELIVERED,
+                prefill_reason.value if prefill_reason else "delivered",
             )
             root_run.patch(
-                outputs={"outcome": outcome.final_state.value, "detail": outcome.detail}
+                metadata={"prefill_reason": prefill_reason.value if prefill_reason else "delivered"},
+                outputs={"outcome": outcome.final_state.value, "detail": outcome.detail},
             )
             return outcome
 

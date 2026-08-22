@@ -43,6 +43,8 @@ from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
 from core.telemetry.langsmith_tracing import agent_trace
 from core.telemetry.stage_events import StageEventLog
+from shared.tools.linkresolution.admissibility import check_admissible
+from shared.tools.linkresolution.sources.search import is_government_domain
 
 
 _RESPONSE_SCHEMA = {
@@ -287,12 +289,13 @@ async def run_assessor_agent(
 _MAX_LINK_CANDIDATES = 20
 
 
-async def _extract_same_domain_links(page, base_url: str) -> list[dict]:
-    """One-hop navigation (2026-08-20 debugging pass, phase 1): pulls the
-    same-domain links actually present on the rendered page, so the model
-    can name a concrete next step instead of only self-reporting `this page
-    is wrong` (which `link_likely_wrong` asked for and got zero times in 50
-    questions across two runs -- it gave the model nothing to act on).
+async def _extract_same_domain_links(
+    page, base_url: str, country_id: str | None = None
+) -> list[dict]:
+    """One-hop navigation (2026-08-20 debugging pass, phase 1; spec 011 T040 cross-domain):
+    pulls admissible government links present on the rendered page, so the model
+    can name a concrete next step instead of only self-reporting `this page is wrong`.
+    Same-domain links are ranked first, followed by valid same-country government domains.
     Best-effort: an extraction failure here should never fail the whole
     assessment, just leave the model without a navigation option."""
     try:
@@ -313,23 +316,15 @@ async def _extract_same_domain_links(page, base_url: str) -> list[dict]:
             continue
         if not href.startswith(("http://", "https://")):
             continue
-        if urlparse(href).netloc.lower() != base_domain:
+        if not (is_government_domain(href, country_id) and check_admissible(href).admissible):
             continue
+        is_same_domain = (urlparse(href).netloc.lower() == base_domain)
         seen.add(href)
-        candidates.append({"text": text[:80], "href": href})
+        candidates.append({"text": text[:80], "href": href, "is_same_domain": is_same_domain})
 
-    # Confirmed live on borger.dk's education hub: site-wide nav chrome
-    # (short, generic category labels like "Sundhed og sygdom") always sits
-    # FIRST in DOM order, and the actually-useful, specific sub-topic links
-    # only appear after it (position 26+ of 51 anchors on that page) --
-    # capping at the first N in DOM order would show the model nothing but
-    # the same nav chrome it's already reading in the page text, on every
-    # page. Longer anchor text reliably means a more specific link (nav
-    # items repeat the same handful of short category words site-wide;
-    # content links describe one specific service), so sorting by text
-    # length before capping surfaces the useful candidates instead.
-    candidates.sort(key=lambda c: len(c["text"]), reverse=True)
-    return candidates[:_MAX_LINK_CANDIDATES]
+    # Same-domain links ranked first, then sorted by text length
+    candidates.sort(key=lambda c: (1 if c["is_same_domain"] else 0, len(c["text"])), reverse=True)
+    return [{"text": c["text"], "href": c["href"]} for c in candidates[:_MAX_LINK_CANDIDATES]]
 
 
 def _link_matching_quote(
@@ -441,7 +436,12 @@ async def _evaluate_page(
         tag.decompose()
     page_text = body_soup.get_text(" ", strip=True)
 
-    links = await _extract_same_domain_links(page, page_result.final_url) if allow_navigation else []
+    country_id = question.get("country_id")
+    links = (
+        await _extract_same_domain_links(page, page_result.final_url, country_id=country_id)
+        if allow_navigation
+        else []
+    )
 
     prompt = build_prompt(
         question_text=question["text"],

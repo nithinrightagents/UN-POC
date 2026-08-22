@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from html import escape
 
-from shared.state.entities import EvidenceArtifact
+from shared.state.entities import EvidenceArtifact, link_source_display_name
 
 
 def render_evidence_html(
@@ -47,7 +47,9 @@ def render_evidence_html(
 
     source_badge = ""
     if supplying_source:
-        source_badge = f'<span class="badge badge--source" role="status">Source: {escape(supplying_source.upper())}</span>'
+        source_label = link_source_display_name(supplying_source) or supplying_source.upper()
+        source_badge = f'<span class="badge badge--source" role="status">Source: {escape(source_label)}</span>'
+
 
     translation_html = ""
     if evidence.element_text_translation:

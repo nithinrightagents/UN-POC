@@ -14,12 +14,8 @@ exercises the real MSQ parser against real content, not a synthetic sample.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import pathlib
 
-import httpx
-
-from agents.prefill.heuristic import run_heuristic_prefill
 from portal.common import ensure_session
 from portal.msq import ingest_msq_pdf
 from shared.config.settings import Settings
@@ -33,7 +29,6 @@ from shared.state.entities import (
     ElementReference,
     EvidenceArtifact,
     HumanAssessorSubmission,
-    Prefill,
     ProjectType,
     PublicationRecord,
     Question,
@@ -58,50 +53,6 @@ _LOSI_UNITS = [
     ("MCR", "Manchester", "https://www.manchester.gov.uk"),
     ("EDI", "Edinburgh", "https://www.edinburgh.gov.uk"),
 ]
-
-
-async def _prefill_unit(
-    repo: Repository, session_id: str, portal: TargetPortal, questions: list[Question]
-) -> None:
-    async with httpx.AsyncClient() as client:
-        try:
-            all_ids = [q.indicator_id or q.question_id for q in questions]
-            results = await run_heuristic_prefill(client, portal.resolved_url, all_ids)
-        except Exception:
-            return
-    by_indicator = {res.indicator_id: res for res in results}
-    for q in questions:
-        res = by_indicator.get(q.indicator_id or q.question_id)
-        if not res:
-            continue
-        evidence = EvidenceArtifact(
-            artifact_id=new_id("ev"),
-            resolved_url=res.evidence_url,
-            element_reference=ElementReference(
-                css_path="(heuristic-check)",
-                text_hash=hashlib.sha256(res.snippet.encode()).hexdigest()[:12],
-            ),
-            element_text=res.snippet or res.reasoning,
-            verifiability_status="verified" if res.confidence >= 70 else "unverified",
-        )
-        repo.insert_evidence(evidence)
-        repo.insert_prefill(
-            Prefill(
-                prefill_id=new_id("pf"),
-                run_id=new_id("run"),
-                session_id=session_id,
-                cycle_id=portal.cycle_id,
-                question_id=q.question_id,
-                portal_id=portal.portal_id,
-                suggested=True,
-                answer=res.answer,
-                confidence=res.confidence,
-                justification=res.reasoning,
-                evidence_url=res.evidence_url,
-                supplying_source="heuristic",
-                agreement_outcome="unanimous",
-            )
-        )
 
 
 async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
@@ -156,10 +107,6 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
             repo.insert_portal(portal)
         losi_portals.append(portal)
 
-    await asyncio.gather(
-        *[_prefill_unit(repo, session_national, p, questions_national) for p in national_portals],
-        *[_prefill_unit(repo, session_losi, p, questions_losi) for p in losi_portals],
-    )
 
     if _DENMARK_MSQ_PATH.exists():
         doc = ingest_msq_pdf(str(_DENMARK_MSQ_PATH), cycle_national.cycle_id, "DK", _DENMARK_MSQ_PATH.name)

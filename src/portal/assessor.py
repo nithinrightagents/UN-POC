@@ -14,7 +14,7 @@ from __future__ import annotations
 import urllib.parse
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from portal.common import ensure_session, repo_factory
@@ -24,24 +24,15 @@ from shared.state.entities import (
     AssessorCompletion,
     AssessorRole,
     HumanAssessorSubmission,
+    link_source_display_name,
     new_id,
 )
 from shared.state.reason_tags import prefill_reason_tag
 
-# Human-readable labels for LinkSource values (shared/state/entities.py),
-# shown to the assessor alongside the AI's evidence link.
-_SUPPLYING_SOURCE_LABELS = {
-    "prior_survey_kb": "Prior Questionnaire",
-    "msq": "MSQ",
-    "search": "Web",
-}
-
 
 def _supplying_source_label(source: str | None) -> str | None:
-    if not source:
-        return None
-    value = source.value if hasattr(source, "value") else str(source)
-    return _SUPPLYING_SOURCE_LABELS.get(value, value)
+    return link_source_display_name(source)
+
 
 
 def build_assessor_router(database_path: str, settings: Settings, templates: Jinja2Templates) -> APIRouter:
@@ -151,6 +142,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
 
     @router.post("/assessor/{cycle_id}/{portal_id}/question/{question_id}/submit")
     def submit(
+        request: Request,
         cycle_id: str,
         portal_id: str,
         question_id: str,
@@ -197,8 +189,43 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             settings.human_discrepancy_rate_threshold,
         )
 
+        # Calculate unanswered questions for intelligent auto-advance
+        question_ids = [q.question_id for q in questions]
+        unanswered: list[str] = []
+        for q in questions:
+            sub = r.latest_human_submission(session_id, q.question_id, portal_id, assessor_role)
+            if sub is None or sub.answer is None:
+                unanswered.append(q.question_id)
+
+        next_unanswered: str | None = None
+        if unanswered:
+            curr_idx = question_ids.index(question_id) if question_id in question_ids else -1
+            # Find next unanswered in sequence after the current question
+            next_unanswered = next((qid for qid in question_ids[curr_idx + 1:] if qid in unanswered), None)
+            if not next_unanswered:
+                # Wrap around to the first unanswered
+                next_unanswered = unanswered[0]
+
+        target_anchor = f"q_{next_unanswered}" if next_unanswered else "assessment-progress-panel"
+
+        # Check if request prefers JSON (AJAX / Fetch API)
+        accept_header = request.headers.get("accept", "")
+        if "application/json" in accept_header or request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JSONResponse({
+                "status": "success",
+                "saved_question_id": question_id,
+                "answer": bool_answer,
+                "evidence_url": evidence_url or "",
+                "notes": notes or "",
+                "answered_count": len(questions) - len(unanswered),
+                "total_questions": len(questions),
+                "outstanding_question_ids": unanswered,
+                "next_unsubmitted_id": next_unanswered,
+                "can_complete": len(unanswered) == 0,
+            })
+
         return RedirectResponse(
-            f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}",
+            f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}#{target_anchor}",
             status_code=303,
         )
 
