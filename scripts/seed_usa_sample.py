@@ -29,7 +29,7 @@ from shared.state.entities import (
 
 CYCLE_ID = "usa-sample-2026"
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
-_INDICATORS_PATH = _REPO_ROOT / "data" / "questionnaires" / "templates" / "un_osi_2024_relaxed.json"
+_INDICATORS_PATH = _REPO_ROOT / "data" / "questionnaires" / "templates" / "un_osi_2024_master.json"
 _SEED = 42
 _SAMPLE_SIZE = 25
 

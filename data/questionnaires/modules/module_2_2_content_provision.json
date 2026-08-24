@@ -1,7 +1,7 @@
 {
   "module": "Content Provision",
   "module_id": "2.2",
-  "source_pdf": "Module 2.2 Content Provision.pdf",
+  "source_pdf": "Module 2.2 Content Provision (2).pdf",
   "total_questions": 8,
   "questions": [
     {
@@ -9,18 +9,18 @@
       "indicator_id": "#015",
       "module": "Content Provision",
       "title": "Foreign language support",
-      "text": "Foreign language support — Provision of information or services in the MGP in another language besides the oﬃcial or primary country language.",
-      "what": "Provision of information or services in the MGP in another language besides the oﬃcial or primary country language.",
-      "why": "Ensures inclusivity and accessibility, enabling diverse communities within the country to access essential services, information, and resources eﬀectively, fostering a sense of belonging and participation.",
+      "text": "Foreign language support — Provision of information or services in the MGP in another language besides the official or primary country language.",
+      "what": "Provision of information or services in the MGP in another language besides the official or primary country language.",
+      "why": "Ensures inclusivity and accessibility, enabling diverse communities within the country to access essential services, information, and resources effectively, fostering a sense of belonging and participation.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Identify Target Languages a. Determine which languages are widely spoken within the country served by the national government. 2. Content Management System (CMS): a. Choose a CMS that supports multilingual content. 3. Regular Updates and Maintenance: a. Continuously update translated content to reﬂect changes in policies, services, or important announcements. For more information check out US GSA Non-English Digital Content Guide or Weglot’s guide",
+        "scoring_guidance": "1. Identify Target Languages a. Determine which languages are widely spoken within the country served by the national government. 2. Content Management System (CMS): a. Choose a CMS that supports multilingual content. 3. Regular Updates and Maintenance: a. Continuously update translated content to reflect changes in policies, services, or important announcements. For more information check out US GSA Non-English Digital Content Guide or Weglot's guide",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Germany’s portal available in English, French and German",
+      "benchmark_case": "",
       "reference_links": [
-        "Germany’s portal available in English, French and German"
+        "Germany's portal available in English, French and German"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -36,17 +36,17 @@
       "what": "A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead and may provide a link to the external platform used by the country.",
       "why": "Essential for promoting transparency, encouraging fair competition, and ensuring that businesses and contractors have equal access to opportunities, fostering accountability and trust within the country.",
       "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Legal Compliance and Policies: a. Familiarize yourself with national laws governing public procurement. 2. Dedicated Webpage/Website Creation: a. Create a dedicated section on the national website, or external link for procurement/bidding processes. 3. Document Transparency: a. Provide access to procurement documents such as Requests for Proposals (RFPs), bid speciﬁcations, and contracts. 4. Regular Updates: a. Keep the procurement section up-to-date with the latest opportunities, amendments, and results. For more information, check out this guide by the current author for digitalizing your procurement processes.",
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Legal Compliance and Policies: a. Familiarize yourself with national laws governing public procurement. 2. Dedicated Webpage/Website Creation: a. Create a dedicated section on the national website, or external link for procurement/bidding processes. 3. Document Transparency: a. Provide access to procurement documents such as Requests for Proposals (RFPs), bid specifications, and contracts. 4. Regular Updates: a. Keep the procurement section up-to-date with the latest opportunities, amendments, and results. For more information, check out this guide by the current author for digitalizing your procurement processes.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Morocco’s procurement website",
+      "benchmark_case": "",
       "reference_links": [
-        "Morocco’s procurement website"
+        "Morocco's procurement website"
       ],
       "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
+      "evidence_locus": "national_portal_only",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -54,22 +54,22 @@
       "question_id": "CP-030",
       "indicator_id": "#030",
       "module": "Content Provision",
-      "title": "Procurement results",
-      "text": "Procurement results — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
+      "title": "Procurement results/contracts awarded",
+      "text": "Procurement results/contracts awarded — A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
       "what": "A government procurement is the acquisition of goods, services or works from an external source by a government. Some governments may use the terms \"tender\" or \"contract\" instead. Results of procurement processes are either indicated on the national portal or on the external platform used by the government",
       "why": "Crucial for transparency, ensuring accountability, and fostering public trust by demonstrating fair and responsible use of taxpayer funds.",
       "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Create a Dedicated Section: a. Develop a dedicated webpage for procurement results 2. Organize Content: a. Categorize results by projects, contracts, or departments 3. Document Preparation: a. Compile procurement outcomes, including bid winners, contract details, and project status 4. Regular Updates: a. Update the section promptly after each procurement process For more information, check out this guide by the current author for digitalizing your procurement processes.",
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Create a Dedicated Section: a. Develop a dedicated webpage for procurement results 2. Organize Content: a. Categorize results by projects, contracts, or departments 3. Document Preparation: a. Compile procurement outcomes, including bid winners, contract details, and project status 4. Regular Updates: a. Update the section promptly after each procurement process For more information, check out this guide by the current author for digitalizing your procurement processes.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out The Netherlands’ tender portal results ﬁlter",
+      "benchmark_case": "",
       "reference_links": [
-        "The Netherlands’ tender portal results ﬁlter"
+        "The Netherlands' tender portal results filter"
       ],
       "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
+      "evidence_locus": "national_portal_only",
       "is_custom": false,
       "requires_authenticated_access": false
     },
@@ -83,13 +83,13 @@
       "why": "Enables informed decision-making, optimizes user experience, and allows the national government to tailor online services to meet the needs of its residents, enhancing digital engagement and civic participation.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Choose Analytics Platform: a. Select a reliable web analytics platform like Google Analytics. 2. Define Goals: a. Set up specific goals within the analytics platform. 3. Track Key Metrics: a. Monitor key metrics such as new visits, total page views, bounce rate (percentage of single-page visits), and average time on site. 4. User Surveys and Feedback: a. Integrate surveys or feedback forms on the website to collect direct input from users. 5. Continuous Improvement: a. Use the insights from user statistics to continuously improve the website. For more help, see USA GSA or UK Gov",
+        "scoring_guidance": "1. Choose Analytics Platform: a. Select a reliable web analytics platform like Google Analytics. 2. Define Goals: a. Set up specific goals within the analytics platform. 3. Track Key Metrics: a. Monitor key metrics such as new visits, total page views, bounce rate (percentage of single-page visits), and average time on site. 4. User Surveys and Feedback: a. Integrate surveys or feedback forms on the website to collect direct input from users. 5. Continuous Improvement: a. Use the insights from user statistics to continuously improve the website. For more help, see USA GSA or UK Gov",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out China’s information on portal usage in upper menu",
+      "benchmark_case": "",
       "reference_links": [
-        "China’s information on portal usage in upper menu"
+        "China's information on portal usage in upper menu"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -106,13 +106,13 @@
       "why": "Enhances transparency, accessibility, and equity in accessing educational resources, thereby facilitating the empowerment and advancement of individuals through education.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Identify Scholarships and Funding: a. Compile a list of available financial aid options from government departments and institutions. 2. Create a Portal Section: a. Design a dedicated section on the government portal for educational funding. 3. Organize Information Clearly: 1. Present details like eligibility criteria and deadlines in a structured format. 5. Update Information Regularly: a. Ensure that the portal reflects the latest changes in eligibility and deadlines. 6. Promote Awareness: a. Advertise funding opportunities through various channels to reach students and educators",
+        "scoring_guidance": "1. Identify Scholarships and Funding: a. Compile a list of available financial aid options from government departments and institutions. 2. Create a Portal Section: a. Design a dedicated section on the government portal for educational funding. 3. Organize Information Clearly: 1. Present details like eligibility criteria and deadlines in a structured format. 5. Update Information Regularly: a. Ensure that the portal reflects the latest changes in eligibility and deadlines. 6. Promote Awareness: a. Advertise funding opportunities through various channels to reach students and educators",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out The Republic of Korea’s page on scholarship and other funding",
+      "benchmark_case": "",
       "reference_links": [
-        "The Republic of Korea’s page on scholarship and other funding"
+        "The Republic of Korea's page on scholarship and other funding"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -129,13 +129,13 @@
       "why": "Empowers young people with the tools and information needed to navigate the job market effectively, enhance their employability skills, and secure meaningful employment opportunities.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Identify Resources: a. Compile a list of youth employment resources, including job portals and training programs. 2. Create a Portal Section: a. Design a dedicated section for youth employment on the government portal. 3. Offer Guidance: a. Provide tips on resume writing and career planning. 4. Promote Training: a. Highlight vocational programs and skill development initiatives. 5. Facilitate Networking: a. Include links to professional networking platforms. 6. Update Regularly: a. Keep job listings and resources current. For more information, check out OECD’s page on Youth employment and social policies",
+        "scoring_guidance": "1. Identify Resources: a. Compile a list of youth employment resources, including job portals and training programs. 2. Create a Portal Section: a. Design a dedicated section for youth employment on the government portal. 3. Offer Guidance: a. Provide tips on resume writing and career planning. 4. Promote Training: a. Highlight vocational programs and skill development initiatives. 5. Facilitate Networking: a. Include links to professional networking platforms. 6. Update Regularly: a. Keep job listings and resources current. For more information, check out OECD's page on Youth employment and social policies",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out The Republic of Korea’s employment for youth page",
+      "benchmark_case": "",
       "reference_links": [
-        "The Republic of Korea’s employment for youth page"
+        "The Republic of Korea's employment for youth page"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -146,19 +146,19 @@
       "question_id": "CP-131a",
       "indicator_id": "#131a",
       "module": "Content Provision",
-      "title": "Workers' compensation beneﬁts",
-      "text": "Workers' compensation beneﬁts — Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of work-related illnesses or injuries. This information typically includes detailed instructions on eligibility criteria, required documentation, and submitting an online application.",
+      "title": "Workers' compensation benefits",
+      "text": "Workers' compensation benefits — Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of work-related illnesses or injuries. This information typically includes detailed instructions on eligibility criteria, required documentation, and submitting an online application.",
       "what": "Comprehensive guidance and resources are provided on the national government portal regarding the process of applying for compensation in cases of work-related illnesses or injuries. This information typically includes detailed instructions on eligibility criteria, required documentation, and submitting an online application.",
       "why": "Facilitate access to support and assistance for individuals who have suffered work-related injuries or illnesses, ensuring they receive the compensation they are entitled to in a timely and efficient manner.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Provide Clear Instructions: a. Offer concise guidance on eligibility criteria and required documentation for workers' compensation benefits. 2. Develop Online Application Forms: a. Create user-friendly online forms for applicants to submit their claims electronically. 3. Include Step-by-Step Instructions: a. Outline the application process in simple, sequential steps to guide users through each stage. 4. Regularly Update Information: a. Keep information on eligibility criteria, documentation, and application procedures current and accurate.",
+        "scoring_guidance": "1. Provide Clear Instructions: a. Offer concise guidance on eligibility criteria and required documentation for workers' compensation benefits. 2. Develop Online Application Forms: a. Create user-friendly online forms for applicants to submit their claims electronically. 3. Include Step-by-Step Instructions: a. Outline the application process in simple, sequential steps to guide users through each stage. 4. Regularly Update Information: a. Keep information on eligibility criteria, documentation, and application procedures current and accurate.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Singapore’s page on workers’ compensation",
+      "benchmark_case": "",
       "reference_links": [
-        "Singapore’s page on workers’ compensation"
+        "Singapore's page on workers' compensation"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -175,13 +175,13 @@
       "why": "Facilitates access to appropriate care and support services for older individuals, enabling them to maintain independence, dignity, and quality of life as they age.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Provide Clear Guidance: a. Offer concise instructions on eligibility criteria and available support services for long-term care. 2. Develop Online Application Forms: a. Create user-friendly forms for older persons to apply for long-term care support. 3. Include Contact Information: a. Provide contact details for government agencies or support organizations offering assistance. 4. Ensure Accessibility: a. Ensure the portal is accessible to older persons with disabilities and across various devices. 5. Regularly Update Information: a. Keep information on eligibility criteria, support services, and application procedures current. 6. Facilitate Navigation: a. Organize information in a clear and intuitive manner to help older persons navigate the process easily. For more information, check out WHO’s Framework for countries to achieve an integrated continuum of long-term care",
+        "scoring_guidance": "1. Provide Clear Guidance: a. Offer concise instructions on eligibility criteria and available support services for long-term care. 2. Develop Online Application Forms: a. Create user-friendly forms for older persons to apply for long-term care support. 3. Include Contact Information: a. Provide contact details for government agencies or support organizations offering assistance. 4. Ensure Accessibility: a. Ensure the portal is accessible to older persons with disabilities and across various devices. 5. Regularly Update Information: a. Keep information on eligibility criteria, support services, and application procedures current. 6. Facilitate Navigation: a. Organize information in a clear and intuitive manner to help older persons navigate the process easily. For more information, check out WHO's Framework for countries to achieve an integrated continuum of long-term care",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Israel’s long term care page",
+      "benchmark_case": "",
       "reference_links": [
-        "Israel’s long term care page"
+        "Israel's long term care page"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",

@@ -1,4 +1,4 @@
-"""Pydantic schemas and API exceptions for EKAP REST API (spec 007)."""
+"""Pydantic schemas and API exceptions for EKAP REST API (spec 007, 008, 012 & headless full capabilities)."""
 
 from __future__ import annotations
 
@@ -117,6 +117,30 @@ class CapacityReached(ApiError):
         self.retry_after_seconds = retry_after_seconds
 
 
+# --- Reference & Metadata Schemas -------------------------------------------
+
+
+class QuestionSetSummary(BaseModel):
+    set_id: str
+    label: str
+    description: str
+    indicator_count: int
+
+
+class QuestionSetListResponse(BaseModel):
+    question_sets: list[QuestionSetSummary]
+
+
+class CountryItem(BaseModel):
+    code: str
+    name: str
+    most_populous_city: str
+
+
+class CountryListResponse(BaseModel):
+    countries: list[CountryItem]
+
+
 # --- Cycle Schemas ----------------------------------------------------------
 
 
@@ -125,6 +149,9 @@ class CycleCreateRequest(BaseModel):
     name: str
     questionnaire_ref: str = "UN MSQ 2026 Indicator Set"
     project_type: str = "national_osi"
+    discrepancy_rate_threshold: float | None = None
+    question_set_id: str | None = None
+    country_ids: list[str] = Field(default_factory=list)
 
 
 class CycleResponse(BaseModel):
@@ -134,6 +161,7 @@ class CycleResponse(BaseModel):
     project_type: str
     country_set: list[str] = Field(default_factory=list)
     created_at: str
+    discrepancy_rate_threshold: float | None = None
 
 
 class CycleDetailResponse(BaseModel):
@@ -145,10 +173,25 @@ class CycleDetailResponse(BaseModel):
     created_at: str
     question_count: int
     unit_count: int
+    discrepancy_rate_threshold: float | None = None
 
 
 class CycleListResponse(BaseModel):
     cycles: list[CycleResponse]
+
+
+class ToleranceUpdateRequest(BaseModel):
+    tolerance: float = Field(..., ge=0.0, le=100.0, description="Tolerance percentage between 0 and 100")
+    actor_id: str = "senior-reviewer"
+
+
+class ToleranceUpdateResponse(BaseModel):
+    cycle_id: str
+    previous_tolerance: float | None = None
+    new_tolerance: float
+    changed_by: str
+    changed_at: str
+    closed_rounds_count: int = 0
 
 
 # --- Question Schemas -------------------------------------------------------
@@ -163,6 +206,15 @@ class QuestionCreateRequest(BaseModel):
     module: str = "Custom Indicators"
     evidence_locus: str = "national_portal_only"
     benchmark_case: str | None = None
+
+
+class QuestionEditRequest(BaseModel):
+    text: str | None = None
+    title: str | None = None
+    what: str | None = None
+    why: str | None = None
+    how: str | None = None
+    editor_actor_id: str = "admin"
 
 
 class QuestionResponse(BaseModel):
@@ -188,8 +240,12 @@ class QuestionListResponse(BaseModel):
 class UnitCreateRequest(BaseModel):
     country_id: str
     display_name: str
-    url: str
+    url: str | None = None
     unit_type: str = "country"
+
+
+class UnitBulkCreateRequest(BaseModel):
+    units: list[UnitCreateRequest]
 
 
 class UnitResponse(BaseModel):
@@ -205,6 +261,36 @@ class UnitResponse(BaseModel):
 
 class UnitListResponse(BaseModel):
     units: list[UnitResponse]
+
+
+class UnitBulkCreateResponse(BaseModel):
+    created_count: int
+    units: list[UnitResponse]
+
+
+# --- MSQ Schemas ------------------------------------------------------------
+
+
+class MSQUploadTextRequest(BaseModel):
+    text: str
+    page_count: int = 1
+
+
+class MSQUploadResponse(BaseModel):
+    country_id: str
+    cycle_id: str
+    page_count: int
+    extracted_links_count: int
+    extracted_links: dict[str, str] = Field(default_factory=dict)
+
+
+class MSQDetailResponse(BaseModel):
+    has_msq: bool
+    cycle_id: str
+    country_id: str
+    page_count: int | None = None
+    text_snippet: str | None = None
+    matched_candidate_count: int = 0
 
 
 # --- Assessment Job Schemas -------------------------------------------------
@@ -235,6 +321,18 @@ class AssessmentStatusResponse(BaseModel):
     created_at: str | None = None
     updated_at: str | None = None
     outcomes: dict[str, Any] | None = None
+
+
+class BatchAssessmentRequest(BaseModel):
+    actor_id: str = "integration-client"
+    portal_ids: list[str] | None = None
+    question_ids: list[str] | None = None
+
+
+class BatchAssessmentResponse(BaseModel):
+    cycle_id: str
+    jobs_triggered: list[AssessmentTriggerResponse]
+    total_jobs: int
 
 
 class AIQuestionResult(BaseModel):
@@ -343,7 +441,6 @@ class PrefillItem(BaseModel):
     reason_text: str | None = None
 
 
-
 class PrefillsResponse(BaseModel):
     run_id: str | None = None
     generated_at: str | None = None
@@ -379,3 +476,324 @@ class CompletionsStatusResponse(BaseModel):
     roles: dict[str, RoleCompletionStatus]
     blocking_reason: str | None = None
 
+
+# --- Discrepancy & Reconciliation Schemas (Spec 012) ------------------------
+
+
+class DiscrepancyStateResponse(BaseModel):
+    portal_id: str
+    state: str
+    differing_answer_rate: float | None = None
+    compared_count: int
+    disputed_question_ids: list[str] = Field(default_factory=list)
+    tolerance_in_force: float
+    rounds_consumed: int
+    automatic_round_used: bool
+    open_round_id: str | None = None
+
+
+class ReconciliationDisputeRow(BaseModel):
+    question_id: str
+    indicator_id: str | None = None
+    title: str | None = None
+    my_answer: bool | None = None
+    my_evidence: str | None = None
+    my_notes: str | None = None
+    peer_answer: bool | None = None
+    peer_evidence: str | None = None
+    peer_notes: str | None = None
+    peer_actor_id: str | None = None
+    joint_answer: bool | None = None
+    joint_justification: str | None = None
+    joint_committed_by: str | None = None
+    is_disputed: bool = True
+
+
+class ReconciliationSettledRow(BaseModel):
+    question_id: str
+    indicator_id: str | None = None
+    title: str | None = None
+    my_answer: bool | None = None
+    joint_answer: bool | None = None
+    is_disputed: bool = False
+
+
+class ReconciliationWorkspaceResponse(BaseModel):
+    portal_id: str
+    cycle_id: str
+    role: str
+    peer_role: str
+    state: str
+    round_id: str | None = None
+    rate_pct: str
+    tolerance_pct: str
+    compared_count: int
+    disputed_rows: list[ReconciliationDisputeRow]
+    settled_rows: list[ReconciliationSettledRow]
+
+
+class JointAnswerRequest(BaseModel):
+    role: str
+    actor_id: str
+    answer: bool
+    justification: str
+
+
+class JointAnswerResponse(BaseModel):
+    joint_answer_id: str
+    round_id: str
+    question_id: str
+    answer: bool
+    justification: str
+    committed_by_role: str
+    round_closed: bool = False
+
+
+class EscalationItemResponse(BaseModel):
+    item_id: str
+    session_id: str
+    portal_id: str | None = None
+    question_id: str | None = None
+    reason: str
+    context: dict[str, Any] = Field(default_factory=dict)
+    disposition: dict[str, Any] | None = None
+    disposed_by_actor_id: str | None = None
+    disposed_at: str | None = None
+
+
+class EscalationsListResponse(BaseModel):
+    escalations: list[EscalationItemResponse]
+
+
+class EscalationDispositionRequest(BaseModel):
+    resolution: str
+    notes: str = ""
+    actor_id: str = "senior-reviewer"
+    resolved_answers: dict[str, bool] | None = None
+
+
+class EscalationDispositionResponse(BaseModel):
+    item_id: str
+    resolution: str
+    resolved_by: str
+    resolved_at: str
+    notes: str = ""
+
+
+# --- Public Reporting Schemas -----------------------------------------------
+
+
+class PublicCycleItem(BaseModel):
+    cycle_id: str
+    name: str
+    project_type: str
+    published_units_count: int
+
+
+class PublicCycleListResponse(BaseModel):
+    cycles: list[PublicCycleItem]
+
+
+class PublicRankingItem(BaseModel):
+    portal_id: str
+    country_id: str
+    display_name: str
+    unit_type: str
+    score: float
+    published_at: str
+
+
+class PublicRankingsResponse(BaseModel):
+    cycle_id: str
+    cycle_name: str
+    project_type: str
+    rankings: list[PublicRankingItem]
+
+
+class PublicProfileBreakdownItem(BaseModel):
+    question_id: str
+    indicator_id: str | None = None
+    title: str | None = None
+    module: str | None = None
+    answer: bool
+
+
+class PublicProfileResponse(BaseModel):
+    cycle_id: str
+    portal_id: str
+    country_id: str
+    display_name: str
+    unit_type: str
+    score: float
+    published_at: str
+    published_by: str
+    breakdown: list[PublicProfileBreakdownItem]
+
+
+# --- AI Review Schemas ------------------------------------------------------
+
+
+class ReviewActionRequest(BaseModel):
+    actor_id: str
+    edited_answer: Any | None = None
+    override_answer: Any | None = None
+    rejection_reason: str | None = None
+
+
+class ReviewActionResponse(BaseModel):
+    decision_id: str
+    action: str
+
+
+class ReviewStatusResponse(BaseModel):
+    session_id: str
+    portal_id: str
+    cycle_id: str
+    status: dict[str, Any]
+
+
+class ReviewQuestionResponse(BaseModel):
+    session_id: str
+    portal_id: str
+    question_id: str
+    view: dict[str, Any]
+
+
+# --- Export Schemas ---------------------------------------------------------
+
+
+class ExportTriggerRequest(BaseModel):
+    output_dir: str = "./data/exports"
+    actor_id: str = "system-exporter"
+
+
+class ExportResponse(BaseModel):
+    cycle_id: str
+    ndjson_path: str
+    exclusion_report_path: str
+    exported_at: str
+
+
+# --- Telemetry & Audit Schemas ----------------------------------------------
+
+
+class TelemetrySummaryResponse(BaseModel):
+    session_id: str
+    summary: dict[str, Any]
+
+
+class TimingsReportResponse(BaseModel):
+    session_id: str
+    timings: dict[str, Any]
+
+
+class FetchesReportResponse(BaseModel):
+    session_id: str
+    fetches: dict[str, Any]
+
+
+class CostReportResponse(BaseModel):
+    session_id: str
+    cost: dict[str, Any]
+
+
+class AuditSummaryResponse(BaseModel):
+    session_id: str
+    summary: dict[str, Any]
+
+
+class QuestionAuditResponse(BaseModel):
+    session_id: str
+    question_id: str
+    portal_id: str
+    history: dict[str, Any]
+
+
+# --- Verification Schemas ---------------------------------------------------
+
+
+class VerifyRequest(BaseModel):
+    checks: list[str] = Field(
+        default_factory=lambda: [
+            "independence",
+            "evidence",
+            "resume",
+            "telemetry",
+            "credentials",
+        ]
+    )
+
+
+class VerifyResponse(BaseModel):
+    clean: bool
+    findings: list[str] = Field(default_factory=list)
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+# --- Benchmark & Diagnostics Schemas ---------------------------------------
+
+
+class BenchmarkRunRequest(BaseModel):
+    set_id: str
+    dataset_path: str = "data/benchmark/module_2_1.json"
+
+
+class BenchmarkRunResponse(BaseModel):
+    session_id: str
+    overall_accuracy: float
+    discrepancy_flag_rate: float
+    total_evaluated: int
+
+
+class BenchmarkCompareRequest(BaseModel):
+    session_id_a: str
+    session_id_b: str
+
+
+class BenchmarkCompareResponse(BaseModel):
+    session_id_a: str
+    session_id_b: str
+    comparison: dict[str, Any]
+
+
+class DiagnosticRunRequest(BaseModel):
+    cycle_id: str = "usa-test-2026"
+    reference_set_id: str = "bm-reference-links-us"
+    fixture_path: str = "data/benchmark/reference_links_us.json"
+    questions_filter: list[str] | None = None
+    resolve_only: bool = False
+    check_staleness: bool = False
+
+
+class DiagnosticRunResponse(BaseModel):
+    summary: str
+    diagnostic_result: dict[str, Any]
+
+
+class DiagnosticCompareRequest(BaseModel):
+    session_a: str
+    session_b: str
+    fail_on_regression: bool = False
+
+
+class DiagnosticCompareResponse(BaseModel):
+    session_a: str
+    session_b: str
+    has_regression: bool
+    summary: str
+
+
+# --- System Config & Health Schemas ----------------------------------------
+
+
+class SystemConfigResponse(BaseModel):
+    valid: bool
+    error: str | None = None
+    parameters: dict[str, dict[str, Any]]
+
+
+class SystemHealthResponse(BaseModel):
+    status: str
+    database_path: str
+    ai_runtime_active: bool
+    timestamp: str

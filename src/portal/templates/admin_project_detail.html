@@ -38,6 +38,13 @@
 </div>
 {% endif %}
 
+{% if tolerance_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Tolerance Update Failed:</strong> Tolerance value must be a valid number between 0% and 100% inclusive.
+</div>
+{% endif %}
+
 {% if units|length > 10 %}
 <div class="alert-box warning">
     <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
@@ -69,6 +76,34 @@
             <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
             <span>Arbitration &amp; Discrepancy Queue</span>
         </a>
+    </div>
+</div>
+
+<!-- Project Tolerance Section -->
+<div class="card" style="margin-bottom: 1.5rem; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="margin: 0; font-size: 1rem;">Project Discrepancy Tolerance</h3>
+                {% if tolerance_is_inherited %}
+                <span class="badge badge--neutral" style="font-size: 0.75rem;">Default Inherited ({{ effective_tolerance_pct }}%)</span>
+                {% else %}
+                <span class="badge badge--yes" style="font-size: 0.75rem;">Configured ({{ effective_tolerance_pct }}%)</span>
+                {% endif %}
+            </div>
+            <p class="muted" style="margin: 0; font-size: 0.85rem;">
+                Threshold above which differing human assessor answers trigger automated reconciliation rounds.
+            </p>
+        </div>
+        <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/tolerance" style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="hidden" name="actor_id" value="senior-reviewer">
+            <label for="tolerance_input" style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary);">Tolerance (%):</label>
+            <input type="number" id="tolerance_input" name="tolerance" min="0" max="100" step="0.1" value="{{ effective_tolerance_pct }}" required style="width: 85px; padding: 0.35rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs);">
+            <button type="submit" class="btn btn-sm btn-primary">
+                <svg class="icon" aria-hidden="true"><use href="#icon-settings"/></svg>
+                <span>Save Tolerance</span>
+            </button>
+        </form>
     </div>
 </div>
 
@@ -365,26 +400,50 @@
         <!-- Discrepancy Status -->
         <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
             <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">Assessor A/B Discrepancy</div>
-            {% if row.discrepancy %}
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
-                <strong style="font-size: 1.1rem; color: var(--color-text-primary);">{{ "%.0f"|format(row.discrepancy.differing_answer_rate * 100) }}%</strong>
-                {% if row.discrepancy.outcome == "flagged_for_arbitration" %}
-                <span class="badge badge--flag">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
-                    Flagged for Arbitration
-                </span>
-                {% else %}
-                <span class="badge badge--yes">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
-                    Within &le;5% Threshold
-                </span>
-                {% endif %}
+                {{ row.badge_html | safe }}
             </div>
-            {% else %}
-            <div style="font-size: 0.875rem; color: var(--color-text-muted);">Awaiting both submissions</div>
-            {% endif %}
         </div>
     </div>
+
+    {% if row.reconciliation_state and row.reconciliation_state.state == 'persistent_discrepancy' and row.disputes_detail %}
+    <div style="margin-bottom: 1rem; padding: 0.875rem 1rem; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: var(--radius-sm);">
+        <div style="font-size: 0.85rem; font-weight: 700; color: #92400e; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.35rem;">
+            <svg class="icon" aria-hidden="true" style="width: 1rem; height: 1rem;"><use href="#icon-alert-triangle"/></svg>
+            <span>Persistent Discrepancy — Automatic round used ({{ row.reconciliation_state.rounds_consumed }} round(s) consumed)</span>
+        </div>
+        <div style="font-size: 0.8rem; color: #78350f; margin-bottom: 0.5rem;">
+            Still-contested indicators ({{ row.disputes_detail | length }}):
+        </div>
+        <table class="table" style="width: 100%; font-size: 0.8rem; background-color: #ffffff; border: 1px solid var(--color-border-subtle);">
+            <thead>
+                <tr>
+                    <th style="padding: 0.35rem 0.5rem;">Indicator ID</th>
+                    <th style="padding: 0.35rem 0.5rem;">Assessor A</th>
+                    <th style="padding: 0.35rem 0.5rem;">Assessor B</th>
+                    <th style="padding: 0.35rem 0.5rem;">Joint Settlement</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in row.disputes_detail %}
+                <tr>
+                    <td style="padding: 0.35rem 0.5rem; font-weight: 600;">{{ d.question_id }}</td>
+                    <td style="padding: 0.35rem 0.5rem;">{{ "Yes" if d.answer_a else "No" }}</td>
+                    <td style="padding: 0.35rem 0.5rem;">{{ "Yes" if d.answer_b else "No" }}</td>
+                    <td style="padding: 0.35rem 0.5rem;">
+                        {% if d.joint_answer is not none %}
+                        <span class="badge badge--yes" style="font-size: 0.75rem;">{{ "Yes" if d.joint_answer else "No" }} (by Assessor {{ d.joint_committed_by }})</span>
+                        <div style="font-size: 0.75rem; color: var(--color-text-muted);">{{ d.joint_justification }}</div>
+                        {% else %}
+                        <span class="badge badge--flag" style="font-size: 0.75rem;">Contested</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
 
     <!-- Actions Toolbar -->
     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding-top: 0.75rem; border-top: 1px solid var(--color-border-subtle);">

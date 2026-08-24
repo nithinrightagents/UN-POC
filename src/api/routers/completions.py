@@ -16,6 +16,8 @@ from api.schemas import (
     RoleCompletionStatus,
 )
 from portal.common import ensure_session
+from portal.discrepancy import recompute_portal_discrepancy
+from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
@@ -102,6 +104,15 @@ def build_completions_router(
             indicator_count_at_declaration=total_indicators,
         )
         repo.insert_assessor_completion(comp)
+
+        recompute_portal_discrepancy(
+            repo,
+            session_id,
+            portal_id,
+            [q.question_id for q in questions],
+            effective_tolerance(repo, cycle_id, settings),
+            cycle_id=cycle_id,
+        )
 
         return CompletionCreateResponse(
             completion_id=comp.completion_id,

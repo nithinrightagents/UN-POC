@@ -1,4 +1,4 @@
-"""Assessment triggers, status polling, and results router (spec 007 US1, US2)."""
+"""Assessment triggers, status polling, and results router (spec 007 US1, US2 & batch operations)."""
 
 from __future__ import annotations
 
@@ -12,13 +12,15 @@ from api.schemas import (
     AssessmentStatusResponse,
     AssessmentTriggerRequest,
     AssessmentTriggerResponse,
+    BatchAssessmentRequest,
+    BatchAssessmentResponse,
     NotFound,
 )
 from portal.common import ensure_session
 from review.query import build_question_review
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
-from shared.state.entities import TERMINAL_UNIT_STATES, UnitState
+from shared.state.entities import TERMINAL_UNIT_STATES
 
 
 def build_assessments_router(
@@ -63,6 +65,65 @@ def build_assessments_router(
             created_at=job.created_at,
         )
 
+    @router.post(
+        "/cycles/{cycle_id}/assessments/batch",
+        response_model=BatchAssessmentResponse,
+        status_code=status.HTTP_202_ACCEPTED,
+    )
+    async def trigger_batch_assessment(
+        cycle_id: str,
+        body: BatchAssessmentRequest = BatchAssessmentRequest(),
+        repo: Repository = Depends(get_repo),
+        runtime=Depends(get_ai_runtime),
+    ):
+        cycle = repo.get_cycle(cycle_id)
+        if cycle is None:
+            raise NotFound(
+                f"Cycle '{cycle_id}' not found.", details={"cycle_id": cycle_id}
+            )
+
+        units = repo.list_portals(cycle_id)
+        if body.portal_ids:
+            wanted = set(body.portal_ids)
+            units = [u for u in units if u.portal_id in wanted]
+
+        session_id = ensure_session(repo, cycle_id)
+        triggered_jobs: list[AssessmentTriggerResponse] = []
+
+        for u in units:
+            try:
+                job_start = start_assessment_job(
+                    repo,
+                    settings,
+                    runtime,
+                    cycle_id=cycle_id,
+                    portal_id=u.portal_id,
+                    triggered_by="api",
+                    actor_id=body.actor_id,
+                )
+                job = job_start.job
+                st = job_status(repo, session_id, cycle_id, u.portal_id)
+                triggered_jobs.append(
+                    AssessmentTriggerResponse(
+                        job_id=job.job_id,
+                        state=job.state,
+                        cycle_id=job.cycle_id,
+                        portal_id=job.portal_id,
+                        questions_total=job.questions_total,
+                        questions_completed=st.questions_completed,
+                        already_running=job_start.already_running,
+                        created_at=job.created_at,
+                    )
+                )
+            except Exception:
+                pass
+
+        return BatchAssessmentResponse(
+            cycle_id=cycle_id,
+            jobs_triggered=triggered_jobs,
+            total_jobs=len(triggered_jobs),
+        )
+
     @router.get(
         "/cycles/{cycle_id}/units/{portal_id}/assessment",
         response_model=AssessmentStatusResponse,
@@ -99,6 +160,40 @@ def build_assessments_router(
             updated_at=st.updated_at,
             outcomes=st.outcomes,
         )
+
+    @router.get(
+        "/cycles/{cycle_id}/assessments/status",
+        response_model=list[AssessmentStatusResponse],
+    )
+    def get_cycle_assessments_status(
+        cycle_id: str,
+        repo: Repository = Depends(get_repo),
+    ):
+        cycle = repo.get_cycle(cycle_id)
+        if cycle is None:
+            raise NotFound(
+                f"Cycle '{cycle_id}' not found.", details={"cycle_id": cycle_id}
+            )
+
+        session_id = ensure_session(repo, cycle_id)
+        units = repo.list_portals(cycle_id)
+        statuses = []
+        for u in units:
+            st = job_status(repo, session_id, cycle_id, u.portal_id)
+            statuses.append(
+                AssessmentStatusResponse(
+                    state=st.state,
+                    job_id=st.job_id,
+                    questions_total=st.questions_total,
+                    questions_completed=st.questions_completed,
+                    failure_cause=st.failure_cause,
+                    triggered_by=st.triggered_by,
+                    created_at=st.created_at,
+                    updated_at=st.updated_at,
+                    outcomes=st.outcomes,
+                )
+            )
+        return statuses
 
     @router.get(
         "/cycles/{cycle_id}/units/{portal_id}/results",

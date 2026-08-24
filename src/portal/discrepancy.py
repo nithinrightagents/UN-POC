@@ -10,6 +10,8 @@ the same table without confusion.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorRole,
@@ -23,7 +25,8 @@ from shared.state.entities import (
 def _compare(
     repo: Repository, session_id: str, portal_id: str, question_ids: list[str], threshold: float
 ) -> tuple[list[str], list[str], float, bool] | None:
-    """Shared comparison logic. Returns (common, disagreements, rate, flagged),
+    """Shared comparison logic with joint-answer overlay (spec 012).
+    Returns (common, disagreements, rate, flagged),
     or None if neither role has any overlapping answered question yet."""
     a_answers: dict[str, object] = {}
     b_answers: dict[str, object] = {}
@@ -39,7 +42,14 @@ def _compare(
     if not common:
         return None
 
-    disagreements = [qid for qid in common if a_answers[qid] != b_answers[qid]]
+    disagreements: list[str] = []
+    for qid in common:
+        joint = repo.latest_joint_answer(session_id, portal_id, qid)
+        if joint is not None:
+            continue
+        if a_answers[qid] != b_answers[qid]:
+            disagreements.append(qid)
+
     rate = len(disagreements) / len(common)
     flagged = rate > threshold
     return common, disagreements, rate, flagged
@@ -75,16 +85,18 @@ def recompute_portal_discrepancy(
     portal_id: str,
     question_ids: list[str],
     threshold: float,
+    cycle_id: str | None = None,
 ) -> DiscrepancyCase | None:
     """Compares the latest Assessor A vs Assessor B submission for every
     question on this unit. Returns None if neither role has any overlapping
     answered question yet (nothing to compare). Writes a DiscrepancyCase
-    always once there is overlap; writes an EscalationQueueItem only when the
-    differing-answer rate exceeds `threshold` (default 5% per the transcript).
+    always once there is overlap; opens an automatic reconciliation round and
+    writes an EscalationQueueItem only when both assessors have completed the unit
+    and the differing-answer rate strictly exceeds `threshold` (spec 012).
 
     Call this only at genuine state-change points (a new human submission,
-    the seed script) -- never from a GET/display path. Use
-    compute_portal_discrepancy for read-only display so repeated page views
+    a completion declaration, the seed script) -- never from a GET/display path.
+    Use compute_portal_discrepancy for read-only display so repeated page views
     don't spam duplicate audit rows and duplicate escalation-queue entries."""
     result = _compare(repo, session_id, portal_id, question_ids, threshold)
     if result is None:
@@ -103,32 +115,68 @@ def recompute_portal_discrepancy(
     )
     repo.insert_discrepancy_case(case)
 
-    if flagged:
-        # Idempotency guard: a resubmission that leaves the same disagreement
-        # set unresolved should not spawn a second queue entry for the
-        # Senior Reviewer to work through -- only a genuinely new disagreement
-        # set (or the first one) gets a fresh item.
-        already_queued = any(
-            item.portal_id == portal_id
-            and item.reason == EscalationReason.PORTAL_DISCREPANCY
-            and item.context.get("disagreements") == disagreements
-            for item in repo.list_escalations(session_id, unresolved_only=True)
+    # Step 3: rate > tolerance in force strictly greater?
+    if not flagged:
+        return case
+
+    # Step 4: a round is already open for this unit?
+    open_round = repo.open_round_for_unit(session_id, portal_id)
+    if open_round is not None:
+        return case
+
+    # Step 5: both roles have an AssessorCompletion? (FR-DR-008)
+    comp_a = repo.latest_assessor_completion(session_id, portal_id, "A")
+    comp_b = repo.latest_assessor_completion(session_id, portal_id, "B")
+    if not (comp_a and comp_b):
+        return case
+
+    # Step 6: an automatic round has already been used for this unit? (FR-DR-030, FR-DR-036)
+    rounds = repo.list_rounds_for_unit(session_id, portal_id)
+    if any(r.opened_by == "automatic" for r in rounds):
+        return case
+
+    # Step 7: open round #n, opened_by='automatic'
+    if not cycle_id:
+        target_p = repo.get_portal(portal_id)
+        cycle_id = target_p.cycle_id if target_p else (comp_a.cycle_id if comp_a else "")
+
+    from portal.reconciliation import open_automatic_round
+
+    new_round = open_automatic_round(
+        repo,
+        session_id=session_id,
+        cycle_id=cycle_id,
+        portal_id=portal_id,
+        disputed_question_ids=disagreements,
+        rate=rate,
+        tolerance=threshold,
+    )
+    if not new_round:
+        return case
+
+    # Step 8: queue the EscalationQueueItem with context containing round_id
+    already_queued = any(
+        item.portal_id == portal_id
+        and item.reason == EscalationReason.PORTAL_DISCREPANCY
+        and item.context.get("disagreements") == disagreements
+        for item in repo.list_escalations(session_id, unresolved_only=True)
+    )
+    if not already_queued:
+        item = EscalationQueueItem(
+            item_id=new_id("esc"),
+            session_id=session_id,
+            reason=EscalationReason.PORTAL_DISCREPANCY,
+            context={
+                "portal_id": portal_id,
+                "differing_answer_rate": rate,
+                "threshold": threshold,
+                "disagreements": disagreements,
+                "compared_questions": len(common),
+                "round_id": new_round.round_id,
+            },
+            portal_id=portal_id,
         )
-        if not already_queued:
-            item = EscalationQueueItem(
-                item_id=new_id("esc"),
-                session_id=session_id,
-                reason=EscalationReason.PORTAL_DISCREPANCY,
-                context={
-                    "portal_id": portal_id,
-                    "differing_answer_rate": rate,
-                    "threshold": threshold,
-                    "disagreements": disagreements,
-                    "compared_questions": len(common),
-                },
-                portal_id=portal_id,
-            )
-            repo.insert_escalation(item)
+        repo.insert_escalation(item)
 
     return case
 

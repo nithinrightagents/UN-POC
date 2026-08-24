@@ -170,3 +170,156 @@ def completed_unit(conn):
             )
         conn.commit()
     return _complete
+
+
+@pytest.fixture
+def two_assessor_unit(conn):
+    """Constructs a unit with given questions and (a_answer, b_answer) pairs.
+    pair_map is dict[str, tuple[bool | object, bool | object]].
+    """
+    def _create(
+        session_id: str,
+        cycle_id: str,
+        portal_id: str,
+        pair_map: dict[str, tuple[object, object]],
+        *,
+        declare_a: bool = False,
+        declare_b: bool = False,
+        actor_a: str = "actor-A",
+        actor_b: str = "actor-B",
+    ):
+        cursor = conn.cursor()
+        now = datetime.now(timezone.utc).isoformat()
+        for qid, (a_ans, b_ans) in pair_map.items():
+            if a_ans is not None:
+                sub_id_a = f"sub-{uuid.uuid4().hex[:10]}"
+                ans_a_val = 1 if a_ans is True else (0 if a_ans is False else a_ans)
+                cursor.execute(
+                    """
+                    INSERT INTO human_assessor_submissions (
+                        submission_id, session_id, cycle_id, question_id, portal_id, role,
+                        actor_id, answer, confidence, evidence_url, justification,
+                        ai_suggested_answer, ai_suggestion_accepted, notes, submitted_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (sub_id_a, session_id, cycle_id, qid, portal_id, "A", actor_a, ans_a_val, 95, "https://example.com", "Justification", None, None, "", now),
+                )
+            if b_ans is not None:
+                sub_id_b = f"sub-{uuid.uuid4().hex[:10]}"
+                ans_b_val = 1 if b_ans is True else (0 if b_ans is False else b_ans)
+                cursor.execute(
+                    """
+                    INSERT INTO human_assessor_submissions (
+                        submission_id, session_id, cycle_id, question_id, portal_id, role,
+                        actor_id, answer, confidence, evidence_url, justification,
+                        ai_suggested_answer, ai_suggestion_accepted, notes, submitted_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (sub_id_b, session_id, cycle_id, qid, portal_id, "B", actor_b, ans_b_val, 95, "https://example.com", "Justification", None, None, "", now),
+                )
+        if declare_a:
+            cursor.execute(
+                """
+                INSERT INTO assessor_completions (
+                    completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "A", actor_a, len(pair_map), now),
+            )
+        if declare_b:
+            cursor.execute(
+                """
+                INSERT INTO assessor_completions (
+                    completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "B", actor_b, len(pair_map), now),
+            )
+        conn.commit()
+    return _create
+
+
+@pytest.fixture
+def open_round(conn):
+    """Directly creates an open reconciliation_rounds row for a unit."""
+    def _create(
+        session_id: str,
+        cycle_id: str,
+        portal_id: str,
+        disputed_question_ids: list[str],
+        *,
+        round_number: int = 1,
+        opened_by: str = "automatic",
+        opened_by_actor_id: str | None = None,
+        opened_reason: str | None = None,
+        rate_at_open: float = 0.1,
+        tolerance_at_open: float = 0.05,
+    ) -> str:
+        round_id = f"rnd-{uuid.uuid4().hex[:10]}"
+        now = datetime.now(timezone.utc).isoformat()
+        data = {
+            "disputed_question_ids": disputed_question_ids,
+            "rate_at_open": rate_at_open,
+            "tolerance_at_open": tolerance_at_open,
+        }
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO reconciliation_rounds (
+                round_id, session_id, portal_id, cycle_id, round_number,
+                opened_by, opened_by_actor_id, opened_reason, state, data, opened_at, closed_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                round_id,
+                session_id,
+                portal_id,
+                cycle_id,
+                round_number,
+                opened_by,
+                opened_by_actor_id,
+                opened_reason,
+                "open",
+                json.dumps(data),
+                now,
+                None,
+            ),
+        )
+        conn.commit()
+        return round_id
+    return _create
+
+
+@pytest.fixture
+def both_declared(conn):
+    """Writes assessor_completions rows for both roles A and B."""
+    def _declare(
+        session_id: str,
+        cycle_id: str,
+        portal_id: str,
+        count: int = 140,
+        *,
+        actor_a: str = "actor-A",
+        actor_b: str = "actor-B",
+    ):
+        cursor = conn.cursor()
+        now = datetime.now(timezone.utc).isoformat()
+        cursor.execute(
+            """
+            INSERT INTO assessor_completions (
+                completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "A", actor_a, count, now),
+        )
+        cursor.execute(
+            """
+            INSERT INTO assessor_completions (
+                completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "B", actor_b, count, now),
+        )
+        conn.commit()
+    return _declare
+

@@ -19,11 +19,19 @@ from fastapi.templating import Jinja2Templates
 
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import recompute_portal_discrepancy
+from portal.reconciliation import (
+    _format_pct,
+    close_round_if_complete,
+    render_badge,
+    unit_reconciliation_state,
+)
+from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
 from shared.state.entities import (
     AssessorCompletion,
     AssessorRole,
     HumanAssessorSubmission,
+    JointAnswer,
     link_source_display_name,
     new_id,
 )
@@ -65,6 +73,14 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             return HTMLResponse("Unknown project or unit.", status_code=404)
         questions = r.list_questions(cycle_id)
         session_id = ensure_session(r, cycle_id)
+
+        recon_state = unit_reconciliation_state(r, session_id, cycle_id, portal_id, questions, settings)
+        if recon_state.state == "reconciliation_open":
+            return RedirectResponse(
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}",
+                status_code=303,
+            )
+
         assessor_role = role
 
         rows = []
@@ -136,6 +152,8 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
                 "is_declared": is_declared,
                 "is_complete": is_complete,
                 "completion": completion,
+                "recon_state": recon_state,
+                "recon_badge": render_badge(recon_state),
                 "error_message": error,
             },
         )
@@ -186,7 +204,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             session_id,
             portal_id,
             [q.question_id for q in questions],
-            settings.human_discrepancy_rate_threshold,
+            effective_tolerance(r, cycle_id, settings),
         )
 
         # Calculate unanswered questions for intelligent auto-advance
@@ -273,8 +291,165 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             )
         )
 
+        recompute_portal_discrepancy(
+            r,
+            session_id,
+            portal_id,
+            [q.question_id for q in questions],
+            effective_tolerance(r, cycle_id, settings),
+            cycle_id=cycle_id,
+        )
+
         return RedirectResponse(
             f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}",
+            status_code=303,
+        )
+
+    @router.get("/assessor/{cycle_id}/{portal_id}/reconcile", response_class=HTMLResponse)
+    def reconcile_workspace(
+        request: Request,
+        cycle_id: str,
+        portal_id: str,
+        role: AssessorRole,
+        actor_id: str = "assessor-1",
+        error: str | None = None,
+    ):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        portal = r.get_portal(portal_id)
+        if cycle is None or portal is None:
+            return HTMLResponse("Unknown project or unit.", status_code=404)
+        session_id = ensure_session(r, cycle_id)
+        open_round = r.open_round_for_unit(session_id, portal_id)
+        if open_round is None:
+            error_msg = "No reconciliation round is currently open for this unit."
+            return RedirectResponse(
+                f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                status_code=303,
+            )
+
+        questions = r.list_questions(cycle_id)
+        disputed_ids = set(open_round.data.get("disputed_question_ids", []))
+        peer_role = AssessorRole.B if role == AssessorRole.A else AssessorRole.A
+        recon_state = unit_reconciliation_state(r, session_id, cycle_id, portal_id, questions, settings)
+        badge_html = render_badge(recon_state)
+
+        disputed_rows = []
+        settled_rows = []
+
+        for q in questions:
+            my_sub = r.latest_human_submission(session_id, q.question_id, portal_id, role)
+            joint = r.latest_joint_answer(session_id, portal_id, q.question_id)
+
+            if q.question_id in disputed_ids:
+                peer_sub = r.latest_human_submission(session_id, q.question_id, portal_id, peer_role)
+                disputed_rows.append({
+                    "question": q,
+                    "my_answer": my_sub.answer if my_sub else None,
+                    "my_evidence": my_sub.evidence_url if my_sub else "",
+                    "my_notes": my_sub.notes if my_sub else "",
+                    "peer_answer": peer_sub.answer if peer_sub else None,
+                    "peer_evidence": peer_sub.evidence_url if peer_sub else "",
+                    "peer_notes": peer_sub.notes if peer_sub else "",
+                    "peer_actor_id": peer_sub.assessor_actor_id if peer_sub else None,
+                    "joint_answer": joint.answer if joint else None,
+                    "joint_justification": joint.justification if joint else None,
+                    "joint_committed_by": joint.committed_by_role if joint else None,
+                    "is_disputed": True,
+                })
+            else:
+                settled_rows.append({
+                    "question": q,
+                    "my_answer": my_sub.answer if my_sub else None,
+                    "joint_answer": joint.answer if joint else None,
+                    "peer_answer": None,  # peer answer omitted for settled indicators (FR-DR-017, SC-011)
+                    "is_disputed": False,
+                })
+
+        return templates.TemplateResponse(
+            request, "assessor_reconcile.html",
+            {
+                "cycle": cycle,
+                "portal": portal,
+                "round": open_round,
+                "role": role.value,
+                "peer_role": peer_role.value,
+                "actor_id": actor_id,
+                "disputed_rows": disputed_rows,
+                "settled_rows": settled_rows,
+                "recon_state": recon_state,
+                "recon_state_badge": badge_html,
+                "rate_pct": _format_pct(recon_state.rate) if recon_state.rate is not None else "0%",
+                "tolerance_pct": _format_pct(recon_state.tolerance_in_force),
+                "compared_count": recon_state.compared_count,
+                "error": error,
+            },
+        )
+
+    @router.post("/assessor/{cycle_id}/{portal_id}/reconcile/{question_id}/joint")
+    def commit_joint_answer(
+        request: Request,
+        cycle_id: str,
+        portal_id: str,
+        question_id: str,
+        role: AssessorRole = Form(...),
+        actor_id: str = Form(...),
+        answer: bool = Form(...),
+        justification: str = Form(""),
+    ):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        portal = r.get_portal(portal_id)
+        if cycle is None or portal is None:
+            return HTMLResponse("Unknown project or unit.", status_code=404)
+        session_id = ensure_session(r, cycle_id)
+        open_round = r.open_round_for_unit(session_id, portal_id)
+        if open_round is None:
+            error_msg = "No reconciliation round is currently open for this unit."
+            return RedirectResponse(
+                f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                status_code=303,
+            )
+
+        disputed_ids = set(open_round.data.get("disputed_question_ids", []))
+        if question_id not in disputed_ids:
+            error_msg = f"Question '{question_id}' is not part of this round's disputed set."
+            return RedirectResponse(
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                status_code=303,
+            )
+
+        if not justification or not justification.strip():
+            error_msg = "A justification is required to commit a joint answer."
+            return RedirectResponse(
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}#dispute-{question_id}",
+                status_code=303,
+            )
+
+        from datetime import datetime, timezone
+        joint = JointAnswer(
+            joint_answer_id=new_id("joint"),
+            session_id=session_id,
+            portal_id=portal_id,
+            question_id=question_id,
+            round_id=open_round.round_id,
+            data={
+                "answer": bool(answer),
+                "justification": justification.strip(),
+                "submitted_by_role": role.value,
+                "submitted_by_actor_id": actor_id,
+            },
+            created_at=datetime.now(timezone.utc),
+        )
+        r.insert_joint_answer(joint)
+
+        questions = r.list_questions(cycle_id)
+        close_round_if_complete(
+            r, open_round.round_id, session_id, cycle_id, portal_id, questions, settings
+        )
+
+        return RedirectResponse(
+            f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}",
             status_code=303,
         )
 

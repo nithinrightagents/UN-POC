@@ -15,6 +15,7 @@ from api.schemas import (
 )
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
+from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import AssessorRole, HumanAssessorSubmission, new_id
@@ -95,7 +96,7 @@ def build_human_router(database_path: str, settings: Settings) -> APIRouter:
             session_id,
             portal_id,
             [q.question_id for q in questions],
-            settings.human_discrepancy_rate_threshold,
+            effective_tolerance(repo, cycle_id, settings),
         )
 
         return HumanSubmissionResponse(

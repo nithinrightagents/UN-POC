@@ -181,7 +181,7 @@ def test_never_published_and_republish(client: TestClient, auth: dict[str, str],
     repo = Repository(conn)
     client.post(
         "/api/v1/cycles",
-        json={"cycle_id": "repub-cycle", "name": "Republish Cycle"},
+        json={"cycle_id": "repub-cycle", "name": "Republish Cycle", "discrepancy_rate_threshold": 1.0},
         headers=auth,
     )
     client.post(
@@ -258,3 +258,149 @@ def test_never_published_and_republish(client: TestClient, auth: dict[str, str],
     assert read2["publication_id"] == pub2_id
     assert read2["score"] == 1.0
     assert read2["published_by"] == "reviewer-2"
+
+
+def test_scenario_6_publish_unresolved_with_contested_indicators_and_identical_score(
+    client: TestClient, auth: dict[str, str], conn
+):
+    repo = Repository(conn)
+    cycle_id = "c-sc6"
+
+    client.post(
+        "/api/v1/cycles",
+        json={"cycle_id": cycle_id, "name": "Scenario 6 Cycle", "discrepancy_rate_threshold": 0.05},
+        headers=auth,
+    )
+    for ind in ["Q1", "Q2", "Q3"]:
+        client.post(
+            "/api/v1/cycles/c-sc6/questions",
+            json={"indicator_id": ind, "title": f"Question {ind}", "what": "W", "why": "Y", "how": "H"},
+            headers=auth,
+        )
+
+    u_res = client.post(
+        "/api/v1/cycles/c-sc6/units",
+        json={"country_id": "DK", "display_name": "Denmark SC6", "url": "https://dk.gov"},
+        headers=auth,
+    )
+    portal_id = u_res.json()["portal_id"]
+    session_id = ensure_session(repo, cycle_id)
+
+    # Q1: A=True, B=True (Consensus -> True)
+    # Q2: A=True, B=False (Unresolved disagreement -> Assessor A wins -> True, marked contested)
+    # Q3: A=False, B=False (Consensus -> False)
+    answers_a = {"c-sc6:Q1": True, "c-sc6:Q2": True, "c-sc6:Q3": False}
+    answers_b = {"c-sc6:Q1": True, "c-sc6:Q2": False, "c-sc6:Q3": False}
+
+    for qid, ans in answers_a.items():
+        repo.insert_human_submission(
+            HumanAssessorSubmission(
+                submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
+                question_id=qid, portal_id=portal_id, role=AssessorRole.A,
+                assessor_actor_id="actor-a", answer=ans,
+            )
+        )
+    for qid, ans in answers_b.items():
+        repo.insert_human_submission(
+            HumanAssessorSubmission(
+                submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
+                question_id=qid, portal_id=portal_id, role=AssessorRole.B,
+                assessor_actor_id="actor-b", answer=ans,
+            )
+        )
+
+    # Both declare completion
+    repo.insert_assessor_completion(
+        AssessorCompletion(
+            completion_id=new_id("comp"), session_id=session_id, cycle_id=cycle_id,
+            portal_id=portal_id, role="A", actor_id="actor-a", indicator_count_at_declaration=3,
+        )
+    )
+    repo.insert_assessor_completion(
+        AssessorCompletion(
+            completion_id=new_id("comp"), session_id=session_id, cycle_id=cycle_id,
+            portal_id=portal_id, role="B", actor_id="actor-b", indicator_count_at_declaration=3,
+        )
+    )
+
+    # Unit has 1 dispute out of 3 = 33.3% > 5% tolerance
+    # Publish unit directly
+    pub_res = client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/publication",
+        json={"actor_id": "senior-reviewer-elena"},
+        headers=auth,
+    )
+    assert pub_res.status_code == 201
+    pub_data = pub_res.json()
+
+    # The score is arithmetically identical to what today's code produces for the same data (2/3 = 0.6666666666666666)
+    expected_score = 2 / 3
+    assert pytest.approx(pub_data["score"], 0.0001) == expected_score
+    assert pub_data["published_by"] == "senior-reviewer-elena"
+
+    # Database publication record has contested_question_ids recorded
+    pub_rec = repo.latest_publication(cycle_id, portal_id)
+    assert pub_rec is not None
+    assert pub_rec.contested_question_ids == ["c-sc6:Q2"]
+    assert pytest.approx(pub_rec.score, 0.0001) == expected_score
+    assert pub_rec.published_by_actor_id == "senior-reviewer-elena"
+
+
+def test_final_answer_prefers_joint_value_over_both_originals(conn):
+    from datetime import datetime, timezone
+    from api.finalize import final_answer_detail
+    from shared.state.entities import JointAnswer
+
+    repo = Repository(conn)
+    session_id = "s-joint-pref"
+    cycle_id = "c-joint-pref"
+    portal_id = "p-joint-pref"
+    qid = "c-joint-pref:IND-01"
+
+    # Assessor A says False, Assessor B says True
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=qid, portal_id=portal_id, role=AssessorRole.A,
+            assessor_actor_id="actor-a", answer=False,
+        )
+    )
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=qid, portal_id=portal_id, role=AssessorRole.B,
+            assessor_actor_id="actor-b", answer=True,
+        )
+    )
+
+    # Before joint answer: final_answer returns Assessor A's False (contested_a_wins)
+    ans_val, source = final_answer_detail(repo, session_id, qid, portal_id)
+    assert ans_val is False
+    assert source == "contested_a_wins"
+    assert final_answer(repo, session_id, qid, portal_id) is False
+
+    # Joint answer committed as True (by Assessor B with Assessor A concurring)
+    repo.insert_joint_answer(
+        JointAnswer(
+            joint_answer_id=new_id("joint"),
+            session_id=session_id,
+            portal_id=portal_id,
+            question_id=qid,
+            round_id="rnd-1",
+            data={
+                "answer": True,
+                "justification": "Found official gazette evidence",
+                "submitted_by_role": "B",
+                "submitted_by_actor_id": "actor-b",
+            },
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+
+    # After joint answer: final_answer returns True (joint_answer takes precedence over originals)
+    ans_val_after, source_after = final_answer_detail(repo, session_id, qid, portal_id)
+    assert ans_val_after is True
+    assert source_after == "joint_answer"
+    assert final_answer(repo, session_id, qid, portal_id) is True
+
+

@@ -33,6 +33,8 @@ All parameters named in FR-072.
 | `AIQ_MAX_CONCURRENT_ASSESSMENT_RUNS` | int | `2` | ≥ 1 | FR-API-014a |
 | `AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE` | int | `10` | ≥ 0 | FR-PF-029 |
 | `AIQ_PREFILL_RUN_BUDGET` | float | `0.0` | ≥ 0.0 (0.0 = uncapped) | FR-PF-041c |
+| `AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD` | float | `0.05` | 0.0–1.0 (default fallback when project tolerance unset) | FR-DR-060, FR-DR-061 |
+| Per-Project Discrepancy Tolerance | float \| None | `None` | 0.0–1.0 (inherits `AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD` when None; 0.0 means 0% tolerance) | FR-DR-060–066 |
 
 ### Notes on specific defaults
 

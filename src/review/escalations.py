@@ -77,6 +77,8 @@ class PortalDiscrepancyView:
 
 
 def portal_discrepancy_cases(repo: Repository, session_id: str) -> list[PortalDiscrepancyView]:
+    # Note: query uses scope="portal", while the human engine writes scope="portal_human".
+    # This pre-existing inconsistency is deliberately preserved (see spec 012 research.md R12).
     cases = repo.list_discrepancy_cases(session_id, scope="portal")
     return [
         PortalDiscrepancyView(

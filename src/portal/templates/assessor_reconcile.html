@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Reconciliation Workspace — {{ portal.display_name or portal.country_id }} — {{ cycle.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1100px; margin: 0 auto; padding: 2rem 1rem;">
+    <!-- Breadcrumb & Header -->
+    <nav aria-label="Breadcrumb" style="margin-bottom: 1rem; font-size: 0.875rem;">
+        <a href="/assessor">Assessor Home</a> &gt;
+        <span>{{ cycle.name }}</span> &gt;
+        <span style="font-weight: 600; color: var(--color-text-primary);">{{ portal.display_name or portal.country_id }} (Reconciliation)</span>
+    </nav>
+
+    {% if error %}
+    <div class="alert alert--danger" role="alert" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: #fef2f2; border: 1px solid #f87171; color: #991b1b;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+            <strong>Error:</strong> {{ error }}
+        </div>
+    </div>
+    {% endif %}
+
+    <header style="margin-bottom: 2rem; border-bottom: 1px solid var(--color-border-subtle); padding-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="margin: 0 0 0.5rem 0; font-size: 1.75rem;">Assessor Reconciliation Workspace</h1>
+                <p style="margin: 0; color: var(--color-text-muted); font-size: 0.95rem;">
+                    Unit: <strong>{{ portal.display_name or portal.country_id }}</strong> &bull;
+                    Viewing as <strong>Assessor {{ role }}</strong> (Peer: <strong>Assessor {{ peer_role }}</strong>)
+                </p>
+            </div>
+            <div>
+                {{ recon_state_badge | safe }}
+            </div>
+        </div>
+
+        <!-- Round Context Card -->
+        <div style="margin-top: 1.25rem; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: 1rem 1.25rem;">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center;">
+                <div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Round</span>
+                    <div style="font-size: 1.1rem; font-weight: 600;">Round {{ round.round_number }} ({{ round.opened_by | capitalize }})</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Current Discrepancy Rate</span>
+                    <div style="font-size: 1.1rem; font-weight: 600;">{{ rate_pct }}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Project Tolerance</span>
+                    <div style="font-size: 1.1rem; font-weight: 600;">&le;{{ tolerance_pct }}</div>
+                </div>
+                <div>
+                    <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Compared Indicators</span>
+                    <div style="font-size: 1.1rem; font-weight: 600;">{{ compared_count }} indicators</div>
+                </div>
+                {% if round.opened_by == 'automatic' %}
+                <div style="flex: 1 1 100%; font-size: 0.85rem; color: var(--color-text-secondary); border-top: 1px solid var(--color-border-subtle); padding-top: 0.5rem; margin-top: 0.25rem;">
+                    <em>Note: This is this unit's only automatic reconciliation round. If disagreements remain above tolerance when closed, the unit moves to persistent discrepancy for Senior Reviewer arbitration.</em>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Disputed Indicators Section (Focus Diff View) -->
+    <section aria-labelledby="disputed-heading" style="margin-bottom: 3rem;">
+        <h2 id="disputed-heading" style="font-size: 1.35rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <svg class="icon" aria-hidden="true" style="color: #b45309;"><use href="#icon-alert-triangle"/></svg>
+            <span>Disputed Indicators ({{ disputed_rows | length }})</span>
+        </h2>
+        <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Review your submission against your peer's submission and commit a joint consensus answer with justification.
+        </p>
+
+        {% for row in disputed_rows %}
+        <div id="dispute-{{ row.question.question_id }}" style="background-color: var(--color-bg-surface); border: 1px solid {% if row.joint_answer is not none %}#10b981{% else %}#f59e0b{% endif %}; border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; box-shadow: var(--shadow-sm);">
+            <!-- Header -->
+            <div style="background-color: {% if row.joint_answer is not none %}#f0fdf4{% else %}#fffbeb{% endif %}; padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--color-border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: 700; font-size: 1rem;">
+                    {{ row.question.question_id }}: {{ row.question.title or row.question.text }}
+                </div>
+                <div>
+                    {% if row.joint_answer is not none %}
+                    <span class="badge badge--yes">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                        Joint Answer Committed: {{ "Yes" if row.joint_answer else "No" }}
+                    </span>
+                    {% else %}
+                    <span class="badge badge--flag">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+                        Dispute Unsettled
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 1.25rem;">
+                <p style="margin-top: 0; color: var(--color-text-primary); font-size: 0.95rem;">{{ row.question.text }}</p>
+
+                <!-- Comparison Grid -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <!-- My Answer -->
+                    <div style="background-color: var(--color-bg-surface-subtle); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                            Your Answer (Assessor {{ role }})
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: {% if row.my_answer %}#15803d{% else %}#b91c1c{% endif %};">
+                            {{ "Yes" if row.my_answer else "No" }}
+                        </div>
+                        {% if row.my_evidence %}
+                        <div style="font-size: 0.85rem; margin-bottom: 0.25rem; word-break: break-all;">
+                            <strong>Evidence:</strong> <a href="{{ row.my_evidence }}" target="_blank" rel="noopener">{{ row.my_evidence }}</a>
+                        </div>
+                        {% endif %}
+                        {% if row.my_notes %}
+                        <div style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                            <strong>Notes:</strong> {{ row.my_notes }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Peer's Answer -->
+                    <div style="background-color: var(--color-bg-surface-subtle); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                            Peer's Answer (Assessor {{ peer_role }})
+                        </div>
+                        <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: {% if row.peer_answer %}#15803d{% else %}#b91c1c{% endif %};">
+                            {{ "Yes" if row.peer_answer else "No" }}
+                        </div>
+                        {% if row.peer_evidence %}
+                        <div style="font-size: 0.85rem; margin-bottom: 0.25rem; word-break: break-all;">
+                            <strong>Evidence:</strong> <a href="{{ row.peer_evidence }}" target="_blank" rel="noopener">{{ row.peer_evidence }}</a>
+                        </div>
+                        {% endif %}
+                        {% if row.peer_notes %}
+                        <div style="font-size: 0.85rem; color: var(--color-text-secondary);">
+                            <strong>Notes:</strong> {{ row.peer_notes }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Joint Answer Action / Result -->
+                {% if row.joint_answer is not none %}
+                <div style="background-color: #f0fdf4; border: 1px solid #86efac; border-radius: var(--radius-sm); padding: 0.875rem 1rem;">
+                    <div style="font-size: 0.85rem; color: #166534; font-weight: 600;">
+                        Consensus committed by Assessor {{ row.joint_committed_by }}:
+                    </div>
+                    <div style="font-size: 0.95rem; margin-top: 0.25rem;">
+                        <strong>Agreed Value:</strong> {{ "Yes" if row.joint_answer else "No" }} &bull;
+                        <strong>Justification:</strong> {{ row.joint_justification }}
+                    </div>
+                </div>
+                {% else %}
+                <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/reconcile/{{ row.question.question_id }}/joint" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); padding: 1rem;">
+                    <input type="hidden" name="role" value="{{ role }}">
+                    <input type="hidden" name="actor_id" value="{{ actor_id }}">
+                    <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.75rem;">Commit Joint Answer:</div>
+                    
+                    <div style="display: flex; gap: 1.5rem; margin-bottom: 0.75rem;">
+                        <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; font-weight: 600;">
+                            <input type="radio" name="answer" value="true" required>
+                            <span>Yes (Affirmative)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; font-weight: 600;">
+                            <input type="radio" name="answer" value="false" required>
+                            <span>No (Negative)</span>
+                        </label>
+                    </div>
+
+                    <div style="margin-bottom: 0.75rem;">
+                        <label for="justification_{{ row.question.question_id }}" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.25rem;">
+                            Justification / Resolution Reason <span style="color: #dc2626;">*</span>:
+                        </label>
+                        <textarea id="justification_{{ row.question.question_id }}" name="justification" rows="2" required placeholder="Explain why this consensus answer was agreed upon..." style="width: 100%; font-size: 0.875rem; padding: 0.5rem; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs);"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                        <span>Commit Consensus for {{ row.question.question_id }}</span>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Agreed / Settled Indicators Section (Locked) -->
+    <section aria-labelledby="settled-heading">
+        <h2 id="settled-heading" style="font-size: 1.25rem; margin-bottom: 0.75rem; color: var(--color-text-secondary);">
+            Agreed Indicators ({{ settled_rows | length }}) — Locked
+        </h2>
+        <p style="color: var(--color-text-muted); font-size: 0.875rem; margin-bottom: 1rem;">
+            These indicators are not in dispute and are locked during reconciliation.
+        </p>
+
+        <details style="background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: 0.5rem 1rem;">
+            <summary style="cursor: pointer; font-weight: 600; font-size: 0.9rem; padding: 0.5rem 0;">
+                Show {{ settled_rows | length }} agreed indicators
+            </summary>
+            <div style="margin-top: 1rem; border-top: 1px solid var(--color-border-subtle); padding-top: 1rem;">
+                <table class="table" style="width: 100%; font-size: 0.875rem;">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px;">ID</th>
+                            <th>Indicator</th>
+                            <th style="width: 120px;">Your Answer</th>
+                            <th style="width: 100px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in settled_rows %}
+                        <tr>
+                            <td><strong>{{ row.question.question_id }}</strong></td>
+                            <td>{{ row.question.title or row.question.text }}</td>
+                            <td>
+                                {% if row.joint_answer is not none %}
+                                    <strong>{{ "Yes" if row.joint_answer else "No" }}</strong> (Joint)
+                                {% elif row.my_answer is not none %}
+                                    <strong>{{ "Yes" if row.my_answer else "No" }}</strong>
+                                {% else %}
+                                    <span style="color: var(--color-text-muted);">Unanswered</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge--yes">Settled</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </section>
+</div>
+{% endblock %}

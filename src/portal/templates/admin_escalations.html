@@ -12,6 +12,13 @@
     <span>Arbitration Queue</span>
 </div>
 
+{% if error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>{{ error }}</strong>
+</div>
+{% endif %}
+
 <div class="page-header">
     <div class="page-header-content">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -33,6 +40,9 @@
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                 <h3 style="margin-bottom: 0;">{{ v.item.reason.value }}</h3>
                 <span class="badge badge--neutral">Unit: <code>{{ v.item.portal_id }}</code></span>
+                {% if v.item.context.round_id %}
+                <span class="badge badge--neutral">Round: <code>{{ v.item.context.round_id }}</code></span>
+                {% endif %}
                 {% if v.already_resolved %}
                 <span class="badge badge--yes">
                     <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
@@ -101,6 +111,8 @@
         <div class="form-group">
             <label for="resolution_{{ v.item.item_id }}">Arbitration Resolution Method</label>
             <select id="resolution_{{ v.item.item_id }}" name="resolution" required>
+                <option value="returned_for_reconciliation">Return to Assessors for another reconciliation round (requires stated reason)</option>
+                <option value="published_unresolved">Publish with disagreement on record (contested)</option>
                 <option value="reconciled_by_joint_review">Reconciled by joint Assessor A/B review</option>
                 <option value="senior_reviewer_override">Senior Reviewer authoritative override</option>
                 <option value="escalation_dismissed">Dismissed — not a genuine discrepancy</option>

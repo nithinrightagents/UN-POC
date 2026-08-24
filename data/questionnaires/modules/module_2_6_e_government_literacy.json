@@ -1,8 +1,8 @@
 {
   "module": "E-Government Literacy",
   "module_id": "2.6",
-  "source_pdf": "Module 2.6 E-Government Literacy.pdf",
-  "total_questions": 18,
+  "source_pdf": "Module 2.6 E-Government Literacy (1).pdf",
+  "total_questions": 13,
   "questions": [
     {
       "question_id": "EGL-003",
@@ -14,13 +14,13 @@
       "why": "Enables visitors to quickly and efficiently find specific information, services, or resources, enhancing user experience, promoting accessibility, and increasing overall user satisfaction and engagement.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Choose a Search Engine: a. Select a reliable search engine service or software that fits your budget and technical requirements. Google Custom Search, Algolia, and Elasticsearch are popular options. 2. Index Website Content: a. Ensure pages, documents, and resources on the government portal are indexed by the search engine. 3. Design User-Friendly Interface: a. Place the search bar prominently on the homepage and all other key pages. 4. Faceted Search (Filters): a. Implement filters that allow users to refine search results based on categories such as departments, document types, or publication dates. 5. Regularly Update Content: a. Keep the website content up-to-date. For more information check out Lynton’s guide or Fresh Tech Tips.",
+        "scoring_guidance": "1. Choose a Search Engine: a. Select a reliable search engine service or software that fits your budget and technical requirements. Google Custom Search, Algolia, and Elasticsearch are popular options. 2. Index Website Content: a. Ensure pages, documents, and resources on the government portal are indexed by the search engine. 3. Design User-Friendly Interface: a. Place the search bar prominently on the homepage and all other key pages. 4. Faceted Search (Filters): a. Implement filters that allow users to refine search results based on categories such as departments, document types, or publication dates. 5. Regularly Update Content: a. Keep the website content up-to-date. For more information check out Lynton's guide or Fresh Tech Tips.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Ghana’s portal search feature",
+      "benchmark_case": "",
       "reference_links": [
-        "Ghana’s portal search feature"
+        "Ghana's portal search feature"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -32,18 +32,18 @@
       "indicator_id": "#006",
       "module": "E-Government Literacy",
       "title": "Help feature/FAQs section",
-      "text": "Help feature/FAQs section — Defined by a Help or 'Frequently Asked Questions (FAQs)’ feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
-      "what": "Defined by a Help or 'Frequently Asked Questions (FAQs)’ feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
+      "text": "Help feature/FAQs section — Defined by a Help or 'Frequently Asked Questions (FAQs)' feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
+      "what": "Defined by a Help or 'Frequently Asked Questions (FAQs)' feature available on the portal. This feature is intended to help the user navigate the site and finding information and/or providing the user with an extensive knowledge base of commonly asked questions that users pose in their search for information.",
       "why": "Provides instant, accurate, and accessible information, enhancing user experience, and promoting efficient communication between the government and people.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Identify Common Queries: a. Analyze frequently asked questions and common issues users encounter while using the portal. 2. User-Friendly Interface: a. Design a clean and intuitive interface with a dedicated section for FAQs. 3. Search Functionality: a. Implement a robust search bar allowing users to enter keywords and find relevant FAQs quickly. 4. Regular Updates: a. Keep the FAQs updated based on new queries and changing policies. Remove outdated information. 5. Prominent Placement: a. Feature the FAQs prominently on the portal, making it easily accessible from the homepage and main navigation menu. For more information check out WebFx’s guide on Help Features or Zendesk’s guide for FAQs.",
+        "scoring_guidance": "1. Identify Common Queries: a. Analyze frequently asked questions and common issues users encounter while using the portal. 2. User-Friendly Interface: a. Design a clean and intuitive interface with a dedicated section for FAQs. 3. Search Functionality: a. Implement a robust search bar allowing users to enter keywords and find relevant FAQs quickly. 4. Regular Updates: a. Keep the FAQs updated based on new queries and changing policies. Remove outdated information. 5. Prominent Placement: a. Feature the FAQs prominently on the portal, making it easily accessible from the homepage and main navigation menu. For more information check out WebFx's guide on Help Features or Zendesk's guide for FAQs.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Fiji’s extensive FAQ section organized by theme",
+      "benchmark_case": "",
       "reference_links": [
-        "Fiji’s extensive FAQ section organized by theme"
+        "Fiji's extensive FAQ section organized by theme"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -60,13 +60,13 @@
       "why": "Fosters direct and interactive communication with users, enhances transparency, and encourages national engagement, creating a dynamic platform for sharing information and gathering public input.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Develop a Social Media Policy: a. Create clear guidelines for the use of social networking platforms. Define the purpose, responsible personnel, content guidelines, and response protocols. 2. Integrate Platforms Seamlessly: a. Work with web developers to seamlessly integrate social media buttons and feeds into your website. 3. Create Engaging Content: a. Develop a content strategy, share updates about country-wide events, public services, policies, achievements. 4. Regular Updates and Maintenance: a. Ensure regular updates on social media platforms to keep people informed. 5. Promote Civic Initiatives: a. Utilize social media to promote civic initiatives, events, and public awareness campaigns. 6. Monitor and Analyze: a. Utilize analytics tools provided by social media platforms to assess engagement, reach, and impact.",
+        "scoring_guidance": "1. Develop a Social Media Policy: a. Create clear guidelines for the use of social networking platforms. Define the purpose, responsible personnel, content guidelines, and response protocols. 2. Integrate Platforms Seamlessly: a. Work with web developers to seamlessly integrate social media buttons and feeds into your website. 3. Create Engaging Content: a. Develop a content strategy, share updates about country-wide events, public services, policies, achievements. 4. Regular Updates and Maintenance: a. Ensure regular updates on social media platforms to keep people informed. 5. Promote Civic Initiatives: a. Utilize social media to promote civic initiatives, events, and public awareness campaigns. 6. Monitor and Analyze: a. Utilize analytics tools provided by social media platforms to assess engagement, reach, and impact.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Morocco’s social networks’ page",
+      "benchmark_case": "",
       "reference_links": [
-        "Sprout social’s guide or Verbit’s"
+        "Sprout social's guide or Verbit's"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -83,13 +83,13 @@
       "why": "Provides real-time assistance, enhances citizen engagement, and fosters transparent communication between residents and government employees/officers, improving overall public service accessibility and satisfaction.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Choose a Suitable Platform: a. Select a reliable live chat software that supports various channels (i.e. \"click to chat,\" webchat, WeChat, WhatsApp, and text messaging. 2. Employee Training for handling real-time interactions effectively and professionally. 3. Integration: a. Seamlessly integrate the chosen live chat software into the government website. 4. User-Friendly Design: a. Design an intuitive interface with clickable icons or buttons, making it easy for users to initiate chats. 5. Monitoring and Improvement: a. Implement a monitoring system to track response times, review chat transcripts, and gather user feedback. Use this data to continuously enhance service quality and employee training.",
+        "scoring_guidance": "1. Choose a Suitable Platform: a. Select a reliable live chat software that supports various channels (i.e. \"click to chat,\" webchat, WeChat, WhatsApp, and text messaging. 2. Employee Training for handling real-time interactions effectively and professionally. 3. Integration: a. Seamlessly integrate the chosen live chat software into the government website. 4. User-Friendly Design: a. Design an intuitive interface with clickable icons or buttons, making it easy for users to initiate chats. 5. Monitoring and Improvement: a. Implement a monitoring system to track response times, review chat transcripts, and gather user feedback. Use this data to continuously enhance service quality and employee training.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Iceland’s live chat support available during specific hours",
+      "benchmark_case": "",
       "reference_links": [
-        "dacast’s guide or touchpoint"
+        "dacast's guide or touchpoint"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -103,16 +103,16 @@
       "title": "Privacy policy",
       "text": "Privacy policy — A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
       "what": "A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
-      "why": "Essential for establishing trust with users, ensuring compliance with relevant privacy laws and regulations, and demonstrating the government’s commitment to protecting individuals’ privacy",
+      "why": "Essential for establishing trust with users, ensuring compliance with relevant privacy laws and regulations, and demonstrating the government's commitment to protecting individuals' privacy",
       "how": {
         "evidence_locus": "national_portal_only",
         "scoring_guidance": "1. Clear Language: a. Write the policy in simple, understandable language. b. Specify what user information is collected & detail methods: cookies, forms, or third-party. 3. Processing & Storage: c. Explain how collected data will be used. 4. Security Measures: d. Describe data protection measures in place. 5. User Rights: e. Outline user rights regarding their data and Include opt-out and data deletion options. 6. Legal Compliance: f. Highlight adherence to data protection laws.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Norway’s page on privacy policy",
+      "benchmark_case": "",
       "reference_links": [
-        "wikiHow’s on How to Create a Website Privacy Policy or The U.S. General Services Administration section on Privacy and identity management"
+        "wikiHow's on How to Create a Website Privacy Policy or The U.S. General Services Administration section on Privacy and identity management"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -129,13 +129,13 @@
       "why": "Empowers people by providing clear instructions, fostering digital literacy, and ensuring that all residents can confidently access and utilize online services effectively.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Assess User Needs: a. Identify common challenges users face while navigating the government website. 2. Develop Clear Content: a. Create easy-to-understand tutorials 3. Implement Help-Link Section: a. Integrate a dedicated Help section on the website. 4. Regular Updates: a. Keep the content up-to-date, and review tutorials with changing services, common user queries. 5. Multimedia Support: a. Enhance tutorials with multimedia elements like videos and infographics. 6. Regular Analytics Review: a. Analyze user engagement data. Identify popular topics and areas where users struggle.",
+        "scoring_guidance": "1. Assess User Needs: a. Identify common challenges users face while navigating the government website. 2. Develop Clear Content: a. Create easy-to-understand tutorials 3. Implement Help-Link Section: a. Integrate a dedicated Help section on the website. 4. Regular Updates: a. Keep the content up-to-date, and review tutorials with changing services, common user queries. 5. Multimedia Support: a. Enhance tutorials with multimedia elements like videos and infographics. 6. Regular Analytics Review: a. Analyze user engagement data. Identify popular topics and areas where users struggle.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out The United Arab Emirates’ tutorial for e-services.",
+      "benchmark_case": "",
       "reference_links": [
-        "The United Arab Emirates’ tutorial for e-services."
+        "The United Arab Emirates' tutorial for e-services."
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -147,18 +147,18 @@
       "indicator_id": "#017",
       "module": "E-Government Literacy",
       "title": "Digital ID to access online services",
-      "text": "Digital ID to access online services — Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to oﬀer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be veriﬁed when getting online.",
-      "what": "Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to oﬀer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be veriﬁed when getting online.",
+      "text": "Digital ID to access online services — Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to offer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be verified when getting online.",
+      "what": "Also referred to as \"e-ID\" in some countries, it can be used through secure login methods, such as usernames, passwords, or multi-factor authentication to offer personalized online/mobile services to the user. Portal authentication ensures that the user's identity has to be verified when getting online.",
       "why": "It ensures that individuals interacting with the portal are genuine and authorized, safeguards sensitive government data and services, enhancing online security and user trust.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative Steps 1. Identify Security Needs: a. Determine the level of security required for the website 2. Choose Authentication Methods: a. Select appropriate authentication methods, such as username/password, biometrics, or multi-factor authentication (MFA). 3. Develop User Database: a. Create a secure database to store user credentials. 4. Integrate Authentication System: a. Integrate the chosen authentication methods into the website's login process 5. Regular Security Audits: a. Conduct regular security audits and updates to identify and address potential vulnerabilities",
+        "scoring_guidance": "1. Identify Security Needs: a. Determine the level of security required for the website 2. Choose Authentication Methods: a. Select appropriate authentication methods, such as username/password, biometrics, or multi-factor authentication (MFA). 3. Develop User Database: a. Create a secure database to store user credentials. 4. Integrate Authentication System: a. Integrate the chosen authentication methods into the website's login process 5. Regular Security Audits: a. Conduct regular security audits and updates to identify and address potential vulnerabilities",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Australia’s myGov Digital ID",
+      "benchmark_case": "",
       "reference_links": [
-        "UK’s National Cyber Security Center Guide or OWASP’s Authentication Cheat Sheet"
+        "UK's National Cyber Security Center Guide or OWASP's Authentication Cheat Sheet"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -170,18 +170,18 @@
       "indicator_id": "#036a",
       "module": "E-Government Literacy",
       "title": "Facilitation of free Internet access",
-      "text": "Facilitation of free Internet access — Evidence of government provision of free access to the Internet i.e. free WIFI in speciﬁc areas or agreement with mobile operators.",
-      "what": "Evidence of government provision of free access to the Internet i.e. free WIFI in speciﬁc areas or agreement with mobile operators.",
+      "text": "Facilitation of free Internet access — Evidence of government provision of free access to the Internet i.e. free WIFI in specific areas or agreement with mobile operators.",
+      "what": "Evidence of government provision of free access to the Internet i.e. free WIFI in specific areas or agreement with mobile operators.",
       "why": "Vital for promoting digital inclusion, bridging the digital divide, and ensuring equal access to essential online services and information for all residents.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Dedicated Webpage: a. Create a user-friendly webpage detailing free Internet access locations and instructions. 2. Clear Information: a. Provide concise details on how to connect 3. Promotion: a. Actively promote the initiative through social media, events, and businesses. 4. Updates and Feedback: a. Regularly update the webpage and provide a feedback mechanism for user suggestions and issues.",
+        "scoring_guidance": "1. Dedicated Webpage: a. Create a user-friendly webpage detailing free Internet access locations and instructions. 2. Clear Information: a. Provide concise details on how to connect 3. Promotion: a. Actively promote the initiative through social media, events, and businesses. 4. Updates and Feedback: a. Regularly update the webpage and provide a feedback mechanism for user suggestions and issues.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Uruguay’s free internet access page",
+      "benchmark_case": "",
       "reference_links": [
-        "Uruguay’s free internet access page"
+        "Uruguay's free internet access page"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -198,13 +198,13 @@
       "why": "Crucial for ensuring inclusive and equitable access to government services, fostering digital literacy, and enhancing engagement.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Partnership: a. Collaborate with community centers, post oﬃces, and libraries to integrate online services. 2. Infrastructure: a. Provide necessary technology and internet access at these locations. 3. Training: a. Train staﬀ to assist residents in accessing online services eﬀectively. 4. Awareness: a. Promote the availability of services through social media and the government portal. 5. Feedback: a. Establish a feedback system for continuous improvement and resident satisfaction.",
+        "scoring_guidance": "1. Partnership: a. Collaborate with community centers, post offices, and libraries to integrate online services. 2. Infrastructure: a. Provide necessary technology and internet access at these locations. 3. Training: a. Train staff to assist residents in accessing online services effectively. 4. Awareness: a. Promote the availability of services through social media and the government portal. 5. Feedback: a. Establish a feedback system for continuous improvement and resident satisfaction.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Singapore’s page on Multimedia Stations",
+      "benchmark_case": "",
       "reference_links": [
-        "Singapore’s page on Multimedia Stations"
+        "Singapore's page on Multimedia Stations"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -221,13 +221,13 @@
       "why": "Enhances data transparency, facilitates accurate understanding and usage, and allows users to assess the data's relevance and reliability, promoting informed decision-making and fostering trust in the government",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Standardize Metadata Fields: a. Establish a standardized format for metadata fields to maintain consistency across all datasets. 2. Detailed Descriptions: a. Encourage authors to provide in-depth descriptions of the dataset 3. Accurate Date and Versioning: a. Always include the date of dataset creation or the last update. 4. Author Information: a. Include the name, contact details, and affiliation of the individual or department for the dataset. 5. Relevant Tags and Categories: a. Assign appropriate tags and categories to each dataset. 6. Data Format and Size: a. Specify the file format (e.g., CSV, JSON, Excel) and size of the dataset.",
+        "scoring_guidance": "1. Standardize Metadata Fields: a. Establish a standardized format for metadata fields to maintain consistency across all datasets. 2. Detailed Descriptions: a. Encourage authors to provide in-depth descriptions of the dataset 3. Accurate Date and Versioning: a. Always include the date of dataset creation or the last update. 4. Author Information: a. Include the name, contact details, and affiliation of the individual or department for the dataset. 5. Relevant Tags and Categories: a. Assign appropriate tags and categories to each dataset. 6. Data Format and Size: a. Specify the file format (e.g., CSV, JSON, Excel) and size of the dataset.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Costa Rica’s open data portal including extensive metadata",
+      "benchmark_case": "",
       "reference_links": [
-        "Ireland’s Open Data Portal Guide or Center for Gov"
+        "Ireland's Open Data Portal Guide or Center for Gov"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -244,13 +244,13 @@
       "why": "Crucial to empower users with the knowledge and tools needed to access and utilize data effectively, fostering transparency, innovation, and informed decision-making.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Training Materials: a. Develop comprehensive manuals or tutorials for accessing open datasets. 2. User-Friendly Tools: a. Ensure clear, easy-to-use guidance tools on the portal. 3. Interactive Workshops: a. Host webinars or workshops to educate users about open data. 4. Clear Instructions: a. Provide straightforward directions for navigating and downloading datasets. 5. Feedback Channels: a. Establish easy ways for users to provide input and ask questions.",
+        "scoring_guidance": "1. Training Materials: a. Develop comprehensive manuals or tutorials for accessing open datasets. 2. User-Friendly Tools: a. Ensure clear, easy-to-use guidance tools on the portal. 3. Interactive Workshops: a. Host webinars or workshops to educate users about open data. 4. Clear Instructions: a. Provide straightforward directions for navigating and downloading datasets. 5. Feedback Channels: a. Establish easy ways for users to provide input and ask questions.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Singapore’s user guide for open data sets",
+      "benchmark_case": "",
       "reference_links": [
-        "Singapore’s user guide for open data sets"
+        "Singapore's user guide for open data sets"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -267,13 +267,13 @@
       "why": "Enhances user engagement and satisfaction, promoting a more user-centric approach to digital governance.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative steps: 1. Establish User Account System: a. Develop a system that allows users to create accounts to personalize their portal experience. 2. Implement Bookmarking Feature: a. Incorporate a feature that enables users to bookmark or mark their favorite or frequently used online services. 3. Provide Customization Instructions: a. Offer clear and concise instructions on how users can customize and personalize their portal settings. 4. Ensure Cross-Portal Accessibility: a. Ensure that the customization features are accessible across all government portals for seamless user experience.",
+        "scoring_guidance": "1. Establish User Account System: a. Develop a system that allows users to create accounts to personalize their portal experience. 2. Implement Bookmarking Feature: a. Incorporate a feature that enables users to bookmark or mark their favorite or frequently used online services. 3. Provide Customization Instructions: a. Offer clear and concise instructions on how users can customize and personalize their portal settings. 4. Ensure Cross-Portal Accessibility: a. Ensure that the customization features are accessible across all government portals for seamless user experience.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Finland’s feature to mark your favorite online services",
+      "benchmark_case": "",
       "reference_links": [
-        "Finland’s feature to mark your favorite online services"
+        "Finland's feature to mark your favorite online services"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -282,139 +282,24 @@
     },
     {
       "question_id": "EGL-317",
-      "indicator_id": "#317",
+      "indicator_id": "#317, #318, #319, #320, #321, #322",
       "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — HEALTH",
-      "text": "Co-creation of e-services — HEALTH — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "title": "Co-creation of e-services",
+      "text": "Co-creation of e-services — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
+      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: HEALTH/ EDUCATION/ EMPLOYMENT/ SOCIAL PROTECTION/ ENVIRONMENT/ JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
       "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
       "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
+      "benchmark_case": "",
       "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
+        "the United Arab Emirates' co creation on e-services"
       ],
       "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "EGL-318",
-      "indicator_id": "#318",
-      "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — EDUCATION",
-      "text": "Co-creation of e-services — EDUCATION — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EDUCATION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EDUCATION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
-      "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "EGL-319",
-      "indicator_id": "#319",
-      "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — EMPLOYMENT",
-      "text": "Co-creation of e-services — EMPLOYMENT — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EMPLOYMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: EMPLOYMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
-      "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "EGL-320",
-      "indicator_id": "#320",
-      "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — SOCIAL PROTECTION",
-      "text": "Co-creation of e-services — SOCIAL PROTECTION — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: SOCIAL PROTECTION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: SOCIAL PROTECTION). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
-      "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "EGL-321",
-      "indicator_id": "#321",
-      "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — ENVIRONMENT",
-      "text": "Co-creation of e-services — ENVIRONMENT — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: ENVIRONMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: ENVIRONMENT). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
-      "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "EGL-322",
-      "indicator_id": "#322",
-      "module": "E-Government Literacy",
-      "title": "Co-creation of e-services — JUSTICE",
-      "text": "Co-creation of e-services — JUSTICE — Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "what": "Evidence of any co-creation and/or co-production (with people) of e-service on the following sectors: JUSTICE). Instances where people actively collaborated with government entities in the development or enhancement of online services in above sectors.",
-      "why": "Underscores the importance of fostering citizen-government partnerships to ensure the relevance and effectiveness of e-services",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "Indicative steps: 1. Develop User-Friendly Online Platforms: a. Create accessible digital spaces for citizen engagement in service development. 2. Encourage Active Participation: a. Facilitate involvement through surveys, feedback forms, and interactive forums. 3. Collaborate with National Organizations: a. Partner with national groups to engage diverse segments of the population. 4. Ensure Transparency in the Co-Creation Process: a. Publicly document the collaborative efforts and outcomes of service development.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out the United Arab Emirates’ co creation on e-services",
-      "reference_links": [
-        "the United Arab Emirates’ co creation on e-services"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
+      "evidence_locus": "national_portal_only",
       "is_custom": false,
       "requires_authenticated_access": false
     }

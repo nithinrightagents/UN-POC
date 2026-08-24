@@ -1,8 +1,8 @@
 {
   "module": "Institutional Framework",
   "module_id": "2.1",
-  "source_pdf": "Module 2.1 Institutional Framework (1).pdf",
-  "total_questions": 26,
+  "source_pdf": "Module 2.1 Institutional Framework (3).pdf",
+  "total_questions": 16,
   "questions": [
     {
       "question_id": "IF-010",
@@ -11,16 +11,16 @@
       "title": "Organization structure/chart of the government",
       "text": "Organization structure/chart of the government — A diagrammatic representation of the structure of a government organization or agency. It illustrates the hierarchy, relationships, roles, and responsibilities of various departments, units, and positions within the government.",
       "what": "A diagrammatic representation of the structure of a government organization or agency. It illustrates the hierarchy, relationships, roles, and responsibilities of various departments, units, and positions within the government.",
-      "why": "A government organogram promotes transparency, accountability, eﬃcient communication, citizen engagement, service access, and even legal and regulatory compliance in some cases.",
+      "why": "A government organogram promotes transparency, accountability, efficient communication, citizen engagement, service access, and even legal and regulatory compliance in some cases.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Visual Representation: a. Create a clear and concise diagram outlining the national organization's structure. 2. Accessibility and Transparency: a. Publish the diagram prominently on the national portal for easy public access. b. Ensure the diagram is in a widely compatible format (e.g., PDF or PNG) for easy viewing. 3. Detailed Descriptions: a. Provide brief descriptions of each department or unit represented in the diagram. b. Include contact information, key responsibilities, and services oﬀered by each department. 4. Regular Updates: a. Reﬂect any changes in staﬃng, departments, or reporting lines promptly to maintain accuracy.",
+        "scoring_guidance": "1. Visual Representation: a. Create a clear and concise diagram outlining the national organization's structure. 2. Accessibility and Transparency: a. Publish the diagram prominently on the national portal for easy public access. b. Ensure the diagram is in a widely compatible format (e.g., PDF or PNG) for easy viewing. 3. Detailed Descriptions: a. Provide brief descriptions of each department or unit represented in the diagram. b. Include contact information, key responsibilities, and services offered by each department. 4. Regular Updates: a. Reflect any changes in staffing, departments, or reporting lines promptly to maintain accuracy.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out the United Kingdom of Great Britain and Northern Ireland Organization structure page",
+      "benchmark_case": "",
       "reference_links": [
-        "Canva’s guide on creating organizational chart"
+        "Canva's guide on creating organizational chart"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -32,18 +32,18 @@
       "indicator_id": "#011",
       "module": "Institutional Framework",
       "title": "Names and titles of heads of department",
-      "text": "Names and titles of heads of department — A section, chart or webpage displaying the names, oﬃcial titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
-      "what": "A section, chart or webpage displaying the names, oﬃcial titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
-      "why": "This information allows individuals, businesses, or other stakeholders to directly communicate with the heads of these departments regarding speciﬁc matters, services, or concerns. It also promotes transparency, accountability, and accessibility.",
+      "text": "Names and titles of heads of department — A section, chart or webpage displaying the names, official titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
+      "what": "A section, chart or webpage displaying the names, official titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
+      "why": "This information allows individuals, businesses, or other stakeholders to directly communicate with the heads of these departments regarding specific matters, services, or concerns. It also promotes transparency, accountability, and accessibility.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Gather Information: a. Collect the names, oﬃcial titles, and contact details (phone numbers and email addresses) of department heads. 2. Create a New Webpage: a. Within your content management system (CMS), create a new webpage dedicated to this information or insert it into your organizational chart (see previous slide). 3. Regular Updates: a. Commit to keeping the information up-to-date, reﬂecting any changes in department leadership.",
+        "scoring_guidance": "1. Gather Information: a. Collect the names, official titles, and contact details (phone numbers and email addresses) of department heads. 2. Create a New Webpage: a. Within your content management system (CMS), create a new webpage dedicated to this information or insert it into your organizational chart (see previous slide). 3. Regular Updates: a. Commit to keeping the information up-to-date, reflecting any changes in department leadership.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Uruguay’s Organizational Structure page",
+      "benchmark_case": "",
       "reference_links": [
-        "Uruguay’s Organizational Structure page"
+        "Uruguay's Organizational Structure page"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -55,18 +55,18 @@
       "indicator_id": "#012",
       "module": "Institutional Framework",
       "title": "Links to sub-national/local government institutions/agencies",
-      "text": "Links to sub-national/local government institutions/agencies — A dedicated section of relative hyperlinks to subnational/local government agencies' oﬃcial websites.",
-      "what": "A dedicated section of relative hyperlinks to subnational/local government agencies' oﬃcial websites.",
-      "why": "These links serve as direct access points, allowing residents to quickly ﬁnd speciﬁc agency information, services, and resources.",
+      "text": "Links to sub-national/local government institutions/agencies — A dedicated section of relative hyperlinks to subnational/local government agencies' official websites.",
+      "what": "A dedicated section of relative hyperlinks to subnational/local government agencies' official websites.",
+      "why": "These links serve as direct access points, allowing residents to quickly find specific agency information, services, and resources.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative Steps 1. Identify Agencies: a. List the government agencies relevant to your audience and region. 2. Create a Section: a. Add a dedicated section on your website, clearly labelled \"Government Links\" or similar. 3. Provide Direct URLs: a. Include direct website links to each agency. Keep it concise and organized for easy navigation. 4. Update Regularly: a. Ensure the links are current and functional. Regularly verify and update the URLs for accuracy. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
+        "scoring_guidance": "1. Identify Agencies: a. List the government agencies relevant to your audience and region. 2. Create a Section: a. Add a dedicated section on your website, clearly labelled \"Government Links\" or similar. 3. Provide Direct URLs: a. Include direct website links to each agency. Keep it concise and organized for easy navigation. 4. Update Regularly: a. Ensure the links are current and functional. Regularly verify and update the URLs for accuracy. For more tips, check out US GSA's external links section or the UK's guide on Adding links to content.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Singapore’s Government Directory Page",
+      "benchmark_case": "",
       "reference_links": [
-        "Singapore’s Government Directory Page"
+        "Singapore's Government Directory Page"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -80,16 +80,16 @@
       "title": "Privacy statement(s)",
       "text": "Privacy statement(s) — A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
       "what": "A formal statement, often found in the footer or home page either explicitly stated or in a related link, explains how the website collects, processes, stores, & protects the personal information of its users.",
-      "why": "Essential for establishing trust with users, ensuring compliance with relevant privacy laws and regulations, and demonstrating the government’s commitment to protecting people’s privacy",
+      "why": "Essential for establishing trust with users, ensuring compliance with relevant privacy laws and regulations, and demonstrating the government's commitment to protecting people's privacy",
       "how": {
         "evidence_locus": "national_portal_only",
         "scoring_guidance": "1. Clear Language: a. Write the policy in simple, understandable language. b. Specify what user information is collected & detail methods: cookies, forms, or third-party. 3. Processing & Storage: c. Explain how collected data will be used. 4. Security Measures: d. Describe data protection measures in place. 5. User Rights: e. Outline user rights regarding their data and Include opt-out and data deletion options. 6. Legal Compliance: f. Highlight adherence to data protection laws.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Türkiye’s Privacy statement",
+      "benchmark_case": "",
       "reference_links": [
-        "wikiHow’s on How to Create a Website Privacy Policy or The U.S. General Services Administration section on Privacy and identity management"
+        "wikiHow's on How to Create a Website Privacy Policy or The U.S. General Services Administration section on Privacy and identity management"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -103,16 +103,16 @@
       "title": "National e-Government/Digital Government Strategy",
       "text": "National e-Government/Digital Government Strategy — The National e-Government or Digital Government Strategy is a comprehensive plan devised by national governments to leverage digital technologies for improving public services and governance. It should be readily accessible and openly available to the public on the government's website.",
       "what": "The National e-Government or Digital Government Strategy is a comprehensive plan devised by national governments to leverage digital technologies for improving public services and governance. It should be readily accessible and openly available to the public on the government's website.",
-      "why": "A National e-Government/Digital Government Strategy ensures eﬃcient and transparent delivery of public services through the strategic use of digital technologies.",
+      "why": "A National e-Government/Digital Government Strategy ensures efficient and transparent delivery of public services through the strategic use of digital technologies.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Indicative Steps 1. Assess Digital Infrastructure: a. Evaluate existing digital systems and infrastructure for gaps and strengths. 2. Engage Stakeholders: a. Involve relevant stakeholders from various sectors to gather insights and ensure inclusivity. 3. Set Clear Objectives: a. Deﬁne speciﬁc, measurable goals aligned with national priorities and public service needs. 4. Publish Strategy Online: a. Make the strategy accessible to the public via the government's website for transparency and accountability. 5. Monitor and Adapt: a. Establish mechanisms for continuous monitoring, evaluation, and adaptation to evolving technological and societal trends.",
+        "scoring_guidance": "1. Assess Digital Infrastructure: a. Evaluate existing digital systems and infrastructure for gaps and strengths. 2. Engage Stakeholders: a. Involve relevant stakeholders from various sectors to gather insights and ensure inclusivity. 3. Set Clear Objectives: a. Define specific, measurable goals aligned with national priorities and public service needs. 4. Publish Strategy Online: a. Make the strategy accessible to the public via the government's website for transparency and accountability. 5. Monitor and Adapt: a. Establish mechanisms for continuous monitoring, evaluation, and adaptation to evolving technological and societal trends.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Australia’s National E-Government Strategy",
+      "benchmark_case": "",
       "reference_links": [
-        "OECD’s Recommendation on Digital Government Strategies or the European Commission’s"
+        "OECD's Recommendation on Digital Government Strategies or the European Commission's"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -123,19 +123,19 @@
       "question_id": "IF-339",
       "indicator_id": "#339",
       "module": "Institutional Framework",
-      "title": "Citizens’ rights to access government information",
-      "text": "Citizens’ rights to access government information — Content or documents regarding users’ rights to access government (such as the Freedom of Information Act or Access to Information Act).",
-      "what": "Content or documents regarding users’ rights to access government (such as the Freedom of Information Act or Access to Information Act).",
-      "why": "The right to access information enables all individuals to know how the decisions that aﬀect them are made, how public funds are handled and according to which criteria institutions act.",
+      "title": "Citizens' rights to access government information",
+      "text": "Citizens' rights to access government information — Content or documents regarding users' rights to access government (such as the Freedom of Information Act or Access to Information Act).",
+      "what": "Content or documents regarding users' rights to access government (such as the Freedom of Information Act or Access to Information Act).",
+      "why": "The right to access information enables all individuals to know how the decisions that affect them are made, how public funds are handled and according to which criteria institutions act.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Legal Compliance: a. Ensure the portal aligns with national Freedom of Information Act or similar legislation. 2. Clear Information: a. Provide a dedicated section outlining people’s rights to access government data. 3. Document Accessibility: a. Upload relevant acts, policies, and guidelines related to information access in PDFs, HTML 4. Request Submission: a. Provide an online form for people to submit information requests. 5. Data Security: a. Assure people about the security of their personal data during the request process.",
+        "scoring_guidance": "1. Legal Compliance: a. Ensure the portal aligns with national Freedom of Information Act or similar legislation. 2. Clear Information: a. Provide a dedicated section outlining people's rights to access government data. 3. Document Accessibility: a. Upload relevant acts, policies, and guidelines related to information access in PDFs, HTML 4. Request Submission: a. Provide an online form for people to submit information requests. 5. Data Security: a. Assure people about the security of their personal data during the request process.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Spain’s Rights to Information page",
+      "benchmark_case": "",
       "reference_links": [
-        "the ICO’s guide for public authorities on applying freedom of information or the UK Government's’ Freedom of Information Code of Practice"
+        "the ICO's guide for public authorities on applying freedom of information or the UK Government's' Freedom of Information Code of Practice"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -152,13 +152,13 @@
       "why": "Crucial to inform people of their rights and obligations regarding personal data, promoting transparency and compliance with legal requirements.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Draft Legislation: a. Develop comprehensive laws and regulations addressing data privacy and protection. 2. Consult Stakeholders: a. Seek input from relevant stakeholders, including individuals, businesses, and legal experts. 3. Review and Revise: a. Conduct thorough review and revision processes to ensure legal clarity and eﬀectiveness. 4. Publish Online: a. Make the ﬁnal legislation available on the national government's website for easy public access and transparency.",
+        "scoring_guidance": "1. Draft Legislation: a. Develop comprehensive laws and regulations addressing data privacy and protection. 2. Consult Stakeholders: a. Seek input from relevant stakeholders, including individuals, businesses, and legal experts. 3. Review and Revise: a. Conduct thorough review and revision processes to ensure legal clarity and effectiveness. 4. Publish Online: a. Make the final legislation available on the national government's website for easy public access and transparency.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Japan’s page on personal data protection",
+      "benchmark_case": "",
       "reference_links": [
-        "the ICO’s Guide to the General Data Protection Regulation (GDPR) or the World Bank’s Practitioner's Guide"
+        "the ICO's Guide to the General Data Protection Regulation (GDPR) or the World Bank's Practitioner's Guide"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -172,16 +172,16 @@
       "title": "Legislation/law/policy/regulation on cybersecurity",
       "text": "Legislation/law/policy/regulation on cybersecurity — Evidence of legislation on cybersecurity refers to laws enacted by governments to safeguard digital infrastructure, data, and systems from cyber threats and attacks.",
       "what": "Evidence of legislation on cybersecurity refers to laws enacted by governments to safeguard digital infrastructure, data, and systems from cyber threats and attacks.",
-      "why": "Crucial for ensuring transparency, compliance, and public awareness regarding measures taken to protect digital assets and people’s online safety.",
+      "why": "Crucial for ensuring transparency, compliance, and public awareness regarding measures taken to protect digital assets and people's online safety.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Research and Consultation: a. Conduct thorough research and consult with stakeholders to understand cybersecurity needs and gather input. 2. Draft Legislation: a. Develop clear and comprehensive cybersecurity legislation, laws, policies, or regulations based on research ﬁndings and stakeholder input. 3. Review and Approval: a. Subject the draft to legal review, revise as necessary, and seek approval from relevant governmental bodies. 4. Public Accessibility: a. Publish the approved legislation on oﬃcial government portals to ensure easy access for the public and promote transparency and compliance.",
+        "scoring_guidance": "1. Research and Consultation: a. Conduct thorough research and consult with stakeholders to understand cybersecurity needs and gather input. 2. Draft Legislation: a. Develop clear and comprehensive cybersecurity legislation, laws, policies, or regulations based on research findings and stakeholder input. 3. Review and Approval: a. Subject the draft to legal review, revise as necessary, and seek approval from relevant governmental bodies. 4. Public Accessibility: a. Publish the approved legislation on official government portals to ensure easy access for the public and promote transparency and compliance.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out South Africa’s page on cybersecurity",
+      "benchmark_case": "",
       "reference_links": [
-        "the European Commission’s White Paper 2 Cybersecurity and Law or the UK’s National Cyber Security Centre 10 Steps to CyberSecurity"
+        "the European Commission's White Paper 2 Cybersecurity and Law or the UK's National Cyber Security Centre 10 Steps to CyberSecurity"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -193,18 +193,18 @@
       "indicator_id": "#337",
       "module": "Institutional Framework",
       "title": "National CIO or equivalent",
-      "text": "National CIO or equivalent — Name of the national Chief Information Oﬃcer (CIO) or equivalent who oversees and directs the implementation of digital government strategies and programs at the national level, ensuring eﬃcient and eﬀective use of technology to enhance public services and governance.",
-      "what": "Name of the national Chief Information Oﬃcer (CIO) or equivalent who oversees and directs the implementation of digital government strategies and programs at the national level, ensuring eﬃcient and eﬀective use of technology to enhance public services and governance.",
+      "text": "National CIO or equivalent — Name of the national Chief Information Officer (CIO) or equivalent who oversees and directs the implementation of digital government strategies and programs at the national level, ensuring efficient and effective use of technology to enhance public services and governance.",
+      "what": "Name of the national Chief Information Officer (CIO) or equivalent who oversees and directs the implementation of digital government strategies and programs at the national level, ensuring efficient and effective use of technology to enhance public services and governance.",
       "why": "Ensures transparency and clarity about the leadership responsible for driving digital transformation and e-government initiatives.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Establishment: a. Set up a dedicated oﬃce speciﬁcally for the national Chief Information Oﬃcer (CIO). 2. Responsibilities and Authority: a. Clearly deﬁne the responsibilities and authority of the CIO in spearheading e-government strategies and programs. 3. Recruitment: a. Recruit an individual with a strong background in information technology and public administration to eﬀectively fulﬁll the CIO role. 4. Collaboration: a. Ensure seamless collaboration and coordination between the CIO oﬃce and relevant government agencies to streamline e-government initiatives. 5. Regular Review: a. Implement a system for regular review and update of the CIO's mandate.",
+        "scoring_guidance": "1. Establishment: a. Set up a dedicated office specifically for the national Chief Information Officer (CIO). 2. Responsibilities and Authority: a. Clearly define the responsibilities and authority of the CIO in spearheading e-government strategies and programs. 3. Recruitment: a. Recruit an individual with a strong background in information technology and public administration to effectively fulfill the CIO role. 4. Collaboration: a. Ensure seamless collaboration and coordination between the CIO office and relevant government agencies to streamline e-government initiatives. 5. Regular Review: a. Implement a system for regular review and update of the CIO's mandate.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Japan’s page on their Digital Supervisor and Digital Deliberative Oﬃcer",
+      "benchmark_case": "",
       "reference_links": [
-        "CIO’s handbook for CIOs"
+        "CIO's handbook for CIOs"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -216,16 +216,16 @@
       "indicator_id": "#345",
       "module": "Institutional Framework",
       "title": "Legislation/law/policy/regulation on e-participation",
-      "text": "Legislation/law/policy/regulation on e-participation — Evidence of legislation on e-participation refers to legal frameworks or guidelines that facilitate people’s engagement and involvement in government decision-making processes through digital platforms and technologies.",
-      "what": "Evidence of legislation on e-participation refers to legal frameworks or guidelines that facilitate people’s engagement and involvement in government decision-making processes through digital platforms and technologies.",
+      "text": "Legislation/law/policy/regulation on e-participation — Evidence of legislation on e-participation refers to legal frameworks or guidelines that facilitate people's engagement and involvement in government decision-making processes through digital platforms and technologies.",
+      "what": "Evidence of legislation on e-participation refers to legal frameworks or guidelines that facilitate people's engagement and involvement in government decision-making processes through digital platforms and technologies.",
       "why": "Crucial to promote transparency, democratic governance, and citizen engagement in the digital age.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Research and Drafting: a. Conduct comprehensive research on e-participation best practices, then draft clear and inclusive legislation/laws/policies/regulations. 2. Stakeholder Consultation: a. Engage with people, civil society organizations, and relevant stakeholders to gather input and ensure the legislation meets diverse needs. 3. Legal Review and Revision: a. Subject the draft to legal review, incorporating feedback and ensuring compliance with existing laws and international standards. 4. Publication and Accessibility: a. Publish the ﬁnalized legislation/laws/policies/regulations on the national portal, ensuring it's easily accessible to the public and fosters transparency and accountability.",
+        "scoring_guidance": "1. Research and Drafting: a. Conduct comprehensive research on e-participation best practices, then draft clear and inclusive legislation/laws/policies/regulations. 2. Stakeholder Consultation: a. Engage with people, civil society organizations, and relevant stakeholders to gather input and ensure the legislation meets diverse needs. 3. Legal Review and Revision: a. Subject the draft to legal review, incorporating feedback and ensuring compliance with existing laws and international standards. 4. Publication and Accessibility: a. Publish the finalized legislation/laws/policies/regulations on the national portal, ensuring it's easily accessible to the public and fosters transparency and accountability.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Uruguay’s plan for an inclusive digital society",
+      "benchmark_case": "",
       "reference_links": [
         "the DigWatch E-participation principles and guidelines or SmartRural21 Guideline"
       ],
@@ -244,11 +244,11 @@
       "why": "Promotes transparency, accountability, and public participation in governance by providing easy access to government-held information.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Research and Consultation: a. Gather input from stakeholders and research best practices for open government data. 2. Draft Legislation: a. Create clear and comprehensive laws outlining open government data requirements. 3. Legal Review and Revision: a. Ensure legal compliance and revise the draft as needed. 4. Approval Process: a. Obtain approval from relevant governmental bodies. 5. Publication: a. Publish the legislation on oﬃcial government portals for public access.",
+        "scoring_guidance": "1. Research and Consultation: a. Gather input from stakeholders and research best practices for open government data. 2. Draft Legislation: a. Create clear and comprehensive laws outlining open government data requirements. 3. Legal Review and Revision: a. Ensure legal compliance and revise the draft as needed. 4. Approval Process: a. Obtain approval from relevant governmental bodies. 5. Publication: a. Publish the legislation on official government portals for public access.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Canada’s Open Government Data Directive",
+      "benchmark_case": "",
       "reference_links": [
         "the Open Data Institute guide on How to write a good open data policy"
       ],
@@ -259,274 +259,44 @@
     },
     {
       "question_id": "IF-090",
-      "indicator_id": "#090",
+      "indicator_id": "#090, #103, #119, #132, #161, #172",
       "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Health",
-      "text": "Link to the sectoral or ministerial websites — Health — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Health",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Health",
+      "title": "Link to the sectoral or ministerial websites",
+      "text": "Link to the sectoral or ministerial websites — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Health, Justice, Education, Employment/ Labor, Social Protection and Environment",
+      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Health, Justice, Education, Employment/ Labor, Social Protection and Environment",
       "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
       "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
+        "evidence_locus": "any_government_domain",
+        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA's external links section or the UK's guide on Adding links to content.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
+      "benchmark_case": "",
       "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
+        "Saudi Arabia's landing page with distinct sectoral links"
       ],
       "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-103",
-      "indicator_id": "#103",
-      "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Education",
-      "text": "Link to the sectoral or ministerial websites — Education — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Education",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Education",
-      "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
-      "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-119",
-      "indicator_id": "#119",
-      "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Employment and/or Labor",
-      "text": "Link to the sectoral or ministerial websites — Employment and/or Labor — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Employment and/or Labor",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Employment and/or Labor",
-      "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
-      "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-132",
-      "indicator_id": "#132",
-      "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Social Protection",
-      "text": "Link to the sectoral or ministerial websites — Social Protection — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Social Protection",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Social Protection",
-      "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
-      "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-161",
-      "indicator_id": "#161",
-      "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Environment",
-      "text": "Link to the sectoral or ministerial websites — Environment — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Environment",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Environment",
-      "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
-      "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-172",
-      "indicator_id": "#172",
-      "module": "Institutional Framework",
-      "title": "Link to the sectoral or ministerial websites — Justice",
-      "text": "Link to the sectoral or ministerial websites — Justice — Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Justice",
-      "what": "Often to be found under a Ministries/Cabinet tab or section, or the organisational charter of the government on the national portal(s). This pertains to sectors such as Justice",
-      "why": "Promotes transparency and enables public engagement in governance across various sectors like Health, Justice, Education, Employment, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Identify Ministries: a. Determine key sectors like Health, Justice, Education, Employment/Labor, Social Protection, and Environment for linking. 2. Establish Guidelines: a. Create clear standards for linking sectoral websites on the national portal. 3. Coordinate with Ministries: a. Collaborate with ministries to ensure accurate and consistent linking. 4. Monitor and Update: a. Regularly review and update links to ensure their relevance. 5. Publicize Accessibility: a. Promote the availability of sectoral links on the national portal for citizen awareness. For more tips, check out US GSA’s external links section or the UK’s guide on Adding links to content.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out Saudi Arabia’s landing page with distinct sectoral links",
-      "reference_links": [
-        "Saudi Arabia’s landing page with distinct sectoral links"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
+      "evidence_locus": "any_government_domain",
       "is_custom": false,
       "requires_authenticated_access": false
     },
     {
       "question_id": "IF-091",
-      "indicator_id": "#091",
+      "indicator_id": "#091, #104, #120, #133, #162, #173",
       "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Health",
-      "text": "Information on policies related to different sectors — Health — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Health",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Health",
+      "title": "Information on policies related to different sectors",
+      "text": "Information on policies related to different sectors — Information refers to a useful collection of content or documents in the specific sector indicated in the question, including historical and current data. This pertains to sectors such as Health, Justice, Education, Employment/ Labor, Social Protection and Environment",
+      "what": "Information refers to a useful collection of content or documents in the specific sector indicated in the question, including historical and current data. This pertains to sectors such as Health, Justice, Education, Employment/ Labor, Social Protection and Environment",
       "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
       "how": {
         "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
+        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identified policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
+      "benchmark_case": "",
       "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-104",
-      "indicator_id": "#104",
-      "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Education",
-      "text": "Information on policies related to different sectors — Education — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Education",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Education",
-      "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
-      "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-120",
-      "indicator_id": "#120",
-      "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Employment and/or Labor",
-      "text": "Information on policies related to different sectors — Employment and/or Labor — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Employment and/or Labor",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Employment and/or Labor",
-      "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
-      "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-133",
-      "indicator_id": "#133",
-      "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Social Protection",
-      "text": "Information on policies related to different sectors — Social Protection — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Social Protection",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Social Protection",
-      "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
-      "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-162",
-      "indicator_id": "#162",
-      "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Environment",
-      "text": "Information on policies related to different sectors — Environment — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Environment",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Environment",
-      "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
-      "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "any_government_domain",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "IF-173",
-      "indicator_id": "#173",
-      "module": "Institutional Framework",
-      "title": "Information on policies related to different sectors — Justice",
-      "text": "Information on policies related to different sectors — Justice — Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Justice",
-      "what": "Information refers to a useful collection of content or documents in the speciﬁc sector indicated in the question, including historical and current data. This pertains to sectors such as Justice",
-      "why": "Crucial to provide people with easy access to comprehensive information and documents relevant to critical areas like Health, Justice, Education, Employment/Labor, Social Protection, and Environment.",
-      "how": {
-        "evidence_locus": "any_government_domain",
-        "scoring_guidance": "1. Identify Relevant Policies: a. Determine the key policies and regulations in the above sectors. 2. Gather Comprehensive Content: a. Collect historical and current data, documents, and other relevant information related to the identiﬁed policies. 3. Organize Information: a. Structure the collected content in a user-friendly manner, categorizing it according to the respective sectors for easy navigation. 4. Ensure Accuracy and Accessibility: a. Verify the accuracy of the information and ensure that it is easily accessible to the public through the national portal. 5. Regular Updates: a. Establish a process for regularly updating the information to keep it current and relevant.",
-        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "Check out The Republic of Korea’s ministry of health policies section",
-      "reference_links": [
-        "The Republic of Korea’s ministry of health policies section"
+        "The Republic of Korea's ministry of health policies section"
       ],
       "answer_type": "binary",
       "evidence_locus": "any_government_domain",
@@ -540,16 +310,16 @@
       "title": "Legislation/law/regulation against misinformation, disinformation and/or fake news",
       "text": "Legislation/law/regulation against misinformation, disinformation and/or fake news — Evidence of legal frameworks against misinformation, disinformation, and/or fake news implemented by national governments to combat the spread of false or misleading information through various channels",
       "what": "Evidence of legal frameworks against misinformation, disinformation, and/or fake news implemented by national governments to combat the spread of false or misleading information through various channels",
-      "why": "Ensures transparency, promote accountability, and safeguard the public from the harmful eﬀects of misinformation and fake news.",
+      "why": "Ensures transparency, promote accountability, and safeguard the public from the harmful effects of misinformation and fake news.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Research and Analysis: a. Conduct thorough research on the prevalence and impact of misinformation and disinformation in society. Analyze existing laws and regulations in other jurisdictions. 2. Deﬁne Scope and Deﬁnitions: a. Clearly deﬁne what constitutes misinformation, disinformation, and fake news. 3. Draft Legislation: a. Develop clear and enforceable legal provisions to address the spread of misinformation and fake news. 4. Consultation and Stakeholder Engagement: a. Engage with relevant stakeholders to gather input and feedback on the draft legislation. 5. Public Accessibility: a. Publish the ﬁnalized legislation on the national portal to make it easily accessible to the public.",
+        "scoring_guidance": "1. Research and Analysis: a. Conduct thorough research on the prevalence and impact of misinformation and disinformation in society. Analyze existing laws and regulations in other jurisdictions. 2. Define Scope and Definitions: a. Clearly define what constitutes misinformation, disinformation, and fake news. 3. Draft Legislation: a. Develop clear and enforceable legal provisions to address the spread of misinformation and fake news. 4. Consultation and Stakeholder Engagement: a. Engage with relevant stakeholders to gather input and feedback on the draft legislation. 5. Public Accessibility: a. Publish the finalized legislation on the national portal to make it easily accessible to the public.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out the Netherland’s page on misinformation",
+      "benchmark_case": "",
       "reference_links": [
-        "Eurostat’s 2022 Rules of engagement for handling disinformation or Council of Europe’s guide"
+        "Eurostat's 2022 Rules of engagement for handling disinformation or Council of Europe's guide"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -561,18 +331,18 @@
       "indicator_id": "#343",
       "module": "Institutional Framework",
       "title": "A cloud strategy or equivalent",
-      "text": "A cloud strategy or equivalent — Evidence of a cloud strategy for national governments which outlines the approach and framework for adopting, managing, and optimizing cloud computing services and resources to enhance eﬃciency, scalability, and security in digital government operations.",
-      "what": "Evidence of a cloud strategy for national governments which outlines the approach and framework for adopting, managing, and optimizing cloud computing services and resources to enhance eﬃciency, scalability, and security in digital government operations.",
-      "why": "Crucial for transparently communicating the government's approach to leveraging cloud computing to improve eﬃciency, scalability, and security in digital operations.",
+      "text": "A cloud strategy or equivalent — Evidence of a cloud strategy for national governments which outlines the approach and framework for adopting, managing, and optimizing cloud computing services and resources to enhance efficiency, scalability, and security in digital government operations.",
+      "what": "Evidence of a cloud strategy for national governments which outlines the approach and framework for adopting, managing, and optimizing cloud computing services and resources to enhance efficiency, scalability, and security in digital government operations.",
+      "why": "Crucial for transparently communicating the government's approach to leveraging cloud computing to improve efficiency, scalability, and security in digital operations.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Assess Current Infrastructure: a. Evaluate existing IT systems for cloud compatibility. 2. Set Clear Objectives: a. Deﬁne speciﬁc goals for eﬃciency, security, and scalability. 3. Choose Cloud Model: a. Select the appropriate cloud deployment model based on requirements. 4. Develop Migration Plan: a. Create a detailed strategy for migrating services and data to the cloud. 5. Implement Security Measures: a. Establish robust security protocols to protect data in the cloud. 6. Monitor and Optimize: a. Continuously monitor cloud performance and costs, making adjustments as needed",
+        "scoring_guidance": "1. Assess Current Infrastructure: a. Evaluate existing IT systems for cloud compatibility. 2. Set Clear Objectives: a. Define specific goals for efficiency, security, and scalability. 3. Choose Cloud Model: a. Select the appropriate cloud deployment model based on requirements. 4. Develop Migration Plan: a. Create a detailed strategy for migrating services and data to the cloud. 5. Implement Security Measures: a. Establish robust security protocols to protect data in the cloud. 6. Monitor and Optimize: a. Continuously monitor cloud performance and costs, making adjustments as needed",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Türkiye’s cloud strategy page",
+      "benchmark_case": "",
       "reference_links": [
-        "Gov.UK’s Cloud for the Public Sector or CIO’s Cloud Infrastructure Guidance Resources"
+        "Gov.UK's Cloud for the Public Sector or CIO's Cloud Infrastructure Guidance Resources"
       ],
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
@@ -583,17 +353,17 @@
       "question_id": "IF-344",
       "indicator_id": "#344",
       "module": "Institutional Framework",
-      "title": "Strategy or equivalent on the use of artiﬁcial intelligence (AI enabled)",
-      "text": "Strategy or equivalent on the use of artiﬁcial intelligence (AI enabled) — Evidence of a government strategy on its approach to leveraging AI technologies to improve public services, enhance decision-making processes, and drive innovation in governance",
+      "title": "Strategy or equivalent on the use of artificial intelligence (AI enabled)",
+      "text": "Strategy or equivalent on the use of artificial intelligence (AI enabled) — Evidence of a government strategy on its approach to leveraging AI technologies to improve public services, enhance decision-making processes, and drive innovation in governance",
       "what": "Evidence of a government strategy on its approach to leveraging AI technologies to improve public services, enhance decision-making processes, and drive innovation in governance",
       "why": "Crucial as it promotes transparency, ensures responsible AI deployment, and fosters public trust in government AI initiatives.",
       "how": {
         "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Conduct AI readiness assessment: a. Evaluate government readiness for AI adoption, including infrastructure and potential applications. 2. Deﬁne strategic objectives: a. Identify goals aligned with government priorities and citizen needs. 3. Develop AI governance framework: a. Establish policies and guidelines for AI development and usage. 4. Foster collaboration: a. Engage stakeholders for knowledge-sharing and collaboration. 5. Promote AI literacy: a. Implement initiatives to enhance understanding of AI concepts and beneﬁts. 6. Monitor and evaluate: a. Establish mechanisms to track implementation progress and adapt strategies.",
+        "scoring_guidance": "1. Conduct AI readiness assessment: a. Evaluate government readiness for AI adoption, including infrastructure and potential applications. 2. Define strategic objectives: a. Identify goals aligned with government priorities and citizen needs. 3. Develop AI governance framework: a. Establish policies and guidelines for AI development and usage. 4. Foster collaboration: a. Engage stakeholders for knowledge-sharing and collaboration. 5. Promote AI literacy: a. Implement initiatives to enhance understanding of AI concepts and benefits. 6. Monitor and evaluate: a. Establish mechanisms to track implementation progress and adapt strategies.",
         "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
         "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
       },
-      "benchmark_case": "Check out Switzerland’s page on its use of AI",
+      "benchmark_case": "",
       "reference_links": [
         "the Center of Excellence AI Guide for Government or the United Nations resource guide"
       ],

@@ -1,0 +1,1868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UN EKAP Modernization — Scoping Brief & Solution Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body, h1, h2, h3, h4, p, ul, li, figure, table, th, td { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  img, svg { max-width: 100%; display: block; }
+
+  /* ==========================================================================
+     Theme 1: Light (Clean Editorial / Crisp Paper)
+     ========================================================================== */
+  :root, :root[data-theme="light"] {
+    --ground:          #F8FAFC;
+    --surface:         #FFFFFF;
+    --surface-2:       #F1F5F9;
+    --surface-3:       #E2E8F0;
+    --ink:             #0F172A;
+    --ink-soft:        #475569;
+    --ink-faint:       #64748B;
+    --rule:            #CBD5E1;
+    --rule-soft:       #E2E8F0;
+    --accent:          #0072CE;
+    --accent-hover:    #005FA3;
+    --accent-soft:     rgba(0, 114, 206, 0.08);
+    --accent-border:   rgba(0, 114, 206, 0.22);
+    --signal:          #D97706;
+    --signal-soft:     rgba(217, 119, 6, 0.08);
+    --signal-border:   rgba(217, 119, 6, 0.25);
+    --danger:          #DC2626;
+    --danger-soft:     rgba(220, 38, 38, 0.06);
+    --danger-border:   rgba(220, 38, 38, 0.22);
+    --verified:        #059669;
+    --verified-soft:   rgba(5, 150, 105, 0.08);
+    --verified-border: rgba(5, 150, 105, 0.22);
+    --shadow-sm:       0 1px 2px rgba(15,23,42,.05);
+    --shadow-md:       0 4px 12px -2px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg:       0 12px 24px -4px rgba(15,23,42,.1), 0 4px 6px -4px rgba(15,23,42,.04);
+
+    --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --serif: "Palatino Linotype", "Iowan Old Style", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: "Fira Code", "Cascadia Mono", "SF Mono", ui-monospace, Consolas, monospace;
+  }
+
+  /* ==========================================================================
+     Theme 2: Dark (Onyx Minimal / High Contrast)
+     ========================================================================== */
+  :root[data-theme="dark"] {
+    --ground:          #080B11;
+    --surface:         #0E1422;
+    --surface-2:       #141C2E;
+    --surface-3:       #1B253D;
+    --ink:             #F8FAFC;
+    --ink-soft:        #94A3B8;
+    --ink-faint:       #64748B;
+    --rule:            rgba(255, 255, 255, 0.12);
+    --rule-soft:       rgba(255, 255, 255, 0.06);
+    --accent:          #38BDF8;
+    --accent-hover:    #7DD3FC;
+    --accent-soft:     rgba(56, 189, 248, 0.08);
+    --accent-border:   rgba(56, 189, 248, 0.25);
+    --signal:          #FBBF24;
+    --signal-soft:     rgba(251, 191, 36, 0.08);
+    --signal-border:   rgba(251, 191, 36, 0.25);
+    --danger:          #FB7185;
+    --danger-soft:     rgba(251, 113, 133, 0.08);
+    --danger-border:   rgba(251, 113, 133, 0.25);
+    --verified:        #34D399;
+    --verified-soft:   rgba(52, 211, 153, 0.08);
+    --verified-border: rgba(52, 211, 153, 0.25);
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.4);
+    --shadow-md:       0 4px 16px -2px rgba(0,0,0,.5);
+    --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.7);
+  }
+
+  /* ==========================================================================
+     Theme 3: Deep Forest (Nordic Pine & Emerald Slate)
+     ========================================================================== */
+  :root[data-theme="forest"] {
+    --ground:          #081411;
+    --surface:         #0E1F1B;
+    --surface-2:       #152B26;
+    --surface-3:       #1D3B34;
+    --ink:             #F0FDF4;
+    --ink-soft:        #94A3B8;
+    --ink-faint:       #64748B;
+    --rule:            rgba(255, 255, 255, 0.12);
+    --rule-soft:       rgba(255, 255, 255, 0.06);
+    --accent:          #2DD4BF;
+    --accent-hover:    #5EEAD4;
+    --accent-soft:     rgba(45, 212, 191, 0.1);
+    --accent-border:   rgba(45, 212, 191, 0.26);
+    --signal:          #FBBF24;
+    --signal-soft:     rgba(251, 191, 36, 0.1);
+    --signal-border:   rgba(251, 191, 36, 0.25);
+    --danger:          #FB7185;
+    --danger-soft:     rgba(251, 113, 133, 0.1);
+    --danger-border:   rgba(251, 113, 133, 0.25);
+    --verified:        #34D399;
+    --verified-soft:   rgba(52, 211, 153, 0.1);
+    --verified-border: rgba(52, 211, 153, 0.25);
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.45);
+    --shadow-md:       0 4px 16px -2px rgba(0,0,0,.55);
+    --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.75);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --ground:          #080B11;
+      --surface:         #0E1422;
+      --surface-2:       #141C2E;
+      --surface-3:       #1B253D;
+      --ink:             #F8FAFC;
+      --ink-soft:        #94A3B8;
+      --ink-faint:       #64748B;
+      --rule:            rgba(255, 255, 255, 0.12);
+      --rule-soft:       rgba(255, 255, 255, 0.06);
+      --accent:          #38BDF8;
+      --accent-hover:    #7DD3FC;
+      --accent-soft:     rgba(56, 189, 248, 0.08);
+      --accent-border:   rgba(56, 189, 248, 0.25);
+      --signal:          #FBBF24;
+      --signal-soft:     rgba(251, 191, 36, 0.08);
+      --signal-border:   rgba(251, 191, 36, 0.25);
+      --danger:          #FB7185;
+      --danger-soft:     rgba(251, 113, 133, 0.08);
+      --danger-border:   rgba(251, 113, 133, 0.25);
+      --verified:        #34D399;
+      --verified-soft:   rgba(52, 211, 153, 0.08);
+      --verified-border: rgba(52, 211, 153, 0.25);
+      --shadow-sm:       0 1px 2px rgba(0,0,0,.4);
+      --shadow-md:       0 4px 16px -2px rgba(0,0,0,.5);
+      --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.7);
+    }
+  }
+
+  /* ---- Presentation Viewport ---- */
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: clamp(.86rem, 1.1vw, .98rem);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3.5px;
+    background: linear-gradient(90deg, var(--accent), var(--verified));
+    transition: width .35s ease;
+    z-index: 100;
+  }
+
+  #deck {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    padding: clamp(16px, 2.4vw, 36px) clamp(20px, 3.4vw, 52px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.4vw, 16px);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    will-change: transform, opacity;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .slide.exit-left { opacity: 0; transform: translateX(-6%); pointer-events: none; }
+
+  .slide-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    flex-shrink: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: clamp(.62rem, .78vw, .7rem);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-size: clamp(.65rem, .8vw, .72rem);
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-soft);
+    font-weight: 600;
+  }
+
+  .slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.3vw, 16px);
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.85rem, 3.6vw, 2.9rem);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    line-height: 1.16;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h2 em { font-style: normal; color: var(--accent); font-weight: 600; }
+  .lede { color: var(--ink-soft); max-width: 72ch; font-size: clamp(.88rem, 1.2vw, 1.02rem); line-height: 1.5; }
+
+  /* ---- Title Slide ---- */
+  .title-slide { justify-content: space-between; }
+  .title-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 16px;
+    margin-top: auto;
+  }
+  .title-meta > div {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 6px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .title-meta .k {
+    display: block; font-family: var(--mono);
+    font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+    color: var(--accent); font-weight: 700;
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .title-meta .v {
+    display: block; margin-top: 4px;
+    font-size: clamp(.7rem, .9vw, .8rem);
+    color: var(--ink-soft); font-weight: 500;
+  }
+
+  /* ---- Challenge vs Resolution Paired Cards ---- */
+  .pain-solution-pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(10px, 1.4vw, 14px);
+  }
+  @media (min-width: 860px) {
+    .pain-solution-pair { grid-template-columns: 1fr 1fr; }
+  }
+
+  .pain-card, .solution-card {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    padding: clamp(12px, 1.5vw, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+
+  .pain-card {
+    border: 1px solid var(--danger-border);
+    border-left: 3.5px solid var(--danger);
+    background: linear-gradient(180deg, var(--danger-soft) 0%, var(--surface-2) 22%);
+  }
+
+  .solution-card {
+    border: 1px solid var(--verified-border);
+    border-left: 3.5px solid var(--verified);
+    background: linear-gradient(180deg, var(--verified-soft) 0%, var(--surface-2) 22%);
+  }
+
+  .card-header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag-pain {
+    font-family: var(--mono);
+    font-size: clamp(.58rem, .72vw, .65rem);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--danger);
+    background: var(--danger-soft);
+    border: 1px solid var(--danger-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .tag-solution {
+    font-family: var(--mono);
+    font-size: clamp(.58rem, .72vw, .65rem);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--verified);
+    background: var(--verified-soft);
+    border: 1px solid var(--verified-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: clamp(.88rem, 1.1vw, .98rem);
+    color: var(--ink);
+    line-height: 1.25;
+  }
+
+  .card-detail {
+    font-size: clamp(.76rem, .95vw, .84rem);
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .card-detail b { color: var(--ink); font-weight: 600; }
+
+  .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .bullet-list li {
+    font-size: clamp(.74rem, .92vw, .82rem);
+    color: var(--ink-soft);
+    line-height: 1.4;
+    position: relative;
+    padding-left: 18px;
+    text-align: left;
+  }
+  .bullet-list li b { color: var(--ink); font-weight: 600; }
+  .pain-card .bullet-list li::before {
+    content: "✕";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--danger);
+    font-weight: 800;
+    font-size: .82em;
+    line-height: 1.4;
+  }
+  .solution-card .bullet-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--verified);
+    font-weight: 800;
+    font-size: .92em;
+    line-height: 1.4;
+  }
+
+  .tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .tech-badge {
+    font-family: var(--mono);
+    font-size: clamp(.55rem, .7vw, .62rem);
+    background: var(--surface-3);
+    color: var(--ink-soft);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--rule-soft);
+    font-weight: 500;
+  }
+
+  /* ---- Matrix Comparison Table ---- */
+  .matrix-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(.72rem, .92vw, .82rem);
+    text-align: left;
+  }
+
+  .matrix-table th {
+    background: var(--surface-2);
+    padding: 9px 12px;
+    font-family: var(--mono);
+    font-size: clamp(.6rem, .75vw, .68rem);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+
+  .matrix-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    vertical-align: middle;
+  }
+
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-table tr:hover td { background: var(--surface-2); }
+  .matrix-table td.dim-name { font-weight: 600; color: var(--ink); font-family: var(--mono); font-size: clamp(.68rem, .85vw, .75rem); }
+  .matrix-table td.current-state { color: var(--danger); background: var(--danger-soft); }
+  .matrix-table td.future-state { color: var(--verified); font-weight: 600; background: var(--verified-soft); }
+
+  /* ---- 2-Row Flow Grid (Slide 8) ---- */
+  .flow-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 600px) {
+    .flow-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .flow-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .flow-step {
+    border: 1px solid var(--rule-soft); border-top: 3.5px solid var(--rule);
+    background: var(--surface-2); padding: 9px 10px 11px;
+    display: flex; flex-direction: column; gap: 4px;
+    border-radius: 4px; box-shadow: var(--shadow-sm);
+  }
+  .flow-step .who { font-family: var(--mono); font-size: clamp(.55rem, .7vw, .62rem); letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+  .flow-step b { font-size: clamp(.74rem, .95vw, .84rem); font-weight: 700; line-height: 1.2; color: var(--ink); }
+  .flow-step span { font-size: clamp(.66rem, .85vw, .75rem); color: var(--ink-soft); line-height: 1.35; }
+  
+  .flow-step.admin   { border-top-color: #818CF8; background: rgba(129,140,248,0.06); }
+  .flow-step.admin .who { color: #818CF8; }
+  .flow-step.ai      { border-top-color: var(--accent); background: var(--accent-soft); }
+  .flow-step.ai .who { color: var(--accent); }
+  .flow-step.human   { border-top-color: var(--rule); }
+  .flow-step.human .who { color: var(--ink-faint); }
+  .flow-step.gate    { border-top-color: var(--signal); background: var(--signal-soft); }
+  .flow-step.gate .who { color: var(--signal); }
+  .flow-step.pub     { border-top-color: var(--verified); background: var(--verified-soft); }
+  .flow-step.pub .who { color: var(--verified); }
+
+  /* ---- AI / Technical Stack Layering ---- */
+  .stack { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); border-radius: 6px; overflow: hidden; }
+  .layer {
+    background: var(--surface); display: grid; grid-template-columns: 8.5rem 1fr; gap: 12px;
+    padding: clamp(8px, 1.1vw, 12px) clamp(10px, 1.4vw, 16px); align-items: baseline;
+  }
+  @media (max-width: 640px) { .layer { grid-template-columns: 1fr; gap: 3px; } }
+  .layer .stage { font-family: var(--mono); font-size: clamp(.6rem, .78vw, .68rem); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .layer p { font-size: clamp(.76rem, .98vw, .86rem); color: var(--ink-soft); line-height: 1.4; }
+  .layer p b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Facts / Grid Stats ---- */
+  .facts { display: grid; gap: 10px; }
+  @media (min-width: 700px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+  .fact {
+    background: var(--surface-2); border: 1px solid var(--rule-soft); border-radius: 6px;
+    padding: clamp(10px, 1.3vw, 14px); display: flex; gap: 12px; align-items: baseline;
+    box-shadow: var(--shadow-sm);
+  }
+  .fact .n {
+    font-family: var(--mono); font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--accent);
+    font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; white-space: nowrap;
+  }
+  .fact div { min-width: 0; }
+  .fact div b { display: block; font-size: clamp(.8rem, 1.05vw, .9rem); font-weight: 700; color: var(--ink); }
+  .fact div span { display: block; font-size: clamp(.7rem, .9vw, .78rem); color: var(--ink-soft); margin-top: 2px; line-height: 1.35; }
+
+  /* ---- Columns & Notes ---- */
+  .cols { display: grid; gap: clamp(12px, 1.8vw, 20px); }
+  @media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr; } }
+  .col h3 {
+    font-family: var(--mono); font-size: clamp(.6rem, .78vw, .68rem); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--rule-soft); margin-bottom: 8px; font-weight: 700;
+  }
+  .col p { font-size: clamp(.76rem, .98vw, .86rem); color: var(--ink-soft); line-height: 1.45; }
+  .col p + p { margin-top: 6px; }
+  .col p b { color: var(--ink); font-weight: 600; }
+  .col ul { display: flex; flex-direction: column; gap: 8px; }
+  .col li {
+    font-size: clamp(.76rem, .98vw, .86rem);
+    color: var(--ink-soft);
+    line-height: 1.45;
+    position: relative;
+    padding-left: 18px;
+    text-align: left;
+  }
+  .col li b { color: var(--ink); font-weight: 600; }
+  .col li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+    line-height: 1.45;
+  }
+
+  .rule-note {
+    border: 1px solid var(--accent-border);
+    border-left: 3.5px solid var(--accent);
+    padding: 8px 12px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: clamp(.78rem, 1.02vw, .88rem);
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .rule-note b { color: var(--ink); font-weight: 600; }
+
+  .footnote { font-size: clamp(.68rem, .85vw, .76rem); color: var(--ink-faint); border-top: 1px solid var(--rule-soft); padding-top: 7px; flex-shrink: 0; line-height: 1.35; }
+  .footnote b { color: var(--ink-soft); font-weight: 600; }
+
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---- API Endpoint Grid & Layout (Slide 11) ---- */
+  .api-grid {
+    display: grid;
+    gap: clamp(8px, 1.1vw, 12px);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .api-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1100px) {
+    .api-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .api-card {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 6px;
+    padding: clamp(9px, 1.1vw, 13px);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .api-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .api-card-title {
+    font-family: var(--mono);
+    font-size: clamp(.65rem, .8vw, .72rem);
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .api-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .api-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .api-route {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: clamp(.64rem, .78vw, .72rem);
+    flex-wrap: nowrap;
+  }
+
+  .badge-method {
+    font-family: var(--mono);
+    font-size: clamp(.54rem, .66vw, .6rem);
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: .04em;
+    flex-shrink: 0;
+  }
+
+  .badge-get {
+    background: var(--verified-soft);
+    color: var(--verified);
+    border: 1px solid var(--verified-border);
+  }
+
+  .badge-post {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+
+  .badge-patch {
+    background: var(--signal-soft);
+    color: var(--signal);
+    border: 1px solid var(--signal-border);
+  }
+
+  .api-path {
+    color: var(--ink);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .api-desc {
+    color: var(--ink-soft);
+    font-size: clamp(.63rem, .76vw, .7rem);
+    line-height: 1.35;
+    padding-left: 2px;
+  }
+
+  .api-specs-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .api-spec-pill {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .api-spec-pill .k {
+    font-family: var(--mono);
+    font-size: clamp(.56rem, .7vw, .62rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--accent);
+  }
+
+  .api-spec-pill .v {
+    font-size: clamp(.65rem, .8vw, .72rem);
+    color: var(--ink-soft);
+    line-height: 1.3;
+  }
+
+  /* ---- Navigation Bar ---- */
+  #nav {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 8px 20px; background: var(--surface); border-top: 1px solid var(--rule-soft); user-select: none;
+    z-index: 90;
+    backdrop-filter: blur(12px);
+  }
+  .nav-group { display: flex; align-items: center; gap: 8px; }
+  #nav button, #nav select {
+    background: var(--surface-2); border: 1px solid var(--rule); color: var(--ink-soft);
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+    padding: 5px 11px; border-radius: 4px; cursor: pointer; transition: all .15s ease;
+  }
+  #nav button:hover:not(:disabled), #nav select:hover {
+    background: var(--accent); border-color: var(--accent); color: #081411;
+    box-shadow: 0 0 12px var(--accent-soft);
+  }
+  :root[data-theme="light"] #nav button:hover:not(:disabled),
+  :root[data-theme="light"] #nav select:hover {
+    color: #fff;
+  }
+  :root[data-theme="dark"] #nav button:hover:not(:disabled),
+  :root[data-theme="dark"] #nav select:hover {
+    color: #fff;
+  }
+  #nav button:disabled { opacity: .3; cursor: default; }
+  #nav-counter { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; color: var(--ink-faint); font-variant-numeric: tabular-nums; min-width: 55px; text-align: center; font-weight: 600; }
+
+  #dots { display: flex; gap: 6px; align-items: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); transition: all .2s ease; cursor: pointer; border: none; padding: 0; }
+  .dot.active { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 8px var(--accent); }
+
+  #click-hint {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 50; opacity: 0; animation: hint-fade 2.8s ease 0.8s forwards;
+  }
+  #click-hint span {
+    background: rgba(15,23,42,.85); color: #fff; font-family: var(--mono); font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; padding: 9px 20px; border-radius: 4px; backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  @keyframes hint-fade { 0% { opacity: 0; } 20% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+
+  @media print {
+    html, body { height: auto; overflow: visible; }
+    #progress-bar, #nav, #dots, #click-hint { display: none !important; }
+    #deck { overflow: visible; height: auto; }
+    .slide { position: relative; opacity: 1 !important; transform: none !important; pointer-events: auto; break-after: page; min-height: 100vh; height: auto; padding: 32px; }
+    .slide.exit-left { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="deck" role="region" aria-label="Presentation slides" tabindex="0">
+
+  <!-- 01 — Title & Executive Summary -->
+  <section class="slide active" id="s1" aria-label="Slide 1 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">RightAgents Technologies · Executive Scoping Brief</span>
+      <span class="num">01 / 12</span>
+    </div>
+    <div class="slide-body title-slide">
+      <div>
+        <h1>UN EKAP Modernization:<br>From Spreadsheets to an Assessment Engine</h1>
+        <p class="lede" style="margin-top:14px">A comprehensive architectural and scoping brief distilled from the UN DESA briefing with Deniz Susar. Outlining the 8 key operational challenges in the global e-Government assessment workflow, and detailing how our agentic platform architecture delivers an engineered resolution for each one across both national (102 indicators) and municipal (95 LOSI indicators) scopes while preserving strict UN governance.</p>
+      </div>
+      <div class="title-meta">
+        <div><span class="k">193</span><span class="v">UN Member States assessed biennially</span></div>
+        <div><span class="k">102 / 95</span><span class="v">National / LOSI Toolkit indicators</span></div>
+        <div><span class="k">2×</span><span class="v">Blind independent human assessors per unit</span></div>
+        <div><span class="k">0</span><span class="v">Manual export steps to publish to Knowledgebase</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — Domain Primer & Scoping Boundary -->
+  <section class="slide" id="s2" aria-label="Slide 2 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Index Architecture &amp; Scoping Boundary</span>
+      <span class="num">02 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>The Online Service Index is <em>one third</em> of the global EGDI</h2>
+      <div class="stack">
+        <div class="layer">
+          <span class="stage">OSI · 1/3</span>
+          <p><b>Online Service Index (In Scope)</b> — Directly evaluated by UN DESA. Assesses <b>102 binary indicators</b> from the National e-Government Toolkit across national portals: institutional frameworks, service provision, content provision, technology standards, e-participation, and literacy.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">TII · 1/3</span>
+          <p><b>Telecommunication Infrastructure Index (External)</b> — Measures internet users, mobile broadband/cellular penetration, and service affordability. Data sourced directly from the <b>International Telecommunication Union (ITU)</b>.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">HCI · 1/3</span>
+          <p><b>Human Capital Index (External)</b> — Evaluates adult literacy rates, school enrollment, and education metrics. Sourced directly from <b>UNESCO</b> and secondary UN statistical feeds.</p>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Project Scoping Boundary:</b> This platform is strictly focused on modernizing the <b>OSI (102 indicators)</b> and its municipal counterpart (<b>LOSI — 95 indicators)</b>. MSQ government submissions serve strictly as link and metadata reference layers for assessors and AI pre-fill; sovereign scores are 100% determined by primary portal evaluations.</p>
+      </div>
+      <p class="footnote"><b>City-Level Evaluation (LOSI):</b> Evaluates <b>95 binary indicators</b> from the Local e-Government Toolkit (e.g., parking ticket payments, tourist services, building permits). Disaggregated TII and HCI data does not exist globally; city rankings depend 100% on the Local Online Service Index produced by this platform.</p>
+    </div>
+  </section>
+
+  <!-- 03 — Current State vs Future Architecture Transformation Matrix -->
+  <section class="slide" id="s3" aria-label="Slide 3 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Transformation Matrix</span>
+      <span class="num">03 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Transforming UN DESA's Assessment Operations</h2>
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Operational Dimension</th>
+              <th>Key Challenge (Current State)</th>
+              <th>Target Architecture (Engineered Resolution)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dim-name">01. Data Architecture</td>
+              <td class="current-state">Disparate Google Sheets, folder wrangling, zero audit trail</td>
+              <td class="future-state">Unified relational schema with append-only immutable audit trail</td>
+            </tr>
+            <tr>
+              <td class="dim-name">02. Publishing Flow</td>
+              <td class="current-state">Disconnected backend; manual CSV export &amp; manual homepage coding</td>
+              <td class="future-state">Direct single-source database-to-portal publishing &amp; headless REST API</td>
+            </tr>
+            <tr>
+              <td class="dim-name">03. Indicator Evolution</td>
+              <td class="current-state">~50% cycle churn breaks history; static features re-tested from scratch</td>
+              <td class="future-state">Versioned 102 National / 95 LOSI lifecycle &amp; automated "Carry-Forward" baseline engine</td>
+            </tr>
+            <tr>
+              <td class="dim-name">04. Municipal Scaling</td>
+              <td class="current-state">LOSI locked to 1 city/country; custom regional projects rebuilt as one-offs</td>
+              <td class="future-state">Polymorphic "Unit of Study" supporting national &amp; custom multi-city projects (95 indicators)</td>
+            </tr>
+            <tr>
+              <td class="dim-name">05. Discrepancy Control</td>
+              <td class="current-state">Reviewers manually eyeball Assessor A vs B; no mathematical alert</td>
+              <td class="future-state">Automated >5% discrepancy gate with reciprocal side-by-side diff reconciliation</td>
+            </tr>
+            <tr>
+              <td class="dim-name">06. 50-Page MSQ Data</td>
+              <td class="current-state">Government self-reports handed to assessors as unindexed raw PDFs</td>
+              <td class="future-state">MSQ link reference ingestion engine for AI pre-fill &amp; assessor verification</td>
+            </tr>
+            <tr>
+              <td class="dim-name">07. AI Reliability</td>
+              <td class="current-state">80% accuracy in past trials; random errors &amp; failure on eID login walls</td>
+              <td class="future-state">Dual-agent pre-fill with citizen shallow findability limits &amp; ≥75% confidence gate</td>
+            </tr>
+            <tr>
+              <td class="dim-name">08. Bureaucracy &amp; Hosting</td>
+              <td class="current-state">UN cannot pay monthly SaaS credit cards; long RFP procurement cycle</td>
+              <td class="future-state">Self-contained zero-recurring stack; turnkey consultant-led onboarding</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote"><b>Core Design Principle:</b> The system is built around <em>Human-in-the-Loop (HITL)</em> authority. AI accelerates evidence gathering; human assessors and senior reviewers retain 100% scoring authority.</p>
+    </div>
+  </section>
+
+  <!-- 04 — Deep Dive 1: Data Architecture & Publishing Disconnect -->
+  <section class="slide" id="s4" aria-label="Slide 4 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Deep Dive · Key Challenges 01 &amp; 02</span>
+      <span class="num">04 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Data Fragmentation &amp; Publishing Disconnect</h2>
+      <div class="pain-solution-pair">
+        <!-- Pair 1: Spreadsheets -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 01 · Current Baseline</span>
+            <span class="tech-badge">Manual Process</span>
+          </div>
+          <div class="card-title">Everything Lives in Fragile Spreadsheets</div>
+          <div class="card-detail">
+            Assessments across 193 nations are tracked in separate Google Sheets and folders (e.g., <code>Afghanistan 0-1</code>, <code>Afghanistan 0-2</code>). Evaluation staff must run ad-hoc scripts to compare and merge submissions.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Zero Data Integrity:</b> Vulnerable to accidental cell overwrites, schema mismatches, and broken formulas.</li>
+            <li><b>4–5 Cycles Trapped:</b> Historical data across prior editions lacks a standardized structure, preventing longitudinal analysis.</li>
+            <li><b>No Role Boundaries:</b> No enforced permissions between blind assessors, reviewers, and admins.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Relational Core</span>
+          </div>
+          <div class="card-title">Unified Database &amp; Workflow State Machine</div>
+          <div class="card-detail">
+            Replaces disparate spreadsheets with a centralized, ACID-compliant database (SQLite / PostgreSQL) managing <code>Cycles</code>, <code>Projects</code>, <code>Units</code>, and <code>Assessments</code> with an append-only audit trail.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Strict Blindness Enforcement:</b> Query-level data isolation guarantees Assessor A and B cannot see each other's work.</li>
+            <li><b>Automated Legacy Ingestion:</b> Migration pipelines convert 4–5 cycles of historical survey sheets into structured records.</li>
+            <li><b>Audit Traceability:</b> Every answer submission, confidence score, and reviewer override is permanently logged.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">SQLite / PostgreSQL</span>
+            <span class="tech-badge">Append-Only Schema</span>
+            <span class="tech-badge">State Machine</span>
+          </div>
+        </div>
+
+        <!-- Pair 2: Publishing Disconnect -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 02 · Current Baseline</span>
+            <span class="tech-badge">System Silos</span>
+          </div>
+          <div class="card-title">Frontend &amp; Backend Completely Disconnected</div>
+          <div class="card-detail">
+            The assessment intake backend (.NET Nuke / eGov Survey) and the public-facing E-Government Knowledgebase (EGKB) are separate silos that do not communicate.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Manual Transfer Overhead:</b> Releasing a biennial report requires manually exporting CSVs and re-importing into the CMS.</li>
+            <li><b>Static Page Maintenance:</b> Public country pages and rankings must be manually updated and hand-coded.</li>
+            <li><b>Release Bottleneck:</b> Months of delay between final assessment sign-off and public data availability.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Direct Pipeline</span>
+          </div>
+          <div class="card-title">Single-Source Direct Publishing &amp; REST API</div>
+          <div class="card-detail">
+            Unified platform where Senior Reviewer approval automatically projects verified scores to the public knowledge base, instantly updating country profiles, rankings, and exports.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Instant Knowledge Base Sync:</b> Zero manual data wrangling or spreadsheet re-formatting between assessment and release.</li>
+            <li><b>Headless Programmatic API:</b> <code>/api/v1</code> REST API exposes clean JSON endpoints for cycles, units, and scores.</li>
+            <li><b>Public Analytics Engine:</b> Dynamic leaderboards, regional filters, and time-series comparisons out of the box.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">FastAPI</span>
+            <span class="tech-badge">Headless /api/v1</span>
+            <span class="tech-badge">Instant Projection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 — Deep Dive 2: Indicator Churn & Municipal LOSI Scaling -->
+  <section class="slide" id="s5" aria-label="Slide 5 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Deep Dive · Key Challenges 03 &amp; 04</span>
+      <span class="num">05 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Indicator Churn &amp; Municipal LOSI Scaling</h2>
+      <div class="pain-solution-pair">
+        <!-- Pair 3: Indicator Churn -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 03 · Current Baseline</span>
+            <span class="tech-badge">Schema Drift</span>
+          </div>
+          <div class="card-title">~50% Indicator Churn Breaks Longitudinal Mapping</div>
+          <div class="card-detail">
+            Digital government evolves rapidly; ~50% of the 102 National and 95 LOSI indicators change, retire, or are introduced across editions. Mapping multi-cycle data is complex and prone to schema breakage.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Redundant Manual Work:</b> Assessors must re-evaluate unchanged baseline features from scratch every single cycle.</li>
+            <li><b>Broken Trend Analytics:</b> Changing question formulations make multi-year progress tracking inaccurate.</li>
+            <li><b>No Version Control:</b> Indicator definitions and scoring guidelines are scattered across ad-hoc PDFs.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Lifecycle Engine</span>
+          </div>
+          <div class="card-title">Versioned Indicators &amp; "Carry-Forward" Engine</div>
+          <div class="card-detail">
+            First-class indicator lifecycle management (<code>active</code>, <code>modified</code>, <code>retired</code>, <code>new</code>) paired with an automated baseline carry-forward acceleration engine across both national and municipal toolkits.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Carry-Forward Acceleration:</b> Prior positive assessments pre-populate as verified baselines for rapid 1-click human confirmation.</li>
+            <li><b>Dynamic Admin Governance:</b> Admins can add, retire, or modify indicators per cycle without altering past survey schemas.</li>
+            <li><b>Longitudinal Lineage:</b> Preserves historical indicator mappings for reliable multi-cycle trend visualizations.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">Schema Versioning</span>
+            <span class="tech-badge">Carry-Forward Logic</span>
+            <span class="tech-badge">Historical Mapping</span>
+          </div>
+        </div>
+
+        <!-- Pair 4: Municipal Scaling -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 04 · Current Baseline</span>
+            <span class="tech-badge">Architecture Bottleneck</span>
+          </div>
+          <div class="card-title">LOSI Built for 1 City — Demand is for Multi-City</div>
+          <div class="card-detail">
+            Standard LOSI evaluates only the most populous city per nation across <b>95 Local Toolkit indicators</b>. Member states increasingly demand assessments for multiple cities across national jurisdictions.
+          </div>
+          <ul class="bullet-list">
+            <li><b>One-Off Siloed Implementations:</b> Each regional request (e.g. UK 8 cities, Argentina, Greece) must be built as a standalone project with disconnected sheets.</li>
+            <li><b>Inconsistent Methodologies:</b> Ad-hoc city surveys drift from the core UN 95-indicator Toolkit standard.</li>
+            <li><b>Administrative Overhead:</b> Secretariat staff cannot scale custom regional projects without significant manual effort.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Polymorphic Units</span>
+          </div>
+          <div class="card-title">Polymorphic "Unit of Study" &amp; Project Spawner</div>
+          <div class="card-detail">
+            Flexible domain model abstracting evaluation targets into "Units of Study" (National Portals, Capital Cities, Regional Municipalities) running on a single unified platform.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Self-Service Project Templates:</b> Admins instantiate custom initiatives (e.g. <code>LOSI UK</code> with 8 cities) in seconds with the modular 95-indicator municipal package.</li>
+            <li><b>Shared Assessment Mechanics:</b> Custom municipal projects reuse the exact same AI pre-fill, discrepancy, and review pipelines.</li>
+            <li><b>Unified Knowledgebase:</b> City profiles (95 indicators) and national rankings (102 indicators) sit side-by-side in the same database.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">Multi-Tenant Projects</span>
+            <span class="tech-badge">95 LOSI Indicators</span>
+            <span class="tech-badge">LOSI City Toolkit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 — Deep Dive 3: Quality Control & MSQ Context Resolution -->
+  <section class="slide" id="s6" aria-label="Slide 6 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Deep Dive · Key Challenges 05 &amp; 06</span>
+      <span class="num">06 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Discrepancy Review &amp; MSQ Context Resolution</h2>
+      <div class="pain-solution-pair">
+        <!-- Pair 5: Discrepancy Control -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 05 · Current Baseline</span>
+            <span class="tech-badge">Subjective Review</span>
+          </div>
+          <div class="card-title">Discrepancies Resolved Manually by Eyeballing</div>
+          <div class="card-detail">
+            Reviewers must manually eyeball Assessor A vs. B answers line-by-line across 102 National / 95 LOSI questions across all units. No automated mathematical threshold or structured escalation exists.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Reviewer Fatigue:</b> Staff must inspect all units equally, even when assessors achieved 100% consensus.</li>
+            <li><b>Arbitration Gaps:</b> Lack of formal reconciliation protocols leads to subjective score settling.</li>
+            <li><b>No Discrepancy Alerting:</b> Wide assessor divergence can slip through manual checks without system warnings.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">In-Platform Reconciliation</span>
+          </div>
+          <div class="card-title">Automated Discrepancy Engine &amp; Dual-Context Joint Reconciliation</div>
+          <div class="card-detail">
+            When divergence exceeds the 5% threshold, surveys return to both assessors in a comparative reconciliation workspace, showing each what they and their peer entered to submit a unified answer.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Reciprocal Side-by-Side Diff:</b> Assessors see their own initial answer/URL side-by-side with their peer's submission for conflicting indicators.</li>
+            <li><b>Isolated Conflict View:</b> Consensual indicators remain locked; assessors focus exclusively on negotiating and resolving disputed features.</li>
+            <li><b>Unified Joint Submission:</b> Assessors agree on a single final score with logged justification, automatically routing clean data to Senior Reviewer sign-off.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">5% Threshold Alert</span>
+            <span class="tech-badge">Reciprocal Diff View</span>
+            <span class="tech-badge">Unified Consensus Flow</span>
+          </div>
+        </div>
+
+        <!-- Pair 6: MSQ Ingestion -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 06 · Current Baseline</span>
+            <span class="tech-badge">Information Silo</span>
+          </div>
+          <div class="card-title">50+ Page MSQ Submissions Go Unindexed</div>
+          <div class="card-detail">
+            Member states submit 50+ page Member State Questionnaires (MSQs) declaring official sub-portals and ministerial links. Secretariat lacks resources to parse these, handing them to assessors as raw PDFs.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Overlooked Government URLs:</b> Assessors miss official ministerial links buried in 50-page PDFs and falsely score <code>0</code>.</li>
+            <li><b>Search Inefficiencies:</b> Assessors spend hours searching search engines for links the government already declared.</li>
+            <li><b>Link Siloing:</b> Rich sub-portal directories declared by authorities remain locked inside unstructured PDFs.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Link Reference Layer</span>
+          </div>
+          <div class="card-title">MSQ Ingestion Engine for Reference &amp; Pre-Fill</div>
+          <div class="card-detail">
+            Automated ingestion of MSQ submissions extracts declared official sub-portals (e-services, open data, e-participation, procurement) into a structured link reference layer for AI pre-fill and assessors.
+          </div>
+          <ul class="bullet-list">
+            <li><b>3-Tier Link Resolution:</b> Resolves URLs systematically: (1) Historical KB → (2) MSQ Declared Official URLs → (3) Search discovery.</li>
+            <li><b>Link Reference Only (Zero Score Bias):</b> Provides official URLs directly to AI agents and assessors without letting self-reports directly award scores.</li>
+            <li><b>Zero Blind Spots:</b> Guarantees evaluation against the exact official sub-portals nominated by national governments.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">MSQ Link Parser</span>
+            <span class="tech-badge">Link Resolution</span>
+            <span class="tech-badge">Reference Layer</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 — Deep Dive 4: AI Reliability & UN Hosting / Bureaucracy -->
+  <section class="slide" id="s7" aria-label="Slide 7 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Deep Dive · Key Challenges 07 &amp; 08</span>
+      <span class="num">07 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>AI Reliability &amp; Institutional Governance</h2>
+      <div class="pain-solution-pair">
+        <!-- Pair 7: AI Reliability -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 07 · Current Baseline</span>
+            <span class="tech-badge">Unpredictable AI</span>
+          </div>
+          <div class="card-title">Past AI Trials: ~80% Accuracy &amp; Deep-Link Drift</div>
+          <div class="card-detail">
+            Previous AI scraping trials had an ~80% accuracy rate with unpredictable error drift across countries. Autonomous crawlers frequently scraped deep, hidden sub-links that ordinary citizens cannot realistically navigate to.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Diplomatic &amp; Credibility Risk:</b> Unverified AI hallucinations or scoring errors on sovereign nations damage UN authority.</li>
+            <li><b>Deep Scraping False Positives:</b> Scrapers uncovering obscure, buried URLs violate the core citizen "easy findability" rule.</li>
+            <li><b>Login Barriers:</b> National portals behind eID systems (e.g. Turkey e-Devlet) block automated crawlers.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Dual-Agent HITL</span>
+          </div>
+          <div class="card-title">Dual-Agent Pre-Fill &amp; Shallow Traversal Rule</div>
+          <div class="card-detail">
+            AI functions strictly as an evidence pre-fill accelerator with shallow traversal limits that simulate citizen findability. Humans retain 100% scoring authority.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Shallow Citizen Traversal:</b> Crawler avoids deep link exploration, scoring <code>0</code> if features are not accessible within standard citizen navigation paths.</li>
+            <li><b>Dual-Agent Verification:</b> Two independent Gemini models (Literal Reader vs Inferential Evaluator) must cross-verify findings.</li>
+            <li><b>Strict Confidence Gate (≥75%):</b> Results with &lt;75% confidence, conflicting evidence, or login walls automatically escalate to human assessors.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">Shallow Findability</span>
+            <span class="tech-badge">Gemini Dual-Agent</span>
+            <span class="tech-badge">≥75% Confidence Gate</span>
+          </div>
+        </div>
+
+        <!-- Pair 8: Institutional & Hosting -->
+        <div class="pain-card">
+          <div class="card-header-line">
+            <span class="tag-pain">Key Challenge 08 · Institutional Constraint</span>
+            <span class="tech-badge">Procurement Roadblocks</span>
+          </div>
+          <div class="card-title">Institutional Hosting &amp; SaaS Procurement Rules</div>
+          <div class="card-detail">
+            Institutional restrictions on recurring credit card micro-transactions and rigid cloud procurement workflows prevent adoption of standard commercial SaaS tools. Central vendor procurement cycles are lengthy (12–24+ months).
+          </div>
+          <ul class="bullet-list">
+            <li><b>No Monthly SaaS Billing:</b> Systems requiring monthly recurring card charges cannot be adopted by UN DESA.</li>
+            <li><b>Strict Data Residency:</b> UN sovereign data rules require enterprise-controlled hosting (.NET/Drupal/UN Cloud).</li>
+            <li><b>Procurement Inertia:</b> Institutional vendor bidding prevents programme leadership from engaging trusted technical partners directly.</li>
+          </ul>
+        </div>
+        <div class="solution-card">
+          <div class="card-header-line">
+            <span class="tag-solution">Engineered Resolution · Implemented</span>
+            <span class="tech-badge">Turnkey Delivery</span>
+          </div>
+          <div class="card-title">Self-Contained Stack &amp; Consultant Delivery</div>
+          <div class="card-detail">
+            Portable, zero-recurring-cost architecture engineered to run on UN enterprise infrastructure or long-term prepaid enterprise cloud instances.
+          </div>
+          <ul class="bullet-list">
+            <li><b>Zero Monthly Dependencies:</b> Built entirely with open-source technologies (Python, FastAPI, SQLite, Playwright) with zero subscription fees.</li>
+            <li><b>Consultant-Led Engagement:</b> Structured as individual technical consultancy deliverables, enabling rapid kickoff within 60 days.</li>
+            <li><b>Enterprise Security Compliance:</b> Application Default Credentials (ADC), private data isolation, and containerized deployment.</li>
+          </ul>
+          <div class="tech-badges">
+            <span class="tech-badge">Zero Recurring Cost</span>
+            <span class="tech-badge">UN Infra Ready</span>
+            <span class="tech-badge">Consultant Delivery</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 — End-to-End Governance & Assessment Flow -->
+  <section class="slide" id="s8" aria-label="Slide 8 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Operational Governance Flow</span>
+      <span class="num">08 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>The 8-Stage Assessment &amp; Publishing Lifecycle</h2>
+      <div class="flow-grid">
+        <div class="flow-step admin">
+          <span class="who">Stage 01 · Admin</span>
+          <b>Project Setup</b>
+          <span>Define cycle, select OSI/LOSI, configure 102/95 indicators, and assign assessor roster</span>
+        </div>
+        <div class="flow-step ai">
+          <span class="who">Stage 02 · System</span>
+          <b>MSQ Link Ingestion</b>
+          <span>Ingest 50+ page MSQs to extract declared official sub-portal URLs for link reference</span>
+        </div>
+        <div class="flow-step ai">
+          <span class="who">Stage 03 · AI Engine</span>
+          <b>AI Shallow Pre-Fill</b>
+          <span>Dual agents evaluate portals with shallow citizen navigation; generate evidence with ≥75% confidence</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 04 · Assessors</span>
+          <b>Blind A/B Intake</b>
+          <span>Assessors A &amp; B evaluate independently; submit 100% blind answers</span>
+        </div>
+        <div class="flow-step gate">
+          <span class="who">Stage 05 · Gate</span>
+          <b>Discrepancy Check</b>
+          <span>Automated check: divergence >5% flags unit and triggers in-platform dual-context diff workspace</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 06 · Assessors</span>
+          <b>Joint Reconciliation</b>
+          <span>Assessors view own vs peer submissions side-by-side, resolve conflicts, and submit 1 unified answer</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 07 · Reviewer</span>
+          <b>Senior Sign-Off</b>
+          <span>Authoritative verification, dispute resolution, and publication authorization</span>
+        </div>
+        <div class="flow-step pub">
+          <span class="who">Stage 08 · Public</span>
+          <b>Instant Publish</b>
+          <span>Direct projection to EGKB; live country profiles &amp; leaderboards update instantly</span>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Strict Governance:</b> Human assessors are never bypassed. The AI serves as an evidence accelerator; every single published score is backed by verified human sign-off and an immutable audit log.
+      </div>
+      <p class="footnote"><b>Discrepancy Threshold:</b> Configurable by project (default: 5% differing answer rate). Uncontested portals pass smoothly to reviewer verification.</p>
+    </div>
+  </section>
+
+  <!-- 09 — The AI Pre-Fill & Verification Engine Deep Dive -->
+  <section class="slide" id="s9" aria-label="Slide 9 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">AI Pre-Fill Architecture</span>
+      <span class="num">09 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Inside the Decoupled AI Pre-Fill Pipeline</h2>
+      <div class="stack">
+        <div class="layer">
+          <span class="stage">01. Resolve</span>
+          <p><b>3-Tier Link Resolution</b> — Resolves target URLs systematically: (1) Historical KB links → (2) MSQ declared government sub-portals for reference → (3) Search engine discovery.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">02. Traverse</span>
+          <p><b>Shallow Citizen Navigation &amp; Crawling</b> — Playwright limits crawl depth to citizen findability paths (first-page search discovery &amp; top-level menus), strictly avoiding deep-link traversal to adhere to scoring rules.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">03. Evaluate</span>
+          <p><b>Dual Independent AI Agents</b> — Two Gemini models running on Vertex AI evaluate each indicator (102 National / 95 LOSI): <em>Agent 1 (Literal Reader)</em> vs <em>Agent 2 (Inferential Context Reader)</em> with zero cross-agent context sharing.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">04. Validate</span>
+          <p><b>Live Citation Verification Gate</b> — A dedicated validator model re-checks every extracted snippet and URL citation against the live rendered HTML to eradicate hallucinations.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">05. Gate &amp; Escalate</span>
+          <p><b>Confidence &amp; HITL Escalation Gate</b> — Results achieving <b>≥75% confidence</b> with dual-agent agreement are presented as pre-fill suggestions. Items &lt;75%, disputed claims, or login-gated services escalate directly to human assessors.</p>
+        </div>
+      </div>
+      <p class="footnote"><b>Key Safety Guarantee:</b> AI suggestions are never published autonomously. Assessors can accept, modify, or completely override suggestions with 1-click simplicity.</p>
+    </div>
+  </section>
+
+  <!-- 10 — Target Platform Scope & Work in Progress (UN-POC) -->
+  <section class="slide" id="s10" aria-label="Slide 10 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Proof of Concept Target Scope</span>
+      <span class="num">10 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Work in Progress: <em>What Is Aimed to Run in the UN-POC</em></h2>
+      <div class="facts">
+        <div class="fact">
+          <span class="n">102+95</span>
+          <div>
+            <b>National &amp; LOSI Toolkits</b>
+            <span>102 National Toolkit indicators + 95 Local E-Gov Toolkit indicators across all core modules</span>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="n">5+3</span>
+          <div>
+            <b>Target PoC Assessment Units</b>
+            <span>5 Regional Archetypes (USA, France, Brazil, China, Nigeria) + 3 LOSI UK Cities (London, Manchester, Edinburgh)</span>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="n">2×</span>
+          <div>
+            <b>Enforced Blind Intake</b>
+            <span>Assessor A &amp; B blindness enforced at database query level, not just in UI presentation</span>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="n">5%</span>
+          <div>
+            <b>Configurable Discrepancy Gate</b>
+            <span>Real-time divergence alerting with reciprocal diff context and unified consensus routing</span>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="n">13</span>
+          <div>
+            <b>Portal Languages Handled</b>
+            <span>EN, ES, FR, DE, PT, IT, NL, RU, ZH, JA, KO, AR, HI — multilingual crawler with auto-detection</span>
+          </div>
+        </div>
+        <div class="fact">
+          <span class="n">REST</span>
+          <div>
+            <b>Headless /api/v1 Endpoints</b>
+            <span>Full programmatic API for cycles, questions, units, AI triggers, and publication</span>
+          </div>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Standardized &amp; Highly Portable Target Stack:</b> Python, FastAPI, SQLite / PostgreSQL, Playwright, Vertex AI. Engineered for zero vendor lock-in and seamless deployment inside UN enterprise environments.</p>
+      </div>
+      <p class="footnote"><b>Benchmark Alignment &amp; Target Calibration:</b> Calibrating against published UN 2024 OSI benchmarks (e.g., Iceland 0.90 reference score, USA.gov, Denmark Borger.dk) to optimize AI pre-fill precision.</p>
+    </div>
+  </section>
+
+  <!-- 11 — Headless FastAPI Architecture & REST Endpoints -->
+  <section class="slide" id="s11" aria-label="Slide 11 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Headless REST Architecture · /api/v1 Interface</span>
+      <span class="num">11 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Headless FastAPI Architecture: <em>End-to-End REST Endpoints</em></h2>
+      <div class="api-grid">
+        <!-- Cluster 1: Cycle & Indicator Orchestration -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">01. Cycles &amp; Study Units</span>
+            <span class="tech-badge">cycles.py · reference.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">/api/v1/cycles</span>
+              </div>
+              <div class="api-desc">Create National OSI (102 items) or LOSI (95 items) assessment cycle</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">/api/v1/cycles/{id}/units</span>
+              </div>
+              <div class="api-desc">Register polymorphic sovereign states or multi-city study units</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">/api/v1/cycles/{id}/questions</span>
+              </div>
+              <div class="api-desc">Version &amp; configure indicator sets (active, modified, retired)</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">/api/v1/reference/countries</span>
+              </div>
+              <div class="api-desc">Query standardized 193 UN Member States reference list &amp; portals</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cluster 2: MSQ Ingestion & AI Pre-Fill -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">02. Ingestion &amp; AI Pre-Fill</span>
+            <span class="tech-badge">msq.py · assessments.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../units/{uid}/msq</span>
+              </div>
+              <div class="api-desc">Ingest 50+ page MSQ PDFs into structured link reference layer</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../units/{uid}/assessment</span>
+              </div>
+              <div class="api-desc">Trigger async shallow crawler &amp; dual-agent evaluation (202 Accepted)</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../assessments/batch</span>
+              </div>
+              <div class="api-desc">Parallel batch unit triggers with live queue status polling</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">.../units/{uid}/results</span>
+              </div>
+              <div class="api-desc">Retrieve verified citations, HTML quotes &amp; &ge;75% confidence gate</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cluster 3: Blind Intake & Discrepancy Control -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">03. Blind Intake &amp; Diff Gate</span>
+            <span class="tech-badge">human.py · discrepancy.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../units/{uid}/human-assessment</span>
+              </div>
+              <div class="api-desc">Submit 100% blind Assessor A or B scoring with query-level isolation</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">.../cycles/{id}/discrepancies</span>
+              </div>
+              <div class="api-desc">Query automated &gt;5% divergence alerts &amp; conflicting indicators</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../reconciliation/start</span>
+              </div>
+              <div class="api-desc">Initiate dual-context reciprocal side-by-side diff workspace</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../reconciliation/submit</span>
+              </div>
+              <div class="api-desc">Submit unified joint consensus answer with audit justification</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cluster 4: Senior Review & Direct EGKB Publishing -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">04. Review &amp; EGKB Publishing</span>
+            <span class="tech-badge">review.py · publication.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">.../review/summary</span>
+              </div>
+              <div class="api-desc">Authoritative sign-off readiness &amp; discrepancy status dashboard</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../units/{uid}/review/approve</span>
+              </div>
+              <div class="api-desc">Senior Reviewer verification sign-off or indicator override</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../cycles/{id}/publish</span>
+              </div>
+              <div class="api-desc">Instant projection to public Knowledgebase (zero spreadsheet exports)</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">/api/v1/public/cycles/{id}/rankings</span>
+              </div>
+              <div class="api-desc">Headless public rankings, sovereign profiles &amp; time-series data</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cluster 5: Dataset Exports & Benchmarks -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">05. Exports &amp; Calibration</span>
+            <span class="tech-badge">export.py · benchmarks.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">.../export/answers</span>
+              </div>
+              <div class="api-desc">Stream verified assessment survey records (CSV / JSON format)</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">.../export/exclusions</span>
+              </div>
+              <div class="api-desc">Stream non-applicable indicators &amp; sovereign exclusion logs</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">/api/v1/benchmarks/run</span>
+              </div>
+              <div class="api-desc">Execute calibration run against 2024 UN ground truth (Iceland, USA)</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">/api/v1/benchmarks/compare</span>
+              </div>
+              <div class="api-desc">Calculate precision/recall deltas against published UN survey scores</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cluster 6: Telemetry, Integrity & Health -->
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">06. Telemetry &amp; System Health</span>
+            <span class="tech-badge">telemetry.py · system.py</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">/api/v1/telemetry/overview</span>
+              </div>
+              <div class="api-desc">Real-time throughput, cycle turnaround &amp; immutable audit traces</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">/api/v1/telemetry/ai-usage</span>
+              </div>
+              <div class="api-desc">Gemini model token consumption, latency &amp; API budget monitoring</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-post">POST</span>
+                <span class="api-path">.../cycles/{id}/verify</span>
+              </div>
+              <div class="api-desc">Automated schema integrity &amp; state-machine validation gate</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route">
+                <span class="badge-method badge-get">GET</span>
+                <span class="api-path">/api/v1/system/health</span>
+              </div>
+              <div class="api-desc">Health liveness check for database, storage &amp; Vertex AI runtime</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Architectural Spec Bar -->
+      <div class="api-specs-bar">
+        <div class="api-spec-pill">
+          <span class="k">Security &amp; Isolation</span>
+          <span class="v">Global <code>X-API-Key</code> dependency + DB query-level blindness</span>
+        </div>
+        <div class="api-spec-pill">
+          <span class="k">Async Processing</span>
+          <span class="v">Non-blocking <code>202 Accepted</code> background jobs with polling</span>
+        </div>
+        <div class="api-spec-pill">
+          <span class="k">Error Handling</span>
+          <span class="v">Single-shape envelope with <code>Retry-After: 30</code> backoff</span>
+        </div>
+        <div class="api-spec-pill">
+          <span class="k">Portability</span>
+          <span class="v">FastAPI OpenAPI docs &amp; zero-vendor lock-in architecture</span>
+        </div>
+      </div>
+
+      <p class="footnote"><b>Headless Integration:</b> By decoupling the core assessment engine into standardized REST endpoints, UN DESA can wire modern AI pre-fill and blind scoring directly into any existing portal or CMS (.NET Nuke, Drupal, Next.js) with zero data migration bottlenecks.</p>
+    </div>
+  </section>
+
+  <!-- 12 — Engineering Sequence & Integration Roadmap -->
+  <section class="slide" id="s12" aria-label="Slide 12 of 12">
+    <div class="slide-head">
+      <span class="eyebrow">Technical Delivery Roadmap</span>
+      <span class="num">12 / 12</span>
+    </div>
+    <div class="slide-body">
+      <h2>Engineering Sequence: <em>From Agentic Core to Portal Integration</em></h2>
+      <div class="cols">
+        <div class="col">
+          <h3>4-Stage Technical Execution Sequence</h3>
+          <ul>
+            <li>
+              <b>Stage 1: Deepening the Dual-Agent Framework:</b><br>
+              Harden the underlying agentic graph beyond the surface PoC, isolating the Literal Reader from the Inferential Evaluator and implementing Playwright shallow traversal rules to enforce citizen findability boundaries.
+            </li>
+            <li>
+              <b>Stage 2: Benchmark Calibration &amp; Verification Testing:</b><br>
+              Calibrate the live HTML citation validator and confidence scoring against 2024 ground-truth benchmarks (e.g., Iceland 0.90 OSI reference score, USA.gov) to establish the strict ≥75% confidence gate.
+            </li>
+            <li>
+              <b>Stage 3: Live Sovereign Portal Stress-Testing:</b><br>
+              Execute multi-portal validation across the 5 global archetypes (USA, France, Brazil, China, Nigeria), stress-testing multilingual scrapers across 13 languages and eID login-wall detection (e.g., Turkey e-Devlet).
+            </li>
+            <li>
+              <b>Stage 4: Headless API &amp; Knowledgebase Integration:</b><br>
+              Connect verified database outputs to the public Knowledgebase via <code>/api/v1</code> REST endpoints, and integrate the dual-context Assessor A/B discrepancy diff workspace.
+            </li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Turnkey Delivery &amp; Institutional Governance</h3>
+          <ul>
+            <li>
+              <b>Individual Consultant Delivery:</b><br>
+              Structured as milestone-based technical consultancy contracts rather than institutional vendor procurement, bypassing 12–24 month central RFP cycles to launch within 60 days.
+            </li>
+            <li>
+              <b>Zero-Recurring Infrastructure:</b><br>
+              Containerized Python/FastAPI/Playwright/SQLite stack with zero SaaS credit-card dependencies, designed for deployment inside UN enterprise infrastructure or prepaid instances.
+            </li>
+            <li>
+              <b>Complete Knowledge Transfer:</b><br>
+              Full delivery of codebase, container configurations, MSQ link extraction parsers, and indicator versioning lifecycles (102 National / 95 LOSI).
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Immediate Development Milestone:</b> Complete Stage 1 dual-agent prompt engineering and shallow crawl constraints, followed by calibration against Iceland and USA portal benchmarks.
+      </div>
+      <p class="footnote"><b>Operational Readiness:</b> Staged sequence ensures core agent reliability is rigorously verified on live national portals before wiring frontend publishing flows.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- Navigation Bar -->
+<nav id="nav" aria-label="Slide navigation">
+  <div class="nav-group">
+    <button id="btn-prev" aria-label="Previous slide" disabled>← Prev</button>
+    <button id="btn-next" aria-label="Next slide">Next →</button>
+    <span id="nav-counter" aria-live="polite">1 / 12</span>
+  </div>
+
+  <div id="dots" role="tablist" aria-label="Slide dots navigation"></div>
+
+  <div class="nav-group">
+    <select id="slide-select" aria-label="Jump directly to slide">
+      <option value="0">01. Executive Summary</option>
+      <option value="1">02. Index Architecture</option>
+      <option value="2">03. Transformation Matrix</option>
+      <option value="3">04. Data &amp; Publishing</option>
+      <option value="4">05. Churn &amp; LOSI Scaling</option>
+      <option value="5">06. QC &amp; MSQ Resolution</option>
+      <option value="6">07. AI &amp; Governance</option>
+      <option value="7">08. Assessment Flow</option>
+      <option value="8">09. AI Engine Deep Dive</option>
+      <option value="9">10. PoC Scope &amp; Target (WIP)</option>
+      <option value="10">11. Headless FastAPI Architecture</option>
+      <option value="11">12. Technical Delivery Roadmap</option>
+    </select>
+    <button id="btn-theme" aria-label="Switch presentation theme" title="Switch Theme (Press T)">☀️ Light</button>
+  </div>
+</nav>
+
+<!-- First-visit hint -->
+<div id="click-hint" aria-hidden="true"><span>Use Next / Prev buttons, Keyboard (→ / Space / Enter), or Select dropdown to advance</span></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var slides      = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total       = slides.length;
+  var current     = 0;
+  var animating   = false;
+
+  var progressBar = document.getElementById('progress-bar');
+  var counter     = document.getElementById('nav-counter');
+  var btnPrev     = document.getElementById('btn-prev');
+  var btnNext     = document.getElementById('btn-next');
+  var btnTheme    = document.getElementById('btn-theme');
+  var slideSelect = document.getElementById('slide-select');
+  var dotsEl      = document.getElementById('dots');
+
+  /* 3-State Professional Theme Registry: Light, Dark, and Nordic Forest/Spruce */
+  var themes = [
+    { id: 'light',  label: '☀️ Light' },
+    { id: 'dark',   label: '🌙 Dark' },
+    { id: 'forest', label: '🌲 Forest' }
+  ];
+
+  function getActiveThemeIndex() {
+    var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    for (var i = 0; i < themes.length; i++) {
+      if (themes[i].id === currentTheme) return i;
+    }
+    return 0;
+  }
+
+  function applyTheme(themeIndex) {
+    var target = themes[themeIndex];
+    document.documentElement.setAttribute('data-theme', target.id);
+    btnTheme.textContent = target.label;
+  }
+
+  function cycleTheme() {
+    var nextIndex = (getActiveThemeIndex() + 1) % themes.length;
+    applyTheme(nextIndex);
+  }
+
+  /* Build dot indicators dynamically */
+  var dots = slides.map(function (_, i) {
+    var d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('role', 'tab');
+    d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    d.addEventListener('click', function (e) { e.stopPropagation(); goTo(i); });
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  function updateChrome() {
+    var pct = total > 1 ? (current / (total - 1)) * 100 : 100;
+    progressBar.style.width = pct + '%';
+    counter.textContent = (current + 1) + ' / ' + total;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+    slideSelect.value = current;
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+  }
+
+  function goTo(index) {
+    if (index === current || animating) return;
+    if (index < 0 || index >= total) return;
+
+    animating = true;
+    var prev = current;
+    current = index;
+
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit-left');
+
+    if (index < prev) {
+      slides[current].style.transform = 'translateX(-100%)';
+    } else {
+      slides[current].style.transform = 'translateX(100%)';
+    }
+
+    slides[current].offsetWidth; // force reflow
+
+    slides[current].classList.add('active');
+    slides[current].style.transform = '';
+
+    updateChrome();
+
+    var DURATION = 380;
+    setTimeout(function () {
+      slides[prev].classList.remove('exit-left');
+      slides[prev].style.transform = '';
+      animating = false;
+    }, DURATION);
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  btnNext.addEventListener('click', function (e) { e.stopPropagation(); next(); });
+  btnPrev.addEventListener('click', function (e) { e.stopPropagation(); prev(); });
+  btnTheme.addEventListener('click', function (e) { e.stopPropagation(); cycleTheme(); });
+
+  slideSelect.addEventListener('change', function (e) {
+    e.stopPropagation();
+    goTo(parseInt(e.target.value, 10));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest('select, input, textarea')) return;
+    var fwd = ['ArrowRight', 'ArrowDown', 'PageDown', 'Space', 'Enter'];
+    var bwd = ['ArrowLeft', 'ArrowUp', 'PageUp'];
+    if (fwd.indexOf(e.key) !== -1) { e.preventDefault(); next(); }
+    if (bwd.indexOf(e.key) !== -1) { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')  { e.preventDefault(); goTo(total - 1); }
+    if (e.key === 't' || e.key === 'T') { e.preventDefault(); cycleTheme(); }
+  });
+
+  /* Initialize default theme button state */
+  applyTheme(getActiveThemeIndex());
+  updateChrome();
+})();
+</script>
+</body>
+</html>

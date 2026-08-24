@@ -43,7 +43,7 @@ def config() -> None:
 def config_show(ctx: click.Context) -> None:
     """Print every parameter with its effective value, default, and source (FR-073)."""
     settings: Settings = ctx.obj["settings"]
-    defaults = Settings.defaults()
+    defaults = Settings.defaults().as_dict()
     effective = settings.as_dict()
 
     click.echo(f"{'PARAMETER':<42} {'EFFECTIVE':<30} {'DEFAULT':<30} SOURCE")

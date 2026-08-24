@@ -74,6 +74,12 @@ def validate_settings(settings: Settings) -> None:
             1.0,
         ),
         (
+            "AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD",
+            settings.human_discrepancy_rate_threshold,
+            0.0,
+            1.0,
+        ),
+        (
             "AIQ_CONFIDENCE_ACCEPTANCE_THRESHOLD",
             settings.confidence_acceptance_threshold,
             0,

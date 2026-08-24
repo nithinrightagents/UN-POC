@@ -209,6 +209,8 @@ class SurveyCycle:
     country_set: list[str]
     status: str = "active"
     project_type: ProjectType = ProjectType.NATIONAL_OSI
+    # None = inherit the process-wide default; 0.0 = tolerate no disagreement (FR-DR-065)
+    discrepancy_rate_threshold: float | None = None
 
 
 @dataclass
@@ -384,7 +386,7 @@ class AdjudicationResult:
 @dataclass
 class DiscrepancyCase:
     case_id: str
-    scope: str  # "question" | "portal"
+    scope: str  # "question" | "portal" | "portal_human"
     session_id: str
     question_id: str | None = None
     portal_id: str | None = None
@@ -649,3 +651,69 @@ class PublicationRecord:
     score: float
     score_breakdown: dict
     published_at: datetime = field(default_factory=utcnow)
+    contested_question_ids: list[str] = field(default_factory=list)
+
+
+# --- Discrepancy Reconciliation entities (spec 012) -----------------------
+
+
+@dataclass
+class ReconciliationRound:
+    """Tracks human A/B reconciliation lifecycle (spec 012).
+    Lifecycle table with mutable state following assessment_jobs precedent.
+    """
+
+    round_id: str
+    session_id: str
+    portal_id: str
+    cycle_id: str
+    round_number: int
+    opened_by: str  # "automatic" | "senior_reviewer"
+    opened_by_actor_id: str | None
+    opened_reason: str | None
+    state: str  # "open" | "resolved" | "exhausted" | "not_required"
+    data: dict  # {"disputed_question_ids": list[str], "rate_at_open": float, "tolerance_at_open": float}
+    opened_at: datetime = field(default_factory=utcnow)
+    closed_at: datetime | None = None
+
+
+@dataclass
+class JointAnswer:
+    """Append-only agreed answer submitted during reconciliation (spec 012)."""
+
+    joint_answer_id: str
+    session_id: str
+    portal_id: str
+    question_id: str
+    round_id: str
+    data: dict = field(default_factory=dict)  # {"answer": object, "justification": str, "submitted_by_role": str, "submitted_by_actor_id": str}
+    created_at: datetime = field(default_factory=utcnow)
+
+    @property
+    def answer(self) -> object:
+        return self.data.get("answer")
+
+    @property
+    def justification(self) -> str:
+        return self.data.get("justification", "")
+
+    @property
+    def committed_by_role(self) -> str:
+        return self.data.get("submitted_by_role") or self.data.get("committed_by_role", "")
+
+    @property
+    def committed_by_actor_id(self) -> str:
+        return self.data.get("submitted_by_actor_id") or self.data.get("committed_by_actor_id", "")
+
+
+@dataclass
+class ToleranceChange:
+    """Append-only audit trail of per-project tolerance edits (spec 012)."""
+
+    change_id: str
+    cycle_id: str
+    previous_value: float | None
+    new_value: float
+    changed_by_actor_id: str
+    changed_at: datetime = field(default_factory=utcnow)
+

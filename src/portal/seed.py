@@ -129,56 +129,76 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
 
     denmark = next(p for p in national_portals if p.country_id == "DK")
     usa = next(p for p in national_portals if p.country_id == "US")
+    france = next(p for p in national_portals if p.country_id == "FR")
+    brazil = next(p for p in national_portals if p.country_id == "BR")
+    nigeria = next(p for p in national_portals if p.country_id == "NG")
 
-    # Denmark: Assessor A and B mostly agree but split on 8 of the 157
-    # national questions (8/157 = 5.10%), deliberately crossing the 5%
-    # human_discrepancy_rate_threshold so the arbitration queue has a real
-    # case to show. All 8 are single-occurrence Content Provision indicators
-    # (no sector-breakdown duplication) so the count is exact.
-    _seed_human_pair(
-        repo, session_national, cycle_national.cycle_id, denmark.portal_id, questions_national,
-        disagree_on={"#015", "#028", "#030", "#088", "#117", "#129", "#131a", "#150"},
-    )
-
-    # USA: Assessor A and B fully agree -- the clean path straight to publish.
+    # 1. USA: Full consensus (0 disagreements)
     _seed_human_pair(
         repo, session_national, cycle_national.cycle_id, usa.portal_id, questions_national,
         disagree_on=set(),
     )
+    # 2. France: Within tolerance (2 of 157 = 1.27% <= 5%)
+    _seed_human_pair(
+        repo, session_national, cycle_national.cycle_id, france.portal_id, questions_national,
+        disagree_on={"#015", "#028"},
+    )
+    # 3. Brazil: Above tolerance in progress (10 disagreements, only Role A completed)
+    _seed_human_pair(
+        repo, session_national, cycle_national.cycle_id, brazil.portal_id, questions_national,
+        disagree_on={"#015", "#028", "#030", "#088", "#117", "#129", "#131a", "#150", "#001", "#002"},
+    )
+    # 4. Denmark: Reconciliation open (8 of 157 = 5.10% > 5%, both complete)
+    _seed_human_pair(
+        repo, session_national, cycle_national.cycle_id, denmark.portal_id, questions_national,
+        disagree_on={"#015", "#028", "#030", "#088", "#117", "#129", "#131a", "#150"},
+    )
+    # 5. Nigeria: Persistent discrepancy (10 disagreements, both complete, round exhausted)
+    _seed_human_pair(
+        repo, session_national, cycle_national.cycle_id, nigeria.portal_id, questions_national,
+        disagree_on={"#015", "#028", "#030", "#088", "#117", "#129", "#131a", "#150", "#001", "#002"},
+    )
 
+    # Insert completions (order matters: completions before recompute per contracts/badge-tolerance-and-api.md §4)
+    for p, roles in [
+        (usa, ("A", "B")),
+        (france, ("A", "B")),
+        (brazil, ("A",)),  # Brazil only has Role A completed -> above_tolerance_in_progress
+        (denmark, ("A", "B")),
+        (nigeria, ("A", "B")),
+    ]:
+        for r_str in roles:
+            repo.insert_assessor_completion(
+                AssessorCompletion(
+                    completion_id=new_id("comp"),
+                    session_id=session_national,
+                    cycle_id=cycle_national.cycle_id,
+                    portal_id=p.portal_id,
+                    role=r_str,
+                    actor_id=f"demo-assessor-{r_str.lower()}",
+                    indicator_count_at_declaration=len(questions_national),
+                )
+            )
+
+    from datetime import datetime, timezone
     from portal.discrepancy import recompute_portal_discrepancy
+    from portal.tolerance import effective_tolerance
 
-    recompute_portal_discrepancy(
-        repo, session_national, denmark.portal_id, [q.question_id for q in questions_national],
-        settings.human_discrepancy_rate_threshold,
-    )
-    recompute_portal_discrepancy(
-        repo, session_national, usa.portal_id, [q.question_id for q in questions_national],
-        settings.human_discrepancy_rate_threshold,
-    )
+    tol = effective_tolerance(repo, cycle_national.cycle_id, settings)
+    q_ids = [q.question_id for q in questions_national]
 
-    repo.insert_assessor_completion(
-        AssessorCompletion(
-            completion_id=new_id("comp"),
-            session_id=session_national,
-            cycle_id=cycle_national.cycle_id,
-            portal_id=usa.portal_id,
-            role="A",
-            actor_id="demo-assessor-a",
-            indicator_count_at_declaration=len(questions_national),
-        )
-    )
-    repo.insert_assessor_completion(
-        AssessorCompletion(
-            completion_id=new_id("comp"),
-            session_id=session_national,
-            cycle_id=cycle_national.cycle_id,
-            portal_id=usa.portal_id,
-            role="B",
-            actor_id="demo-assessor-b",
-            indicator_count_at_declaration=len(questions_national),
-        )
-    )
+    # Recompute for all units
+    recompute_portal_discrepancy(repo, session_national, usa.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
+    recompute_portal_discrepancy(repo, session_national, france.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
+    recompute_portal_discrepancy(repo, session_national, brazil.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
+    recompute_portal_discrepancy(repo, session_national, denmark.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
+    recompute_portal_discrepancy(repo, session_national, nigeria.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
+
+    # Close Nigeria's round as exhausted so it enters persistent_discrepancy state
+    ng_round = repo.open_round_for_unit(session_national, nigeria.portal_id)
+    if ng_round:
+        repo.close_round(ng_round.round_id, "exhausted", datetime.now(timezone.utc))
+        recompute_portal_discrepancy(repo, session_national, nigeria.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
 
     usa_breakdown = {
         q.question_id: bool(
@@ -201,6 +221,9 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
         "cycles": [cycle_national.cycle_id, cycle_losi.cycle_id],
         "denmark_portal_id": denmark.portal_id,
         "usa_portal_id": usa.portal_id,
+        "france_portal_id": france.portal_id,
+        "brazil_portal_id": brazil.portal_id,
+        "nigeria_portal_id": nigeria.portal_id,
     }
 
 

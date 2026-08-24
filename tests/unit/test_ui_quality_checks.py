@@ -232,3 +232,43 @@ def test_all_portal_routes_render_successfully(seeded_client):
         assert 'role="banner"' in html, f"Route {route} is missing header banner role"
         assert 'id="main-content"' in html, f"Route {route} is missing main content anchor"
         assert 'role="contentinfo"' in html, f"Route {route} is missing footer role"
+
+
+def test_reconciliation_workspace_renders_successfully(seeded_client, db_path):
+    """Verify that the reconciliation workspace view renders with HTTP 200, semantic landmarks, and skip links when a round is open."""
+    import sqlite3
+    from shared.persistence.repositories import Repository
+    client, session_id = seeded_client
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    repo = Repository(conn)
+
+    from shared.state.entities import ReconciliationRound, new_id
+    from datetime import datetime, timezone
+
+    repo.insert_reconciliation_round(
+        ReconciliationRound(
+            round_id=new_id("rnd"),
+            session_id=session_id,
+            portal_id="DK",
+            cycle_id="un-2026",
+            round_number=1,
+            opened_by="automatic",
+            opened_by_actor_id=None,
+            opened_reason=None,
+            state="open",
+            data={"disputed_question_ids": ["PF-001"], "rate_at_open": 1.0, "tolerance_at_open": 0.05},
+            opened_at=datetime.now(timezone.utc),
+            closed_at=None,
+        )
+    )
+
+    for role in ("A", "B"):
+        resp = client.get(f"/assessor/un-2026/DK/reconcile?role={role}&actor_id=test-actor")
+        assert resp.status_code == 200
+        html = resp.text
+        assert '<a class="skip-link" href="#main-content">Skip to main content</a>' in html
+        assert 'role="banner"' in html
+        assert 'id="main-content"' in html
+        assert 'role="contentinfo"' in html
+

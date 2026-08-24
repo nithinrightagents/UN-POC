@@ -17,6 +17,7 @@ from shared.state.entities import (
     AssessorRole,
     EvidenceLocus,
     HumanAssessorSubmission,
+    ProjectType,
     Question,
     SurveyCycle,
     TargetPortal,
@@ -363,3 +364,160 @@ def test_redeclaration_appends_second_row_without_mutating_first():
     row = cursor.fetchone()
     assert row is not None
     assert row["indicator_count_at_declaration"] == 2
+
+
+def test_scenario_7_completions_survive_rounds_and_gating(conn):
+    from datetime import datetime, timezone
+    from portal.reconciliation import close_round_if_complete, open_automatic_round, open_reviewer_round
+    from shared.config.settings import Settings
+    from shared.state.entities import JointAnswer
+
+    repo = Repository(conn)
+    cycle_id = "c-sc7"
+    session_id = "s-sc7"
+    portal_id = "p-sc7"
+
+    repo.insert_cycle(
+        SurveyCycle(
+            cycle_id=cycle_id,
+            name="Cycle SC7",
+            questionnaire_ref="ref",
+            country_set=["DK"],
+            project_type=ProjectType.NATIONAL_OSI,
+            discrepancy_rate_threshold=0.05,
+        )
+    )
+    repo.insert_portal(
+        TargetPortal(
+            portal_id=portal_id,
+            cycle_id=cycle_id,
+            country_id="DK",
+            unit_type="country",
+            display_name="Denmark",
+        )
+    )
+    questions = []
+    for i in range(2):
+        q = Question(
+            question_id=f"{cycle_id}:Q{i}",
+            cycle_id=cycle_id,
+            text=f"Q{i}",
+            indicator_id=f"Q{i}",
+            question_class="Core",
+            title=f"Q{i}",
+            what="W",
+            why="Y",
+            how={},
+            answer_type=AnswerType.BINARY,
+            evidence_locus=EvidenceLocus.NATIONAL_PORTAL_ONLY,
+        )
+        repo.insert_question(q)
+        questions.append(q)
+
+    # Unit blocked on outstanding indicators reports completion problem first (FR-DR-059)
+    readiness_initial = publication_readiness(repo, session_id, cycle_id, portal_id)
+    assert readiness_initial.ready is False
+    assert "declared their assessment complete" in readiness_initial.blocking_reason
+
+    # Assessors submit answers (Q0 agrees, Q1 disagrees)
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=questions[0].question_id, portal_id=portal_id, role=AssessorRole.A,
+            assessor_actor_id="actor-a", answer=True,
+        )
+    )
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=questions[1].question_id, portal_id=portal_id, role=AssessorRole.A,
+            assessor_actor_id="actor-a", answer=True,
+        )
+    )
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=questions[0].question_id, portal_id=portal_id, role=AssessorRole.B,
+            assessor_actor_id="actor-b", answer=True,
+        )
+    )
+    repo.insert_human_submission(
+        HumanAssessorSubmission(
+            submission_id=new_id("sub"), session_id=session_id, cycle_id=cycle_id,
+            question_id=questions[1].question_id, portal_id=portal_id, role=AssessorRole.B,
+            assessor_actor_id="actor-b", answer=False,
+        )
+    )
+
+    # Declare completion for both
+    comp_a = AssessorCompletion(
+        completion_id="comp-a-init",
+        session_id=session_id,
+        cycle_id=cycle_id,
+        portal_id=portal_id,
+        role="A",
+        actor_id="actor-a",
+        indicator_count_at_declaration=2,
+    )
+    comp_b = AssessorCompletion(
+        completion_id="comp-b-init",
+        session_id=session_id,
+        cycle_id=cycle_id,
+        portal_id=portal_id,
+        role="B",
+        actor_id="actor-b",
+        indicator_count_at_declaration=2,
+    )
+    repo.insert_assessor_completion(comp_a)
+    repo.insert_assessor_completion(comp_b)
+
+    # 1. Open Round 1 (automatic)
+    r1 = open_automatic_round(
+        repo,
+        session_id=session_id,
+        cycle_id=cycle_id,
+        portal_id=portal_id,
+        disputed_question_ids=[questions[1].question_id],
+        rate=0.5,
+        tolerance=0.05,
+    )
+    assert r1 is not None
+
+    # publication_readiness reports not-ready naming reconciliation (FR-DR-059)
+    readiness_during_r1 = publication_readiness(repo, session_id, cycle_id, portal_id)
+    assert readiness_during_r1.ready is False
+    assert "reconciliation round is currently open" in readiness_during_r1.blocking_reason
+
+    # Both completions are byte-identical and still valid (FR-DR-058)
+    assert repo.latest_assessor_completion(session_id, portal_id, "A").completion_id == "comp-a-init"
+    assert repo.latest_assessor_completion(session_id, portal_id, "B").completion_id == "comp-b-init"
+
+    # Settle dispute with joint answer
+    repo.insert_joint_answer(
+        JointAnswer(
+            joint_answer_id=new_id("joint"),
+            session_id=session_id,
+            portal_id=portal_id,
+            question_id=questions[1].question_id,
+            round_id=r1.round_id,
+            data={
+                "answer": True,
+                "justification": "Agreed on evidence",
+                "submitted_by_role": "A",
+                "submitted_by_actor_id": "actor-a",
+            },
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    settings = Settings()
+    close_round_if_complete(repo, r1.round_id, session_id, cycle_id, portal_id, questions, settings)
+
+    # Readiness returns to ready now that round closed and consensus achieved
+    readiness_after_r1 = publication_readiness(repo, session_id, cycle_id, portal_id)
+    assert readiness_after_r1.ready is True
+    assert readiness_after_r1.blocking_reason is None
+
+    # Completions still unchanged
+    assert repo.latest_assessor_completion(session_id, portal_id, "A").completion_id == "comp-a-init"
+    assert repo.latest_assessor_completion(session_id, portal_id, "B").completion_id == "comp-b-init"
+

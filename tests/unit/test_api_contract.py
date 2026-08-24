@@ -391,3 +391,124 @@ def test_portal_and_api_share_one_dataset(client: TestClient, auth: dict[str, st
     # Assert visible in API
     api_cycles = client.get("/api/v1/cycles", headers=auth).json()["cycles"]
     assert any(c["cycle_id"] == "portal-cycle" for c in api_cycles)
+
+
+def test_api_discrepancy_endpoint_parity_and_no_answers_exposed(client: TestClient, auth: dict[str, str], conn, settings):
+    from portal.reconciliation import render_badge, unit_reconciliation_state
+    repo = Repository(conn)
+    cycle_id = "disc-api-cycle"
+    client.post(
+        "/api/v1/cycles",
+        json={"cycle_id": cycle_id, "name": "Discrepancy API Cycle", "discrepancy_rate_threshold": 0.05},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/questions",
+        json={"indicator_id": "D.1", "title": "Question D1", "what": "W", "why": "Y", "how": "H"},
+        headers=auth,
+    )
+    u_res = client.post(
+        f"/api/v1/cycles/{cycle_id}/units",
+        json={"country_id": "EST", "display_name": "Estonia", "url": "https://eesti.ee"},
+        headers=auth,
+    )
+    portal_id = u_res.json()["portal_id"]
+    session_id = ensure_session(repo, cycle_id)
+
+    # 1. Awaiting second assessment -> state="awaiting_second_assessment", differing_answer_rate=None
+    res1 = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/discrepancy", headers=auth)
+    assert res1.status_code == 200
+    data1 = res1.json()
+    assert data1["state"] == "awaiting_second_assessment"
+    assert data1["differing_answer_rate"] is None
+    assert data1["rounds_consumed"] == 0
+    assert data1["automatic_round_used"] is False
+    assert data1["open_round_id"] is None
+    assert "answer" not in data1
+    assert "answers" not in data1
+
+    # Verify parity with unit_reconciliation_state
+    state_obj = unit_reconciliation_state(repo, session_id, cycle_id, portal_id, repo.list_questions(cycle_id), settings)
+    assert data1["state"] == state_obj.state
+
+    # 2. Both assessors submit consensus answers + complete -> state="full_consensus", differing_answer_rate=0.0
+    qid = f"{cycle_id}:D.1"
+    for role in ("A", "B"):
+        client.post(
+            f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+            json={"question_id": qid, "role": role, "actor_id": f"actor-{role.lower()}", "answer": True},
+            headers=auth,
+        )
+        client.post(
+            f"/api/v1/cycles/{cycle_id}/units/{portal_id}/completions",
+            json={"role": role, "actor_id": f"actor-{role.lower()}"},
+            headers=auth,
+        )
+
+    res2 = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/discrepancy", headers=auth)
+    assert res2.status_code == 200
+    data2 = res2.json()
+    assert data2["state"] == "full_consensus"
+    assert data2["differing_answer_rate"] == 0.0
+    assert data2["compared_count"] == 1
+    assert data2["disputed_question_ids"] == []
+
+
+def test_api_end_to_end_discrepancy_and_round_opening(client: TestClient, auth: dict[str, str], conn):
+    """Drive a unit end to end through REST API only and verify round opening (T070, FR-DR-070)."""
+    cycle_id = "rest-e2e-cycle"
+    client.post(
+        "/api/v1/cycles",
+        json={"cycle_id": cycle_id, "name": "REST E2E Cycle", "discrepancy_rate_threshold": 0.05},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/questions",
+        json={"indicator_id": "E.1", "title": "Question E1", "what": "W", "why": "Y", "how": "H"},
+        headers=auth,
+    )
+    u_res = client.post(
+        f"/api/v1/cycles/{cycle_id}/units",
+        json={"country_id": "LVA", "display_name": "Latvia", "url": "https://latvija.lv"},
+        headers=auth,
+    )
+    portal_id = u_res.json()["portal_id"]
+    qid = f"{cycle_id}:E.1"
+
+    # Assessor A submits True, Assessor B submits False
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid, "role": "A", "actor_id": "actor-a", "answer": True},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/completions",
+        json={"role": "A", "actor_id": "actor-a"},
+        headers=auth,
+    )
+
+    # Unit is not yet complete for both -> state is above_tolerance_in_progress, no open round yet
+    res_mid = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/discrepancy", headers=auth).json()
+    assert res_mid["state"] == "awaiting_second_assessment"
+
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid, "role": "B", "actor_id": "actor-b", "answer": False},
+        headers=auth,
+    )
+    # The moment Assessor B completes, the round must open automatically (FR-DR-009, FR-DR-070)
+    comp_b = client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/completions",
+        json={"role": "B", "actor_id": "actor-b"},
+        headers=auth,
+    )
+    assert comp_b.status_code == 201
+
+    res_post = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/discrepancy", headers=auth).json()
+    assert res_post["state"] == "reconciliation_open"
+    assert res_post["rounds_consumed"] == 1
+    assert res_post["automatic_round_used"] is True
+    assert res_post["open_round_id"] is not None
+    assert res_post["disputed_question_ids"] == [qid]
+    assert res_post["differing_answer_rate"] == 1.0
+

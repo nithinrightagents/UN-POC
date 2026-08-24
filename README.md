@@ -98,6 +98,8 @@ aiq verify no-credentials
 aiq verify telemetry-hygiene --session <id>
 aiq verify benchmark-isolation --session <id>
 ```
+# Run the live server directly
+.venv\Scripts\aiq serve
 
 Full walkthrough: [quickstart.md](specs/001-ekap-aiq-assessment/quickstart.md).
 

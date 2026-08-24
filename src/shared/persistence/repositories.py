@@ -24,6 +24,7 @@ from shared.state.entities import (
     EscalationQueueItem,
     EvidenceArtifact,
     HumanAssessorSubmission,
+    JointAnswer,
     LanguageDecision,
     MSQDocument,
     MSQLinkCandidate,
@@ -31,8 +32,10 @@ from shared.state.entities import (
     PriorSurveyLink,
     PublicationRecord,
     Question,
+    ReconciliationRound,
     SurveyCycle,
     TargetPortal,
+    ToleranceChange,
     ValidationResult,
     new_id,
 )
@@ -996,6 +999,260 @@ class Repository:
             declared_at=row["declared_at"],
         )
 
+    # --- Reconciliation Rounds, Joint Answers, Tolerance Changes (spec 012) ---
+
+    def insert_reconciliation_round(self, round_obj: ReconciliationRound) -> bool:
+        """Inserts a reconciliation round.
+        Returns False on IntegrityError (e.g. concurrent open under partial unique index).
+        """
+        opened_at_str = (
+            round_obj.opened_at.isoformat()
+            if hasattr(round_obj.opened_at, "isoformat")
+            else str(round_obj.opened_at)
+        )
+        closed_at_str = (
+            round_obj.closed_at.isoformat()
+            if round_obj.closed_at and hasattr(round_obj.closed_at, "isoformat")
+            else (str(round_obj.closed_at) if round_obj.closed_at else None)
+        )
+        data_str = (
+            json.dumps(round_obj.data)
+            if isinstance(round_obj.data, dict)
+            else to_json(round_obj.data)
+        )
+        try:
+            self.conn.execute(
+                """
+                INSERT INTO reconciliation_rounds (
+                    round_id, session_id, portal_id, cycle_id, round_number,
+                    opened_by, opened_by_actor_id, opened_reason, state, data,
+                    opened_at, closed_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    round_obj.round_id,
+                    round_obj.session_id,
+                    round_obj.portal_id,
+                    round_obj.cycle_id,
+                    round_obj.round_number,
+                    round_obj.opened_by,
+                    round_obj.opened_by_actor_id,
+                    round_obj.opened_reason,
+                    round_obj.state,
+                    data_str,
+                    opened_at_str,
+                    closed_at_str,
+                ),
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+
+    def open_round_for_unit(self, session_id: str, portal_id: str) -> ReconciliationRound | None:
+        row = self.conn.execute(
+            """
+            SELECT * FROM reconciliation_rounds
+            WHERE session_id = ? AND portal_id = ? AND state = 'open'
+            LIMIT 1
+            """,
+            (session_id, portal_id),
+        ).fetchone()
+        return _row_to_reconciliation_round(row) if row else None
+
+    def list_rounds_for_unit(self, session_id: str, portal_id: str) -> list[ReconciliationRound]:
+        rows = self.conn.execute(
+            """
+            SELECT * FROM reconciliation_rounds
+            WHERE session_id = ? AND portal_id = ?
+            ORDER BY round_number ASC
+            """,
+            (session_id, portal_id),
+        ).fetchall()
+        return [_row_to_reconciliation_round(r) for r in rows]
+
+    def close_round(self, round_id: str, state: str, closed_at: datetime | str | None = None) -> bool:
+        if state not in ("resolved", "exhausted", "not_required"):
+            raise ValueError(f"Invalid terminal state for reconciliation round: {state}")
+        if closed_at is None:
+            from datetime import datetime, timezone
+            closed_at_val = datetime.now(timezone.utc).isoformat()
+        elif hasattr(closed_at, "isoformat"):
+            closed_at_val = closed_at.isoformat()
+        else:
+            closed_at_val = str(closed_at)
+
+        cursor = self.conn.execute(
+            """
+            UPDATE reconciliation_rounds
+            SET state = ?, closed_at = ?
+            WHERE round_id = ?
+            """,
+            (state, closed_at_val, round_id),
+        )
+        self.conn.commit()
+        return cursor.rowcount > 0
+
+    def insert_joint_answer(self, joint_answer: JointAnswer) -> bool:
+        created_at_str = (
+            joint_answer.created_at.isoformat()
+            if hasattr(joint_answer.created_at, "isoformat")
+            else str(joint_answer.created_at)
+        )
+        data_str = (
+            json.dumps(joint_answer.data)
+            if isinstance(joint_answer.data, dict)
+            else to_json(joint_answer.data)
+        )
+        try:
+            self.conn.execute(
+                """
+                INSERT INTO joint_answers (
+                    joint_answer_id, session_id, portal_id, question_id, round_id, data, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    joint_answer.joint_answer_id,
+                    joint_answer.session_id,
+                    joint_answer.portal_id,
+                    joint_answer.question_id,
+                    joint_answer.round_id,
+                    data_str,
+                    created_at_str,
+                ),
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+
+    def latest_joint_answer(self, session_id: str, portal_id: str, question_id: str) -> JointAnswer | None:
+        row = self.conn.execute(
+            """
+            SELECT * FROM joint_answers
+            WHERE session_id = ? AND portal_id = ? AND question_id = ?
+            ORDER BY created_at DESC, rowid DESC LIMIT 1
+            """,
+            (session_id, portal_id, question_id),
+        ).fetchone()
+        return _row_to_joint_answer(row) if row else None
+
+    def list_joint_answers_for_round(self, round_id: str) -> list[JointAnswer]:
+        rows = self.conn.execute(
+            """
+            SELECT * FROM joint_answers
+            WHERE round_id = ?
+            ORDER BY created_at ASC, rowid ASC
+            """,
+            (round_id,),
+        ).fetchall()
+        return [_row_to_joint_answer(r) for r in rows]
+
+    def insert_tolerance_change(self, change: ToleranceChange) -> None:
+        changed_at_str = (
+            change.changed_at.isoformat()
+            if hasattr(change.changed_at, "isoformat")
+            else str(change.changed_at)
+        )
+        self.conn.execute(
+            """
+            INSERT INTO tolerance_changes (
+                change_id, cycle_id, previous_value, new_value, changed_by_actor_id, changed_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                change.change_id,
+                change.cycle_id,
+                change.previous_value,
+                change.new_value,
+                change.changed_by_actor_id,
+                changed_at_str,
+            ),
+        )
+        self.conn.commit()
+
+    def list_tolerance_changes(self, cycle_id: str) -> list[ToleranceChange]:
+        rows = self.conn.execute(
+            """
+            SELECT * FROM tolerance_changes
+            WHERE cycle_id = ?
+            ORDER BY changed_at ASC, rowid ASC
+            """,
+            (cycle_id,),
+        ).fetchall()
+        return [_row_to_tolerance_change(r) for r in rows]
+
+
+def _row_to_reconciliation_round(row: sqlite3.Row) -> ReconciliationRound:
+    from datetime import datetime
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    opened_at = row["opened_at"]
+    if isinstance(opened_at, str):
+        try:
+            opened_at = datetime.fromisoformat(opened_at)
+        except Exception:
+            pass
+    closed_at = row["closed_at"]
+    if isinstance(closed_at, str):
+        try:
+            closed_at = datetime.fromisoformat(closed_at)
+        except Exception:
+            pass
+    return ReconciliationRound(
+        round_id=row["round_id"],
+        session_id=row["session_id"],
+        portal_id=row["portal_id"],
+        cycle_id=row["cycle_id"],
+        round_number=row["round_number"],
+        opened_by=row["opened_by"],
+        opened_by_actor_id=row["opened_by_actor_id"],
+        opened_reason=row["opened_reason"],
+        state=row["state"],
+        data=parsed_data,
+        opened_at=opened_at,
+        closed_at=closed_at,
+    )
+
+
+def _row_to_joint_answer(row: sqlite3.Row) -> JointAnswer:
+    from datetime import datetime
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    created_at = row["created_at"]
+    if isinstance(created_at, str):
+        try:
+            created_at = datetime.fromisoformat(created_at)
+        except Exception:
+            pass
+    return JointAnswer(
+        joint_answer_id=row["joint_answer_id"],
+        session_id=row["session_id"],
+        portal_id=row["portal_id"],
+        question_id=row["question_id"],
+        round_id=row["round_id"],
+        data=parsed_data,
+        created_at=created_at,
+    )
+
+
+def _row_to_tolerance_change(row: sqlite3.Row) -> ToleranceChange:
+    from datetime import datetime
+    changed_at = row["changed_at"]
+    if isinstance(changed_at, str):
+        try:
+            changed_at = datetime.fromisoformat(changed_at)
+        except Exception:
+            pass
+    return ToleranceChange(
+        change_id=row["change_id"],
+        cycle_id=row["cycle_id"],
+        previous_value=row["previous_value"],
+        new_value=row["new_value"],
+        changed_by_actor_id=row["changed_by_actor_id"],
+        changed_at=changed_at,
+    )
+
 
 def _row_to_prefill(row: sqlite3.Row) -> Prefill:
     data = json.loads(row["data"]) if isinstance(row["data"], str) else (row["data"] or {})
@@ -1041,4 +1298,5 @@ def _row_to_job(row: sqlite3.Row):
         created_at=row["created_at"],
         updated_at=row["updated_at"],
     )
+
 

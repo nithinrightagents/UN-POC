@@ -294,3 +294,100 @@ def test_prefill_endpoint_blind_to_human_roles(client: TestClient, auth: dict[st
     for item in data["prefills"]:
         assert "role" not in item
 
+
+def test_cross_route_blindness_preservation_sc011(client: TestClient, auth: dict[str, str], conn):
+    """Mechanises SC-011 across all routes in contracts/reconciliation-workspace.md §4."""
+    repo = Repository(conn)
+    cycle_id = "blind-sc11-cycle"
+    client.post(
+        "/api/v1/cycles",
+        json={"cycle_id": cycle_id, "name": "Blindness SC11 Cycle", "discrepancy_rate_threshold": 0.05},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/questions",
+        json={"indicator_id": "SC.1", "title": "Question SC1", "what": "W", "why": "Y", "how": "H"},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/questions",
+        json={"indicator_id": "SC.2", "title": "Question SC2", "what": "W", "why": "Y", "how": "H"},
+        headers=auth,
+    )
+    u_res = client.post(
+        f"/api/v1/cycles/{cycle_id}/units",
+        json={"country_id": "NOR", "display_name": "Norway", "url": "https://norge.no"},
+        headers=auth,
+    )
+    portal_id = u_res.json()["portal_id"]
+    qid1 = f"{cycle_id}:SC.1"
+    qid2 = f"{cycle_id}:SC.2"
+
+    alice_actor = "alice-unique-actor-99"
+    bob_actor = "bob-unique-actor-77"
+    alice_note = "Alice secret note about portal layout 42"
+    bob_note = "Bob secret note about missing certificate 88"
+
+    # Alice submits Q1=True, Q2=True
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid1, "role": "A", "actor_id": alice_actor, "answer": True, "notes": alice_note},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid2, "role": "A", "actor_id": alice_actor, "answer": True, "notes": alice_note},
+        headers=auth,
+    )
+
+    # Bob submits Q1=False (dispute), Q2=True (consensus)
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid1, "role": "B", "actor_id": bob_actor, "answer": False, "notes": bob_note},
+        headers=auth,
+    )
+    client.post(
+        f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
+        json={"question_id": qid2, "role": "B", "actor_id": bob_actor, "answer": True, "notes": bob_note},
+        headers=auth,
+    )
+
+    # 1. Check GET /assessor questionnaire in Role A
+    res_assessor_a = client.get(f"/assessor/{cycle_id}/{portal_id}?role=A")
+    assert res_assessor_a.status_code == 200
+    assert bob_actor not in res_assessor_a.text
+    assert bob_note not in res_assessor_a.text
+
+    # Check GET /assessor questionnaire in Role B
+    res_assessor_b = client.get(f"/assessor/{cycle_id}/{portal_id}?role=B")
+    assert res_assessor_b.status_code == 200
+    assert alice_actor not in res_assessor_b.text
+    assert alice_note not in res_assessor_b.text
+
+    # 2. Check GET /human-answers?role=A and ?role=B
+    res_api_a = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers?role=A", headers=auth)
+    assert res_api_a.status_code == 200
+    assert bob_actor not in res_api_a.text
+    assert bob_note not in res_api_a.text
+
+    res_api_b = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers?role=B", headers=auth)
+    assert res_api_b.status_code == 200
+    assert alice_actor not in res_api_b.text
+    assert alice_note not in res_api_b.text
+
+    # 3. Check GET /discrepancy endpoint
+    res_disc = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/discrepancy", headers=auth)
+    assert res_disc.status_code == 200
+    assert alice_actor not in res_disc.text
+    assert bob_actor not in res_disc.text
+    assert alice_note not in res_disc.text
+    assert bob_note not in res_disc.text
+    assert "true" not in res_disc.text.lower() or "automatic_round_used" in res_disc.text
+
+    # 4. Check admin project detail page
+    res_admin = client.get(f"/admin/projects/{cycle_id}")
+    assert res_admin.status_code == 200
+    assert alice_note not in res_admin.text
+    assert bob_note not in res_admin.text
+
+

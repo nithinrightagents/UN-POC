@@ -345,6 +345,61 @@ CREATE INDEX IF NOT EXISTS idx_assessment_jobs_unit
     ON assessment_jobs(cycle_id, portal_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_assessment_jobs_state
     ON assessment_jobs(state);
+
+-- Reconciliation Rounds (spec 012): tracks human A/B reconciliation lifecycle.
+-- Lifecycle table (mutable state, following assessment_jobs precedent).
+CREATE TABLE IF NOT EXISTS reconciliation_rounds (
+    round_id        TEXT PRIMARY KEY,
+    session_id      TEXT NOT NULL,
+    portal_id       TEXT NOT NULL,
+    cycle_id        TEXT NOT NULL,
+    round_number    INTEGER NOT NULL,      -- 1-based, per unit
+    opened_by       TEXT NOT NULL,         -- 'automatic' | 'senior_reviewer'
+    opened_by_actor_id TEXT,               -- NULL when opened_by = 'automatic'
+    opened_reason   TEXT,                  -- required when opened_by = 'senior_reviewer'
+    state           TEXT NOT NULL,         -- 'open' | 'resolved' | 'exhausted' | 'not_required'
+    data            TEXT NOT NULL,         -- disputed_question_ids, rate_at_open, tolerance_at_open
+    opened_at       TEXT NOT NULL DEFAULT (datetime('now')),
+    closed_at       TEXT
+);
+
+-- Concurrency guarantee: partial unique index ensures at most one open round per unit.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_reconciliation_one_open
+    ON reconciliation_rounds(session_id, portal_id) WHERE state = 'open';
+
+CREATE INDEX IF NOT EXISTS idx_reconciliation_unit
+    ON reconciliation_rounds(session_id, portal_id, round_number);
+
+-- Joint Answers (spec 012): append-only record of agreed answers during reconciliation.
+CREATE TABLE IF NOT EXISTS joint_answers (
+    joint_answer_id TEXT PRIMARY KEY,
+    session_id      TEXT NOT NULL,
+    portal_id       TEXT NOT NULL,
+    question_id     TEXT NOT NULL,
+    round_id        TEXT NOT NULL,
+    data            TEXT NOT NULL,   -- answer, justification, submitted_by_role, submitted_by_actor_id
+    created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Concurrency guarantee: at most one joint answer per indicator per round.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_joint_answers_once
+    ON joint_answers(round_id, question_id);
+
+CREATE INDEX IF NOT EXISTS idx_joint_answers_lookup
+    ON joint_answers(session_id, portal_id, question_id);
+
+-- Tolerance Changes (spec 012): append-only audit trail of per-project tolerance edits.
+CREATE TABLE IF NOT EXISTS tolerance_changes (
+    change_id       TEXT PRIMARY KEY,
+    cycle_id        TEXT NOT NULL,
+    previous_value  REAL,            -- NULL when the project was previously inheriting
+    new_value       REAL NOT NULL,
+    changed_by_actor_id TEXT NOT NULL,
+    changed_at      TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_tolerance_changes_cycle
+    ON tolerance_changes(cycle_id, changed_at);
 """
 
 

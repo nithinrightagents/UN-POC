@@ -22,21 +22,35 @@ def test_master_template_and_modules_exist():
     master_path = REPO_ROOT / "data" / "questionnaires" / "templates" / "un_osi_2024_master.json"
     assert master_path.exists(), "Master template JSON must exist"
 
-    master = json.loads(master_path.read_text(encoding="utf-8"))
-    assert master["total_questions"] >= 100
-    assert len(master["questions"]) == master["total_questions"]
+    raw_text = master_path.read_text(encoding="utf-8")
+    for lig in ["\ufb00", "\ufb01", "\ufb02", "\ufb03", "\ufb04"]:
+        assert lig not in raw_text, f"Master template contains raw ligature: {repr(lig)}"
 
-    # Verify every question has what, why, and how
+    master = json.loads(raw_text)
+    assert master["total_questions"] == 102
+    assert len(master["questions"]) == 102
+
+    # Verify every question has what, why, how, and valid enum values
     for q in master["questions"]:
-        assert "question_id" in q
+        assert "question_id" in q and len(q["question_id"]) > 0
+        assert "title" in q and len(q["title"]) > 0
+        assert "text" in q and len(q["text"]) > 0
         assert "what" in q and len(q["what"]) > 0
         assert "why" in q and len(q["why"]) > 0
-        assert "how" in q
+        assert "how" in q and isinstance(q["how"], dict)
         assert "evidence_locus" in q
+        assert EvidenceLocus(q["evidence_locus"])  # must be valid enum
+        assert AnswerType(q["answer_type"]) == AnswerType.BINARY
 
     modules_dir = REPO_ROOT / "data" / "questionnaires" / "modules"
     module_files = list(modules_dir.glob("module_*.json"))
     assert len(module_files) == 6, f"Expected 6 module files, found {len(module_files)}"
+
+    # Check LOSI template exists
+    losi_path = REPO_ROOT / "data" / "questionnaires" / "templates" / "un_losi_2024_master.json"
+    assert losi_path.exists(), "LOSI master template JSON must exist"
+    losi = json.loads(losi_path.read_text(encoding="utf-8"))
+    assert losi["total_questions"] == 95
 
 
 def test_question_entity_rich_fields_roundtrip():

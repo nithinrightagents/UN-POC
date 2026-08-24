@@ -1,4 +1,4 @@
-"""REST API router construction and error handler registration (spec 007)."""
+"""REST API router construction and error handler registration (spec 007 & full capabilities)."""
 
 from __future__ import annotations
 
@@ -9,11 +9,20 @@ from fastapi.responses import JSONResponse
 
 from api.deps import make_require_api_key
 from api.routers.assessments import build_assessments_router
+from api.routers.benchmarks import build_benchmarks_router
 from api.routers.completions import build_completions_router
 from api.routers.cycles import build_cycles_router
+from api.routers.discrepancy import build_discrepancy_router
+from api.routers.export import build_export_router
 from api.routers.human import build_human_router
+from api.routers.msq import build_msq_router
 from api.routers.prefills import build_prefills_router
 from api.routers.publication import build_publication_router
+from api.routers.reference import build_reference_router
+from api.routers.review import build_review_router
+from api.routers.system import build_system_router
+from api.routers.telemetry import build_telemetry_router
+from api.routers.verify import build_verify_router
 from api.schemas import ApiError, CapacityReached
 from shared.config.settings import Settings
 
@@ -23,17 +32,26 @@ def build_api_router(
     settings: Settings,
     runtime_getter: Callable[[], Any] | None = None,
 ) -> APIRouter:
-    """Builds the main /api/v1 router with X-API-Key security dependency and sub-routers."""
+    """Builds the main /api/v1 router with X-API-Key security dependency and all sub-routers."""
     router = APIRouter(
         dependencies=[Depends(make_require_api_key(settings))],
     )
 
+    router.include_router(build_reference_router(database_path, settings))
     router.include_router(build_cycles_router(database_path, settings))
+    router.include_router(build_msq_router(database_path, settings))
     router.include_router(build_assessments_router(database_path, settings))
-    router.include_router(build_human_router(database_path, settings))
-    router.include_router(build_publication_router(database_path, settings))
     router.include_router(build_prefills_router(database_path, settings))
+    router.include_router(build_human_router(database_path, settings))
     router.include_router(build_completions_router(database_path, settings))
+    router.include_router(build_discrepancy_router(database_path, settings))
+    router.include_router(build_review_router(database_path, settings))
+    router.include_router(build_publication_router(database_path, settings))
+    router.include_router(build_export_router(database_path, settings))
+    router.include_router(build_telemetry_router(database_path, settings))
+    router.include_router(build_verify_router(database_path, settings))
+    router.include_router(build_benchmarks_router(database_path, settings))
+    router.include_router(build_system_router(database_path, settings))
 
     return router
 

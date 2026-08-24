@@ -97,6 +97,12 @@ def publication_readiness(
             first_q = b_comp.outstanding_question_ids[0]
             blocking_reason = f"Assessor B has {cnt} {s} outstanding: {first_q}."
 
+    if ready:
+        open_round = repo.open_round_for_unit(session_id, portal_id)
+        if open_round is not None:
+            ready = False
+            blocking_reason = "A reconciliation round is currently open for this unit."
+
     return PublicationReadiness(
         ready=ready,
         roles=roles_dict,
@@ -107,20 +113,42 @@ def publication_readiness(
 def final_answer(
     repo: Repository, session_id: str, question_id: str, portal_id: str
 ) -> bool | None:
-    """Precedence for what a Senior Reviewer publishes (spec 005 Section 3.6, spec 008):
-    a resolved arbitration decision beats simple A/B agreement, which beats
-    a single human answer. Never invents an answer nobody gave."""
+    """Precedence for what a Senior Reviewer publishes (spec 005 Section 3.6, spec 008, spec 012):
+    a resolved arbitration decision beats a joint answer, which beats simple A/B agreement,
+    which beats a single human answer. Never invents an answer nobody gave."""
+    ans, _ = final_answer_detail(repo, session_id, question_id, portal_id)
+    return ans
+
+
+def final_answer_detail(
+    repo: Repository, session_id: str, question_id: str, portal_id: str
+) -> tuple[bool | None, str]:
+    """Precedence for what a Senior Reviewer publishes (spec 005 Section 3.6, spec 008, spec 012):
+    1. Senior Reviewer arbitration for this indicator (find_resolved_answer)
+    2. Joint answer for this indicator (latest_joint_answer)
+    3. A/B consensus agreement
+    4. Single assessor answer (A or B)
+    5. Unresolved disagreement (returns Assessor A's answer, marked contested)
+    """
+    resolved = find_resolved_answer(repo, session_id, portal_id, question_id)
+    if resolved is not None:
+        return resolved, "arbitration"
+
+    joint = repo.latest_joint_answer(session_id, portal_id, question_id)
+    if joint is not None:
+        return bool(joint.answer), "joint_answer"
+
     a = repo.latest_human_submission(session_id, question_id, portal_id, AssessorRole.A)
     b = repo.latest_human_submission(session_id, question_id, portal_id, AssessorRole.B)
+
     if a and b:
         if a.answer == b.answer:
-            return bool(a.answer)
-        resolved = find_resolved_answer(repo, session_id, portal_id, question_id)
-        if resolved is not None:
-            return resolved
-        return bool(a.answer)  # unresolved disagreement pending arbitration: best-effort placeholder
+            return bool(a.answer), "consensus"
+        return bool(a.answer), "contested_a_wins"
+
     if a:
-        return bool(a.answer)
+        return bool(a.answer), "single_assessor_a"
     if b:
-        return bool(b.answer)
-    return None
+        return bool(b.answer), "single_assessor_b"
+    return None, "none"
+
