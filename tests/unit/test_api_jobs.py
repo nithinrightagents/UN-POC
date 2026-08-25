@@ -1,16 +1,24 @@
 """Assessment jobs, lifecycle, restart sweep, and concurrency tests (spec 007 US2)."""
 
 from unittest.mock import AsyncMock, patch
+
 import pytest
 from fastapi.testclient import TestClient
 
-from api.jobs import AssessmentJob, sweep_interrupted_jobs
+from api.jobs import AssessmentJob
 from portal.common import ensure_session
 from portal.webapp import build_app
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import connect, init_db
-from shared.state.entities import Question, SurveyCycle, TargetPortal, UnitState, AnswerType, EvidenceLocus
+from shared.state.entities import (
+    AnswerType,
+    EvidenceLocus,
+    Question,
+    SurveyCycle,
+    TargetPortal,
+    UnitState,
+)
 
 pytestmark = pytest.mark.unit
 

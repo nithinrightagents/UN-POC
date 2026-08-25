@@ -5,7 +5,8 @@ Enforces rules E1 through E7 on exported NDJSON answer records and exclusion rep
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 VALID_EXCLUSION_REASONS = frozenset({
     "awaiting_human_review",

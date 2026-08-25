@@ -8,11 +8,10 @@ FR-LD-031, FR-LD-032, FR-LD-036, FR-LD-037.
 from __future__ import annotations
 
 import json
-import sqlite3
 import time
-from dataclasses import asdict, dataclass, field
+from collections.abc import Sequence
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Sequence
 
 import httpx
 
@@ -23,13 +22,10 @@ from benchmark.trace import UnitResolutionTrace, read_unit_traces
 from benchmark.urlmatch import urls_equivalent
 from core.llm_factory import ModelProvider
 from shared.config.settings import Settings
-from shared.persistence.benchmark_repo import BenchmarkRepository
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
-    BenchmarkSet,
     GroundTruthAnswer,
     Question,
-    SessionStatus,
     TargetPortal,
     new_id,
 )
@@ -441,7 +437,6 @@ async def run_diagnostic(
     )
 
     # Persist diagnostic result via benchmark_run_results (FR-LD-032, T041)
-    bm_repo = BenchmarkRepository(repo.conn)
     result_data = {
         "result_id": run_result.result_id,
         "session_id": run_result.session_id,

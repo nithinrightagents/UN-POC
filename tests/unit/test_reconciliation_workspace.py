@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import pytest
-from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
 from portal.reconciliation import open_automatic_round
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AnswerType,
-    AssessorCompletion,
     AssessorRole,
     EvidenceLocus,
     HumanAssessorSubmission,

@@ -10,8 +10,8 @@ from __future__ import annotations
 import statistics
 from dataclasses import dataclass, field
 
-from shared.state.entities import AgentRunState
 from shared.persistence.repositories import Repository
+from shared.state.entities import AgentRunState
 
 
 @dataclass

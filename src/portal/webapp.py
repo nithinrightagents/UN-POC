@@ -6,6 +6,9 @@ as 001 -- no new framework introduced."""
 
 from __future__ import annotations
 
+import logging
+import os
+import sqlite3
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -14,9 +17,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-import logging
-import os
-import sqlite3
 from api.app import build_api_router, install_api_error_handlers
 from api.jobs import sweep_interrupted_jobs
 from api.runtime import AIRuntime

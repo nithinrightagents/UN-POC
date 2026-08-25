@@ -1,25 +1,27 @@
 import sqlite3
+
 import pytest
+
 from core.llm_factory import ModelProvider
+from core.telemetry.cost_ledger import CostLedger
+from core.telemetry.fetch_log import FetchLog
+from core.telemetry.stage_events import StageEventLog
 from orchestration.scheduler import run_batch
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
 from shared.ratelimit.token_bucket import RateLimiter
 from shared.state.entities import (
+    AnswerType,
     AssessmentSession,
     EvidenceLocus,
     Question,
-    AnswerType,
     SessionMode,
     SessionStatus,
     TargetPortal,
     UnitState,
 )
 from shared.tools.browser import BrowserSession
-from core.telemetry.cost_ledger import CostLedger
-from core.telemetry.fetch_log import FetchLog
-from core.telemetry.stage_events import StageEventLog
 
 
 class NoCallProvider(ModelProvider):

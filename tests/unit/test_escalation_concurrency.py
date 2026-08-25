@@ -9,10 +9,10 @@ import sqlite3
 
 import pytest
 
-from shared.state.entities import EscalationQueueItem, EscalationReason, new_id
+from review.escalations import dispose_escalation, list_escalation_queue
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
-from review.escalations import dispose_escalation, list_escalation_queue
+from shared.state.entities import EscalationQueueItem, EscalationReason, new_id
 
 pytestmark = pytest.mark.unit
 

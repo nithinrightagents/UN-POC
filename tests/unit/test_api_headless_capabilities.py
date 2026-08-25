@@ -6,16 +6,9 @@ from fastapi.testclient import TestClient
 from portal.common import ensure_session
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
-    AssessorCompletion,
-    AssessorRole,
     EscalationQueueItem,
     EscalationReason,
-    HumanAssessorSubmission,
     PublicationRecord,
-    Question,
-    ReconciliationRound,
-    SurveyCycle,
-    TargetPortal,
     new_id,
 )
 
@@ -265,7 +258,7 @@ def test_reconciliation_workspace_and_joint_answering(client: TestClient, auth: 
     )
     portal_id = u_res.json()["portal_id"]
 
-    session_id = ensure_session(repo, cycle_id)
+    ensure_session(repo, cycle_id)
 
     # Role A answers True, Role B answers False
     client.post(
@@ -380,7 +373,7 @@ def test_ai_review_actions(client: TestClient, auth: dict[str, str], conn):
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
-    session_id = ensure_session(repo, cycle_id)
+    ensure_session(repo, cycle_id)
 
     # Get review status
     st_res = client.get(f"/api/v1/cycles/{cycle_id}/units/{portal_id}/review-status", headers=auth)

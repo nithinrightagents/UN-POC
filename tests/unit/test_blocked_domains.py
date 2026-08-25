@@ -4,9 +4,11 @@ Asserts that candidate URLs on hosts present in blocked_domains are rejected by 
 while URLs on unblocked government domains are accepted.
 """
 
-import pytest
 from unittest.mock import AsyncMock
-from shared.tools.linkresolution.sources.search import search_for_link, Candidate
+
+import pytest
+
+from shared.tools.linkresolution.sources.search import Candidate, search_for_link
 
 pytestmark = pytest.mark.unit
 

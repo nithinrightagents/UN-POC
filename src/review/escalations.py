@@ -14,10 +14,10 @@ silently overwriting the first.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 
-from shared.state.entities import EscalationQueueItem
 from shared.persistence.repositories import Repository
+from shared.state.entities import EscalationQueueItem
 
 
 @dataclass

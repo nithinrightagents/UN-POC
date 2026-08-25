@@ -11,7 +11,7 @@ other units.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from shared.state.entities import LanguageDecision, LanguageDecisionOutcome, new_id
 
@@ -79,7 +79,7 @@ def resolve_decision_expired(pending: LanguageDecision) -> LanguageDecision:
 
 
 def window_has_expired(pending_created_at: datetime, window_hours: int) -> bool:
-    return datetime.now(timezone.utc) - pending_created_at > timedelta(hours=window_hours)
+    return datetime.now(UTC) - pending_created_at > timedelta(hours=window_hours)
 
 
 def apply_best_effort_confidence_cap(confidence: int, ceiling: int) -> int:

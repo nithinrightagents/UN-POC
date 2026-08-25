@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
-from portal.discrepancy import compute_portal_discrepancy, recompute_portal_discrepancy
+from portal.discrepancy import recompute_portal_discrepancy
 from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository

@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from contextlib import contextmanager
+from datetime import UTC, datetime
 
 from shared.state.entities import (
     AdjudicationResult,
@@ -33,6 +34,7 @@ from shared.state.entities import (
     PublicationRecord,
     Question,
     ReconciliationRound,
+    SessionStatus,
     SurveyCycle,
     TargetPortal,
     ToleranceChange,
@@ -381,19 +383,6 @@ class Repository:
         ).fetchone()
         return from_json(row["data"], EvidenceArtifact) if row else None
 
-    def insert_export(self, export_obj: AnswerExport) -> None:
-        self.conn.execute(
-            "INSERT INTO answer_exports (export_id, cycle_id, data) VALUES (?, ?, ?)",
-            (export_obj.export_id, export_obj.cycle_id, to_json(export_obj)),
-        )
-        self.conn.commit()
-
-    def get_export(self, export_id: str) -> AnswerExport | None:
-        row = self.conn.execute(
-            "SELECT data FROM answer_exports WHERE export_id = ?", (export_id,)
-        ).fetchone()
-        return from_json(row["data"], AnswerExport) if row else None
-
 
     # --- Assessor Agent Run --------------------------------------------------
 
@@ -661,10 +650,10 @@ class Repository:
         ).fetchall()
         indicator_code = question_id.split(":")[-1]
         all_links = [from_json(r["data"], PriorSurveyLink) for r in rows]
-        exact = [l for l in all_links if l.question_id == question_id]
+        exact = [link for link in all_links if link.question_id == question_id]
         if exact:
             return exact
-        return [l for l in all_links if l.question_id.split(":")[-1] == indicator_code]
+        return [link for link in all_links if link.question_id.split(":")[-1] == indicator_code]
 
     def insert_msq_link_candidate(self, candidate: MSQLinkCandidate) -> None:
         self.conn.execute(
@@ -695,6 +684,12 @@ class Repository:
             (export.export_id, export.cycle_id, to_json(export)),
         )
         self.conn.commit()
+
+    def get_export(self, export_id: str) -> AnswerExport | None:
+        row = self.conn.execute(
+            "SELECT data FROM answer_exports WHERE export_id = ?", (export_id,)
+        ).fetchone()
+        return from_json(row["data"], AnswerExport) if row else None
 
     def list_exports(self, cycle_id: str) -> list[AnswerExport]:
         rows = self.conn.execute(
@@ -1110,8 +1105,7 @@ class Repository:
         if state not in ("resolved", "exhausted", "not_required"):
             raise ValueError(f"Invalid terminal state for reconciliation round: {state}")
         if closed_at is None:
-            from datetime import datetime, timezone
-            closed_at_val = datetime.now(timezone.utc).isoformat()
+            closed_at_val = datetime.now(UTC).isoformat()
         elif hasattr(closed_at, "isoformat"):
             closed_at_val = closed_at.isoformat()
         else:

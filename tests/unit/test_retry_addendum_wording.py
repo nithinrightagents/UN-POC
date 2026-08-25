@@ -20,7 +20,12 @@ from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
 from core.telemetry.stage_events import StageEventLog
 from shared.persistence.schema import DDL
-from shared.state.entities import AgentRunState, AssessorAgentRun, ValidationResult, VerificationOutcome
+from shared.state.entities import (
+    AgentRunState,
+    AssessorAgentRun,
+    ValidationResult,
+    VerificationOutcome,
+)
 
 pytestmark = pytest.mark.unit
 

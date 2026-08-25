@@ -9,6 +9,10 @@ import sqlite3
 
 import pytest
 
+from review.query import build_question_review
+from review.unlock import portal_review_status
+from shared.persistence.repositories import Repository
+from shared.persistence.schema import DDL
 from shared.state.entities import (
     AdjudicationResult,
     AgentRunState,
@@ -25,10 +29,6 @@ from shared.state.entities import (
     UnitState,
     new_id,
 )
-from shared.persistence.repositories import Repository
-from shared.persistence.schema import DDL
-from review.query import build_question_review
-from review.unlock import portal_review_status
 
 pytestmark = pytest.mark.unit
 

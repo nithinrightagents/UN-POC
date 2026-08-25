@@ -266,7 +266,7 @@ def test_prefill_endpoint_blind_to_human_roles(client: TestClient, auth: dict[st
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
-    session_id = ensure_session(repo, "blind-pf-cycle")
+    ensure_session(repo, "blind-pf-cycle")
 
     # Assessor A and B submit answers
     client.post(
@@ -297,7 +297,6 @@ def test_prefill_endpoint_blind_to_human_roles(client: TestClient, auth: dict[st
 
 def test_cross_route_blindness_preservation_sc011(client: TestClient, auth: dict[str, str], conn):
     """Mechanises SC-011 across all routes in contracts/reconciliation-workspace.md §4."""
-    repo = Repository(conn)
     cycle_id = "blind-sc11-cycle"
     client.post(
         "/api/v1/cycles",

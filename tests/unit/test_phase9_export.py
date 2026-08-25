@@ -2,7 +2,20 @@
 
 import json
 import sqlite3
+
 import pytest
+
+from export.ekap_projection import project_to_ekap_aosq_interactions
+from export.invariants import (
+    VALID_EXCLUSION_REASONS,
+    ExportInvariantError,
+    validate_export_record,
+    validate_export_set,
+)
+from export.writer import export_cycle_answers
+from review import actions
+from shared.persistence.repositories import Repository
+from shared.persistence.schema import DDL
 from shared.state.entities import (
     AnswerType,
     AssessmentSession,
@@ -15,17 +28,6 @@ from shared.state.entities import (
     TargetPortal,
     UnitState,
 )
-from export.ekap_projection import project_to_ekap_aosq_interactions
-from export.invariants import (
-    VALID_EXCLUSION_REASONS,
-    ExportInvariantError,
-    validate_export_record,
-    validate_export_set,
-)
-from export.writer import export_cycle_answers
-from review import actions
-from shared.persistence.repositories import Repository
-from shared.persistence.schema import DDL
 
 
 def test_export_invariants_validation():

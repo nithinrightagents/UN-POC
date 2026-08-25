@@ -5,23 +5,22 @@ Covers Scenarios 1 and 2 of quickstart.md.
 
 from __future__ import annotations
 
-import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
-from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.reconciliation import unit_reconciliation_state
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
+    AnswerType,
     AssessorCompletion,
     AssessorRole,
     EscalationReason,
+    EvidenceLocus,
     HumanAssessorSubmission,
     Question,
-    AnswerType,
-    EvidenceLocus,
     SurveyCycle,
     TargetPortal,
     new_id,
@@ -85,7 +84,7 @@ def _submit(
         notes="",
         ai_suggested_answer=None,
         ai_suggestion_accepted=None,
-        submitted_at=datetime.now(timezone.utc),
+        submitted_at=datetime.now(UTC),
     )
     repo.insert_human_submission(sub)
     return sub
@@ -267,7 +266,7 @@ def test_scenario_2_round_opens_on_second_completion_once(conn, client, settings
         opened_reason=None,
         state="open",
         data=rnd.data,
-        opened_at=datetime.now(timezone.utc),
+        opened_at=datetime.now(UTC),
         closed_at=None,
     )
     ok = repo.insert_reconciliation_round(rnd_duplicate)

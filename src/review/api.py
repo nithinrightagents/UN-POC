@@ -25,11 +25,11 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from shared.config.settings import Settings
-from shared.persistence.repositories import Repository
 from review import actions
 from review.query import build_question_review
 from review.unlock import portal_review_status
+from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
 
 
 class ApproveBody(BaseModel):

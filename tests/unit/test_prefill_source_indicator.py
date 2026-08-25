@@ -1,11 +1,9 @@
 from fastapi.testclient import TestClient
-import pytest
 
 from portal.common import ensure_session, repo_factory
 from portal.webapp import build_app
 from review.web.evidence import render_evidence_html
 from shared.config.settings import Settings
-
 from shared.persistence.schema import init_db
 from shared.state.entities import (
     AnswerType,
@@ -192,7 +190,7 @@ def test_api_prefills_includes_supplying_source_label(tmp_path):
 
 
 def test_assessor_portal_renders_source_indicators(tmp_path):
-    """Verify assessor unit HTML template renders source badges in suggestion box and evidence link."""
+    """Verify assessor unit HTML template does not render AI suggestion boxes (portal AI removed)."""
     db_path = str(tmp_path / "test_portal_source.db")
     init_db(db_path)
     settings = Settings(database_path=db_path)
@@ -250,7 +248,7 @@ def test_assessor_portal_renders_source_indicators(tmp_path):
     res = client.get("/assessor/cycle-portal-test/US?role=A")
     assert res.status_code == 200
     html = res.text
-
-    assert "Source: Previous KB" in html
-    assert "badge--source-prior_survey_kb" in html
-    assert "https://www.usa.gov/portal-services" in html
+    assert "AI Suggested Answer" not in html
+    assert '<div class="ai-suggestion-box">' not in html
+    assert "btn-ai-fill" not in html
+    assert "Use AI Suggestion" not in html

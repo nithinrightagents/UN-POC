@@ -1,6 +1,7 @@
 """Unit tests for configuration settings loading and model parameter mapping."""
 
 import pytest
+
 from shared.config.settings import Settings, load_settings
 
 

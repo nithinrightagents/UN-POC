@@ -117,7 +117,7 @@ class AssessorAgentOutput(BaseModel):
     navigated_to_url: str | None = None
 
     @model_validator(mode="after")
-    def _auth_boundary_implies_no_answer(self) -> "AssessorAgentOutput":
+    def _auth_boundary_implies_no_answer(self) -> AssessorAgentOutput:
         if self.auth_boundary_observed and self.answer is not None:
             raise ValueError(
                 "auth_boundary_observed=True requires answer=None (invariant A5, FR-108)"

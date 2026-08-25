@@ -16,14 +16,14 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from shared.config.settings import Settings
-from shared.persistence.repositories import Repository
 from review import actions
 from review.api import build_router
 from review.query import build_question_review
 from review.unlock import portal_review_status
 from review.web.detail import render_agent_detail_html, render_attempt_history_html
 from review.web.evidence import render_evidence_html
+from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 

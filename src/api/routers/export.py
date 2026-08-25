@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Response
@@ -36,7 +35,7 @@ def build_export_router(database_path: str, settings: Settings) -> APIRouter:
             repo, cycle_id, out_dir, body.actor_id
         )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return ExportResponse(
             cycle_id=cycle_id,
             ndjson_path=str(ndjson_path),

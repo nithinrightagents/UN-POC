@@ -8,8 +8,8 @@ status derivation.
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass, field
 import sqlite3
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from api.runner import run_assessment_job
@@ -17,7 +17,7 @@ from api.schemas import CapacityReached, NotFound, PreconditionFailed
 from portal.common import ensure_session
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
-from shared.state.entities import TERMINAL_UNIT_STATES, UnitState, new_id
+from shared.state.entities import TERMINAL_UNIT_STATES, new_id
 
 if TYPE_CHECKING:
     from api.runtime import AIRuntime

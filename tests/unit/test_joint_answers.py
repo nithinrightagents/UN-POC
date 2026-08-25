@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
-from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
@@ -214,7 +213,7 @@ def test_concurrent_joint_answers_winner_takes_first(conn):
             "submitted_by_role": "A",
             "submitted_by_actor_id": "actor-a",
         },
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     ok1 = repo.insert_joint_answer(ja1)
     assert ok1 is True
@@ -232,7 +231,7 @@ def test_concurrent_joint_answers_winner_takes_first(conn):
             "submitted_by_role": "B",
             "submitted_by_actor_id": "actor-b",
         },
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
     ok2 = repo.insert_joint_answer(ja2)
     assert ok2 is False  # unique constraint idx_joint_answers_once prevented duplicate
@@ -263,7 +262,7 @@ def test_resolved_reconciliation_cannot_be_silently_re_resolved(conn, client, se
                     "submitted_by_role": "A",
                     "submitted_by_actor_id": "actor-a",
                 },
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
         )
 

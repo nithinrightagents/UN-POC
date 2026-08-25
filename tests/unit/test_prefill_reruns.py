@@ -1,6 +1,7 @@
 """Tests for prefill re-run semantics and preservation of human assessor submissions (spec 008 US6)."""
 
 import sqlite3
+
 import pytest
 
 from orchestration.prefill_writer import write_prefill
@@ -15,7 +16,6 @@ from shared.state.entities import (
     Question,
     SurveyCycle,
     TargetPortal,
-    UnitState,
 )
 
 pytestmark = pytest.mark.unit

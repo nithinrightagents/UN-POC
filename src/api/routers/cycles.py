@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from dataclasses import replace
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, status
 
 from api.deps import make_repo_dependency
@@ -220,7 +221,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
         cycle.discrepancy_rate_threshold = new_ratio
         repo.insert_cycle(cycle)
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         repo.insert_tolerance_change(
             ToleranceChange(
                 change_id=new_id("tol"),

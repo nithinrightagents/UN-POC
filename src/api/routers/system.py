@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, Request
 
@@ -53,7 +53,7 @@ def build_system_router(database_path: str, settings: Settings) -> APIRouter:
         repo: Repository = Depends(get_repo),
         runtime=Depends(get_ai_runtime),
     ):
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return SystemHealthResponse(
             status="ok",
             database_path=database_path,

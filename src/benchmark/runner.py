@@ -6,15 +6,20 @@ Ground-truth answers remain isolated in BenchmarkStore and are never passed into
 
 from __future__ import annotations
 
-import pathlib
-from typing import Sequence
+from collections.abc import Sequence
 
 import httpx
 
-from core.llm_factory import ModelProvider
 from benchmark.measures import compute_benchmark_measures
 from benchmark.store import BenchmarkStore
+from core.llm_factory import ModelProvider
+from core.telemetry.cost_ledger import CostLedger
+from core.telemetry.fetch_log import FetchLog
+from core.telemetry.stage_events import StageEventLog
+from orchestration.scheduler import run_batch
 from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
+from shared.ratelimit.token_bucket import RateLimiter
 from shared.state.entities import (
     AssessmentSession,
     BenchmarkRunResult,
@@ -25,13 +30,7 @@ from shared.state.entities import (
     TargetPortal,
     new_id,
 )
-from orchestration.scheduler import run_batch
-from shared.persistence.repositories import Repository
 from shared.tools.browser import BrowserSession
-from shared.ratelimit.token_bucket import RateLimiter
-from core.telemetry.cost_ledger import CostLedger
-from core.telemetry.fetch_log import FetchLog
-from core.telemetry.stage_events import StageEventLog
 
 
 async def run_benchmark_session(

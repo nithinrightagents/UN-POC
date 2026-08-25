@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
 
 from portal.common import ensure_session
@@ -182,7 +183,7 @@ def test_round_ending_above_tolerance_closes_exhausted_and_becomes_persistent_di
                 "submitted_by_role": "A",
                 "submitted_by_actor_id": "actor-a",
             },
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         repo.insert_joint_answer(ja)
 
@@ -259,7 +260,7 @@ def test_disagreement_after_resolved_round_goes_straight_to_persistent_discrepan
                 "submitted_by_role": "A",
                 "submitted_by_actor_id": "actor-a",
             },
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         repo.insert_joint_answer(ja)
 
@@ -337,7 +338,7 @@ def test_senior_reviewer_return_opens_round_2_and_routes_assessors_back(conn, cl
                     "submitted_by_role": "A",
                     "submitted_by_actor_id": "actor-a",
                 },
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
         )
     close_round_if_complete(repo, round_obj.round_id, session_id, cycle_id, portal_id, questions, settings)
@@ -408,7 +409,7 @@ def test_senior_reviewer_return_without_reason_refused(conn, client, settings):
                 question_id=f"PF-{i:03d}",
                 round_id=round_obj.round_id,
                 data={"answer": True, "justification": "Settled", "submitted_by_role": "A", "submitted_by_actor_id": "actor-a"},
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
         )
     close_round_if_complete(repo, round_obj.round_id, session_id, cycle_id, portal_id, questions, settings)

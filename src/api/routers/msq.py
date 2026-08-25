@@ -15,7 +15,7 @@ from api.schemas import (
     MSQUploadResponse,
     NotFound,
 )
-from portal.msq import extract_pdf_text, ingest_msq_pdf, match_msq_links, parse_msq_text
+from portal.msq import ingest_msq_pdf, match_msq_links, parse_msq_text
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import MSQDocument, new_id

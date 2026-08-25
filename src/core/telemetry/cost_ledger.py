@@ -9,9 +9,10 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
+from typing import Any
 
-from shared.state.entities import new_id
 from shared.persistence.serialization import to_json
+from shared.state.entities import new_id
 
 
 @dataclass

@@ -10,20 +10,18 @@ Verifies that the entire revamped UI across Admin, Assessor, Public, and AI Revi
 from __future__ import annotations
 
 import pathlib
-from fastapi.testclient import TestClient
+from datetime import UTC
+
 import pytest
+from fastapi.testclient import TestClient
 
 from portal.common import ensure_session, repo_factory
 from portal.webapp import build_app
 from shared.config.settings import Settings
 from shared.persistence.schema import init_db
 from shared.state.entities import (
-    AgentRunState,
     AnswerType,
-    AssessorAgentRun,
     AssessorRole,
-    ElementReference,
-    EvidenceArtifact,
     EvidenceLocus,
     HumanAssessorSubmission,
     ProjectType,
@@ -237,14 +235,16 @@ def test_all_portal_routes_render_successfully(seeded_client):
 def test_reconciliation_workspace_renders_successfully(seeded_client, db_path):
     """Verify that the reconciliation workspace view renders with HTTP 200, semantic landmarks, and skip links when a round is open."""
     import sqlite3
+
     from shared.persistence.repositories import Repository
     client, session_id = seeded_client
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     repo = Repository(conn)
 
+    from datetime import datetime
+
     from shared.state.entities import ReconciliationRound, new_id
-    from datetime import datetime, timezone
 
     repo.insert_reconciliation_round(
         ReconciliationRound(
@@ -258,7 +258,7 @@ def test_reconciliation_workspace_renders_successfully(seeded_client, db_path):
             opened_reason=None,
             state="open",
             data={"disputed_question_ids": ["PF-001"], "rate_at_open": 1.0, "tolerance_at_open": 0.05},
-            opened_at=datetime.now(timezone.utc),
+            opened_at=datetime.now(UTC),
             closed_at=None,
         )
     )

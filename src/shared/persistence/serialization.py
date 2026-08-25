@@ -76,7 +76,7 @@ def _coerce_value(value: Any, hint: Any) -> Any:
         return datetime.fromisoformat(value)
 
     origin = typing.get_origin(hint)
-    if origin in (list, typing.List) and isinstance(value, list):
+    if origin in (list, list) and isinstance(value, list):
         (item_hint,) = typing.get_args(hint) or (None,)
         return [_coerce_value(v, item_hint) for v in value]
 

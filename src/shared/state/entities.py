@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 
@@ -17,7 +17,7 @@ def new_id(prefix: str) -> str:
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # --- Enums ---------------------------------------------------------------
@@ -591,7 +591,7 @@ class Prefill:
 
 
 def prefill_answer_category(
-    suggested: bool, answer: bool | None, reason: "PrefillReason | str | None"
+    suggested: bool, answer: bool | None, reason: PrefillReason | str | None
 ) -> str:
     """Free-standing form of `Prefill.answer_category()` for callers that only
     have the raw fields (e.g. a `units` row's stored context), not a `Prefill`

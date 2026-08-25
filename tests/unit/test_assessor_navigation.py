@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import pathlib
-from fastapi.testclient import TestClient
+
 import pytest
+from fastapi.testclient import TestClient
 
 from portal.common import ensure_session, repo_factory
 from portal.webapp import build_app
@@ -12,14 +13,11 @@ from shared.config.settings import Settings
 from shared.persistence.schema import init_db
 from shared.state.entities import (
     AnswerType,
-    AssessorRole,
     EvidenceLocus,
-    HumanAssessorSubmission,
     ProjectType,
     Question,
     SurveyCycle,
     TargetPortal,
-    new_id,
 )
 
 

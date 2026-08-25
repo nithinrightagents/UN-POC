@@ -1,5 +1,7 @@
 """Publication, published results, and portal parity tests (spec 007 US4, spec 008 Scenario 6)."""
 
+from datetime import UTC
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -11,7 +13,6 @@ from shared.state.entities import (
     AssessorRole,
     HumanAssessorSubmission,
     Prefill,
-    UnitState,
     new_id,
 )
 
@@ -196,7 +197,7 @@ def test_never_published_and_republish(client: TestClient, auth: dict[str, str],
     )
     portal_id = u_res.json()["portal_id"]
     qid = "repub-cycle:R.1"
-    session_id = ensure_session(repo, "repub-cycle")
+    ensure_session(repo, "repub-cycle")
 
     # 1. Never published -> 200 with published: false, score: null
     get_unpub = client.get(f"/api/v1/cycles/repub-cycle/units/{portal_id}/publication", headers=auth)
@@ -347,7 +348,8 @@ def test_scenario_6_publish_unresolved_with_contested_indicators_and_identical_s
 
 
 def test_final_answer_prefers_joint_value_over_both_originals(conn):
-    from datetime import datetime, timezone
+    from datetime import datetime
+
     from api.finalize import final_answer_detail
     from shared.state.entities import JointAnswer
 
@@ -393,7 +395,7 @@ def test_final_answer_prefers_joint_value_over_both_originals(conn):
                 "submitted_by_role": "B",
                 "submitted_by_actor_id": "actor-b",
             },
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
     )
 

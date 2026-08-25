@@ -33,12 +33,11 @@ from __future__ import annotations
 
 import asyncio
 import random
+from dataclasses import dataclass
 from urllib.parse import parse_qs, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
-
-from dataclasses import dataclass
 
 from shared.state.entities import LinkSource, ResolutionAttempt
 from shared.tools.linkresolution.admissibility import check_admissible

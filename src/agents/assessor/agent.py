@@ -24,9 +24,15 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 from core.base_agent import BaseAgent
-from orchestration.routers.confidence_gate import ConfidenceGateOutcome, run_with_confidence_gate
-from shared.prompts.profiles import build_prompt
 from core.llm_factory import ModelProvider, estimate_cost
+from core.telemetry.cost_ledger import CostLedger
+from core.telemetry.fetch_log import FetchLog
+from core.telemetry.langsmith_tracing import agent_trace
+from core.telemetry.stage_events import StageEventLog
+from orchestration.routers.confidence_gate import ConfidenceGateOutcome, run_with_confidence_gate
+from shared.config.settings import Settings
+from shared.prompts.profiles import build_prompt
+from shared.state.entities import AgentRunState, AssessorAgentRun, new_id
 from shared.state.schemas import (
     AssessorAgentInput,
     AssessorAgentOutput,
@@ -34,18 +40,11 @@ from shared.state.schemas import (
     EvidenceOutput,
     RetryAddendum,
 )
-from shared.config.settings import Settings
-from shared.state.entities import AgentRunState, AssessorAgentRun, new_id, utcnow
 from shared.tools.boundaries import check_authentication_boundary
 from shared.tools.browser import BrowserSession
 from shared.tools.element_ref import build_reference, search_by_text
-from core.telemetry.cost_ledger import CostLedger
-from core.telemetry.fetch_log import FetchLog
-from core.telemetry.langsmith_tracing import agent_trace
-from core.telemetry.stage_events import StageEventLog
 from shared.tools.linkresolution.admissibility import check_admissible
 from shared.tools.linkresolution.sources.search import is_government_domain
-
 
 _RESPONSE_SCHEMA = {
     "type": "object",
@@ -348,9 +347,9 @@ def _link_matching_quote(
     q_norm = raw_quote.strip().lower()
     if len(q_norm) < 3:
         return None
-    for l in links:
-        l_text = l["text"].strip().lower()
-        l_href = l["href"]
+    for link_item in links:
+        l_text = link_item["text"].strip().lower()
+        l_href = link_item["href"]
         l_path = urlparse(l_href).path.rstrip("/").lower()
         if l_path == curr_path:
             continue
@@ -389,12 +388,12 @@ def _find_best_navigation_link(
 
     best_link = None
     best_score = 0
-    for l in links:
-        l_href = l["href"]
+    for link_item in links:
+        l_href = link_item["href"]
         l_path = urlparse(l_href).path.rstrip("/").lower()
         if l_path == curr_path:
             continue
-        l_text = l["text"].lower()
+        l_text = link_item["text"].lower()
         score = sum(2 for t in meaningful_terms if t in l_text)
         score += sum(1 for t in meaningful_terms if t in l_path)
         if score > best_score:

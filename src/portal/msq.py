@@ -46,7 +46,7 @@ def parse_msq_text(raw_text: str) -> dict:
     def _flush() -> None:
         nonlocal current_question, current_answer_lines
         if current_question is not None:
-            answer = " ".join(l.strip() for l in current_answer_lines if l.strip())
+            answer = " ".join(line.strip() for line in current_answer_lines if line.strip())
             sections.setdefault(current_section, []).append(
                 {
                     "question": current_question,

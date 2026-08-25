@@ -13,10 +13,10 @@ from __future__ import annotations
 import contextlib
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from shared.state.entities import new_id
 from shared.persistence.serialization import to_json
+from shared.state.entities import new_id
 
 STAGES = (
     "url_resolution",
@@ -82,7 +82,7 @@ class StageEventLog:
     def timed(self, stage: str, unit_ref: dict, **kwargs):
         """Context manager: records a stage event covering the wrapped block.
         Usage: `with log.timed("assessor_run", {...}, agent_index=0): ...`"""
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         outcome = "success"
         try:
             yield
@@ -90,7 +90,7 @@ class StageEventLog:
             outcome = "failure"
             raise
         finally:
-            ended = datetime.now(timezone.utc)
+            ended = datetime.now(UTC)
             self.record(stage, unit_ref, started, ended, outcome=outcome, **kwargs)
 
     def durations_by_stage(self) -> dict[str, list[float]]:

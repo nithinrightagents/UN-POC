@@ -2,6 +2,7 @@
 
 import json
 import sqlite3
+
 import pytest
 
 from core.telemetry.cost_ledger import CostLedger
@@ -151,7 +152,7 @@ async def test_budget_exhaustion_stops_undispatched_and_completes_inflight():
     provider = CostingModelProvider()
     browser = FakeBrowserSession()
 
-    summary = await run_batch(
+    await run_batch(
         repo=repo,
         settings=settings,
         session_id="s-bdg",
@@ -214,7 +215,6 @@ async def test_concurrent_units_track_independent_run_budgets():
     repo.upsert_unit("s-conc", q.question_id, p1.portal_id, UnitState.RESOLVED.value, {"resolved_url": p1.resolved_url})
     repo.upsert_unit("s-conc", q.question_id, p2.portal_id, UnitState.RESOLVED.value, {"resolved_url": p2.resolved_url})
 
-    settings = Settings(assessor_agent_count=2, supported_languages=["en"])
     b1 = RunBudget(limit=1.0)
     b2 = RunBudget(limit=2.0)
 

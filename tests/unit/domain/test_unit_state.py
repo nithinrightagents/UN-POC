@@ -8,8 +8,8 @@ import pytest
 
 from shared.state.entities import TERMINAL_UNIT_STATES, UnitState
 from shared.state.unit_state import (
-    IllegalTransitionError,
     _ALLOWED,
+    IllegalTransitionError,
     assert_exhaustive_terminal_coverage,
     can_transition,
     is_terminal,

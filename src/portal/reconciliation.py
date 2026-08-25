@@ -13,19 +13,17 @@ by design.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from datetime import UTC, datetime
 
 from portal.discrepancy import _compare
 from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
-    AssessorCompletion,
-    AssessorRole,
     EscalationQueueItem,
     EscalationReason,
+    HumanAssessorSubmission,
     Question,
     ReconciliationRound,
     new_id,
@@ -148,7 +146,7 @@ def open_automatic_round(
             "rate_at_open": float(rate),
             "tolerance_at_open": float(tolerance),
         },
-        opened_at=datetime.now(timezone.utc),
+        opened_at=datetime.now(UTC),
         closed_at=None,
     )
     ok = repo.insert_reconciliation_round(round_obj)
@@ -227,7 +225,7 @@ def open_reviewer_round(
             "rate_at_open": float(rate),
             "tolerance_at_open": float(tolerance),
         },
-        opened_at=datetime.now(timezone.utc),
+        opened_at=datetime.now(UTC),
         closed_at=None,
     )
     ok = repo.insert_reconciliation_round(round_obj)
@@ -320,7 +318,7 @@ def close_round_if_complete(
     rate = cmp_res[2] if cmp_res else 0.0
 
     terminal_state = "resolved" if rate <= tolerance else "exhausted"
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     repo.close_round(round_id, terminal_state, now)
 
     if terminal_state == "resolved":

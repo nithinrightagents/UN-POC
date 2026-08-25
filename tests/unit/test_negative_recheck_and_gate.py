@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import json
 import sqlite3
+
 import pytest
 
 from core.telemetry.cost_ledger import CostLedger
@@ -159,7 +159,6 @@ async def test_negative_delivery_gate_floors_when_multiple_pages_and_queries():
     assert prefill.confidence >= 55
 
     # T047: Negative provenance is recorded in unit context
-    unit = repo.get_unit("s-neg", q.question_id, portal.portal_id)
     review_view = build_question_review(repo, "s-neg", q.question_id, portal.portal_id, 60)
     assert review_view is not None
     assert review_view.delivered_answer is False

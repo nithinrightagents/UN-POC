@@ -14,7 +14,6 @@ from shared.state.entities import (
     VerificationOutcome,
     new_id,
 )
-from shared.state.reason_tags import ReasonTag
 
 pytestmark = pytest.mark.unit
 
@@ -239,7 +238,6 @@ def test_results_partial_and_blocked(client: TestClient, auth: dict[str, str], c
     session_id = ensure_session(repo, "part-cycle")
     q1_id = "part-cycle:1.1"
     q2_id = "part-cycle:1.2"
-    q3_id = "part-cycle:1.3"
 
     # DELIVERED unit for q1
     repo.upsert_unit(
@@ -394,7 +392,7 @@ def test_portal_and_api_share_one_dataset(client: TestClient, auth: dict[str, st
 
 
 def test_api_discrepancy_endpoint_parity_and_no_answers_exposed(client: TestClient, auth: dict[str, str], conn, settings):
-    from portal.reconciliation import render_badge, unit_reconciliation_state
+    from portal.reconciliation import unit_reconciliation_state
     repo = Repository(conn)
     cycle_id = "disc-api-cycle"
     client.post(

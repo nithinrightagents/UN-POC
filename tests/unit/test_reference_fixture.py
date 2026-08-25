@@ -29,7 +29,7 @@ def test_reference_fixture_structure():
     fixture_path = Path("data/benchmark/reference_links_us.json")
     assert fixture_path.exists(), "Reference fixture file data/benchmark/reference_links_us.json must exist"
 
-    with open(fixture_path, "r", encoding="utf-8") as f:
+    with open(fixture_path, encoding="utf-8") as f:
         data = json.load(f)
 
     assert "entries" in data
@@ -87,7 +87,7 @@ def test_reference_fixture_structure():
 def test_minimal_reference_fixture():
     min_path = Path("tests/fixtures/reference/minimal.json")
     assert min_path.exists()
-    with open(min_path, "r", encoding="utf-8") as f:
+    with open(min_path, encoding="utf-8") as f:
         data = json.load(f)
 
     assert "entries" in data

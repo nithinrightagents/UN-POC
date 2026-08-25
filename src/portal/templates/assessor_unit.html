@@ -237,95 +237,8 @@
     </details>
     {% endif %}
 
-    <!-- AI Suggestion Accelerator -->
-    {% if row.ai and row.ai.suggested %}
-    <div class="ai-suggestion-box">
-        <div class="ai-suggestion-header">
-            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                <span class="badge badge--ai">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"/></svg>
-                    AI Suggested Answer
-                </span>
-                <strong style="color: var(--color-text-primary); font-size: 0.95rem;">
-                    {{ "Yes — Feature Present" if row.ai.answer else "No — Absent / Not Found" }}
-                </strong>
-                {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") %}
-                <span class="badge badge--neutral" style="font-size: 0.75rem; background-color: var(--color-warning-subtle, #fef3c7); color: #92400e;">
-                    Settled Dispute
-                </span>
-                {% endif %}
-                {% if row.ai.supplying_source_label %}
-                <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Where the evidence link came from">
-                    <span class="badge-dot"></span>
-                    Source: {{ row.ai.supplying_source_label }}
-                </span>
-                {% endif %}
-            </div>
-            <div class="ai-confidence-meter">
-                <span>Confidence:</span>
-                <span class="badge badge--neutral">{{ row.ai.confidence }}%</span>
-                {% if row.ai.confidence_gap is not none %}
-                <span class="muted" style="font-size: 0.75rem; cursor: help;" title="Confidence delta between the two independent AI assessor agents. A small gap indicates strong agreement between both models.">(Agent Gap: {{ row.ai.confidence_gap }}%)</span>
-                {% endif %}
-            </div>
-        </div>
-        {% if row.ai.justification %}
-        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem;">
-            <strong>Rationale:</strong> {{ row.ai.justification }}
-        </p>
-        {% endif %}
-        {% if row.ai.evidence_url %}
-        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-            <strong>Evidence URL:</strong>
-            <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
-            {% if row.ai.supplying_source_label %}
-            <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Source link origin: {{ row.ai.supplying_source_label }}">
-                <span class="badge-dot"></span>
-                {{ row.ai.supplying_source_label }}
-            </span>
-            {% endif %}
-        </p>
-        {% endif %}
-        {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
-        <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background-color: rgba(0,0,0,0.03); border-radius: var(--radius-xs); font-size: 0.85rem;">
-            {% if row.ai.resolver_reasoning %}
-            <div><strong>Resolver Characterization:</strong> {{ row.ai.resolver_reasoning }}</div>
-            {% endif %}
-            {% if row.ai.unselected_position %}
-            <div class="muted" style="margin-top: 0.25rem;">
-                Alternative Position: <strong>{{ "Yes" if row.ai.unselected_position.answer else "No" }}</strong> (Confidence: {{ row.ai.unselected_position.confidence }}%) &mdash; <em>"{{ row.ai.unselected_position.justification }}"</em>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <!-- Quick 1-Click Adopt AI Suggestion Button -->
-        <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
-            <button type="button" class="btn btn-sm btn-ai-fill" 
-                    data-qid="{{ row.question.question_id }}"
-                    data-answer="{{ 'true' if row.ai.answer else 'false' }}"
-                    data-evidence="{{ row.ai.evidence_url or '' }}"
-                    data-notes="Adopted findings: {{ row.ai.justification|e if row.ai.justification else '' }}"
-                    style="font-size: 0.775rem; background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd;"
-                    title="Pre-fill form fields with AI suggested answer and evidence URL">
-                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-sparkles"/></svg>
-                <span>Use AI Suggestion</span>
-            </button>
-        </div>
-    </div>
-    {% elif row.ai and not row.ai.suggested %}
-    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; background-color: var(--color-bg-surface-subtle); border-left: 3px solid var(--color-border-subtle);">
-        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
-        <span>{{ row.ai.reason_text or "No suggestion produced by AI prefill." }}</span>
-    </div>
-    {% else %}
-    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem;">
-        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
-        <span>No automated pre-fill available for this indicator. Please evaluate directly from the portal.</span>
-    </div>
-    {% endif %}
-
     <!-- Assessor Previous Submission Summary Container -->
+
     <div id="summary_container_{{ row.question.question_id }}">
         {% if row.mine %}
         <div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">
@@ -565,31 +478,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // 1-Click AI Suggestion Fill
-    document.querySelectorAll(".btn-ai-fill").forEach(function(btn) {
-        btn.addEventListener("click", function() {
-            var qid = this.getAttribute("data-qid");
-            var answer = this.getAttribute("data-answer");
-            var evidence = this.getAttribute("data-evidence");
-            var notes = this.getAttribute("data-notes");
-
-            var answerSelect = document.getElementById("answer_" + qid);
-            var evidenceInput = document.getElementById("evidence_url_" + qid);
-            var notesTextarea = document.getElementById("notes_" + qid);
-
-            if (answerSelect) answerSelect.value = answer;
-            if (evidenceInput && evidence) evidenceInput.value = evidence;
-            if (notesTextarea && notes && !notesTextarea.value) notesTextarea.value = notes;
-
-            showToast("Populated AI suggestion for " + qid, "info");
-
-            if (answerSelect) {
-                answerSelect.focus();
-                answerSelect.style.borderColor = "var(--color-brand-primary)";
-                setTimeout(function() { answerSelect.style.borderColor = ""; }, 1200);
-            }
-        });
-    });
 
     // Filter Logic
     function applyFilters() {

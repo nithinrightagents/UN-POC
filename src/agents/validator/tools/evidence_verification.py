@@ -16,10 +16,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from core.telemetry.fetch_log import FetchLog
 from shared.state.entities import ElementReference
 from shared.tools.browser import BrowserSession
 from shared.tools.element_ref import resolve_on_page, search_by_text, text_hash
-from core.telemetry.fetch_log import FetchLog
 
 
 @dataclass

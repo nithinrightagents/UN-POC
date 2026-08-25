@@ -1,37 +1,31 @@
 """Admin surface (spec 005 Section 3.2 / 3.6).
 
 Project (cycle) creation, indicator management, unit (country/city + URL)
-assignment, triggering the live 001 assessment pipeline (link resolution ->
-N independent Vertex AI agents -> validator -> adjudicator, see
-portal/live_prefill.py) as a background run, MSQ upload, and the Senior
-Reviewer's one-click publish. CLI equivalents of most of this already existed
-in 001 (`aiq question add`, `aiq run`); this is the UI Deniz asked for on top
-of the same repository/entity layer.
+assignment, MSQ upload, and the Senior Reviewer's one-click publish.
 """
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import logging
 import pathlib
 import tempfile
+from datetime import UTC, datetime
 from urllib.parse import quote
 
 from fastapi import APIRouter, Form, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from api.finalize import final_answer, final_answer_detail, publication_readiness
+from api.finalize import final_answer_detail, publication_readiness
 from api.identity import compose_question_id
-from api.jobs import job_status, start_assessment_job
-from api.schemas import ApiError
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import _compare, compute_portal_discrepancy
+from portal.msq import ingest_msq_pdf
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
 from portal.tolerance import effective_tolerance
-from portal.msq import ingest_msq_pdf, match_msq_links
 from review.escalations import dispose_escalation, list_escalation_queue
 from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
 from shared.questionnaires.registry import list_question_sets, load_question_set
 from shared.reference.countries import list_countries
 from shared.state.entities import (
@@ -43,9 +37,7 @@ from shared.state.entities import (
     Question,
     SurveyCycle,
     TargetPortal,
-    TERMINAL_UNIT_STATES,
     ToleranceChange,
-    UnitState,
     new_id,
 )
 
@@ -60,18 +52,11 @@ def _build_unit_rows(
     questions: list[Question],
     settings: Settings,
 ) -> list[dict]:
-    from portal.reconciliation import render_badge, unit_reconciliation_state
-
     unit_rows = []
     eff_tol = effective_tolerance(r, cycle_id, settings)
     question_ids = [q.question_id for q in questions]
-    q_count = len(questions)
-    terminal = {s.value for s in TERMINAL_UNIT_STATES}
 
     for u in units:
-        unit_states = r.list_units_for_portal(session_id, u.portal_id)
-        states_seen = {row["state"] for row in unit_states}
-        assessed_count = sum(1 for row in unit_states if row["state"] in terminal)
         msq = r.find_msq_document(cycle_id, u.country_id)
         publication = r.latest_publication(cycle_id, u.portal_id)
 
@@ -89,7 +74,6 @@ def _build_unit_rows(
             r, session_id, cycle_id, u.portal_id, questions, settings,
             tolerance=eff_tol, submissions=submissions, cmp_res=cmp_res,
         )
-        st = job_status(r, session_id, cycle_id, u.portal_id, questions_total=q_count)
         readiness = publication_readiness(
             r, session_id, cycle_id, u.portal_id, questions=questions, submissions=submissions
         )
@@ -114,18 +98,12 @@ def _build_unit_rows(
 
         unit_rows.append({
             "portal": u,
-            "assessed_count": assessed_count,
-            "started_count": len(unit_states),
-            "total_questions": q_count,
-            "run_in_progress": st.state == "running" or bool(states_seen - terminal),
             "msq": msq,
             "publication": publication,
             "discrepancy": case,
             "reconciliation_state": recon_state,
             "badge_html": render_badge(recon_state),
             "readiness": readiness,
-            "job_status": st,
-            "prefill_summary": st.summary,
             "disputes_detail": disputes_detail,
         })
     return unit_rows
@@ -211,7 +189,6 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         request: Request,
         cycle_id: str,
         msq_error: str | None = None,
-        assess_error: str | None = None,
         tolerance_error: str | None = None,
     ):
         r = repo()
@@ -231,9 +208,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             {
                 "cycle": cycle, "questions": questions,
                 "units": unit_rows, "session_id": session_id,
-                "any_run_in_progress": any(row["run_in_progress"] for row in unit_rows),
                 "msq_error": msq_error,
-                "assess_error": assess_error,
                 "tolerance_error": tolerance_error,
                 "effective_tolerance_pct": eff_pct,
                 "tolerance_is_inherited": cycle.discrepancy_rate_threshold is None,
@@ -309,35 +284,6 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             r.insert_cycle(cycle)  # upsert on cycle_id primary key
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
-    @router.post("/admin/projects/{cycle_id}/units/{portal_id}/assess")
-    async def run_assessment(request: Request, cycle_id: str, portal_id: str):
-        r = repo()
-        runtime = getattr(request.app.state, "ai_runtime", None)
-        assess_error = None
-        if runtime is None:
-            assess_error = "AI runtime is not configured on this server."
-        else:
-            try:
-                start_assessment_job(
-                    r,
-                    settings,
-                    runtime,
-                    cycle_id=cycle_id,
-                    portal_id=portal_id,
-                    triggered_by="portal",
-                    actor_id="admin",
-                )
-            except ApiError as exc:
-                # Surface the precondition (e.g. "unit has no URL", "cycle
-                # has no indicators") on the redirected page instead of
-                # 500-ing or dumping JSON at the admin user.
-                assess_error = exc.message
-            except Exception as exc:
-                _log.exception("Assessment job dispatch failed: %s", exc)
-                assess_error = "Could not schedule assessment job. See server logs for details."
-        suffix = f"?assess_error={quote(assess_error)}" if assess_error else ""
-        return RedirectResponse(f"/admin/projects/{cycle_id}{suffix}", status_code=303)
-
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/msq")
     async def upload_msq_pdf(
         cycle_id: str, portal_id: str, msq_file: UploadFile = ...
@@ -360,21 +306,12 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                     msq_error = "msq_unreadable"
                 else:
                     r.insert_msq_document(cycle_id, portal.country_id, text, page_count)
-                    try:
-                        questions = r.list_questions(cycle_id)
-                        extracted = match_msq_links(text, questions)
-                        for q_id, url in extracted.items():
-                            r.insert_prefill_candidate(cycle_id, portal.country_id, q_id, url, "msq_match")
-                    except Exception:
-                        _log.warning(
-                            "MSQ link matching failed for cycle=%s country=%s; document stored, "
-                            "no per-question candidates extracted", cycle_id, portal.country_id,
-                        )
             except Exception:
                 _log.exception(
-                    "MSQ ingestion failed for cycle=%s country=%s file=%s; "
-                    "resolution will fall through to search", cycle_id, portal.country_id, msq_file.filename,
+                    "MSQ ingestion failed for cycle=%s country=%s file=%s",
+                    cycle_id, portal.country_id, msq_file.filename,
                 )
+                msq_error = "msq_error"
             finally:
                 pathlib.Path(tmp_path).unlink(missing_ok=True)
         suffix = f"?msq_error={msq_error}" if msq_error else ""
@@ -404,7 +341,6 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                     "questions": questions,
                     "units": unit_rows,
                     "session_id": session_id,
-                    "any_run_in_progress": any(row["run_in_progress"] for row in unit_rows),
                     "error_message": readiness.blocking_reason,
                     "effective_tolerance_pct": eff_pct,
                     "tolerance_is_inherited": cycle.discrepancy_rate_threshold is None,
@@ -467,7 +403,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 previous_value=prev_ratio,
                 new_value=new_ratio,
                 changed_by_actor_id=actor_id.strip() or "senior-reviewer",
-                changed_at=datetime.now(timezone.utc),
+                changed_at=datetime.now(UTC),
             )
         )
 
@@ -486,7 +422,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 if cmp_res is not None:
                     rate = cmp_res[2]
                     if rate <= new_ratio:
-                        now = datetime.now(timezone.utc)
+                        now = datetime.now(UTC)
                         r.close_round(open_rnd.round_id, "not_required", now)
                         for item in r.list_escalations(session_id, unresolved_only=True):
                             if item.portal_id == u.portal_id and item.reason == EscalationReason.PORTAL_DISCREPANCY:

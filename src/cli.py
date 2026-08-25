@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import sqlite3
-from dataclasses import replace
+from dataclasses import asdict, replace
 
 import click
 
@@ -86,8 +86,8 @@ def seed_demo_review_cmd(ctx: click.Context) -> None:
     demonstrating the review surface with no assessment pipeline running
     (US1 independent test)."""
     settings: Settings = ctx.obj["settings"]
-    from shared.persistence.schema import init_db
     from review.seed_demo import seed_demo_review
+    from shared.persistence.schema import init_db
 
     init_db(settings.database_path)
     conn = _connect(settings)
@@ -104,8 +104,8 @@ def seed_demo_cmd(ctx: click.Context) -> None:
     ingested, and a deliberately-flagged Assessor A/B discrepancy so the
     arbitration queue has a real case to show."""
     settings: Settings = ctx.obj["settings"]
-    from shared.persistence.repositories import Repository
     from portal.seed import seed_demo_data
+    from shared.persistence.repositories import Repository
 
     init_db(settings.database_path)
     conn = _connect(settings)
@@ -150,8 +150,8 @@ def audit() -> None:
 def audit_reconstruct(ctx: click.Context, session_id: str, question_id: str | None, portal_id: str | None) -> None:
     """Reconstruct full history from the session identifier alone (SC-005)."""
     settings: Settings = ctx.obj["settings"]
-    from shared.persistence.repositories import Repository
     from review.audit import reconstruct_question_history, reconstruct_session_summary
+    from shared.persistence.repositories import Repository
 
     conn = _connect(settings)
     repo = Repository(conn)
@@ -258,14 +258,14 @@ def run(
     conn = _connect(settings)
 
     from core.llm_factory import ModelProvider
-    from orchestration.scheduler import run_batch
-    from portal.common import ensure_session
-    from shared.persistence.repositories import Repository
-    from shared.tools.browser import BrowserSession
-    from shared.ratelimit.token_bucket import RateLimiter
     from core.telemetry.cost_ledger import CostLedger
     from core.telemetry.fetch_log import FetchLog
     from core.telemetry.stage_events import StageEventLog
+    from orchestration.scheduler import run_batch
+    from portal.common import ensure_session
+    from shared.persistence.repositories import Repository
+    from shared.ratelimit.token_bucket import RateLimiter
+    from shared.tools.browser import BrowserSession
 
     repo = Repository(conn)
 
@@ -349,8 +349,8 @@ def run(
 def verify_resume_cmd(ctx: click.Context, session_id: str) -> None:
     """SC-006: zero duplicated and zero lost units after a resume."""
     settings: Settings = ctx.obj["settings"]
-    from shared.persistence.repositories import Repository
     from orchestration.verify import verify_resume
+    from shared.persistence.repositories import Repository
 
     repo = Repository(_connect(settings))
     report = verify_resume(repo, session_id, settings.assessor_agent_count)
@@ -392,8 +392,8 @@ def question_add_cmd(
 ) -> None:
     """Add a custom, cycle-scoped question (FR-053, FR-054)."""
     settings: Settings = ctx.obj["settings"]
-    from shared.state.entities import AnswerType, EvidenceLocus, Question
     from shared.persistence.repositories import Repository
+    from shared.state.entities import AnswerType, EvidenceLocus, Question
 
     init_db(settings.database_path)
     conn = _connect(settings)
@@ -472,8 +472,7 @@ def benchmark_run_cmd(ctx: click.Context, set_id: str, json_dataset: str) -> Non
     repo = Repository(conn)
     store = BenchmarkStore(conn)
 
-    b_set = store.load_from_json(json_dataset, set_id, "Benchmark Set")
-    gt_list = store.list_ground_truth(set_id)
+    store.load_from_json(json_dataset, set_id, "Benchmark Set")
 
     questions = repo.list_questions("2026-cycle") or []
     portals = repo.list_portals("2026-cycle") or []
@@ -660,9 +659,10 @@ def diagnose_run_cmd(
 ) -> None:
     """Run link resolution diagnostics over reference set and output report."""
     import asyncio
-    from shared.persistence.repositories import Repository
+
     from benchmark.diagnostics import run_diagnostic
     from benchmark.report import render_diagnostic_report
+    from shared.persistence.repositories import Repository
 
     settings: Settings = ctx.obj["settings"]
     conn = _connect(settings)
@@ -699,8 +699,8 @@ def diagnose_compare_cmd(
     fail_on_regression: bool,
 ) -> None:
     """Compare two diagnostic runs and surface regressions."""
-    from shared.persistence.repositories import Repository
     from benchmark.compare import compare_diagnostic_runs
+    from shared.persistence.repositories import Repository
 
     settings: Settings = ctx.obj["settings"]
     conn = _connect(settings)

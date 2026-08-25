@@ -10,14 +10,13 @@ the same table without confusion.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorRole,
     DiscrepancyCase,
     EscalationQueueItem,
     EscalationReason,
+    HumanAssessorSubmission,
     new_id,
 )
 

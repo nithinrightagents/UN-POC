@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -54,7 +54,7 @@ def fake_runner():
 
     try:
         with patch("api.jobs.run_assessment_job", new_callable=AsyncMock) as mock_jobs_run, \
-             patch("api.runner.run_assessment_job", new_callable=AsyncMock) as mock_runner_run:
+             patch("api.runner.run_assessment_job", new_callable=AsyncMock):
             yield mock_jobs_run
     except (ImportError, AttributeError):
         yield AsyncMock()
@@ -126,7 +126,7 @@ def seeded_prefills(conn):
             for k in ("answer", "confidence", "justification", "evidence_url", "supplying_source", "reason", "terminal_state", "agreement_outcome", "confidence_gap", "resolver_decision", "unselected_position", "position_run_ids"):
                 if k not in data_dict and k in r:
                     data_dict[k] = r[k]
-            created_at = r.get("created_at", datetime.now(timezone.utc).isoformat())
+            created_at = r.get("created_at", datetime.now(UTC).isoformat())
             cursor.execute(
                 """
                 INSERT INTO prefills (prefill_id, run_id, session_id, cycle_id, question_id, portal_id, suggested, data, created_at)
@@ -143,7 +143,7 @@ def completed_unit(conn):
     def _complete(session_id: str, cycle_id: str, portal_id: str, questions: list[str], *, roles=("A", "B"), answers=None):
         cursor = conn.cursor()
         answers = answers or {}
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         for role in roles:
             for qid in questions:
                 ans = answers.get(qid, True)
@@ -189,7 +189,7 @@ def two_assessor_unit(conn):
         actor_b: str = "actor-B",
     ):
         cursor = conn.cursor()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         for qid, (a_ans, b_ans) in pair_map.items():
             if a_ans is not None:
                 sub_id_a = f"sub-{uuid.uuid4().hex[:10]}"
@@ -256,7 +256,7 @@ def open_round(conn):
         tolerance_at_open: float = 0.05,
     ) -> str:
         round_id = f"rnd-{uuid.uuid4().hex[:10]}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         data = {
             "disputed_question_ids": disputed_question_ids,
             "rate_at_open": rate_at_open,
@@ -303,7 +303,7 @@ def both_declared(conn):
         actor_b: str = "actor-B",
     ):
         cursor = conn.cursor()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         cursor.execute(
             """
             INSERT INTO assessor_completions (
