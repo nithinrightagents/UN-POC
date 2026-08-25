@@ -33,19 +33,37 @@ class PublicationReadiness:
 
 
 def publication_readiness(
-    repo: Repository, session_id: str, cycle_id: str, portal_id: str
+    repo: Repository,
+    session_id: str,
+    cycle_id: str,
+    portal_id: str,
+    questions: list[Question] | None = None,
+    submissions: list[HumanAssessorSubmission] | None = None,
 ) -> PublicationReadiness:
-    questions = repo.list_questions(cycle_id)
+    if questions is None:
+        questions = repo.list_questions(cycle_id)
     total_indicators = len(questions)
     roles_dict: dict[str, RoleCompletion] = {}
+
+    if submissions is None:
+        submissions = repo.list_human_submissions(session_id, portal_id)
+
+    subs_by_role: dict[AssessorRole, dict[str, HumanAssessorSubmission]] = {
+        AssessorRole.A: {},
+        AssessorRole.B: {},
+    }
+    for sub in submissions:
+        if sub.role in subs_by_role:
+            subs_by_role[sub.role][sub.question_id] = sub
 
     for r_str in ("A", "B"):
         role_enum = AssessorRole(r_str)
         decl = repo.latest_assessor_completion(session_id, portal_id, r_str)
         outstanding: list[str] = []
         answered_count = 0
+        role_subs = subs_by_role.get(role_enum, {})
         for q in questions:
-            sub = repo.latest_human_submission(session_id, q.question_id, portal_id, role_enum)
+            sub = role_subs.get(q.question_id)
             if sub is not None and sub.answer is not None:
                 answered_count += 1
             else:

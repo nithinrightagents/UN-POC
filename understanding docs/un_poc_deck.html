@@ -784,19 +784,19 @@
   <!-- 01 — Title & Executive Summary -->
   <section class="slide active" id="s1" aria-label="Slide 1 of 12">
     <div class="slide-head">
-      <span class="eyebrow">RightAgents Technologies · Executive Scoping Brief</span>
+      <span class="eyebrow">RightAgents Technologies · Executive Briefing</span>
       <span class="num">01 / 12</span>
     </div>
     <div class="slide-body title-slide">
       <div>
-        <h1>UN EKAP Modernization:<br>From Spreadsheets to an Assessment Engine</h1>
-        <p class="lede" style="margin-top:14px">A comprehensive architectural and scoping brief distilled from the UN DESA briefing with Deniz Susar. Outlining the 8 key operational challenges in the global e-Government assessment workflow, and detailing how our agentic platform architecture delivers an engineered resolution for each one across both national (102 indicators) and municipal (95 LOSI indicators) scopes while preserving strict UN governance.</p>
+        <h1>UN EKAP Modernization:<br>From Spreadsheets to an Intelligent Assessment Platform</h1>
+        <p class="lede" style="margin-top:14px">A clear, non-technical overview of how we are modernizing the UN e-Government assessment process. We address the 8 major operational bottlenecks in evaluating 193 UN Member States (102 national questions) and cities (95 local questions) — transforming manual spreadsheet work into a smooth, automated workflow while keeping UN experts in complete control.</p>
       </div>
       <div class="title-meta">
-        <div><span class="k">193</span><span class="v">UN Member States assessed biennially</span></div>
-        <div><span class="k">102 / 95</span><span class="v">National / LOSI Toolkit indicators</span></div>
-        <div><span class="k">2×</span><span class="v">Blind independent human assessors per unit</span></div>
-        <div><span class="k">0</span><span class="v">Manual export steps to publish to Knowledgebase</span></div>
+        <div><span class="k">193</span><span class="v">UN Member States assessed every 2 years</span></div>
+        <div><span class="k">102 / 95</span><span class="v">National / City Toolkit Questions</span></div>
+        <div><span class="k">2×</span><span class="v">Independent blind human assessors per country</span></div>
+        <div><span class="k">0</span><span class="v">Manual export steps to publish online</span></div>
       </div>
     </div>
   </section>
@@ -804,29 +804,29 @@
   <!-- 02 — Domain Primer & Scoping Boundary -->
   <section class="slide" id="s2" aria-label="Slide 2 of 12">
     <div class="slide-head">
-      <span class="eyebrow">Index Architecture &amp; Scoping Boundary</span>
+      <span class="eyebrow">Scope &amp; Boundaries</span>
       <span class="num">02 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>The Online Service Index is <em>one third</em> of the global EGDI</h2>
+      <h2>The Online Service Index is <em>one third</em> of the global e-Government Index</h2>
       <div class="stack">
         <div class="layer">
           <span class="stage">OSI · 1/3</span>
-          <p><b>Online Service Index (In Scope)</b> — Directly evaluated by UN DESA. Assesses <b>102 binary indicators</b> from the National e-Government Toolkit across national portals: institutional frameworks, service provision, content provision, technology standards, e-participation, and literacy.</p>
+          <p><b>Online Service Index (Our Focus)</b> — Evaluated directly by UN DESA. Assesses <b>102 core questions</b> across national government portals: public services, government information, digital participation, technical standards, and digital literacy.</p>
         </div>
         <div class="layer">
           <span class="stage">TII · 1/3</span>
-          <p><b>Telecommunication Infrastructure Index (External)</b> — Measures internet users, mobile broadband/cellular penetration, and service affordability. Data sourced directly from the <b>International Telecommunication Union (ITU)</b>.</p>
+          <p><b>Telecommunication Infrastructure Index (External)</b> — Measures internet access, mobile network coverage, and broadband affordability. Data comes directly from the <b>International Telecommunication Union (ITU)</b>.</p>
         </div>
         <div class="layer">
           <span class="stage">HCI · 1/3</span>
-          <p><b>Human Capital Index (External)</b> — Evaluates adult literacy rates, school enrollment, and education metrics. Sourced directly from <b>UNESCO</b> and secondary UN statistical feeds.</p>
+          <p><b>Human Capital Index (External)</b> — Evaluates adult literacy rates, school enrollment, and education levels. Sourced directly from <b>UNESCO</b> and UN statistical databases.</p>
         </div>
       </div>
       <div class="rule-note">
-        <b>Project Scoping Boundary:</b> This platform is strictly focused on modernizing the <b>OSI (102 indicators)</b> and its municipal counterpart (<b>LOSI — 95 indicators)</b>. MSQ government submissions serve strictly as link and metadata reference layers for assessors and AI pre-fill; sovereign scores are 100% determined by primary portal evaluations.</p>
+        <b>Project Focus:</b> This platform focuses exclusively on the <b>Online Service Index (102 questions)</b> and its city counterpart (<b>LOSI — 95 questions)</b>. Government questionnaires (MSQs) provide official links and reference material, while final country scores are 100% determined by evaluating live public portals.
       </div>
-      <p class="footnote"><b>City-Level Evaluation (LOSI):</b> Evaluates <b>95 binary indicators</b> from the Local e-Government Toolkit (e.g., parking ticket payments, tourist services, building permits). Disaggregated TII and HCI data does not exist globally; city rankings depend 100% on the Local Online Service Index produced by this platform.</p>
+      <p class="footnote"><b>City-Level Evaluation (LOSI):</b> Assesses <b>95 local public services</b> (e.g. municipal permits, local transport info, city taxes, waste management). City rankings depend entirely on the Local Online Service Index produced by this platform.</p>
     </div>
   </section>
 
@@ -837,61 +837,61 @@
       <span class="num">03 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Transforming UN DESA's Assessment Operations</h2>
+      <h2>Modernizing UN DESA's Assessment Operations</h2>
       <div class="matrix-wrap">
         <table class="matrix-table">
           <thead>
             <tr>
-              <th>Operational Dimension</th>
-              <th>Key Challenge (Current State)</th>
-              <th>Target Architecture (Engineered Resolution)</th>
+              <th>Key Area</th>
+              <th>Current Challenge (Today)</th>
+              <th>Target Solution (How It Works)</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="dim-name">01. Data Architecture</td>
+              <td class="dim-name">01. Data Storage</td>
               <td class="current-state">Disparate Google Sheets, folder wrangling, zero audit trail</td>
-              <td class="future-state">Unified relational schema with append-only immutable audit trail</td>
+              <td class="future-state"><b>Single Secure Database:</b> Replaces messy spreadsheets with a secure database that permanently records who made every change and when.</td>
             </tr>
             <tr>
-              <td class="dim-name">02. Publishing Flow</td>
-              <td class="current-state">Disconnected backend; manual CSV export &amp; manual homepage coding</td>
-              <td class="future-state">Direct single-source database-to-portal publishing &amp; headless REST API</td>
+              <td class="dim-name">02. Publishing to Website</td>
+              <td class="current-state">Disconnected backend; manual CSV export &amp; manual website updates</td>
+              <td class="future-state"><b>1-Click Instant Publishing:</b> Approved scores publish directly to the UN public website without manual spreadsheet exports or formatting delays.</td>
             </tr>
             <tr>
-              <td class="dim-name">03. Indicator Evolution</td>
-              <td class="current-state">~50% cycle churn breaks history; static features re-tested from scratch</td>
-              <td class="future-state">Versioned 102 National / 95 LOSI lifecycle &amp; automated "Carry-Forward" baseline engine</td>
+              <td class="dim-name">03. Question Updates</td>
+              <td class="current-state">~50% question changes break multi-year comparisons; static features re-tested from scratch</td>
+              <td class="future-state"><b>Smart Updates &amp; "Carry-Forward":</b> Easily update or retire questions, while automatically carrying over past verified answers so assessors save time.</td>
             </tr>
             <tr>
-              <td class="dim-name">04. Municipal Scaling</td>
-              <td class="current-state">LOSI locked to 1 city/country; custom regional projects rebuilt as one-offs</td>
-              <td class="future-state">Polymorphic "Unit of Study" supporting national &amp; custom multi-city projects (95 indicators)</td>
+              <td class="dim-name">04. Multi-City Studies</td>
+              <td class="current-state">City tool locked to 1 city per country; regional projects rebuilt manually</td>
+              <td class="future-state"><b>Flexible Multi-City Setup:</b> Easily evaluate whole countries or multiple cities (like the UK 8-city study) using the exact same standard platform.</td>
             </tr>
             <tr>
-              <td class="dim-name">05. Discrepancy Control</td>
-              <td class="current-state">Reviewers manually eyeball Assessor A vs B; no mathematical alert</td>
-              <td class="future-state">Automated >5% discrepancy gate with reciprocal side-by-side diff reconciliation</td>
+              <td class="dim-name">05. Disagreement Review</td>
+              <td class="current-state">Reviewers manually eyeball Assessor A vs B; no automatic warnings</td>
+              <td class="future-state"><b>Automatic Discrepancy Alerts:</b> Automatically flags when two assessors differ by over 5%, opening a side-by-side comparison screen to quickly agree.</td>
             </tr>
             <tr>
-              <td class="dim-name">06. 50-Page MSQ Data</td>
+              <td class="dim-name">06. 50-Page Government Forms</td>
               <td class="current-state">Government self-reports handed to assessors as unindexed raw PDFs</td>
-              <td class="future-state">MSQ link reference ingestion engine for AI pre-fill &amp; assessor verification</td>
+              <td class="future-state"><b>Automatic Link Extraction:</b> Automatically scans 50-page government questionnaires to surface official links so assessors never miss them.</td>
             </tr>
             <tr>
-              <td class="dim-name">07. AI Reliability</td>
-              <td class="current-state">80% accuracy in past trials; random errors &amp; failure on eID login walls</td>
-              <td class="future-state">Dual-agent pre-fill with citizen shallow findability limits &amp; ≥75% confidence gate</td>
+              <td class="dim-name">07. Reliable AI Assistance</td>
+              <td class="current-state">Past trials had 80% accuracy, random errors, and struggled on login screens</td>
+              <td class="future-state"><b>Double-Checking AI with Safety Rules:</b> Two AI assistants search only easy-to-find public pages and only suggest answers with 75%+ confidence. Humans make all final decisions.</td>
             </tr>
             <tr>
-              <td class="dim-name">08. Bureaucracy &amp; Hosting</td>
-              <td class="current-state">UN cannot pay monthly SaaS credit cards; long RFP procurement cycle</td>
-              <td class="future-state">Self-contained zero-recurring stack; turnkey consultant-led onboarding</td>
+              <td class="dim-name">08. UN Hosting &amp; Delivery</td>
+              <td class="current-state">UN cannot pay monthly SaaS credit cards; vendor procurement takes 12–24 months</td>
+              <td class="future-state"><b>Zero Subscription Fees &amp; Fast Delivery:</b> Built with open technologies that run on UN servers with zero monthly fees, delivered quickly via standard consultant contracts.</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p class="footnote"><b>Core Design Principle:</b> The system is built around <em>Human-in-the-Loop (HITL)</em> authority. AI accelerates evidence gathering; human assessors and senior reviewers retain 100% scoring authority.</p>
+      <p class="footnote"><b>Core Principle: Human Experts Stay in Charge (Human-in-the-Loop)</b> — AI acts as a fast research assistant to gather evidence; UN assessors and senior reviewers make all final scoring decisions.</p>
     </div>
   </section>
 
@@ -902,42 +902,42 @@
       <span class="num">04 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Data Fragmentation &amp; Publishing Disconnect</h2>
+      <h2>Data Organization &amp; Website Publishing</h2>
       <div class="pain-solution-pair">
         <!-- Pair 1: Spreadsheets -->
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 01 · Current Baseline</span>
-            <span class="tech-badge">Manual Process</span>
+            <span class="tech-badge">Manual Spreadsheets</span>
           </div>
           <div class="card-title">Everything Lives in Fragile Spreadsheets</div>
           <div class="card-detail">
-            Assessments across 193 nations are tracked in separate Google Sheets and folders (e.g., <code>Afghanistan 0-1</code>, <code>Afghanistan 0-2</code>). Evaluation staff must run ad-hoc scripts to compare and merge submissions.
+            Assessments across 193 nations are tracked in separate Google Sheets and folders (e.g., <code>Afghanistan 0-1</code>, <code>Afghanistan 0-2</code>). Staff must run manual steps to compare, clean, and merge files.
           </div>
           <ul class="bullet-list">
-            <li><b>Zero Data Integrity:</b> Vulnerable to accidental cell overwrites, schema mismatches, and broken formulas.</li>
-            <li><b>4–5 Cycles Trapped:</b> Historical data across prior editions lacks a standardized structure, preventing longitudinal analysis.</li>
-            <li><b>No Role Boundaries:</b> No enforced permissions between blind assessors, reviewers, and admins.</li>
+            <li><b>Risk of Accidental Errors:</b> Vulnerable to accidental cell overwrites, broken formulas, and mixed-up files.</li>
+            <li><b>Past Data Trapped:</b> 4–5 cycles of past survey data are locked in different spreadsheets, making multi-year comparisons painful.</li>
+            <li><b>No Role Separation:</b> No built-in way to keep Assessor A and B blind to each other's answers.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Relational Core</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Secure Database</span>
           </div>
-          <div class="card-title">Unified Database &amp; Workflow State Machine</div>
+          <div class="card-title">Unified Secure Database with Full History Tracking</div>
           <div class="card-detail">
-            Replaces disparate spreadsheets with a centralized, ACID-compliant database (SQLite / PostgreSQL) managing <code>Cycles</code>, <code>Projects</code>, <code>Units</code>, and <code>Assessments</code> with an append-only audit trail.
+            Replaces scattered spreadsheets with a single, secure central database that manages survey cycles, country/city targets, and assessments while permanently recording all activity.
           </div>
           <ul class="bullet-list">
-            <li><b>Strict Blindness Enforcement:</b> Query-level data isolation guarantees Assessor A and B cannot see each other's work.</li>
-            <li><b>Automated Legacy Ingestion:</b> Migration pipelines convert 4–5 cycles of historical survey sheets into structured records.</li>
-            <li><b>Audit Traceability:</b> Every answer submission, confidence score, and reviewer override is permanently logged.</li>
+            <li><b>Guaranteed Blind Scoring:</b> Built-in permissions ensure Assessor A and B cannot view each other's work until both finish.</li>
+            <li><b>Easy Past Data Import:</b> Automated tools import past survey spreadsheets into clean, standardized records.</li>
+            <li><b>Complete Activity Log:</b> Every answer, supporting link, score change, and supervisor approval is permanently tracked.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">SQLite / PostgreSQL</span>
-            <span class="tech-badge">Append-Only Schema</span>
-            <span class="tech-badge">State Machine</span>
+            <span class="tech-badge">Secure Central Database</span>
+            <span class="tech-badge">Full Activity History</span>
+            <span class="tech-badge">Role-Based Access</span>
           </div>
         </div>
 
@@ -947,34 +947,34 @@
             <span class="tag-pain">Key Challenge 02 · Current Baseline</span>
             <span class="tech-badge">System Silos</span>
           </div>
-          <div class="card-title">Frontend &amp; Backend Completely Disconnected</div>
+          <div class="card-title">Survey System &amp; Public Website Are Disconnected</div>
           <div class="card-detail">
-            The assessment intake backend (.NET Nuke / eGov Survey) and the public-facing E-Government Knowledgebase (EGKB) are separate silos that do not communicate.
+            The internal survey intake system and the public UN Knowledgebase are separate systems that do not talk to each other.
           </div>
           <ul class="bullet-list">
-            <li><b>Manual Transfer Overhead:</b> Releasing a biennial report requires manually exporting CSVs and re-importing into the CMS.</li>
-            <li><b>Static Page Maintenance:</b> Public country pages and rankings must be manually updated and hand-coded.</li>
-            <li><b>Release Bottleneck:</b> Months of delay between final assessment sign-off and public data availability.</li>
+            <li><b>Heavy Manual Transfer:</b> Releasing the report requires manually exporting CSV files and re-uploading them.</li>
+            <li><b>Time-Consuming Web Updates:</b> Country profile pages and rankings must be manually updated and checked by hand.</li>
+            <li><b>Months of Delay:</b> Long delays between final assessment sign-off and public availability on the UN website.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Direct Pipeline</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Direct Publishing</span>
           </div>
-          <div class="card-title">Single-Source Direct Publishing &amp; REST API</div>
+          <div class="card-title">Instant 1-Click Publishing to Public Website</div>
           <div class="card-detail">
-            Unified platform where Senior Reviewer approval automatically projects verified scores to the public knowledge base, instantly updating country profiles, rankings, and exports.
+            A connected platform where a supervisor's final sign-off instantly updates the public UN Knowledgebase, country profiles, and global rankings.
           </div>
           <ul class="bullet-list">
-            <li><b>Instant Knowledge Base Sync:</b> Zero manual data wrangling or spreadsheet re-formatting between assessment and release.</li>
-            <li><b>Headless Programmatic API:</b> <code>/api/v1</code> REST API exposes clean JSON endpoints for cycles, units, and scores.</li>
-            <li><b>Public Analytics Engine:</b> Dynamic leaderboards, regional filters, and time-series comparisons out of the box.</li>
+            <li><b>Instant Public Updates:</b> No manual spreadsheet formatting or copy-pasting between assessment completion and publication.</li>
+            <li><b>Direct Data Feeds:</b> Clean, standard data feeds connect seamlessly to any existing UN website or dashboard.</li>
+            <li><b>Interactive Public Dashboards:</b> Instant rankings, country profiles, and multi-year comparisons ready on day one.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">FastAPI</span>
-            <span class="tech-badge">Headless /api/v1</span>
-            <span class="tech-badge">Instant Projection</span>
+            <span class="tech-badge">1-Click Publishing</span>
+            <span class="tech-badge">Instant Website Sync</span>
+            <span class="tech-badge">Connected Data Feeds</span>
           </div>
         </div>
       </div>
@@ -988,42 +988,42 @@
       <span class="num">05 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Indicator Churn &amp; Municipal LOSI Scaling</h2>
+      <h2>Question Updates &amp; Multi-City Studies</h2>
       <div class="pain-solution-pair">
         <!-- Pair 3: Indicator Churn -->
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 03 · Current Baseline</span>
-            <span class="tech-badge">Schema Drift</span>
+            <span class="tech-badge">Changing Questions</span>
           </div>
-          <div class="card-title">~50% Indicator Churn Breaks Longitudinal Mapping</div>
+          <div class="card-title">~50% Question Changes Break Past Comparisons</div>
           <div class="card-detail">
-            Digital government evolves rapidly; ~50% of the 102 National and 95 LOSI indicators change, retire, or are introduced across editions. Mapping multi-cycle data is complex and prone to schema breakage.
+            e-Government evolves fast; about half of the 102 National and 95 City questions change, update, or retire between survey cycles, making long-term tracking difficult.
           </div>
           <ul class="bullet-list">
-            <li><b>Redundant Manual Work:</b> Assessors must re-evaluate unchanged baseline features from scratch every single cycle.</li>
-            <li><b>Broken Trend Analytics:</b> Changing question formulations make multi-year progress tracking inaccurate.</li>
-            <li><b>No Version Control:</b> Indicator definitions and scoring guidelines are scattered across ad-hoc PDFs.</li>
+            <li><b>Repetitive Work:</b> Assessors must re-test basic, unchanged government websites from scratch every single cycle.</li>
+            <li><b>Broken Multi-Year Trends:</b> When questions change wording or format, tracking progress over time becomes difficult.</li>
+            <li><b>Scattered Guidelines:</b> Question definitions and scoring rules are often spread across separate PDF documents.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Lifecycle Engine</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Smart Carry-Forward</span>
           </div>
-          <div class="card-title">Versioned Indicators &amp; "Carry-Forward" Engine</div>
+          <div class="card-title">Smart Question Updates &amp; "Carry-Forward" Past Answers</div>
           <div class="card-detail">
-            First-class indicator lifecycle management (<code>active</code>, <code>modified</code>, <code>retired</code>, <code>new</code>) paired with an automated baseline carry-forward acceleration engine across both national and municipal toolkits.
+            Clean management of survey questions (active, updated, or retired) combined with an automated feature that brings forward past verified answers for quick confirmation.
           </div>
           <ul class="bullet-list">
-            <li><b>Carry-Forward Acceleration:</b> Prior positive assessments pre-populate as verified baselines for rapid 1-click human confirmation.</li>
-            <li><b>Dynamic Admin Governance:</b> Admins can add, retire, or modify indicators per cycle without altering past survey schemas.</li>
-            <li><b>Longitudinal Lineage:</b> Preserves historical indicator mappings for reliable multi-cycle trend visualizations.</li>
+            <li><b>Carry-Forward Speed:</b> Previously confirmed positive features pre-load automatically for rapid 1-click human verification.</li>
+            <li><b>Flexible Question Updates:</b> Administrators can add, update, or retire questions per cycle without breaking past records.</li>
+            <li><b>Clear Multi-Year History:</b> Keeps track of how questions evolved over time for accurate historical trend charts.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">Schema Versioning</span>
-            <span class="tech-badge">Carry-Forward Logic</span>
-            <span class="tech-badge">Historical Mapping</span>
+            <span class="tech-badge">Question Lifecycle</span>
+            <span class="tech-badge">1-Click Carry-Forward</span>
+            <span class="tech-badge">Historical Tracking</span>
           </div>
         </div>
 
@@ -1031,36 +1031,36 @@
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 04 · Current Baseline</span>
-            <span class="tech-badge">Architecture Bottleneck</span>
+            <span class="tech-badge">City Limits</span>
           </div>
-          <div class="card-title">LOSI Built for 1 City — Demand is for Multi-City</div>
+          <div class="card-title">City Assessment Built for 1 City — Demand is for Multi-City</div>
           <div class="card-detail">
-            Standard LOSI evaluates only the most populous city per nation across <b>95 Local Toolkit indicators</b>. Member states increasingly demand assessments for multiple cities across national jurisdictions.
+            Standard city evaluations cover only the single largest city per country. Member states increasingly request evaluations for multiple cities across their region.
           </div>
           <ul class="bullet-list">
-            <li><b>One-Off Siloed Implementations:</b> Each regional request (e.g. UK 8 cities, Argentina, Greece) must be built as a standalone project with disconnected sheets.</li>
-            <li><b>Inconsistent Methodologies:</b> Ad-hoc city surveys drift from the core UN 95-indicator Toolkit standard.</li>
-            <li><b>Administrative Overhead:</b> Secretariat staff cannot scale custom regional projects without significant manual effort.</li>
+            <li><b>Isolated Regional Projects:</b> Custom city requests (e.g. UK 8 cities, Argentina, Greece) have to be built in separate, disconnected sheets.</li>
+            <li><b>Inconsistent Methods:</b> Ad-hoc city surveys risk drifting away from the core UN 95-indicator Toolkit standard.</li>
+            <li><b>Heavy Administrative Burden:</b> UN staff spend excessive time managing custom city projects manually.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Polymorphic Units</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Multi-City Ready</span>
           </div>
-          <div class="card-title">Polymorphic "Unit of Study" &amp; Project Spawner</div>
+          <div class="card-title">Flexible Country &amp; Multi-City Project Builder</div>
           <div class="card-detail">
-            Flexible domain model abstracting evaluation targets into "Units of Study" (National Portals, Capital Cities, Regional Municipalities) running on a single unified platform.
+            A versatile system designed to assess both national portals (102 questions) and multiple cities (95 questions) within the exact same platform.
           </div>
           <ul class="bullet-list">
-            <li><b>Self-Service Project Templates:</b> Admins instantiate custom initiatives (e.g. <code>LOSI UK</code> with 8 cities) in seconds with the modular 95-indicator municipal package.</li>
-            <li><b>Shared Assessment Mechanics:</b> Custom municipal projects reuse the exact same AI pre-fill, discrepancy, and review pipelines.</li>
-            <li><b>Unified Knowledgebase:</b> City profiles (95 indicators) and national rankings (102 indicators) sit side-by-side in the same database.</li>
+            <li><b>Instant Project Creation:</b> Administrators can set up custom regional projects (e.g. 8 UK cities) in seconds with standard templates.</li>
+            <li><b>Shared Quality Tools:</b> City assessments use the exact same AI research, discrepancy checks, and review tools as national surveys.</li>
+            <li><b>Unified Knowledgebase:</b> City profiles and national rankings sit together in one organized database.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">Multi-Tenant Projects</span>
-            <span class="tech-badge">95 LOSI Indicators</span>
-            <span class="tech-badge">LOSI City Toolkit</span>
+            <span class="tech-badge">Multi-City Ready</span>
+            <span class="tech-badge">95-Question City Toolkit</span>
+            <span class="tech-badge">Standardized Methods</span>
           </div>
         </div>
       </div>
@@ -1074,42 +1074,42 @@
       <span class="num">06 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Discrepancy Review &amp; MSQ Context Resolution</h2>
+      <h2>Quality Control &amp; Government Form Extraction</h2>
       <div class="pain-solution-pair">
         <!-- Pair 5: Discrepancy Control -->
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 05 · Current Baseline</span>
-            <span class="tech-badge">Subjective Review</span>
+            <span class="tech-badge">Manual Review</span>
           </div>
-          <div class="card-title">Discrepancies Resolved Manually by Eyeballing</div>
+          <div class="card-title">Disagreements Spotted Manually by Eyeballing Spreadsheets</div>
           <div class="card-detail">
-            Reviewers must manually eyeball Assessor A vs. B answers line-by-line across 102 National / 95 LOSI questions across all units. No automated mathematical threshold or structured escalation exists.
+            Supervisors must manually compare Assessor A and B answers line-by-line across all 102 questions for every country. There is no automated warning when scores diverge.
           </div>
           <ul class="bullet-list">
-            <li><b>Reviewer Fatigue:</b> Staff must inspect all units equally, even when assessors achieved 100% consensus.</li>
-            <li><b>Arbitration Gaps:</b> Lack of formal reconciliation protocols leads to subjective score settling.</li>
-            <li><b>No Discrepancy Alerting:</b> Wide assessor divergence can slip through manual checks without system warnings.</li>
+            <li><b>Reviewer Fatigue:</b> Supervisors must check every question line-by-line, even when both assessors agreed 100%.</li>
+            <li><b>No Clear Dispute Process:</b> Lack of a structured comparison screen makes resolving differences slow and subjective.</li>
+            <li><b>Risk of Missed Conflicts:</b> Large score differences can slip through manual checks without automated warnings.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">In-Platform Reconciliation</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Automatic Flagging</span>
           </div>
-          <div class="card-title">Automated Discrepancy Engine &amp; Dual-Context Joint Reconciliation</div>
+          <div class="card-title">Automatic Discrepancy Alerts &amp; Side-by-Side Resolution</div>
           <div class="card-detail">
-            When divergence exceeds the 5% threshold, surveys return to both assessors in a comparative reconciliation workspace, showing each what they and their peer entered to submit a unified answer.
+            When two assessors differ by more than 5%, the system automatically flags the unit and brings both assessors into a clear side-by-side comparison screen to agree on the right answer.
           </div>
           <ul class="bullet-list">
-            <li><b>Reciprocal Side-by-Side Diff:</b> Assessors see their own initial answer/URL side-by-side with their peer's submission for conflicting indicators.</li>
-            <li><b>Isolated Conflict View:</b> Consensual indicators remain locked; assessors focus exclusively on negotiating and resolving disputed features.</li>
-            <li><b>Unified Joint Submission:</b> Assessors agree on a single final score with logged justification, automatically routing clean data to Senior Reviewer sign-off.</li>
+            <li><b>Side-by-Side Comparison:</b> Assessors clearly see their own answer and link next to their peer's submission for conflicting questions.</li>
+            <li><b>Focus on Differences Only:</b> Agreed questions remain locked; assessors focus their time only on disputed items.</li>
+            <li><b>One Agreed Submission:</b> Assessors submit a single unified answer with their reasoning, ready for supervisor sign-off.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">5% Threshold Alert</span>
-            <span class="tech-badge">Reciprocal Diff View</span>
-            <span class="tech-badge">Unified Consensus Flow</span>
+            <span class="tech-badge">5% Disagreement Alert</span>
+            <span class="tech-badge">Side-by-Side Screen</span>
+            <span class="tech-badge">Consensus Workflow</span>
           </div>
         </div>
 
@@ -1117,36 +1117,36 @@
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 06 · Current Baseline</span>
-            <span class="tech-badge">Information Silo</span>
+            <span class="tech-badge">Trapped PDFs</span>
           </div>
-          <div class="card-title">50+ Page MSQ Submissions Go Unindexed</div>
+          <div class="card-title">50+ Page Government Questionnaires Go Unindexed</div>
           <div class="card-detail">
-            Member states submit 50+ page Member State Questionnaires (MSQs) declaring official sub-portals and ministerial links. Secretariat lacks resources to parse these, handing them to assessors as raw PDFs.
+            Governments submit 50+ page self-reports (MSQs) listing official portals and links. The UN lacks the staff to manually index these, so they are given to assessors as raw PDFs.
           </div>
           <ul class="bullet-list">
-            <li><b>Overlooked Government URLs:</b> Assessors miss official ministerial links buried in 50-page PDFs and falsely score <code>0</code>.</li>
-            <li><b>Search Inefficiencies:</b> Assessors spend hours searching search engines for links the government already declared.</li>
-            <li><b>Link Siloing:</b> Rich sub-portal directories declared by authorities remain locked inside unstructured PDFs.</li>
+            <li><b>Missed Official Links:</b> Assessors miss ministry links buried in long PDFs and mistakenly give a score of 0.</li>
+            <li><b>Wasted Research Time:</b> Assessors spend hours searching the web for links the government already provided.</li>
+            <li><b>Trapped Information:</b> Useful government sub-portals remain locked inside unstructured PDF files.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Link Reference Layer</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Smart PDF Extractor</span>
           </div>
-          <div class="card-title">MSQ Ingestion Engine for Reference &amp; Pre-Fill</div>
+          <div class="card-title">Automatic Link Extraction from Government Questionnaires</div>
           <div class="card-detail">
-            Automated ingestion of MSQ submissions extracts declared official sub-portals (e-services, open data, e-participation, procurement) into a structured link reference layer for AI pre-fill and assessors.
+            The system automatically scans 50+ page government forms (MSQs) and organizes all official links (e-services, open data, permits, tax) into an easy reference panel for AI and assessors.
           </div>
           <ul class="bullet-list">
-            <li><b>3-Tier Link Resolution:</b> Resolves URLs systematically: (1) Historical KB → (2) MSQ Declared Official URLs → (3) Search discovery.</li>
-            <li><b>Link Reference Only (Zero Score Bias):</b> Provides official URLs directly to AI agents and assessors without letting self-reports directly award scores.</li>
-            <li><b>Zero Blind Spots:</b> Guarantees evaluation against the exact official sub-portals nominated by national governments.</li>
+            <li><b>3-Step Link Lookup:</b> Checks: (1) Past verified links → (2) Official links submitted by government → (3) Public web search.</li>
+            <li><b>Reference Only (No Biased Scores):</b> Supplies official URLs for quick checking without letting self-reports automatically award points.</li>
+            <li><b>Zero Blind Spots:</b> Ensures assessors evaluate the exact official portals provided by national authorities.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">MSQ Link Parser</span>
-            <span class="tech-badge">Link Resolution</span>
-            <span class="tech-badge">Reference Layer</span>
+            <span class="tech-badge">Automatic PDF Reader</span>
+            <span class="tech-badge">Official Link Panel</span>
+            <span class="tech-badge">Unbiased Reference</span>
           </div>
         </div>
       </div>
@@ -1160,42 +1160,42 @@
       <span class="num">07 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>AI Reliability &amp; Institutional Governance</h2>
+      <h2>Reliable AI &amp; UN Operational Governance</h2>
       <div class="pain-solution-pair">
         <!-- Pair 7: AI Reliability -->
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 07 · Current Baseline</span>
-            <span class="tech-badge">Unpredictable AI</span>
+            <span class="tech-badge">Unreliable AI</span>
           </div>
-          <div class="card-title">Past AI Trials: ~80% Accuracy &amp; Deep-Link Drift</div>
+          <div class="card-title">Past AI Trials: ~80% Accuracy &amp; Deep-Link Errors</div>
           <div class="card-detail">
-            Previous AI scraping trials had an ~80% accuracy rate with unpredictable error drift across countries. Autonomous crawlers frequently scraped deep, hidden sub-links that ordinary citizens cannot realistically navigate to.
+            Previous AI scraping tests had an ~80% accuracy rate with unpredictable errors. Automated crawlers frequently found obscure, deeply buried links that ordinary citizens cannot realistically find.
           </div>
           <ul class="bullet-list">
-            <li><b>Diplomatic &amp; Credibility Risk:</b> Unverified AI hallucinations or scoring errors on sovereign nations damage UN authority.</li>
-            <li><b>Deep Scraping False Positives:</b> Scrapers uncovering obscure, buried URLs violate the core citizen "easy findability" rule.</li>
-            <li><b>Login Barriers:</b> National portals behind eID systems (e.g. Turkey e-Devlet) block automated crawlers.</li>
+            <li><b>Diplomatic Risk:</b> Unverified AI errors or false scores on sovereign nations create credibility risks for the UN.</li>
+            <li><b>Too-Deep Web Scraping:</b> Scrapers finding hidden, buried links violate the rule that services must be easy for citizens to find.</li>
+            <li><b>Login Barriers:</b> National digital ID login walls (like Turkey e-Devlet) block automated crawlers.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Dual-Agent HITL</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">Controlled AI</span>
           </div>
-          <div class="card-title">Dual-Agent Pre-Fill &amp; Shallow Traversal Rule</div>
+          <div class="card-title">Double-Checking AI Assistants with Strict Citizen Rules</div>
           <div class="card-detail">
-            AI functions strictly as an evidence pre-fill accelerator with shallow traversal limits that simulate citizen findability. Humans retain 100% scoring authority.
+            AI operates strictly as a research assistant with citizen-level search limits. Two separate AI models verify every finding, and human experts make 100% of final scoring decisions.
           </div>
           <ul class="bullet-list">
-            <li><b>Shallow Citizen Traversal:</b> Crawler avoids deep link exploration, scoring <code>0</code> if features are not accessible within standard citizen navigation paths.</li>
-            <li><b>Dual-Agent Verification:</b> Two independent Gemini models (Literal Reader vs Inferential Evaluator) must cross-verify findings.</li>
-            <li><b>Strict Confidence Gate (≥75%):</b> Results with &lt;75% confidence, conflicting evidence, or login walls automatically escalate to human assessors.</li>
+            <li><b>Citizen-Level Navigation:</b> AI searches only easy-to-find public pages — if a citizen cannot find a service within a few clicks, it cannot score positive.</li>
+            <li><b>Two AI Assistants Cross-Check:</b> Two separate AI models independently verify each question to eliminate errors.</li>
+            <li><b>Strict 75%+ Confidence Gate:</b> Any uncertain finding (&lt;75%), conflicting evidence, or login-gated portal immediately escalates to human assessors.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">Shallow Findability</span>
-            <span class="tech-badge">Gemini Dual-Agent</span>
-            <span class="tech-badge">≥75% Confidence Gate</span>
+            <span class="tech-badge">Citizen Findability</span>
+            <span class="tech-badge">Dual AI Cross-Check</span>
+            <span class="tech-badge">75% Confidence Filter</span>
           </div>
         </div>
 
@@ -1203,36 +1203,36 @@
         <div class="pain-card">
           <div class="card-header-line">
             <span class="tag-pain">Key Challenge 08 · Institutional Constraint</span>
-            <span class="tech-badge">Procurement Roadblocks</span>
+            <span class="tech-badge">Procurement Delays</span>
           </div>
-          <div class="card-title">Institutional Hosting &amp; SaaS Procurement Rules</div>
+          <div class="card-title">Strict UN Procurement Rules &amp; No Monthly SaaS Cards</div>
           <div class="card-detail">
-            Institutional restrictions on recurring credit card micro-transactions and rigid cloud procurement workflows prevent adoption of standard commercial SaaS tools. Central vendor procurement cycles are lengthy (12–24+ months).
+            UN DESA cannot pay recurring monthly software subscriptions via credit cards. Traditional IT vendor procurement can take 12 to 24 months before work can begin.
           </div>
           <ul class="bullet-list">
-            <li><b>No Monthly SaaS Billing:</b> Systems requiring monthly recurring card charges cannot be adopted by UN DESA.</li>
-            <li><b>Strict Data Residency:</b> UN sovereign data rules require enterprise-controlled hosting (.NET/Drupal/UN Cloud).</li>
-            <li><b>Procurement Inertia:</b> Institutional vendor bidding prevents programme leadership from engaging trusted technical partners directly.</li>
+            <li><b>No Monthly Credit Card Billing:</b> UN DESA cannot adopt tools requiring recurring credit card payments.</li>
+            <li><b>Strict UN Data Rules:</b> UN data must be securely hosted on UN-controlled servers or approved enterprise clouds.</li>
+            <li><b>Lengthy Vendor Bidding:</b> Traditional vendor bidding processes create long delays before project kickoff.</li>
           </ul>
         </div>
         <div class="solution-card">
           <div class="card-header-line">
-            <span class="tag-solution">Engineered Resolution · Implemented</span>
-            <span class="tech-badge">Turnkey Delivery</span>
+            <span class="tag-solution">The Modern Solution · How It Works</span>
+            <span class="tech-badge">UN Ready</span>
           </div>
-          <div class="card-title">Self-Contained Stack &amp; Consultant Delivery</div>
+          <div class="card-title">Zero Subscription Fees &amp; Fast UN-Ready Delivery</div>
           <div class="card-detail">
-            Portable, zero-recurring-cost architecture engineered to run on UN enterprise infrastructure or long-term prepaid enterprise cloud instances.
+            Built entirely with standard open technologies that run on UN infrastructure with zero monthly software fees, structured for fast delivery within 60 days via standard consultant agreements.
           </div>
           <ul class="bullet-list">
-            <li><b>Zero Monthly Dependencies:</b> Built entirely with open-source technologies (Python, FastAPI, SQLite, Playwright) with zero subscription fees.</li>
-            <li><b>Consultant-Led Engagement:</b> Structured as individual technical consultancy deliverables, enabling rapid kickoff within 60 days.</li>
-            <li><b>Enterprise Security Compliance:</b> Application Default Credentials (ADC), private data isolation, and containerized deployment.</li>
+            <li><b>Zero Monthly Software Fees:</b> Built with open technologies (Python, SQLite/PostgreSQL) with no recurring license costs.</li>
+            <li><b>Fast 60-Day Consultant Onboarding:</b> Packaged as standard technical consultancy deliverables to bypass long vendor RFP cycles.</li>
+            <li><b>Enterprise UN Security:</b> Full support for enterprise cloud security, strict privacy boundaries, and containerized deployment.</li>
           </ul>
           <div class="tech-badges">
-            <span class="tech-badge">Zero Recurring Cost</span>
-            <span class="tech-badge">UN Infra Ready</span>
-            <span class="tech-badge">Consultant Delivery</span>
+            <span class="tech-badge">Zero Recurring Fees</span>
+            <span class="tech-badge">UN Infrastructure Ready</span>
+            <span class="tech-badge">Fast 60-Day Delivery</span>
           </div>
         </div>
       </div>
@@ -1251,82 +1251,82 @@
         <div class="flow-step admin">
           <span class="who">Stage 01 · Admin</span>
           <b>Project Setup</b>
-          <span>Define cycle, select OSI/LOSI, configure 102/95 indicators, and assign assessor roster</span>
+          <span>Set up survey year, choose National (102 items) or City (95 items), and assign assessor teams</span>
         </div>
         <div class="flow-step ai">
           <span class="who">Stage 02 · System</span>
-          <b>MSQ Link Ingestion</b>
-          <span>Ingest 50+ page MSQs to extract declared official sub-portal URLs for link reference</span>
+          <b>Government Form Reading</b>
+          <span>Automatically extract official links from 50+ page government forms into a reference panel</span>
         </div>
         <div class="flow-step ai">
           <span class="who">Stage 03 · AI Engine</span>
-          <b>AI Shallow Pre-Fill</b>
-          <span>Dual agents evaluate portals with shallow citizen navigation; generate evidence with ≥75% confidence</span>
+          <b>Double-Check AI Search</b>
+          <span>Two AI assistants research portals using citizen search rules; flag verified items with ≥75% confidence</span>
         </div>
         <div class="flow-step human">
           <span class="who">Stage 04 · Assessors</span>
-          <b>Blind A/B Intake</b>
-          <span>Assessors A &amp; B evaluate independently; submit 100% blind answers</span>
+          <b>Blind Double-Entry</b>
+          <span>Assessor A &amp; Assessor B evaluate independently without seeing each other's answers</span>
         </div>
         <div class="flow-step gate">
           <span class="who">Stage 05 · Gate</span>
           <b>Discrepancy Check</b>
-          <span>Automated check: divergence >5% flags unit and triggers in-platform dual-context diff workspace</span>
+          <span>System automatically flags any country or city where assessors differ by more than 5%</span>
         </div>
         <div class="flow-step human">
           <span class="who">Stage 06 · Assessors</span>
-          <b>Joint Reconciliation</b>
-          <span>Assessors view own vs peer submissions side-by-side, resolve conflicts, and submit 1 unified answer</span>
+          <b>Side-by-Side Resolution</b>
+          <span>Assessors compare differing answers on a split screen, agree, and submit 1 final answer</span>
         </div>
         <div class="flow-step human">
           <span class="who">Stage 07 · Reviewer</span>
           <b>Senior Sign-Off</b>
-          <span>Authoritative verification, dispute resolution, and publication authorization</span>
+          <span>Senior UN supervisor reviews evidence, resolves remaining questions, and approves scores</span>
         </div>
         <div class="flow-step pub">
           <span class="who">Stage 08 · Public</span>
-          <b>Instant Publish</b>
-          <span>Direct projection to EGKB; live country profiles &amp; leaderboards update instantly</span>
+          <b>Instant Web Publish</b>
+          <span>Approved scores publish instantly to the UN Knowledgebase with live rankings and profiles</span>
         </div>
       </div>
       <div class="rule-note">
-        <b>Strict Governance:</b> Human assessors are never bypassed. The AI serves as an evidence accelerator; every single published score is backed by verified human sign-off and an immutable audit log.
+        <b>Strict Governance Guarantee:</b> Human experts are always in control. AI acts only as a research assistant; every published score is backed by verified human approval and a permanent audit trail.
       </div>
-      <p class="footnote"><b>Discrepancy Threshold:</b> Configurable by project (default: 5% differing answer rate). Uncontested portals pass smoothly to reviewer verification.</p>
+      <p class="footnote"><b>Discrepancy Threshold:</b> Configurable per project (default: 5% differing answers). Units where assessors agree 100% pass smoothly to senior review.</p>
     </div>
   </section>
 
   <!-- 09 — The AI Pre-Fill & Verification Engine Deep Dive -->
   <section class="slide" id="s9" aria-label="Slide 9 of 12">
     <div class="slide-head">
-      <span class="eyebrow">AI Pre-Fill Architecture</span>
+      <span class="eyebrow">AI Assistant Architecture</span>
       <span class="num">09 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Inside the Decoupled AI Pre-Fill Pipeline</h2>
+      <h2>Inside the AI Assistant &amp; Verification Engine</h2>
       <div class="stack">
         <div class="layer">
-          <span class="stage">01. Resolve</span>
-          <p><b>3-Tier Link Resolution</b> — Resolves target URLs systematically: (1) Historical KB links → (2) MSQ declared government sub-portals for reference → (3) Search engine discovery.</p>
+          <span class="stage">01. Find Links</span>
+          <p><b>3-Tier Link Lookup</b> — Gathers target website links in order: (1) Past verified links → (2) Official links submitted by governments in MSQs → (3) Public web search.</p>
         </div>
         <div class="layer">
-          <span class="stage">02. Traverse</span>
-          <p><b>Shallow Citizen Navigation &amp; Crawling</b> — Playwright limits crawl depth to citizen findability paths (first-page search discovery &amp; top-level menus), strictly avoiding deep-link traversal to adhere to scoring rules.</p>
+          <span class="stage">02. Search</span>
+          <p><b>Search Like a Citizen (Shallow Navigation)</b> — Searches only top-level pages and main menus — strictly avoiding deep hidden links so ratings reflect true public accessibility.</p>
         </div>
         <div class="layer">
-          <span class="stage">03. Evaluate</span>
-          <p><b>Dual Independent AI Agents</b> — Two Gemini models running on Vertex AI evaluate each indicator (102 National / 95 LOSI): <em>Agent 1 (Literal Reader)</em> vs <em>Agent 2 (Inferential Context Reader)</em> with zero cross-agent context sharing.</p>
+          <span class="stage">03. Double-Check</span>
+          <p><b>Two AI Assistants Review Independently</b> — Two distinct AI models review each question separately (one checks exact text, one checks context) with no shared bias.</p>
         </div>
         <div class="layer">
           <span class="stage">04. Validate</span>
-          <p><b>Live Citation Verification Gate</b> — A dedicated validator model re-checks every extracted snippet and URL citation against the live rendered HTML to eradicate hallucinations.</p>
+          <p><b>Live Citation Verification</b> — A dedicated verification check tests every extracted text snippet and link against the real live webpage to prevent hallucinations.</p>
         </div>
         <div class="layer">
-          <span class="stage">05. Gate &amp; Escalate</span>
-          <p><b>Confidence &amp; HITL Escalation Gate</b> — Results achieving <b>≥75% confidence</b> with dual-agent agreement are presented as pre-fill suggestions. Items &lt;75%, disputed claims, or login-gated services escalate directly to human assessors.</p>
+          <span class="stage">05. Escalate</span>
+          <p><b>High-Confidence Filter (≥75%) &amp; Human Escalation</b> — Only suggestions with ≥75% confidence and AI agreement are shown as drafts; anything uncertain or behind logins is sent directly to human experts.</p>
         </div>
       </div>
-      <p class="footnote"><b>Key Safety Guarantee:</b> AI suggestions are never published autonomously. Assessors can accept, modify, or completely override suggestions with 1-click simplicity.</p>
+      <p class="footnote"><b>Safety Guarantee:</b> AI suggestions are never published automatically. Assessors can accept, modify, or completely override suggestions with 1-click simplicity.</p>
     </div>
   </section>
 
@@ -1337,101 +1337,101 @@
       <span class="num">10 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Work in Progress: <em>What Is Aimed to Run in the UN-POC</em></h2>
+      <h2>Proof of Concept Scope: <em>What the Platform Delivers</em></h2>
       <div class="facts">
         <div class="fact">
           <span class="n">102+95</span>
           <div>
-            <b>National &amp; LOSI Toolkits</b>
-            <span>102 National Toolkit indicators + 95 Local E-Gov Toolkit indicators across all core modules</span>
+            <b>National &amp; City Toolkits</b>
+            <span>102 National e-Gov indicators + 95 Local City indicators across all core modules</span>
           </div>
         </div>
         <div class="fact">
           <span class="n">5+3</span>
           <div>
-            <b>Target PoC Assessment Units</b>
-            <span>5 Regional Archetypes (USA, France, Brazil, China, Nigeria) + 3 LOSI UK Cities (London, Manchester, Edinburgh)</span>
+            <b>Target PoC Testing Units</b>
+            <span>5 Diverse Global Nations (USA, France, Brazil, China, Nigeria) + 3 UK Cities (London, Manchester, Edinburgh)</span>
           </div>
         </div>
         <div class="fact">
           <span class="n">2×</span>
           <div>
-            <b>Enforced Blind Intake</b>
-            <span>Assessor A &amp; B blindness enforced at database query level, not just in UI presentation</span>
+            <b>Enforced Blind Evaluation</b>
+            <span>Assessor A &amp; B blindness strictly enforced in the database, not just hidden on screen</span>
           </div>
         </div>
         <div class="fact">
           <span class="n">5%</span>
           <div>
-            <b>Configurable Discrepancy Gate</b>
-            <span>Real-time divergence alerting with reciprocal diff context and unified consensus routing</span>
+            <b>Automated Discrepancy Alert</b>
+            <span>Real-time alert whenever assessors differ by >5%, opening side-by-side agreement screen</span>
           </div>
         </div>
         <div class="fact">
           <span class="n">13</span>
           <div>
             <b>Portal Languages Handled</b>
-            <span>EN, ES, FR, DE, PT, IT, NL, RU, ZH, JA, KO, AR, HI — multilingual crawler with auto-detection</span>
+            <span>English, Spanish, French, German, Portuguese, Italian, Dutch, Russian, Chinese, Japanese, Korean, Arabic, Hindi</span>
           </div>
         </div>
         <div class="fact">
-          <span class="n">REST</span>
+          <span class="n">Direct</span>
           <div>
-            <b>Headless /api/v1 Endpoints</b>
-            <span>Full programmatic API for cycles, questions, units, AI triggers, and publication</span>
+            <b>Connected Data Feeds</b>
+            <span>Full data connection for cycles, questionnaires, AI triggers, and instant web publishing</span>
           </div>
         </div>
       </div>
       <div class="rule-note">
-        <b>Standardized &amp; Highly Portable Target Stack:</b> Python, FastAPI, SQLite / PostgreSQL, Playwright, Vertex AI. Engineered for zero vendor lock-in and seamless deployment inside UN enterprise environments.</p>
+        <b>Standard, Portable &amp; Independent Stack:</b> Built with standard Python, secure databases, and modern web engines. Engineered for zero vendor lock-in and seamless deployment inside UN enterprise environments.
       </div>
-      <p class="footnote"><b>Benchmark Alignment &amp; Target Calibration:</b> Calibrating against published UN 2024 OSI benchmarks (e.g., Iceland 0.90 reference score, USA.gov, Denmark Borger.dk) to optimize AI pre-fill precision.</p>
+      <p class="footnote"><b>Real-World Accuracy Benchmark:</b> Calibrating against published UN 2024 benchmarks (e.g., Iceland 0.90 reference score, USA.gov, Denmark Borger.dk) to ensure maximum AI precision.</p>
     </div>
   </section>
 
   <!-- 11 — Headless FastAPI Architecture & REST Endpoints -->
   <section class="slide" id="s11" aria-label="Slide 11 of 12">
     <div class="slide-head">
-      <span class="eyebrow">Headless REST Architecture · /api/v1 Interface</span>
+      <span class="eyebrow">System Architecture · Core Platform Capabilities</span>
       <span class="num">11 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Headless FastAPI Architecture: <em>End-to-End REST Endpoints</em></h2>
+      <h2>System Architecture: <em>Core Platform Capabilities</em></h2>
       <div class="api-grid">
         <!-- Cluster 1: Cycle & Indicator Orchestration -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">01. Cycles &amp; Study Units</span>
-            <span class="tech-badge">cycles.py · reference.py</span>
+            <span class="api-card-title">01. Cycles &amp; Survey Setup</span>
+            <span class="tech-badge">Survey Setup</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">/api/v1/cycles</span>
+                <span class="badge-method badge-post">SETUP</span>
+                <span class="api-path">Create Assessment Cycle</span>
               </div>
-              <div class="api-desc">Create National OSI (102 items) or LOSI (95 items) assessment cycle</div>
+              <div class="api-desc">Create National OSI (102 items) or City LOSI (95 items) assessment cycle</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">/api/v1/cycles/{id}/units</span>
+                <span class="badge-method badge-post">SETUP</span>
+                <span class="api-path">Register Countries &amp; Cities</span>
               </div>
-              <div class="api-desc">Register polymorphic sovereign states or multi-city study units</div>
+              <div class="api-desc">Add sovereign nations or custom multi-city study groups</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">/api/v1/cycles/{id}/questions</span>
+                <span class="badge-method badge-post">SETUP</span>
+                <span class="api-path">Question Management</span>
               </div>
-              <div class="api-desc">Version &amp; configure indicator sets (active, modified, retired)</div>
+              <div class="api-desc">Add, modify, or retire indicators per survey cycle</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">/api/v1/reference/countries</span>
+                <span class="badge-method badge-get">VIEW</span>
+                <span class="api-path">Country Reference Directory</span>
               </div>
-              <div class="api-desc">Query standardized 193 UN Member States reference list &amp; portals</div>
+              <div class="api-desc">Access standardized 193 UN Member States list &amp; official portals</div>
             </div>
           </div>
         </div>
@@ -1439,37 +1439,37 @@
         <!-- Cluster 2: MSQ Ingestion & AI Pre-Fill -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">02. Ingestion &amp; AI Pre-Fill</span>
-            <span class="tech-badge">msq.py · assessments.py</span>
+            <span class="api-card-title">02. Document Reading &amp; AI Drafts</span>
+            <span class="tech-badge">AI Assistant</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../units/{uid}/msq</span>
+                <span class="badge-method badge-post">READ</span>
+                <span class="api-path">Scan Government Questionnaires</span>
               </div>
-              <div class="api-desc">Ingest 50+ page MSQ PDFs into structured link reference layer</div>
+              <div class="api-desc">Extract official sub-portal links from 50+ page PDFs into reference layer</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../units/{uid}/assessment</span>
+                <span class="badge-method badge-post">RUN</span>
+                <span class="api-path">Double-Check AI Search</span>
               </div>
-              <div class="api-desc">Trigger async shallow crawler &amp; dual-agent evaluation (202 Accepted)</div>
+              <div class="api-desc">Run citizen-style web discovery with dual-agent verification</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../assessments/batch</span>
+                <span class="badge-method badge-post">RUN</span>
+                <span class="api-path">Batch Country Processing</span>
               </div>
-              <div class="api-desc">Parallel batch unit triggers with live queue status polling</div>
+              <div class="api-desc">Trigger AI research across multiple countries simultaneously</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">.../units/{uid}/results</span>
+                <span class="badge-method badge-get">VIEW</span>
+                <span class="api-path">Evidence &amp; Confidence View</span>
               </div>
-              <div class="api-desc">Retrieve verified citations, HTML quotes &amp; &ge;75% confidence gate</div>
+              <div class="api-desc">Retrieve verified text quotes, live links &amp; &ge;75% confidence score</div>
             </div>
           </div>
         </div>
@@ -1477,37 +1477,37 @@
         <!-- Cluster 3: Blind Intake & Discrepancy Control -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">03. Blind Intake &amp; Diff Gate</span>
-            <span class="tech-badge">human.py · discrepancy.py</span>
+            <span class="api-card-title">03. Blind Double-Entry &amp; Discrepancy Alerts</span>
+            <span class="tech-badge">Quality Checks</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../units/{uid}/human-assessment</span>
+                <span class="badge-method badge-post">SUBMIT</span>
+                <span class="api-path">Independent Blind Scoring</span>
               </div>
-              <div class="api-desc">Submit 100% blind Assessor A or B scoring with query-level isolation</div>
+              <div class="api-desc">Submit Assessor A or B scoring with complete privacy between assessors</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">.../cycles/{id}/discrepancies</span>
+                <span class="badge-method badge-get">ALERT</span>
+                <span class="api-path">Automatic Divergence Warnings</span>
               </div>
-              <div class="api-desc">Query automated &gt;5% divergence alerts &amp; conflicting indicators</div>
+              <div class="api-desc">Flag countries or cities where assessors differ by &gt;5%</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../reconciliation/start</span>
+                <span class="badge-method badge-post">RESOLVE</span>
+                <span class="api-path">Side-by-Side Resolution Workspace</span>
               </div>
-              <div class="api-desc">Initiate dual-context reciprocal side-by-side diff workspace</div>
+              <div class="api-desc">Open split-screen showing both assessors' answers &amp; supporting links</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../reconciliation/submit</span>
+                <span class="badge-method badge-post">SUBMIT</span>
+                <span class="api-path">Joint Consensus Submission</span>
               </div>
-              <div class="api-desc">Submit unified joint consensus answer with audit justification</div>
+              <div class="api-desc">Submit single agreed answer with clear explanatory notes</div>
             </div>
           </div>
         </div>
@@ -1515,37 +1515,37 @@
         <!-- Cluster 4: Senior Review & Direct EGKB Publishing -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">04. Review &amp; EGKB Publishing</span>
-            <span class="tech-badge">review.py · publication.py</span>
+            <span class="api-card-title">04. Senior Review &amp; Web Publishing</span>
+            <span class="tech-badge">Publishing</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">.../review/summary</span>
+                <span class="badge-method badge-get">VIEW</span>
+                <span class="api-path">Supervisor Progress Dashboard</span>
               </div>
-              <div class="api-desc">Authoritative sign-off readiness &amp; discrepancy status dashboard</div>
+              <div class="api-desc">Track review readiness, disagreements, and completion status</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../units/{uid}/review/approve</span>
+                <span class="badge-method badge-post">APPROVE</span>
+                <span class="api-path">Final Verification &amp; Approvals</span>
               </div>
-              <div class="api-desc">Senior Reviewer verification sign-off or indicator override</div>
+              <div class="api-desc">Senior supervisor confirms scores or adjusts final findings</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../cycles/{id}/publish</span>
+                <span class="badge-method badge-post">PUBLISH</span>
+                <span class="api-path">Instant 1-Click Publishing</span>
               </div>
-              <div class="api-desc">Instant projection to public Knowledgebase (zero spreadsheet exports)</div>
+              <div class="api-desc">Publish approved scores directly to UN Knowledgebase (zero CSV exports)</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">/api/v1/public/cycles/{id}/rankings</span>
+                <span class="badge-method badge-get">PUBLIC</span>
+                <span class="api-path">Public Rankings &amp; Profiles</span>
               </div>
-              <div class="api-desc">Headless public rankings, sovereign profiles &amp; time-series data</div>
+              <div class="api-desc">Power live public rankings, country profiles, and multi-year trend charts</div>
             </div>
           </div>
         </div>
@@ -1553,37 +1553,37 @@
         <!-- Cluster 5: Dataset Exports & Benchmarks -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">05. Exports &amp; Calibration</span>
-            <span class="tech-badge">export.py · benchmarks.py</span>
+            <span class="api-card-title">05. Data Exports &amp; Accuracy Testing</span>
+            <span class="tech-badge">Analytics</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">.../export/answers</span>
+                <span class="badge-method badge-get">EXPORT</span>
+                <span class="api-path">Export Complete Datasets</span>
               </div>
-              <div class="api-desc">Stream verified assessment survey records (CSV / JSON format)</div>
+              <div class="api-desc">Download verified survey responses in standard CSV or JSON</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">.../export/exclusions</span>
+                <span class="badge-method badge-get">EXPORT</span>
+                <span class="api-path">Export Exclusions &amp; Notes</span>
               </div>
-              <div class="api-desc">Stream non-applicable indicators &amp; sovereign exclusion logs</div>
+              <div class="api-desc">Download non-applicable indicators and justification logs</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">/api/v1/benchmarks/run</span>
+                <span class="badge-method badge-post">TEST</span>
+                <span class="api-path">Run Accuracy Calibration</span>
               </div>
-              <div class="api-desc">Execute calibration run against 2024 UN ground truth (Iceland, USA)</div>
+              <div class="api-desc">Test AI accuracy against published 2024 UN ground-truth data (Iceland, USA)</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">/api/v1/benchmarks/compare</span>
+                <span class="badge-method badge-post">ANALYZE</span>
+                <span class="api-path">Precision &amp; Recall Analytics</span>
               </div>
-              <div class="api-desc">Calculate precision/recall deltas against published UN survey scores</div>
+              <div class="api-desc">Compare AI accuracy rates directly against official UN survey scores</div>
             </div>
           </div>
         </div>
@@ -1591,37 +1591,37 @@
         <!-- Cluster 6: Telemetry, Integrity & Health -->
         <div class="api-card">
           <div class="api-card-header">
-            <span class="api-card-title">06. Telemetry &amp; System Health</span>
-            <span class="tech-badge">telemetry.py · system.py</span>
+            <span class="api-card-title">06. System Monitoring &amp; Audit Logs</span>
+            <span class="tech-badge">System Health</span>
           </div>
           <div class="api-list">
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">/api/v1/telemetry/overview</span>
+                <span class="badge-method badge-get">VIEW</span>
+                <span class="api-path">Progress &amp; Activity Tracking</span>
               </div>
-              <div class="api-desc">Real-time throughput, cycle turnaround &amp; immutable audit traces</div>
+              <div class="api-desc">Real-time tracking of assessment progress and complete history logs</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">/api/v1/telemetry/ai-usage</span>
+                <span class="badge-method badge-get">VIEW</span>
+                <span class="api-path">AI Usage &amp; Response Time</span>
               </div>
-              <div class="api-desc">Gemini model token consumption, latency &amp; API budget monitoring</div>
+              <div class="api-desc">Monitor AI speed, token usage, and computing efficiency</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-post">POST</span>
-                <span class="api-path">.../cycles/{id}/verify</span>
+                <span class="badge-method badge-post">VERIFY</span>
+                <span class="api-path">Data Quality &amp; Rules Check</span>
               </div>
-              <div class="api-desc">Automated schema integrity &amp; state-machine validation gate</div>
+              <div class="api-desc">Automated verification ensuring all required fields and steps are complete</div>
             </div>
             <div class="api-item">
               <div class="api-route">
-                <span class="badge-method badge-get">GET</span>
-                <span class="api-path">/api/v1/system/health</span>
+                <span class="badge-method badge-get">HEALTH</span>
+                <span class="api-path">System Health Checks</span>
               </div>
-              <div class="api-desc">Health liveness check for database, storage &amp; Vertex AI runtime</div>
+              <div class="api-desc">Continuous health checks for database, storage, and AI components</div>
             </div>
           </div>
         </div>
@@ -1630,79 +1630,79 @@
       <!-- Architectural Spec Bar -->
       <div class="api-specs-bar">
         <div class="api-spec-pill">
-          <span class="k">Security &amp; Isolation</span>
-          <span class="v">Global <code>X-API-Key</code> dependency + DB query-level blindness</span>
+          <span class="k">Security &amp; Privacy</span>
+          <span class="v">Protected access keys and strict blindness between assessors</span>
         </div>
         <div class="api-spec-pill">
-          <span class="k">Async Processing</span>
-          <span class="v">Non-blocking <code>202 Accepted</code> background jobs with polling</span>
+          <span class="k">Smooth Processing</span>
+          <span class="v">Long searches run in background without freezing the screen</span>
         </div>
         <div class="api-spec-pill">
-          <span class="k">Error Handling</span>
-          <span class="v">Single-shape envelope with <code>Retry-After: 30</code> backoff</span>
+          <span class="k">Clear Error Recovery</span>
+          <span class="v">Automatic retry and friendly messages if a website is down</span>
         </div>
         <div class="api-spec-pill">
-          <span class="k">Portability</span>
-          <span class="v">FastAPI OpenAPI docs &amp; zero-vendor lock-in architecture</span>
+          <span class="k">Open &amp; Flexible</span>
+          <span class="v">Works seamlessly with existing UN websites (Drupal, .NET, Next.js)</span>
         </div>
       </div>
 
-      <p class="footnote"><b>Headless Integration:</b> By decoupling the core assessment engine into standardized REST endpoints, UN DESA can wire modern AI pre-fill and blind scoring directly into any existing portal or CMS (.NET Nuke, Drupal, Next.js) with zero data migration bottlenecks.</p>
+      <p class="footnote"><b>Seamless Integration:</b> By organizing the platform into clean, modular capabilities, UN DESA can easily connect modern AI research and blind scoring directly into any existing UN website or database with zero data migration bottlenecks.</p>
     </div>
   </section>
 
   <!-- 12 — Engineering Sequence & Integration Roadmap -->
   <section class="slide" id="s12" aria-label="Slide 12 of 12">
     <div class="slide-head">
-      <span class="eyebrow">Technical Delivery Roadmap</span>
+      <span class="eyebrow">Project Delivery Roadmap</span>
       <span class="num">12 / 12</span>
     </div>
     <div class="slide-body">
-      <h2>Engineering Sequence: <em>From Agentic Core to Portal Integration</em></h2>
+      <h2>Delivery Sequence: <em>From Core Engine to UN Rollout</em></h2>
       <div class="cols">
         <div class="col">
-          <h3>4-Stage Technical Execution Sequence</h3>
+          <h3>4-Step Technical Delivery Sequence</h3>
           <ul>
             <li>
-              <b>Stage 1: Deepening the Dual-Agent Framework:</b><br>
-              Harden the underlying agentic graph beyond the surface PoC, isolating the Literal Reader from the Inferential Evaluator and implementing Playwright shallow traversal rules to enforce citizen findability boundaries.
+              <b>Step 1: AI Double-Check Engine &amp; Citizen Search Rules:</b><br>
+              Fine-tune the two independent AI models and citizen-level navigation rules so the AI searches websites just like a real citizen.
             </li>
             <li>
-              <b>Stage 2: Benchmark Calibration &amp; Verification Testing:</b><br>
-              Calibrate the live HTML citation validator and confidence scoring against 2024 ground-truth benchmarks (e.g., Iceland 0.90 OSI reference score, USA.gov) to establish the strict ≥75% confidence gate.
+              <b>Step 2: Real-World Accuracy Testing against UN Benchmarks:</b><br>
+              Calibrate the evidence verification and 75% confidence filter against published 2024 UN results (like Iceland and USA.gov) to ensure high precision.
             </li>
             <li>
-              <b>Stage 3: Live Sovereign Portal Stress-Testing:</b><br>
-              Execute multi-portal validation across the 5 global archetypes (USA, France, Brazil, China, Nigeria), stress-testing multilingual scrapers across 13 languages and eID login-wall detection (e.g., Turkey e-Devlet).
+              <b>Step 3: Global Portal Stress-Testing across 5 Archetypes:</b><br>
+              Test on live government portals across 5 diverse countries (USA, France, Brazil, China, Nigeria) across 13 languages, handling logins and varied layouts.
             </li>
             <li>
-              <b>Stage 4: Headless API &amp; Knowledgebase Integration:</b><br>
-              Connect verified database outputs to the public Knowledgebase via <code>/api/v1</code> REST endpoints, and integrate the dual-context Assessor A/B discrepancy diff workspace.
+              <b>Step 4: Portal Integration &amp; Reviewer Workspace:</b><br>
+              Connect approved outputs directly to the UN Knowledgebase and test the side-by-side assessor agreement screen.
             </li>
           </ul>
         </div>
         <div class="col">
-          <h3>Turnkey Delivery &amp; Institutional Governance</h3>
+          <h3>Fast Delivery &amp; UN-Friendly Setup</h3>
           <ul>
             <li>
-              <b>Individual Consultant Delivery:</b><br>
-              Structured as milestone-based technical consultancy contracts rather than institutional vendor procurement, bypassing 12–24 month central RFP cycles to launch within 60 days.
+              <b>Consultant-Led Delivery:</b><br>
+              Structured as milestone-based technical consultancy deliverables — bypasses lengthy 12–24 month vendor procurement to start within 60 days.
             </li>
             <li>
-              <b>Zero-Recurring Infrastructure:</b><br>
-              Containerized Python/FastAPI/Playwright/SQLite stack with zero SaaS credit-card dependencies, designed for deployment inside UN enterprise infrastructure or prepaid instances.
+              <b>Zero Ongoing Software Fees:</b><br>
+              Self-contained system built with open technologies — runs on UN infrastructure with zero recurring monthly subscription charges.
             </li>
             <li>
-              <b>Complete Knowledge Transfer:</b><br>
-              Full delivery of codebase, container configurations, MSQ link extraction parsers, and indicator versioning lifecycles (102 National / 95 LOSI).
+              <b>Complete Handover &amp; Documentation:</b><br>
+              Full transfer of source code, setup guides, government questionnaire parsers, and question management tools.
             </li>
           </ul>
         </div>
       </div>
       <div class="rule-note">
-        <b>Immediate Development Milestone:</b> Complete Stage 1 dual-agent prompt engineering and shallow crawl constraints, followed by calibration against Iceland and USA portal benchmarks.
+        <b>Immediate Development Milestone:</b> Complete Step 1 AI double-check rules and citizen search limits, followed by benchmark testing against Iceland and USA portal evaluations.
       </div>
-      <p class="footnote"><b>Operational Readiness:</b> Staged sequence ensures core agent reliability is rigorously verified on live national portals before wiring frontend publishing flows.</p>
+      <p class="footnote"><b>Operational Readiness:</b> Staged approach ensures AI reliability is thoroughly verified on real national portals before connecting public website publishing.</p>
     </div>
   </section>
 
@@ -1721,17 +1721,17 @@
   <div class="nav-group">
     <select id="slide-select" aria-label="Jump directly to slide">
       <option value="0">01. Executive Summary</option>
-      <option value="1">02. Index Architecture</option>
-      <option value="2">03. Transformation Matrix</option>
-      <option value="3">04. Data &amp; Publishing</option>
-      <option value="4">05. Churn &amp; LOSI Scaling</option>
-      <option value="5">06. QC &amp; MSQ Resolution</option>
-      <option value="6">07. AI &amp; Governance</option>
-      <option value="7">08. Assessment Flow</option>
-      <option value="8">09. AI Engine Deep Dive</option>
-      <option value="9">10. PoC Scope &amp; Target (WIP)</option>
-      <option value="10">11. Headless FastAPI Architecture</option>
-      <option value="11">12. Technical Delivery Roadmap</option>
+      <option value="1">02. Index Scope &amp; Boundaries</option>
+      <option value="2">03. Solution Transformation Matrix</option>
+      <option value="3">04. Data &amp; Instant Publishing</option>
+      <option value="4">05. Question Updates &amp; Multi-City</option>
+      <option value="5">06. Quality Checks &amp; Government Forms</option>
+      <option value="6">07. Reliable AI &amp; UN Hosting</option>
+      <option value="7">08. 8-Stage Assessment Flow</option>
+      <option value="8">09. Inside the AI Assistant Engine</option>
+      <option value="9">10. PoC Scope &amp; Deliverables</option>
+      <option value="10">11. System Architecture &amp; Data Feeds</option>
+      <option value="11">12. Project Delivery Roadmap</option>
     </select>
     <button id="btn-theme" aria-label="Switch presentation theme" title="Switch Theme (Press T)">☀️ Light</button>
   </div>

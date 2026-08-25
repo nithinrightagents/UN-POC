@@ -26,7 +26,7 @@ from api.identity import compose_question_id
 from api.jobs import job_status, start_assessment_job
 from api.schemas import ApiError
 from portal.common import ensure_session, repo_factory
-from portal.discrepancy import compute_portal_discrepancy
+from portal.discrepancy import _compare, compute_portal_discrepancy
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
 from portal.tolerance import effective_tolerance
 from portal.msq import ingest_msq_pdf, match_msq_links
@@ -63,28 +63,45 @@ def _build_unit_rows(
     from portal.reconciliation import render_badge, unit_reconciliation_state
 
     unit_rows = []
+    eff_tol = effective_tolerance(r, cycle_id, settings)
+    question_ids = [q.question_id for q in questions]
+    q_count = len(questions)
+    terminal = {s.value for s in TERMINAL_UNIT_STATES}
+
     for u in units:
         unit_states = r.list_units_for_portal(session_id, u.portal_id)
         states_seen = {row["state"] for row in unit_states}
-        terminal = {s.value for s in TERMINAL_UNIT_STATES}
         assessed_count = sum(1 for row in unit_states if row["state"] in terminal)
         msq = r.find_msq_document(cycle_id, u.country_id)
         publication = r.latest_publication(cycle_id, u.portal_id)
+
+        # Batch load human submissions for this portal (1 SQL query instead of 204)
+        submissions = r.list_human_submissions(session_id, u.portal_id)
+
+        # Compute comparison once per portal
+        cmp_res = _compare(r, session_id, u.portal_id, question_ids, eff_tol, submissions=submissions)
+
         case = compute_portal_discrepancy(
-            r, session_id, u.portal_id, [q.question_id for q in questions],
-            effective_tolerance(r, cycle_id, settings),
+            r, session_id, u.portal_id, question_ids,
+            eff_tol, submissions=submissions, cmp_res=cmp_res,
         )
         recon_state = unit_reconciliation_state(
-            r, session_id, cycle_id, u.portal_id, questions, settings
+            r, session_id, cycle_id, u.portal_id, questions, settings,
+            tolerance=eff_tol, submissions=submissions, cmp_res=cmp_res,
         )
-        st = job_status(r, session_id, cycle_id, u.portal_id)
-        readiness = publication_readiness(r, session_id, cycle_id, u.portal_id)
+        st = job_status(r, session_id, cycle_id, u.portal_id, questions_total=q_count)
+        readiness = publication_readiness(
+            r, session_id, cycle_id, u.portal_id, questions=questions, submissions=submissions
+        )
 
         disputes_detail = []
         if recon_state.disputed_question_ids:
+            subs_by_role_qid = {}
+            for sub in submissions:
+                subs_by_role_qid[(sub.role, sub.question_id)] = sub
             for qid in recon_state.disputed_question_ids:
-                sub_a = r.latest_human_submission(session_id, qid, u.portal_id, AssessorRole.A)
-                sub_b = r.latest_human_submission(session_id, qid, u.portal_id, AssessorRole.B)
+                sub_a = subs_by_role_qid.get((AssessorRole.A, qid))
+                sub_b = subs_by_role_qid.get((AssessorRole.B, qid))
                 joint = r.latest_joint_answer(session_id, u.portal_id, qid)
                 disputes_detail.append({
                     "question_id": qid,
@@ -99,7 +116,7 @@ def _build_unit_rows(
             "portal": u,
             "assessed_count": assessed_count,
             "started_count": len(unit_states),
-            "total_questions": len(questions),
+            "total_questions": q_count,
             "run_in_progress": st.state == "running" or bool(states_seen - terminal),
             "msq": msq,
             "publication": publication,
@@ -164,13 +181,14 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         )
         ensure_session(r, cycle_id)
 
-        for q in load_question_set(question_set_id, cycle_id):
-            r.insert_question(q)
+        questions = load_question_set(question_set_id, cycle_id)
+        r.insert_questions(questions)
 
         # No resolved_url on bulk-tagged units: link resolution searches
         # live per question (see api/jobs.py) rather than depending on a
         # pre-fetched portal URL, and pre-verifying ~193 country URLs here
         # would be an unreliable, slow synchronous step at creation time.
+        portals = []
         for c in target_countries:
             if ptype is ProjectType.NATIONAL_OSI:
                 display_name = c.name
@@ -178,12 +196,13 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             else:
                 display_name = f"{c.most_populous_city}, {c.name}"
                 unit_type = "city"
-            r.insert_portal(
+            portals.append(
                 TargetPortal(
                     portal_id=new_id("portal"), cycle_id=cycle_id, country_id=c.code,
                     resolved_url=None, unit_type=unit_type, display_name=display_name,
                 )
             )
+        r.insert_portals(portals)
 
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 

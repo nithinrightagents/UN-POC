@@ -23,20 +23,28 @@ from shared.state.entities import (
 
 
 def _compare(
-    repo: Repository, session_id: str, portal_id: str, question_ids: list[str], threshold: float
+    repo: Repository,
+    session_id: str,
+    portal_id: str,
+    question_ids: list[str],
+    threshold: float,
+    submissions: list[HumanAssessorSubmission] | None = None,
 ) -> tuple[list[str], list[str], float, bool] | None:
     """Shared comparison logic with joint-answer overlay (spec 012).
     Returns (common, disagreements, rate, flagged),
     or None if neither role has any overlapping answered question yet."""
+    if submissions is None:
+        submissions = repo.list_human_submissions(session_id, portal_id)
+
+    qid_set = set(question_ids)
     a_answers: dict[str, object] = {}
     b_answers: dict[str, object] = {}
-    for qid in question_ids:
-        a_sub = repo.latest_human_submission(session_id, qid, portal_id, AssessorRole.A)
-        b_sub = repo.latest_human_submission(session_id, qid, portal_id, AssessorRole.B)
-        if a_sub:
-            a_answers[qid] = a_sub.answer
-        if b_sub:
-            b_answers[qid] = b_sub.answer
+    for sub in submissions:
+        if sub.question_id in qid_set:
+            if sub.role == AssessorRole.A:
+                a_answers[sub.question_id] = sub.answer
+            elif sub.role == AssessorRole.B:
+                b_answers[sub.question_id] = sub.answer
 
     common = sorted(set(a_answers) & set(b_answers))
     if not common:
@@ -56,14 +64,22 @@ def _compare(
 
 
 def compute_portal_discrepancy(
-    repo: Repository, session_id: str, portal_id: str, question_ids: list[str], threshold: float
+    repo: Repository,
+    session_id: str,
+    portal_id: str,
+    question_ids: list[str],
+    threshold: float,
+    submissions: list[HumanAssessorSubmission] | None = None,
+    cmp_res: tuple[list[str], list[str], float, bool] | None = None,
 ) -> DiscrepancyCase | None:
     """Read-only: same comparison as recompute_portal_discrepancy but writes
     nothing. Safe to call from GET routes (e.g. the admin project-detail page)
     that just need the current rate/flag for display, without spamming a new
     audit-trail DiscrepancyCase row -- and a new EscalationQueueItem -- on
     every page view."""
-    result = _compare(repo, session_id, portal_id, question_ids, threshold)
+    result = cmp_res if cmp_res is not None else _compare(
+        repo, session_id, portal_id, question_ids, threshold, submissions=submissions
+    )
     if result is None:
         return None
     common, disagreements, rate, flagged = result

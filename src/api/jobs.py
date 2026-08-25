@@ -124,16 +124,20 @@ def prefill_run_summary(repo: Repository, run_id: str) -> PrefillRunSummary:
 
 
 def job_status(
-    repo: Repository, session_id: str, cycle_id: str, portal_id: str
+    repo: Repository,
+    session_id: str,
+    cycle_id: str,
+    portal_id: str,
+    questions_total: int | None = None,
 ) -> JobStatus:
     """Reads latest assessment job for the unit and derives progress monotonically."""
     job = repo.latest_assessment_job(cycle_id, portal_id)
     if job is None:
-        questions = repo.list_questions(cycle_id)
+        total = questions_total if questions_total is not None else len(repo.list_questions(cycle_id))
         return JobStatus(
             state="never_triggered",
             job_id=None,
-            questions_total=len(questions),
+            questions_total=total,
             questions_completed=0,
         )
 

@@ -51,11 +51,15 @@ def unit_reconciliation_state(
     portal_id: str,
     questions: list[Question] | list[str],
     settings: Settings,
+    tolerance: float | None = None,
+    submissions: list[HumanAssessorSubmission] | None = None,
+    cmp_res: tuple[list[str], list[str], float, bool] | None = None,
 ) -> UnitReconciliationState:
     """Computes the live derived reconciliation state for a unit (data-model.md §7).
     One function for the badge, the assessor routes, and publication readiness.
     """
-    tolerance = effective_tolerance(repo, cycle_id, settings)
+    if tolerance is None:
+        tolerance = effective_tolerance(repo, cycle_id, settings)
     question_ids = [q.question_id if hasattr(q, "question_id") else str(q) for q in questions]
 
     rounds = repo.list_rounds_for_unit(session_id, portal_id)
@@ -64,7 +68,8 @@ def unit_reconciliation_state(
     open_round = repo.open_round_for_unit(session_id, portal_id)
     open_round_id = open_round.round_id if open_round else None
 
-    cmp_res = _compare(repo, session_id, portal_id, question_ids, tolerance)
+    if cmp_res is None:
+        cmp_res = _compare(repo, session_id, portal_id, question_ids, tolerance, submissions=submissions)
 
     if cmp_res is None:
         rate = None

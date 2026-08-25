@@ -126,6 +126,26 @@ class Repository:
         )
         self.conn.commit()
 
+    def insert_questions(self, questions: list[Question]) -> None:
+        if not questions:
+            return
+        params = [
+            (
+                q.question_id,
+                q.cycle_id,
+                1 if q.is_custom else 0,
+                to_json(q),
+            )
+            for q in questions
+        ]
+        self.conn.executemany(
+            "INSERT INTO questions (question_id, cycle_id, is_custom, data) "
+            "VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(question_id) DO UPDATE SET data = excluded.data, is_custom = excluded.is_custom, created_at = datetime('now')",
+            params,
+        )
+        self.conn.commit()
+
     def get_question(self, question_id: str) -> Question | None:
         row = self.conn.execute(
             "SELECT data FROM questions WHERE question_id = ?", (question_id,)
@@ -203,6 +223,21 @@ class Repository:
             "VALUES (?, ?, ?, ?) "
             "ON CONFLICT(cycle_id, country_id) DO NOTHING",
             (portal.portal_id, portal.cycle_id, portal.country_id, to_json(portal)),
+        )
+        self.conn.commit()
+
+    def insert_portals(self, portals: list[TargetPortal]) -> None:
+        if not portals:
+            return
+        params = [
+            (p.portal_id, p.cycle_id, p.country_id, to_json(p))
+            for p in portals
+        ]
+        self.conn.executemany(
+            "INSERT INTO target_portals (portal_id, cycle_id, country_id, data) "
+            "VALUES (?, ?, ?, ?) "
+            "ON CONFLICT(cycle_id, country_id) DO NOTHING",
+            params,
         )
         self.conn.commit()
 
