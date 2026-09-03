@@ -211,6 +211,10 @@ class SurveyCycle:
     project_type: ProjectType = ProjectType.NATIONAL_OSI
     # None = inherit the process-wide default; 0.0 = tolerate no disagreement (FR-DR-065)
     discrepancy_rate_threshold: float | None = None
+    # Set together with status="locked" once an admin assigns both assessors --
+    # see assign_assessors()/unassign_assessors() in portal/admin.py.
+    assessor_a_email: str | None = None
+    assessor_b_email: str | None = None
 
 
 @dataclass
@@ -242,6 +246,32 @@ class Question:
     how: dict | str | None = None
     benchmark_case: str | None = None
     reference_links: list[str] = field(default_factory=list)
+    status: str = "active"  # "active" | "retired" -- retired indicators drop out of live assessment/scoring but stay visible for audit
+
+
+@dataclass
+class PendingIndicator:
+    """A candidate indicator parsed from an admin-uploaded PDF, awaiting
+    review before it counts as a real Question. Ingestion is never trusted
+    directly -- parsing a slide's What/Why/How text is heuristic, so every
+    extracted candidate lands here first for an admin to edit, approve
+    (converted into a Question via admin.py's review route), or reject
+    (deleted outright, since nothing scoring-relevant ever touched it)."""
+
+    pending_id: str
+    cycle_id: str
+    module: str
+    title: str
+    what: str
+    why: str
+    how: dict
+    indicator_id: str | None = None
+    benchmark_case: str | None = None
+    reference_links: list[str] = field(default_factory=list)
+    evidence_locus: EvidenceLocus = EvidenceLocus.NATIONAL_PORTAL_ONLY
+    source_pdf_filename: str | None = None
+    source_page: int | None = None
+    created_at: datetime = field(default_factory=utcnow)
 
 
 @dataclass

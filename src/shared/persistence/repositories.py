@@ -29,6 +29,7 @@ from shared.state.entities import (
     LanguageDecision,
     MSQDocument,
     MSQLinkCandidate,
+    PendingIndicator,
     Prefill,
     PriorSurveyLink,
     PublicationRecord,
@@ -79,6 +80,109 @@ class Repository:
                 seen.add(c.cycle_id)
                 out.append(c)
         return out
+
+    def delete_cycle(self, cycle_id: str) -> None:
+        session_rows = self.conn.execute(
+            "SELECT session_id FROM assessment_sessions WHERE cycle_id = ?", (cycle_id,)
+        ).fetchall()
+        session_ids = [r["session_id"] for r in session_rows]
+
+        portal_rows = self.conn.execute(
+            "SELECT portal_id FROM target_portals WHERE cycle_id = ?", (cycle_id,)
+        ).fetchall()
+        portal_ids = [r["portal_id"] for r in portal_rows]
+
+        for s_id in session_ids:
+            items = self.conn.execute(
+                "SELECT item_id FROM escalation_queue_items WHERE session_id = ?", (s_id,)
+            ).fetchall()
+            for it in items:
+                self.conn.execute(
+                    "DELETE FROM escalation_dispositions WHERE item_id = ?", (it["item_id"],)
+                )
+            self.conn.execute("DELETE FROM units WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM language_decisions WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM assessor_agent_runs WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM validation_results WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM adjudication_results WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM discrepancy_cases WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM escalation_queue_items WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM assessor_decisions WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM configuration_snapshots WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM stage_events WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM fetch_records WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM cost_ledger_entries WHERE session_id = ?", (s_id,))
+            self.conn.execute("DELETE FROM joint_answers WHERE session_id = ?", (s_id,))
+
+        for p_id in portal_ids:
+            self.conn.execute("DELETE FROM language_decisions WHERE portal_id = ?", (p_id,))
+            self.conn.execute("DELETE FROM joint_answers WHERE portal_id = ?", (p_id,))
+
+        self.conn.execute("DELETE FROM human_assessor_submissions WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM msq_documents WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM publication_records WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM prefills WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM assessor_completions WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM assessment_jobs WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM reconciliation_rounds WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM tolerance_changes WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM question_revisions WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM questions WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM pending_indicators WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM target_portals WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM assessment_sessions WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM survey_cycles WHERE cycle_id = ?", (cycle_id,))
+        self.conn.commit()
+
+    def delete_portal(self, cycle_id: str, portal_id: str) -> None:
+        """Remove a single target unit from a project -- the counterpart to
+        delete_cycle() at unit granularity. Projects now default to tagging
+        every country (or, for LOSI, every country's most-populous city) at
+        creation, so admins prune this down to the units they actually want
+        from Manage Workspace rather than hand-picking at creation time.
+
+        Mirrors delete_cycle()'s per-table cleanup, scoped to just this
+        portal_id -- and, for the country-keyed msq_documents table, this
+        portal's country within this cycle. A no-op if the portal doesn't
+        belong to this cycle (or doesn't exist)."""
+        portal = self.get_portal(portal_id)
+        if portal is None or portal.cycle_id != cycle_id:
+            return
+
+        self.conn.execute("DELETE FROM units WHERE portal_id = ?", (portal_id,))
+        self.conn.execute("DELETE FROM language_decisions WHERE portal_id = ?", (portal_id,))
+        self.conn.execute("DELETE FROM assessor_agent_runs WHERE portal_id = ?", (portal_id,))
+        self.conn.execute("DELETE FROM adjudication_results WHERE portal_id = ?", (portal_id,))
+        self.conn.execute("DELETE FROM assessor_decisions WHERE portal_id = ?", (portal_id,))
+        self.conn.execute("DELETE FROM joint_answers WHERE portal_id = ?", (portal_id,))
+        self.conn.execute(
+            "DELETE FROM human_assessor_submissions WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute(
+            "DELETE FROM msq_documents WHERE cycle_id = ? AND country_id = ?",
+            (cycle_id, portal.country_id),
+        )
+        self.conn.execute(
+            "DELETE FROM publication_records WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute(
+            "DELETE FROM prefills WHERE cycle_id = ? AND portal_id = ?", (cycle_id, portal_id)
+        )
+        self.conn.execute(
+            "DELETE FROM assessor_completions WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute(
+            "DELETE FROM assessment_jobs WHERE cycle_id = ? AND portal_id = ?", (cycle_id, portal_id)
+        )
+        self.conn.execute(
+            "DELETE FROM reconciliation_rounds WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute("DELETE FROM target_portals WHERE portal_id = ?", (portal_id,))
+        self.conn.commit()
 
     # --- Assessment Session --------------------------------------------
 
@@ -184,6 +288,33 @@ class Repository:
         self.conn.commit()
         return question
 
+    def set_question_status(
+        self, question_id: str, status: str, revised_by: str | None = None
+    ) -> Question:
+        """Retire or reactivate a question for this cycle. Unlike
+        update_question(), this is allowed on BOTH default and custom
+        questions: retiring doesn't alter scoring-relevant text, it just
+        stops the indicator from counting toward live progress/discrepancy/
+        publication going forward (see list_questions' include_retired),
+        while past submissions against it are left untouched for audit."""
+        if status not in ("active", "retired"):
+            raise ValueError(f"Invalid question status '{status}'; must be 'active' or 'retired'.")
+        existing = self.get_question(question_id)
+        if existing is None:
+            raise ValueError(f"Question '{question_id}' does not exist.")
+        self.conn.execute(
+            "INSERT INTO question_revisions (revision_id, question_id, cycle_id, data, revised_by) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (new_id("qrev"), existing.question_id, existing.cycle_id, to_json(existing), revised_by),
+        )
+        existing.status = status
+        self.conn.execute(
+            "UPDATE questions SET data = ? WHERE question_id = ?",
+            (to_json(existing), question_id),
+        )
+        self.conn.commit()
+        return existing
+
     def count_question_revisions(self, question_id: str) -> int:
         row = self.conn.execute(
             "SELECT COUNT(*) AS n FROM question_revisions WHERE question_id = ?", (question_id,)
@@ -201,7 +332,9 @@ class Repository:
         ).fetchall()
         return [from_json(r["data"], Question) for r in rows]
 
-    def list_questions(self, cycle_id: str, include_custom: bool = True) -> list[Question]:
+    def list_questions(
+        self, cycle_id: str, include_custom: bool = True, include_retired: bool = False
+    ) -> list[Question]:
         sql = "SELECT question_id, cycle_id, is_custom, data FROM questions WHERE cycle_id = ?"
         params: list = [cycle_id]
         if not include_custom:
@@ -214,8 +347,44 @@ class Repository:
                 d["cycle_id"] = r["cycle_id"]
             if "question_id" not in d:
                 d["question_id"] = r["question_id"]
+            if not include_retired and d.get("status", "active") == "retired":
+                continue
             out.append(from_json(json.dumps(d), Question))
         return out
+
+    # --- Pending Indicator (PDF ingestion review queue) -------------------
+
+    def insert_pending_indicators(self, items: list[PendingIndicator]) -> None:
+        if not items:
+            return
+        params = [(i.pending_id, i.cycle_id, to_json(i)) for i in items]
+        self.conn.executemany(
+            "INSERT INTO pending_indicators (pending_id, cycle_id, data) VALUES (?, ?, ?)",
+            params,
+        )
+        self.conn.commit()
+
+    def list_pending_indicators(self, cycle_id: str) -> list[PendingIndicator]:
+        rows = self.conn.execute(
+            "SELECT data FROM pending_indicators WHERE cycle_id = ? ORDER BY created_at ASC, rowid ASC",
+            (cycle_id,),
+        ).fetchall()
+        return [from_json(r["data"], PendingIndicator) for r in rows]
+
+    def get_pending_indicator(self, pending_id: str) -> PendingIndicator | None:
+        row = self.conn.execute(
+            "SELECT data FROM pending_indicators WHERE pending_id = ?", (pending_id,)
+        ).fetchone()
+        return from_json(row["data"], PendingIndicator) if row else None
+
+    def delete_pending_indicator(self, pending_id: str) -> None:
+        self.conn.execute("DELETE FROM pending_indicators WHERE pending_id = ?", (pending_id,))
+        self.conn.commit()
+
+    def delete_pending_indicators_for_cycle(self, cycle_id: str) -> None:
+        """Bulk-reject: clear every pending indicator awaiting review for a project."""
+        self.conn.execute("DELETE FROM pending_indicators WHERE cycle_id = ?", (cycle_id,))
+        self.conn.commit()
 
     # --- Target Portal -----------------------------------------------------
 

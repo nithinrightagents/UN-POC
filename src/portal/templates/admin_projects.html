@@ -15,6 +15,12 @@
         <h1>Survey Projects &amp; Cycles</h1>
         <p class="lead">Configure assessment cycles, define indicator questionnaires, and assign country and municipal target units.</p>
     </div>
+    <div class="page-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <a href="/admin/questionnaires" class="btn btn-primary" style="background-color: var(--color-brand-navy); border-color: var(--color-brand-navy);">
+            <svg class="icon" aria-hidden="true"><use href="#icon-layers"/></svg>
+            <span>Manage Questionnaires ({{ question_sets|length }})</span>
+        </a>
+    </div>
 </div>
 
 <div class="section-title">
@@ -109,27 +115,21 @@
         </div>
 
         <div class="form-group">
-            <label for="question_set_id">Questionnaire / Indicator Set</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                <label for="question_set_id" style="margin: 0;">Questionnaire / Indicator Set</label>
+                <a href="/admin/questionnaires" style="font-size: 0.8rem; font-weight: 600; color: var(--color-brand-primary); text-decoration: underline;">View &amp; inspect all questionnaires &rarr;</a>
+            </div>
             <select id="question_set_id" name="question_set_id" required>
-                {% for s in question_sets %}
-                <option value="{{ s.set_id }}">{{ s.label }} ({{ s.question_count }} questions)</option>
+                {% for s in question_sets if s.scope %}
+                <option value="{{ s.set_id }}" data-scope="{{ s.scope }}">{{ s.label }} ({{ s.question_count }} questions)</option>
                 {% endfor %}
             </select>
-            <span class="form-help">Indicator set used for evaluation.</span>
+            <span class="form-help">Only questionnaires matching the selected Assessment Scope are shown -- the National Online Service Index questionnaire for national projects, the Local Online Service Index questionnaire for city projects, plus any custom set previously saved from a project of that same scope.</span>
         </div>
 
-        <div class="form-group" id="nosi-note">
-            <span class="form-help">All {{ countries|length }} UN member states are automatically tagged as target units.</span>
-        </div>
-
-        <div class="form-group" id="losi-countries" style="display: none;">
-            <label for="country_ids">Countries to Include</label>
-            <select id="country_ids" name="country_ids" multiple size="8">
-                {% for c in countries %}
-                <option value="{{ c.code }}">{{ c.name }} — most populous city: {{ c.most_populous_city }}</option>
-                {% endfor %}
-            </select>
-            <span class="form-help">Each selected country's most-populous city is added as the initial unit; more cities can be added afterward.</span>
+        <div class="form-group" id="scope-note">
+            <span class="form-help" id="nosi-note-text">All {{ countries|length }} UN member states are automatically tagged as target units.</span>
+            <span class="form-help" id="losi-note-text" style="display: none;">Every country's most-populous city is automatically tagged as the initial target unit ({{ countries|length }} cities total). Remove the ones you don't need, or add specific other cities, from the project's Manage Workspace after it's created.</span>
         </div>
 
         <div style="margin-top: 0.5rem;">
@@ -144,13 +144,30 @@
 <script>
 (function () {
     var typeSelect = document.getElementById("project_type");
-    var nosiNote = document.getElementById("nosi-note");
-    var losiCountries = document.getElementById("losi-countries");
+    var nosiNoteText = document.getElementById("nosi-note-text");
+    var losiNoteText = document.getElementById("losi-note-text");
+    var questionSetSelect = document.getElementById("question_set_id");
+    var questionSetOptions = Array.prototype.slice.call(questionSetSelect.options);
+
+    function syncQuestionSets() {
+        var scope = typeSelect.value;
+        var firstMatch = null;
+        questionSetOptions.forEach(function (opt) {
+            var matches = opt.getAttribute("data-scope") === scope;
+            opt.hidden = !matches;
+            opt.disabled = !matches;
+            if (matches && firstMatch === null) firstMatch = opt.value;
+        });
+        if (questionSetSelect.selectedOptions[0] && questionSetSelect.selectedOptions[0].disabled && firstMatch !== null) {
+            questionSetSelect.value = firstMatch;
+        }
+    }
 
     function syncScopeFields() {
         var isLosi = typeSelect.value === "losi_city";
-        nosiNote.style.display = isLosi ? "none" : "";
-        losiCountries.style.display = isLosi ? "" : "none";
+        nosiNoteText.style.display = isLosi ? "none" : "";
+        losiNoteText.style.display = isLosi ? "" : "none";
+        syncQuestionSets();
     }
 
     typeSelect.addEventListener("change", syncScopeFields);

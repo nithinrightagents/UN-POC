@@ -23,6 +23,7 @@
             <span class="badge badge--neutral">{{ cycle.name }}</span>
         </div>
         <h1>{{ portal.display_name or portal.country_id if portal else record.portal_id }}</h1>
+        {% if portal and portal.resolved_url %}
         <p class="lead">
             Official Portal:
             <a href="{{ portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600;">
@@ -30,6 +31,7 @@
                 <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
             </a>
         </p>
+        {% endif %}
     </div>
 </div>
 

@@ -56,12 +56,15 @@
         </div>
         <h1>{{ portal.display_name or portal.country_id }}</h1>
         <p class="lead">
+            {% if portal.resolved_url %}
             Official Portal:
             <a href="{{ portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600;">
                 {{ portal.resolved_url }}
                 <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
             </a>
-            &mdash; Evaluate each indicator using the portal and cited evidence.
+            &mdash;
+            {% endif %}
+            Evaluate each indicator using verified evidence and official sources.
         </p>
 
         <!-- Progress and Completion Section -->
@@ -588,22 +591,54 @@ document.addEventListener("DOMContentLoaded", function() {
                         badge.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span class="badge-label">Submitted</span>';
                     }
 
-                    // Update Summary Box
+                    // Update Summary Box (built via safe DOM APIs -- notes/evidence_url
+                    // are assessor-typed free text and must never be spliced into innerHTML)
                     var summaryContainer = document.getElementById("summary_container_" + qid);
                     if (summaryContainer) {
-                        var answerBadge = data.answer 
-                            ? '<span class="badge badge--yes">Yes</span>' 
-                            : '<span class="badge badge--no">No</span>';
-                        var evidenceHtml = data.evidence_url 
-                            ? '<div style="color: var(--color-text-secondary);">Evidence URL: <a href="' + data.evidence_url + '" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">' + data.evidence_url + '</a></div>' 
-                            : '';
-                        var notesHtml = data.notes 
-                            ? '<div class="muted" style="margin-top: 0.25rem;">Notes: <em>"' + data.notes + '"</em></div>' 
-                            : '';
+                        var box = document.createElement("div");
+                        box.className = "submission-summary-box";
+                        box.style.cssText = "background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;";
 
-                        summaryContainer.innerHTML = '<div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">' +
-                            '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;"><strong style="color: var(--color-text-primary);">Your Current Submission:</strong> ' + answerBadge + '</div>' +
-                            evidenceHtml + notesHtml + '</div>';
+                        var header = document.createElement("div");
+                        header.style.cssText = "display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;";
+                        var headerLabel = document.createElement("strong");
+                        headerLabel.style.color = "var(--color-text-primary)";
+                        headerLabel.textContent = "Your Current Submission:";
+                        var answerBadge = document.createElement("span");
+                        answerBadge.className = data.answer ? "badge badge--yes" : "badge badge--no";
+                        answerBadge.textContent = data.answer ? "Yes" : "No";
+                        header.appendChild(headerLabel);
+                        header.appendChild(answerBadge);
+                        box.appendChild(header);
+
+                        if (data.evidence_url) {
+                            var evidenceDiv = document.createElement("div");
+                            evidenceDiv.style.color = "var(--color-text-secondary)";
+                            evidenceDiv.appendChild(document.createTextNode("Evidence URL: "));
+                            var link = document.createElement("a");
+                            var isSafeUrl = /^https?:\/\//i.test(data.evidence_url);
+                            link.href = isSafeUrl ? data.evidence_url : "#";
+                            link.target = "_blank";
+                            link.rel = "noopener noreferrer";
+                            link.style.wordBreak = "break-all";
+                            link.textContent = data.evidence_url;
+                            evidenceDiv.appendChild(link);
+                            box.appendChild(evidenceDiv);
+                        }
+
+                        if (data.notes) {
+                            var notesDiv = document.createElement("div");
+                            notesDiv.className = "muted";
+                            notesDiv.style.marginTop = "0.25rem";
+                            var notesEm = document.createElement("em");
+                            notesEm.textContent = '"' + data.notes + '"';
+                            notesDiv.appendChild(document.createTextNode("Notes: "));
+                            notesDiv.appendChild(notesEm);
+                            box.appendChild(notesDiv);
+                        }
+
+                        summaryContainer.innerHTML = "";
+                        summaryContainer.appendChild(box);
                     }
                 }
 

@@ -201,6 +201,18 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
             discrepancy_rate_threshold=cycle.discrepancy_rate_threshold,
         )
 
+    @router.delete(
+        "/cycles/{cycle_id}",
+        status_code=status.HTTP_204_NO_CONTENT,
+    )
+    def delete_cycle(cycle_id: str, repo: Repository = Depends(get_repo)):
+        cycle = repo.get_cycle(cycle_id)
+        if cycle is None:
+            raise NotFound(
+                f"Cycle '{cycle_id}' not found.", details={"cycle_id": cycle_id}
+            )
+        repo.delete_cycle(cycle_id)
+
     @router.post(
         "/cycles/{cycle_id}/tolerance",
         response_model=ToleranceUpdateResponse,

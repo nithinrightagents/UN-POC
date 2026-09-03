@@ -122,19 +122,44 @@ def seed_ekap_demo_cmd(ctx: click.Context) -> None:
     ctx.forward(seed_demo_cmd)
 
 
-@main.command()
+@seed.command("lifecycle-demo")
 @click.pass_context
-def serve(ctx: click.Context) -> None:
+def seed_lifecycle_demo_cmd(ctx: click.Context) -> None:
+    """Seed six standalone demo-stageN projects, each pre-frozen at one
+    state of the Assessor A/B reconciliation lifecycle, for walking a
+    client through assignment through Senior Reviewer escalation."""
+    settings: Settings = ctx.obj["settings"]
+    from portal.seed_lifecycle_demo import seed_lifecycle_demo
+    from shared.persistence.repositories import Repository
+
+    init_db(settings.database_path)
+    conn = _connect(settings)
+    repo = Repository(conn)
+    result = seed_lifecycle_demo(repo, settings)
+    if result["created"]:
+        click.secho(f"Created: {', '.join(result['created'])}", fg="green")
+    if result["skipped"]:
+        click.echo(f"Already existed, left untouched: {', '.join(result['skipped'])}")
+    click.echo(f"Open: http://{settings.serve_host}:{settings.serve_port}/admin")
+
+
+@main.command()
+@click.option("--reload/--no-reload", default=False, help="Enable auto-reload on code changes.")
+@click.pass_context
+def serve(ctx: click.Context, reload: bool) -> None:
     """Start the app: Admin, Assessor Portal, AI Review (mounted at
     /review), and the Public Knowledge Base (spec 005)."""
     settings: Settings = ctx.obj["settings"]
     import uvicorn
 
-    from portal.webapp import build_app
-
     init_db(settings.database_path)
-    app = build_app(settings.database_path, settings)
-    uvicorn.run(app, host=settings.serve_host, port=settings.serve_port)
+    if reload:
+        uvicorn.run("portal.webapp:create_app", factory=True, host=settings.serve_host, port=settings.serve_port, reload=True)
+    else:
+        from portal.webapp import build_app
+
+        app = build_app(settings.database_path, settings)
+        uvicorn.run(app, host=settings.serve_host, port=settings.serve_port)
 
 
 @main.group()

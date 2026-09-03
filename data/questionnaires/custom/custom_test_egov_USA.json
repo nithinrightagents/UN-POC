@@ -1,79 +1,12 @@
 {
-  "template_id": "un_losi_2024_master",
-  "name": "UN E-Government Survey 2024 — Local Online Service Index (LOSI) Master Indicator Set",
-  "description": "Official UN DESA Local Online Service Index (LOSI) municipal indicator catalog extracted from city evaluation modules.",
-  "version": "2024.1",
+  "template_id": "custom_test_egov_USA",
+  "name": "test — Custom Indicator Set (95 indicators)",
+  "description": "Custom indicator set branched from project 'test' (test_egov_USA) after an admin added indicators beyond the starting template.",
+  "version": "custom",
   "is_master_template": false,
   "project_type": "losi_city",
   "total_questions": 95,
   "questions": [
-    {
-      "question_id": "L-IF-281",
-      "indicator_id": "#281",
-      "module": "Institutional Framework",
-      "title": "Institutional Framework Indicator 1",
-      "text": "Institutional Framework Indicator 1 — An official city government-provided website, which can be identified by the following: i) the domain name with the abbreviations for government (i.e.: gov; gob etc.) and for the city or country, ii) at the bottom of the page, the copyright (©) should mention the name of the city for that portal, e.g.: \"Copyright © ... City. All Rights Reserved\".",
-      "what": "An official city government-provided website, which can be identified by the following: i) the domain name with the abbreviations for government (i.e.: gov; gob etc.) and for the city or country, ii) at the bottom of the page, the copyright (©) should mention the name of the city for that portal, e.g.: \"Copyright © ... City. All Rights Reserved\".",
-      "why": "Enhances transparency, improves communication with residents, and provides easy access to essential services and information, promoting civic engagement and efficiency in local governance.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "Recommended steps: 1. Choose a Domain Name and Hosting: a. Select a domain name that represents your municipality and register it through a domain registrar 2. Install a Content Management System (CMS): a. Choose a CMS like WordPress, Joomla, or Drupa 3. Select a Theme: a. Choose a responsive and user-friendly theme that suits the municipality's aesthetics and requirements For more information check out the U.S. Web Design System (USWDS) Guide or the UK government's design principles or the Europa Web Guide",
-        "criteria_for_yes": "Evidence found on the designated municipal portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "🌐 For a list of cities' website portals, check out this page by UN DESA and click on each city to see their portals",
-      "reference_links": [],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "L-IF-215",
-      "indicator_id": "#215",
-      "module": "Institutional Framework",
-      "title": "/",
-      "text": "/ — A diagrammatic representation of the structure of a government organization or agency. It illustrates the hierarchy, relationships, roles, and responsibilities of various departments, units, and positions within the government.",
-      "what": "A diagrammatic representation of the structure of a government organization or agency. It illustrates the hierarchy, relationships, roles, and responsibilities of various departments, units, and positions within the government.",
-      "why": "A government organogram promotes transparency, accountability, efficient communication, people engagement, service access, and even legal and regulatory compliance in some cases.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Visual Representation: a. Create a clear and concise diagram outlining the municipal organization's structure. 2. Accessibility and Transparency: a. Publish the diagram prominently on the municipal portal for easy public access. b. Ensure the diagram is in a widely compatible format (e.g., PDF or PNG) for easy viewing. 3. Detailed Descriptions: a. Provide brief descriptions of each department or unit represented in the diagram. b. Include contact information, key responsibilities, and services offered by each department. 4. Regular Updates: a. Reflect any changes in staffing, departments, or reporting lines to maintain accuracy.",
-        "criteria_for_yes": "Evidence found on the designated municipal portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "",
-      "reference_links": [
-        "Canva's guide on creating organizational chart"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
-    {
-      "question_id": "L-IF-216",
-      "indicator_id": "#216",
-      "module": "Institutional Framework",
-      "title": "Institutional Framework Indicator 3",
-      "text": "Institutional Framework Indicator 3 — A section, chart or webpage displaying the names, official titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
-      "what": "A section, chart or webpage displaying the names, official titles, and contact information (such as phone numbers and email addresses) of individuals leading various government departments or ministries.",
-      "why": "This information allows people, businesses, or other stakeholders to directly communicate with the heads of these departments regarding specific matters, services, or concerns. It also promotes transparency, accountability, and accessibility.",
-      "how": {
-        "evidence_locus": "national_portal_only",
-        "scoring_guidance": "1. Gather Information: a. Collect the names, official titles, and contact details (phone numbers and email addresses) of department heads. 2. Create a New Webpage: a. Within your content management system (CMS), create a new webpage dedicated to this information or insert it into your organizational chart (see previous slide). 3. Regular Updates: a. Commit to keeping the information up-to-date, reflecting any changes in department leadership.",
-        "criteria_for_yes": "Evidence found on the designated municipal portal satisfying the What specification.",
-        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
-      },
-      "benchmark_case": "",
-      "reference_links": [
-        "Montevideo's Authorities' Section and Dublin's Contact Us page"
-      ],
-      "answer_type": "binary",
-      "evidence_locus": "national_portal_only",
-      "is_custom": false,
-      "requires_authenticated_access": false
-    },
     {
       "question_id": "L-IF-224",
       "indicator_id": "#224",
@@ -2180,6 +2113,75 @@
       "answer_type": "binary",
       "evidence_locus": "national_portal_only",
       "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TEST-401",
+      "indicator_id": "TEST-401",
+      "module": "test",
+      "title": "National Digital Identity Gateway",
+      "text": "National Digital Identity Gateway — A single sign-on national digital ID authentication gateway for accessing all government online services.",
+      "what": "A single sign-on national digital ID authentication gateway for accessing all government online services.",
+      "why": "Eliminates multiple logins, secures citizen personal data, and streamlines cross-agency service delivery.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Check for single citizen login portal. Criteria for Yes: Centralized identity provider (eID/SSO) available.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Estonia e-Residency/Smart-ID, Singapore Singpass, UK GOV.UK One Login.",
+      "reference_links": [
+        "https://singpass.gov.sg"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": true,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TEST-402",
+      "indicator_id": "TEST-402",
+      "module": "test",
+      "title": "Centralized Public e-Procurement Portal",
+      "text": "Centralized Public e-Procurement Portal — A national electronic portal publishing all government tender notices, bids, award notices, and contract values.",
+      "what": "A national electronic portal publishing all government tender notices, bids, award notices, and contract values.",
+      "why": "Promotes fair market competition, prevents corruption, and provides transparency in public spending.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Search national e-procurement portal. Criteria for Yes: Open tender listings and contract award publications found.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "South Korea KONEPS, ChileCompra, UK Contracts Finder.",
+      "reference_links": [
+        "https://contractsfinder.service.gov.uk"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": true,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "TEST-403",
+      "indicator_id": "TEST-403",
+      "module": "test",
+      "title": "National Open Government Data Catalog",
+      "text": "National Open Government Data Catalog — A centralized national data repository offering public sector datasets in machine-readable open formats (CSV, JSON, XML).",
+      "what": "A centralized national data repository offering public sector datasets in machine-readable open formats (CSV, JSON, XML).",
+      "why": "Stimulates economic innovation, academic research, and public accountability through open data access.",
+      "how": {
+        "evidence_locus": "national_portal_only",
+        "scoring_guidance": "1. Navigate to open data portal. Criteria for Yes: Searchable dataset catalog with direct download links.",
+        "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+        "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation."
+      },
+      "benchmark_case": "Data.gov (USA), Data.gov.uk (UK), Data.gouv.fr (France).",
+      "reference_links": [
+        "https://data.gov"
+      ],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": true,
       "requires_authenticated_access": false
     }
   ]

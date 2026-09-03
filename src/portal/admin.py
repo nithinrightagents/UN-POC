@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import pathlib
+import re
 import tempfile
 from datetime import UTC, datetime
 from urllib.parse import quote
@@ -19,19 +20,27 @@ from fastapi.templating import Jinja2Templates
 from api.finalize import final_answer_detail, publication_readiness
 from api.identity import compose_question_id
 from portal.common import ensure_session, repo_factory
-from portal.discrepancy import _compare, compute_portal_discrepancy
+from portal.discrepancy import _compare, compute_portal_discrepancy, recompute_portal_discrepancy
 from portal.msq import ingest_msq_pdf
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
 from portal.tolerance import effective_tolerance
 from review.escalations import dispose_escalation, list_escalation_queue
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
-from shared.questionnaires.registry import list_question_sets, load_question_set
+from shared.questionnaires.pdf_ingest import extract_candidate_indicators
+from shared.questionnaires.registry import (
+    delete_questionnaire,
+    get_questionnaire_detail,
+    list_question_sets,
+    load_question_set,
+    save_custom_question_set,
+)
 from shared.reference.countries import list_countries
 from shared.state.entities import (
     AnswerType,
     AssessorRole,
     EvidenceLocus,
+    PendingIndicator,
     ProjectType,
     PublicationRecord,
     Question,
@@ -42,6 +51,31 @@ from shared.state.entities import (
 )
 
 _log = logging.getLogger(__name__)
+
+
+def _blocked_if_locked(cycle: SurveyCycle | None, cycle_id: str) -> RedirectResponse | None:
+    """Units and questions freeze once an admin has assigned both assessors
+    (SurveyCycle.status == "locked") -- otherwise a mid-assessment unit/
+    question change would silently skew recompute_portal_discrepancy() and
+    AssessorCompletion.indicator_count_at_declaration, which both assume a
+    fixed question set per unit."""
+    if cycle is not None and cycle.status == "locked":
+        return RedirectResponse(f"/admin/projects/{cycle_id}?lock_error=1", status_code=303)
+    return None
+
+
+def _remove_unit(r: Repository, cycle_id: str, portal_id: str) -> None:
+    portal = r.get_portal(portal_id)
+    r.delete_portal(cycle_id, portal_id)
+    cycle = r.get_cycle(cycle_id)
+    # Only drop the country from country_set if no other unit in this
+    # cycle still targets it (LOSI projects use unit_type="city" but
+    # key by country_id, so in principle a country could reappear).
+    if cycle and portal and portal.country_id in cycle.country_set:
+        remaining = r.list_portals(cycle_id)
+        if not any(u.country_id == portal.country_id for u in remaining):
+            cycle.country_set.remove(portal.country_id)
+            r.insert_cycle(cycle)
 
 
 def _build_unit_rows(
@@ -126,27 +160,83 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             },
         )
 
+    @router.get("/admin/questionnaires", response_class=HTMLResponse)
+    def questionnaires_page(
+        request: Request,
+        deleted: str | None = None,
+        name: str | None = None,
+        error: str | None = None,
+    ):
+        qsets = list_question_sets()
+        templates_count = sum(1 for s in qsets if s.kind == "template")
+        custom_count = sum(1 for s in qsets if s.kind == "custom")
+        modules_count = sum(1 for s in qsets if s.kind == "module")
+
+        return templates.TemplateResponse(
+            request, "admin_questionnaires.html",
+            {
+                "question_sets": qsets,
+                "templates_count": templates_count,
+                "custom_count": custom_count,
+                "modules_count": modules_count,
+                "deleted": deleted,
+                "deleted_name": name,
+                "error": error,
+            },
+        )
+
+    @router.get("/admin/questionnaires/{set_id}", response_class=HTMLResponse)
+    def questionnaire_detail_page(
+        request: Request,
+        set_id: str,
+        error: str | None = None,
+    ):
+        detail = get_questionnaire_detail(set_id)
+        if detail is None:
+            return HTMLResponse("Unknown questionnaire.", status_code=404)
+
+        return templates.TemplateResponse(
+            request, "admin_questionnaire_detail.html",
+            {
+                "questionnaire": detail,
+                "error": error,
+            },
+        )
+
+    @router.post("/admin/questionnaires/{set_id}/delete")
+    def delete_questionnaire_endpoint(set_id: str):
+        try:
+            ok, label = delete_questionnaire(set_id)
+            return RedirectResponse(
+                f"/admin/questionnaires?deleted=1&name={quote(label)}",
+                status_code=303,
+            )
+        except ValueError as e:
+            return RedirectResponse(
+                f"/admin/questionnaires?error={quote(str(e))}",
+                status_code=303,
+            )
+        except FileNotFoundError as e:
+            return RedirectResponse(
+                f"/admin/questionnaires?error={quote(str(e))}",
+                status_code=303,
+            )
+
     @router.post("/admin/projects")
     def create_project(
         cycle_id: str = Form(...),
         name: str = Form(...),
         question_set_id: str = Form(...),
         project_type: str = Form("national_osi"),
-        country_ids: list[str] = Form([]),
     ):
         r = repo()
         ptype = ProjectType(project_type)
-        all_countries = list_countries()
-
-        # NOSI auto-tags every UN member state; LOSI targets only the
-        # countries picked in the multi-select (each contributing its
-        # most-populous city as the initial unit -- more cities can be added
-        # afterward via the existing add-unit form).
-        if ptype is ProjectType.NATIONAL_OSI:
-            target_countries = all_countries
-        else:
-            selected = set(country_ids)
-            target_countries = [c for c in all_countries if c.code in selected]
+        # Both National and LOSI projects default to tagging every UN member
+        # state at init (LOSI contributing each country's most-populous city
+        # as the starting unit) -- admins narrow the unit list down
+        # afterward in Manage Workspace (add/remove) rather than
+        # hand-picking countries up front.
+        target_countries = list_countries()
 
         question_set = next((s for s in list_question_sets() if s.set_id == question_set_id), None)
         questionnaire_ref = question_set.label if question_set else question_set_id
@@ -190,15 +280,24 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         cycle_id: str,
         msq_error: str | None = None,
         tolerance_error: str | None = None,
+        edit_error: str | None = None,
+        custom_set_saved: str | None = None,
+        ingest_error: str | None = None,
+        lock_error: str | None = None,
+        assign_error: str | None = None,
     ):
         r = repo()
         cycle = r.get_cycle(cycle_id)
         if cycle is None:
             return HTMLResponse("Unknown project.", status_code=404)
-        questions = r.list_questions(cycle_id)
+        questions = r.list_questions(cycle_id, include_retired=True)
         units = r.list_portals(cycle_id)
+        pending_indicator_count = len(r.list_pending_indicators(cycle_id))
         session_id = ensure_session(r, cycle_id)
-        unit_rows = _build_unit_rows(r, session_id, cycle_id, units, questions, settings)
+        # Unit progress/discrepancy math must only count live indicators --
+        # retired ones stay in the table above (for visibility) but drop out here.
+        active_questions = [q for q in questions if q.status != "retired"]
+        unit_rows = _build_unit_rows(r, session_id, cycle_id, units, active_questions, settings)
 
         eff_tol = effective_tolerance(r, cycle_id, settings)
         eff_pct = int(round(eff_tol * 100)) if abs(eff_tol * 100 - round(eff_tol * 100)) < 1e-4 else round(eff_tol * 100, 1)
@@ -210,8 +309,15 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 "units": unit_rows, "session_id": session_id,
                 "msq_error": msq_error,
                 "tolerance_error": tolerance_error,
+                "edit_error": edit_error,
+                "custom_set_saved": custom_set_saved,
+                "ingest_error": ingest_error,
+                "lock_error": lock_error,
+                "assign_error": assign_error,
+                "pending_indicator_count": pending_indicator_count,
                 "effective_tolerance_pct": eff_pct,
                 "tolerance_is_inherited": cycle.discrepancy_rate_threshold is None,
+                "countries": list_countries(),
             },
         )
 
@@ -228,6 +334,8 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         benchmark_case: str = Form(""),
     ):
         r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
         text = f"{title} — {what}"
         how_data = {
             "evidence_locus": evidence_locus,
@@ -255,33 +363,359 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             )
         )
 
-        # Branch into a distinct custom questionnaire set for this project
+        # Branch this project's full indicator set (starting template plus
+        # every custom indicator added so far) into a distinct, named,
+        # reusable questionnaire -- persisted to data/questionnaires/custom/
+        # and tagged with this project's scope so it's offered to future
+        # national/local projects in the admin create-project picker,
+        # instead of only ever renaming the label in place.
         cycle = r.get_cycle(cycle_id)
         if cycle:
-            existing_questions = r.list_questions(cycle_id)
-            total_count = len(existing_questions)
-            custom_ref_name = f"{cycle.name} Custom Questionnaire Set ({total_count} indicators)"
-            cycle.questionnaire_ref = custom_ref_name
+            live_questions = [q for q in r.list_questions(cycle_id) if q.status != "retired"]
+            saved_set = save_custom_question_set(cycle, live_questions)
+            cycle.questionnaire_ref = saved_set.label
             r.insert_cycle(cycle)  # upsert on cycle_id primary key
 
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
+    @router.post("/admin/projects/{cycle_id}/questions/save-custom-set")
+    def save_custom_indicator_set(cycle_id: str, label: str = Form("")):
+        # Explicit counterpart to the auto-save inside add_question() above --
+        # this is the path for an admin who only retired/reactivated/edited
+        # indicators (no new custom question added) but still wants the
+        # resulting set persisted as a named, reusable questionnaire.
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return RedirectResponse("/admin", status_code=303)
+        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+            return resp
+        live_questions = [q for q in r.list_questions(cycle_id) if q.status != "retired"]
+        saved_set = save_custom_question_set(cycle, live_questions, label=label.strip() or None)
+        cycle.questionnaire_ref = saved_set.label
+        r.insert_cycle(cycle)  # upsert on cycle_id primary key
+        return RedirectResponse(f"/admin/projects/{cycle_id}?custom_set_saved=1", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/indicators/upload")
+    async def upload_indicator_pdf(
+        cycle_id: str,
+        pdf_file: UploadFile,
+        module: str = Form(...),
+        prefix: str = Form(""),
+        evidence_locus: str = Form("national_portal_only"),
+    ):
+        # Generalizes the same What/Why/How slide layout the original UN
+        # OSI/LOSI questionnaires were manually extracted from (see
+        # src/data/extract_modules.py) to any admin-uploaded PDF of that
+        # format -- but nothing here is trusted directly: every parsed
+        # candidate lands in the review queue below, never straight into
+        # the live questionnaire.
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return RedirectResponse("/admin", status_code=303)
+        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+            return resp
+
+        contents = await pdf_file.read()
+        derived_prefix = re.sub(r"[^A-Za-z0-9]", "", prefix or module)[:8].upper() or "CUSTOM"
+
+        try:
+            candidates = extract_candidate_indicators(contents, module, derived_prefix, evidence_locus)
+        except ValueError:
+            return RedirectResponse(f"/admin/projects/{cycle_id}?ingest_error=unreadable", status_code=303)
+
+        if not candidates:
+            return RedirectResponse(f"/admin/projects/{cycle_id}?ingest_error=no_indicators_found", status_code=303)
+
+        pending = [
+            PendingIndicator(
+                pending_id=new_id("pending"),
+                cycle_id=cycle_id,
+                module=c["module"],
+                title=c["title"],
+                what=c["what"],
+                why=c["why"],
+                how={
+                    "evidence_locus": c["evidence_locus"],
+                    "scoring_guidance": c["how_scoring_guidance"],
+                    "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+                    "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation.",
+                },
+                indicator_id=c["indicator_id"],
+                benchmark_case=c["benchmark_case"] or None,
+                reference_links=c["reference_links"],
+                evidence_locus=EvidenceLocus(c["evidence_locus"]),
+                source_pdf_filename=pdf_file.filename or "upload.pdf",
+                source_page=c["source_page"],
+            )
+            for c in candidates
+        ]
+        r.insert_pending_indicators(pending)
+        return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
+
+    @router.get("/admin/projects/{cycle_id}/indicators/review", response_class=HTMLResponse)
+    def review_pending_indicators(request: Request, cycle_id: str):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return HTMLResponse("Unknown project.", status_code=404)
+        pending = r.list_pending_indicators(cycle_id)
+        return templates.TemplateResponse(
+            request, "admin_indicator_review.html",
+            {"cycle": cycle, "pending": pending},
+        )
+
+    @router.post("/admin/projects/{cycle_id}/indicators/review/{pending_id}/approve")
+    def approve_pending_indicator(
+        cycle_id: str,
+        pending_id: str,
+        indicator_id: str = Form(...),
+        title: str = Form(...),
+        what: str = Form(...),
+        why: str = Form(...),
+        how: str = Form(...),
+        module: str = Form("Custom Indicators"),
+        evidence_locus: str = Form("national_portal_only"),
+        benchmark_case: str = Form(""),
+    ):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        pending = r.get_pending_indicator(pending_id)
+        if pending is None or pending.cycle_id != cycle_id:
+            return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
+
+        text = f"{title} — {what}"
+        how_data = {
+            "evidence_locus": evidence_locus,
+            "scoring_guidance": how,
+            "criteria_for_yes": "Evidence found on the designated government portal satisfying the What specification.",
+            "criteria_for_no": "No evidence found or feature unreachable within reasonable navigation.",
+        }
+        r.insert_question(
+            Question(
+                question_id=compose_question_id(cycle_id, indicator_id),
+                cycle_id=cycle_id,
+                text=text,
+                answer_type=AnswerType.BINARY,
+                evidence_locus=EvidenceLocus(evidence_locus),
+                is_custom=True,
+                indicator_id=indicator_id,
+                question_class=module,
+                title=title,
+                what=what,
+                why=why,
+                how=how_data,
+                benchmark_case=benchmark_case or None,
+                reference_links=pending.reference_links,
+            )
+        )
+        r.delete_pending_indicator(pending_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/indicators/review/{pending_id}/reject")
+    def reject_pending_indicator(cycle_id: str, pending_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        pending = r.get_pending_indicator(pending_id)
+        if pending is not None and pending.cycle_id == cycle_id:
+            r.delete_pending_indicator(pending_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/indicators/review/bulk-reject")
+    def bulk_reject_pending_indicators(cycle_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        r.delete_pending_indicators_for_cycle(cycle_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/questions/{question_id}/retire")
+    def retire_question(
+        cycle_id: str, question_id: str, actor_id: str = Form("senior-reviewer"),
+    ):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        r.set_question_status(question_id, "retired", revised_by=actor_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/questions/{question_id}/reactivate")
+    def reactivate_question(
+        cycle_id: str, question_id: str, actor_id: str = Form("senior-reviewer"),
+    ):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        r.set_question_status(question_id, "active", revised_by=actor_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/questions/bulk-retire")
+    async def bulk_retire_questions(request: Request, cycle_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        form = await request.form()
+        actor_id = form.get("actor_id") or "senior-reviewer"
+        for question_id in form.getlist("question_ids"):
+            r.set_question_status(question_id, "retired", revised_by=actor_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/questions/bulk-reactivate")
+    async def bulk_reactivate_questions(request: Request, cycle_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        form = await request.form()
+        actor_id = form.get("actor_id") or "senior-reviewer"
+        for question_id in form.getlist("question_ids"):
+            r.set_question_status(question_id, "active", revised_by=actor_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/questions/{question_id}/edit")
+    def edit_question(
+        cycle_id: str,
+        question_id: str,
+        title: str = Form(...),
+        what: str = Form(...),
+        why: str = Form(...),
+        how: str = Form(...),
+        module: str = Form("Custom Indicators"),
+        evidence_locus: str = Form("national_portal_only"),
+        benchmark_case: str = Form(""),
+        actor_id: str = Form("senior-reviewer"),
+    ):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        existing = r.get_question(question_id)
+        if existing is None or not existing.is_custom:
+            # Default/master indicators are immutable content -- only custom
+            # ones support in-place edits (retire/reactivate works on both).
+            return RedirectResponse(f"/admin/projects/{cycle_id}?edit_error=not_editable", status_code=303)
+        existing.text = f"{title} — {what}"
+        existing.evidence_locus = EvidenceLocus(evidence_locus)
+        existing.question_class = module
+        existing.title = title
+        existing.what = what
+        existing.why = why
+        how_data = existing.how if isinstance(existing.how, dict) else {}
+        how_data = {**how_data, "evidence_locus": evidence_locus, "scoring_guidance": how}
+        existing.how = how_data
+        existing.benchmark_case = benchmark_case or None
+        r.update_question(existing, revised_by=actor_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/delete")
+    def delete_project(cycle_id: str):
+        r = repo()
+        r.delete_cycle(cycle_id)
+        return RedirectResponse("/admin", status_code=303)
+
     @router.post("/admin/projects/{cycle_id}/units")
     def add_unit(
         cycle_id: str, country_id: str = Form(...), display_name: str = Form(...),
-        url: str = Form(...), unit_type: str = Form("country"),
+        url: str = Form(""), unit_type: str = Form("country"),
     ):
         r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+            return resp
+        clean_url = url.strip() if url else None
         r.insert_portal(
             TargetPortal(
                 portal_id=new_id("portal"), cycle_id=cycle_id, country_id=country_id,
-                resolved_url=url, unit_type=unit_type, display_name=display_name,
+                resolved_url=clean_url or None, unit_type=unit_type, display_name=display_name,
             )
         )
-        cycle = r.get_cycle(cycle_id)
         if cycle and country_id not in cycle.country_set:
             cycle.country_set.append(country_id)
             r.insert_cycle(cycle)  # upsert on cycle_id primary key
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/units/{portal_id}/remove")
+    def remove_unit(cycle_id: str, portal_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        _remove_unit(r, cycle_id, portal_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/units/bulk-remove")
+    async def bulk_remove_units(request: Request, cycle_id: str):
+        r = repo()
+        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+            return resp
+        form = await request.form()
+        for portal_id in form.getlist("portal_ids"):
+            _remove_unit(r, cycle_id, portal_id)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/units/bulk-add")
+    async def bulk_add_units(request: Request, cycle_id: str):
+        r = repo()
+        form = await request.form()
+        country_codes = form.getlist("country_codes")
+        unit_type = form.get("unit_type", "country")
+        cycle = r.get_cycle(cycle_id)
+        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+            return resp
+        if cycle and country_codes:
+            countries_by_code = {c.code: c for c in list_countries()}
+            portals = []
+            for code in country_codes:
+                c = countries_by_code.get(code)
+                if c is None:
+                    continue
+                if unit_type == "city":
+                    display_name = f"{c.most_populous_city}, {c.name}"
+                else:
+                    display_name = c.name
+                portals.append(
+                    TargetPortal(
+                        portal_id=new_id("portal"), cycle_id=cycle_id, country_id=c.code,
+                        resolved_url=None, unit_type=unit_type, display_name=display_name,
+                    )
+                )
+                if c.code not in cycle.country_set:
+                    cycle.country_set.append(c.code)
+            if portals:
+                # ON CONFLICT(cycle_id, country_id) DO NOTHING -- re-selecting
+                # a country that already has a unit in this cycle is a no-op
+                # for the portal row, but country_set stays correctly synced.
+                r.insert_portals(portals)
+                r.insert_cycle(cycle)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/assign-assessors")
+    def assign_assessors(
+        cycle_id: str, assessor_a_email: str = Form(...), assessor_b_email: str = Form(...),
+    ):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return HTMLResponse("Unknown project.", status_code=404)
+        a, b = assessor_a_email.strip(), assessor_b_email.strip()
+        if "@" not in a or "@" not in b:
+            return RedirectResponse(f"/admin/projects/{cycle_id}?assign_error=1", status_code=303)
+        cycle.assessor_a_email = a
+        cycle.assessor_b_email = b
+        cycle.status = "locked"
+        r.insert_cycle(cycle)
+        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+
+    @router.post("/admin/projects/{cycle_id}/unassign-assessors")
+    def unassign_assessors(cycle_id: str):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return HTMLResponse("Unknown project.", status_code=404)
+        cycle.assessor_a_email = None
+        cycle.assessor_b_email = None
+        cycle.status = "active"
+        r.insert_cycle(cycle)
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/msq")
@@ -296,24 +730,26 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         msq_error = None
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
             tmp_path = tmp.name
-            try:
-                contents = await msq_file.read()
-                tmp.write(contents)
-                tmp.flush()
+            contents = await msq_file.read()
+            tmp.write(contents)
 
-                text, page_count = ingest_msq_pdf(tmp_path)
-                if not text or not text.strip():
-                    msq_error = "msq_unreadable"
-                else:
-                    r.insert_msq_document(cycle_id, portal.country_id, text, page_count)
-            except Exception:
-                _log.exception(
-                    "MSQ ingestion failed for cycle=%s country=%s file=%s",
-                    cycle_id, portal.country_id, msq_file.filename,
-                )
-                msq_error = "msq_error"
-            finally:
-                pathlib.Path(tmp_path).unlink(missing_ok=True)
+        # tmp must be closed before ingest_msq_pdf reopens it and before
+        # unlinking -- on Windows a still-open handle cannot be deleted or
+        # reliably reread by a second file object.
+        try:
+            doc = ingest_msq_pdf(tmp_path, cycle_id, portal.country_id, msq_file.filename or "msq.pdf")
+            if not doc.raw_text or not doc.raw_text.strip():
+                msq_error = "msq_unreadable"
+            else:
+                r.insert_msq_document(doc)
+        except Exception:
+            _log.exception(
+                "MSQ ingestion failed for cycle=%s country=%s file=%s",
+                cycle_id, portal.country_id, msq_file.filename,
+            )
+            msq_error = "msq_error"
+        finally:
+            pathlib.Path(tmp_path).unlink(missing_ok=True)
         suffix = f"?msq_error={msq_error}" if msq_error else ""
         return RedirectResponse(f"/admin/projects/{cycle_id}{suffix}", status_code=303)
 
@@ -329,9 +765,10 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         readiness = publication_readiness(r, session_id, cycle_id, portal_id)
         if not readiness.ready:
             cycle = r.get_cycle(cycle_id)
-            questions = r.list_questions(cycle_id)
+            questions = r.list_questions(cycle_id, include_retired=True)
+            active_questions = [q for q in questions if q.status != "retired"]
             units = r.list_portals(cycle_id)
-            unit_rows = _build_unit_rows(r, session_id, cycle_id, units, questions, settings)
+            unit_rows = _build_unit_rows(r, session_id, cycle_id, units, active_questions, settings)
             eff_tol = effective_tolerance(r, cycle_id, settings)
             eff_pct = int(round(eff_tol * 100)) if abs(eff_tol * 100 - round(eff_tol * 100)) < 1e-4 else round(eff_tol * 100, 1)
             return templates.TemplateResponse(
@@ -447,9 +884,35 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             return HTMLResponse("Unknown project.", status_code=404)
         session_id = ensure_session(r, cycle_id)
         views = list_escalation_queue(r, session_id)
+        questions_by_id = {q.question_id: q for q in r.list_questions(cycle_id, include_retired=True)}
+
+        disputed_details_by_item: dict[str, list[dict]] = {}
+        for v in views:
+            qids = v.item.context.get("disagreements") or []
+            if not qids:
+                continue
+            submissions = r.list_human_submissions(session_id, v.item.portal_id)
+            subs_by_role_qid = {(sub.role, sub.question_id): sub for sub in submissions}
+            details = []
+            for qid in qids:
+                q = questions_by_id.get(qid)
+                sub_a = subs_by_role_qid.get((AssessorRole.A, qid))
+                sub_b = subs_by_role_qid.get((AssessorRole.B, qid))
+                details.append({
+                    "question_id": qid,
+                    "question": q,
+                    "sub_a": sub_a,
+                    "sub_b": sub_b,
+                })
+            disputed_details_by_item[v.item.item_id] = details
+
         return templates.TemplateResponse(
             request, "admin_escalations.html",
-            {"cycle": cycle, "views": views, "session_id": session_id, "error": error},
+            {
+                "cycle": cycle, "views": views, "session_id": session_id, "error": error,
+                "questions_by_id": questions_by_id,
+                "disputed_details_by_item": disputed_details_by_item,
+            },
         )
 
     @router.post("/admin/projects/{cycle_id}/escalations/{item_id}/dispose")
@@ -466,18 +929,19 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             if key.startswith("resolved__") and value in ("true", "false")
         }
 
+        items = r.list_escalations(session_id)
+        matching_item = next((it for it in items if it.item_id == item_id), None)
+        if not matching_item:
+            return RedirectResponse(
+                f"/admin/projects/{cycle_id}/escalations?error={quote('Escalation item not found.')}",
+                status_code=303,
+            )
+
         if resolution == "returned_for_reconciliation":
             if not notes or not notes.strip():
                 error_msg = "A stated reason is required to return a unit for reconciliation."
                 return RedirectResponse(
                     f"/admin/projects/{cycle_id}/escalations?error={quote(error_msg)}",
-                    status_code=303,
-                )
-            items = r.list_escalations(session_id)
-            matching_item = next((it for it in items if it.item_id == item_id), None)
-            if not matching_item:
-                return RedirectResponse(
-                    f"/admin/projects/{cycle_id}/escalations?error={quote('Escalation item not found.')}",
                     status_code=303,
                 )
             try:
@@ -489,6 +953,20 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                     f"/admin/projects/{cycle_id}/escalations?error={quote(str(e))}",
                     status_code=303,
                 )
+        elif resolution == "senior_reviewer_decision":
+            disputed_qids = matching_item.context.get("disagreements") or []
+            missing = [qid for qid in disputed_qids if qid not in resolved_answers]
+            if missing:
+                error_msg = "Select Yes or No for every disputed indicator before recording a decision."
+                return RedirectResponse(
+                    f"/admin/projects/{cycle_id}/escalations?error={quote(error_msg)}",
+                    status_code=303,
+                )
+        else:
+            return RedirectResponse(
+                f"/admin/projects/{cycle_id}/escalations?error={quote('Unknown resolution method.')}",
+                status_code=303,
+            )
 
         ok = dispose_escalation(r, item_id, resolution, actor_id, notes, resolved_answers or None)
         if not ok:
@@ -497,6 +975,23 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 f"/admin/projects/{cycle_id}/escalations?error={quote(error_msg)}",
                 status_code=303,
             )
+
+        if resolution == "senior_reviewer_decision":
+            # A Senior Reviewer decision settles the disputed indicators by
+            # fiat, so it must also close the round that raised them --
+            # otherwise the round stays "open" forever (only an assessor
+            # committing joint answers ever closes one) and publish stays
+            # blocked with "reconciliation round is currently open" even
+            # though the disagreement has in fact been resolved.
+            open_round = r.open_round_for_unit(session_id, matching_item.portal_id)
+            if open_round is not None:
+                r.close_round(open_round.round_id, "resolved", datetime.now(UTC))
+                questions = r.list_questions(cycle_id)
+                q_ids = [q.question_id for q in questions]
+                tolerance = effective_tolerance(r, cycle_id, settings)
+                recompute_portal_discrepancy(
+                    r, session_id, matching_item.portal_id, q_ids, tolerance, cycle_id=cycle_id
+                )
 
         return RedirectResponse(f"/admin/projects/{cycle_id}/escalations", status_code=303)
 

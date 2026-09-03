@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Review Pending Indicators — {{ cycle.name }} | EKAP{% endblock %}
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/admin">Admin Projects</a>
+    <span>/</span>
+    <a href="/admin/projects/{{ cycle.cycle_id }}">{{ cycle.name }}</a>
+    <span>/</span>
+    <span>Review Pending Indicators</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <div style="display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge--ai">
+                <span class="badge-dot"></span>
+                {{ cycle.project_type.value }}
+            </span>
+            <span class="badge badge--neutral">{{ pending|length }} Pending Candidate(s)</span>
+        </div>
+        <h1>Review Pending Indicators</h1>
+        <p class="lead">Candidates parsed from an uploaded PDF. Nothing here counts toward the questionnaire yet -- edit as needed, then approve each one individually, or reject what doesn't belong.</p>
+    </div>
+    <div class="page-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <a href="/admin/projects/{{ cycle.cycle_id }}" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#icon-arrow-left"/></svg>
+            <span>Back to Project</span>
+        </a>
+        {% if pending %}
+        <form id="bulkRejectForm" method="post" action="/admin/projects/{{ cycle.cycle_id }}/indicators/review/bulk-reject" style="display: none;"></form>
+        <button type="button" class="btn btn-danger" onclick="confirmAndSubmit(document.getElementById('bulkRejectForm'), 'Reject all pending indicators?', 'All ' + {{ pending|length }} + ' parsed candidate(s) for this project will be discarded permanently. This cannot be undone.', 'Reject All')">
+            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+            <span>Reject All Pending</span>
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+{% if not pending %}
+<div class="card">
+    <p class="muted" style="text-align: center; padding: 2rem 0; margin: 0;">
+        No pending indicators awaiting review. Upload a PDF from the project page to parse new candidates.
+    </p>
+</div>
+{% endif %}
+
+{% for p in pending %}
+<div class="card" style="margin-bottom: 1.25rem; border-left: 4px solid var(--color-warning, #eab308);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge badge--warning">
+                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-clock"/></svg>
+                Pending Review
+            </span>
+            {% if p.source_pdf_filename %}
+            <span class="badge badge--neutral" style="font-size: 0.7rem;">
+                <svg class="icon" aria-hidden="true" style="width: 0.75rem; height: 0.75rem;"><use href="#icon-file-text"/></svg>
+                {{ p.source_pdf_filename }}{% if p.source_page %} — page {{ p.source_page }}{% endif %}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/indicators/review/{{ p.pending_id }}/approve">
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="indicator_id_{{ p.pending_id }}">Indicator Identifier *</label>
+                <input type="text" id="indicator_id_{{ p.pending_id }}" name="indicator_id" value="{{ p.indicator_id or '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="title_{{ p.pending_id }}">Indicator Title *</label>
+                <input type="text" id="title_{{ p.pending_id }}" name="title" value="{{ p.title or '' }}" required>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="module_{{ p.pending_id }}">Dimension / Module *</label>
+                <input type="text" id="module_{{ p.pending_id }}" name="module" value="{{ p.module or '' }}" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+            </div>
+            <div class="form-group">
+                <label for="evidence_locus_{{ p.pending_id }}">Evidence Locus *</label>
+                <select id="evidence_locus_{{ p.pending_id }}" name="evidence_locus" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                    <option value="national_portal_only" {% if p.evidence_locus and p.evidence_locus.value == "national_portal_only" %}selected{% endif %}>National Portal Only (Strict Locus)</option>
+                    <option value="any_government_domain" {% if p.evidence_locus and p.evidence_locus.value == "any_government_domain" %}selected{% endif %}>Any Official Government Domain</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="what_{{ p.pending_id }}">WHAT — Feature &amp; Scope Specification *</label>
+            <textarea id="what_{{ p.pending_id }}" name="what" rows="2" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;">{{ p.what or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="why_{{ p.pending_id }}">WHY — Governance &amp; Maturity Objective *</label>
+            <textarea id="why_{{ p.pending_id }}" name="why" rows="2" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;">{{ p.why or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="how_{{ p.pending_id }}">HOW — Step-by-Step Scoring Guidance &amp; Pass Criteria *</label>
+            <textarea id="how_{{ p.pending_id }}" name="how" rows="3" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs); font-family: inherit; font-size: 0.9rem;">{{ (p.how.scoring_guidance if p.how is mapping else p.how) or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="benchmark_case_{{ p.pending_id }}">Benchmark Case / Reference Example (Optional)</label>
+            <input type="text" id="benchmark_case_{{ p.pending_id }}" name="benchmark_case" value="{{ p.benchmark_case or '' }}">
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; align-items: center;">
+            <button type="submit" class="btn btn-primary" style="background-color: var(--color-brand-primary);">
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                <span>Approve &amp; Add to Questionnaire</span>
+            </button>
+        </div>
+    </form>
+
+    <form id="rejectForm_{{ p.pending_id }}" method="post" action="/admin/projects/{{ cycle.cycle_id }}/indicators/review/{{ p.pending_id }}/reject" style="display: none;"></form>
+    <button type="button" class="btn btn-sm" style="margin-top: 0.75rem; background-color: var(--color-danger-subtle, #fee2e2); border-color: var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);" onclick="confirmAndSubmit(document.getElementById('rejectForm_{{ p.pending_id }}'), 'Reject this candidate indicator?', 'It will be discarded and never added to the questionnaire. This cannot be undone.', 'Reject')">
+        <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-x"/></svg>
+        <span>Reject</span>
+    </button>
+</div>
+{% endfor %}
+
+<!-- Generic In-UI Confirmation Modal (approve/reject/bulk-reject actions) -->
+<div id="genericConfirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="genericConfirmTitle" onclick="if(event.target === this) closeGenericConfirmModal()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-header">
+            <h3 id="genericConfirmTitle" style="margin: 0;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+                <span id="genericConfirmTitleText">Confirm Action</span>
+            </h3>
+            <button type="button" class="modal-close-btn" onclick="closeGenericConfirmModal()" aria-label="Close dialog">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="genericConfirmDetail" class="muted" style="margin-top: 0;"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="closeGenericConfirmModal()">
+                <span>Cancel</span>
+            </button>
+            <button type="button" class="btn btn-danger" id="genericConfirmActionBtn" onclick="runPendingConfirmAction()">
+                <span id="genericConfirmActionLabel">Confirm</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+var _pendingConfirmSubmitForm = null;
+
+function confirmAndSubmit(form, title, detail, actionLabel) {
+    var titleEl = document.getElementById("genericConfirmTitleText");
+    var detailEl = document.getElementById("genericConfirmDetail");
+    var actionEl = document.getElementById("genericConfirmActionLabel");
+    if (titleEl) titleEl.textContent = title;
+    if (detailEl) detailEl.textContent = detail || "";
+    if (actionEl) actionEl.textContent = actionLabel || "Confirm";
+    _pendingConfirmSubmitForm = form;
+
+    var modal = document.getElementById("genericConfirmModal");
+    if (modal) {
+        modal.style.display = "flex";
+        setTimeout(function() {
+            modal.classList.add("active");
+            var actionBtn = document.getElementById("genericConfirmActionBtn");
+            if (actionBtn) actionBtn.focus();
+        }, 10);
+    }
+}
+
+function closeGenericConfirmModal() {
+    var modal = document.getElementById("genericConfirmModal");
+    if (modal) {
+        modal.classList.remove("active");
+        setTimeout(function() {
+            modal.style.display = "none";
+        }, 150);
+    }
+    _pendingConfirmSubmitForm = null;
+}
+
+function runPendingConfirmAction() {
+    var form = _pendingConfirmSubmitForm;
+    closeGenericConfirmModal();
+    if (form) form.submit();
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        closeGenericConfirmModal();
+    }
+});
+</script>
+
+{% endblock %}

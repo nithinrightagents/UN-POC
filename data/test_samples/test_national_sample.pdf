@@ -1,0 +1,81 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 4 0 R 5 0 R 6 0 R] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 11 0 R >> >> /MediaBox [0 0 612 792] /Contents 7 0 R >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 11 0 R >> >> /MediaBox [0 0 612 792] /Contents 8 0 R >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 11 0 R >> >> /MediaBox [0 0 612 792] /Contents 9 0 R >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 11 0 R >> >> /MediaBox [0 0 612 792] /Contents 10 0 R >>
+endobj
+7 0 obj
+<< /Length 145 >>
+stream
+BT /F1 11 Tf 40 720 Td (National OSI Custom Test Module) Tj ET
+BT /F1 11 Tf 40 700 Td (Section: National Digital Government Infrastructure) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Length 700 >>
+stream
+BT /F1 11 Tf 40 720 Td (National Digital Identity Gateway #401) Tj ET
+BT /F1 11 Tf 40 700 Td (What A single sign-on national digital ID authentication gateway for accessing all government online services.) Tj ET
+BT /F1 11 Tf 40 680 Td (Why Eliminates multiple logins, secures citizen personal data, and streamlines cross-agency service delivery.) Tj ET
+BT /F1 11 Tf 40 660 Td (How? Indicative Steps: 1. Check for single citizen login portal. Criteria for Yes: Centralized identity provider \(eID/SSO\) available.) Tj ET
+BT /F1 11 Tf 40 640 Td (Case Examples Estonia e-Residency/Smart-ID, Singapore Singpass, UK GOV.UK One Login.) Tj ET
+BT /F1 11 Tf 40 620 Td (Check out https://singpass.gov.sg) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Length 712 >>
+stream
+BT /F1 11 Tf 40 720 Td (Centralized Public e-Procurement Portal #402) Tj ET
+BT /F1 11 Tf 40 700 Td (What A national electronic portal publishing all government tender notices, bids, award notices, and contract values.) Tj ET
+BT /F1 11 Tf 40 680 Td (Why Promotes fair market competition, prevents corruption, and provides transparency in public spending.) Tj ET
+BT /F1 11 Tf 40 660 Td (How? Indicative Steps: 1. Search national e-procurement portal. Criteria for Yes: Open tender listings and contract award publications found.) Tj ET
+BT /F1 11 Tf 40 640 Td (Case Examples South Korea KONEPS, ChileCompra, UK Contracts Finder.) Tj ET
+BT /F1 11 Tf 40 620 Td (Check out https://contractsfinder.service.gov.uk) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Length 697 >>
+stream
+BT /F1 11 Tf 40 720 Td (National Open Government Data Catalog #403) Tj ET
+BT /F1 11 Tf 40 700 Td (What A centralized national data repository offering public sector datasets in machine-readable open formats \(CSV, JSON, XML\).) Tj ET
+BT /F1 11 Tf 40 680 Td (Why Stimulates economic innovation, academic research, and public accountability through open data access.) Tj ET
+BT /F1 11 Tf 40 660 Td (How? Indicative Steps: 1. Navigate to open data portal. Criteria for Yes: Searchable dataset catalog with direct download links.) Tj ET
+BT /F1 11 Tf 40 640 Td (Case Examples Data.gov \(USA\), Data.gov.uk \(UK\), Data.gouv.fr \(France\).) Tj ET
+BT /F1 11 Tf 40 620 Td (Check out https://data.gov) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000133 00000 n 
+0000000260 00000 n 
+0000000387 00000 n 
+0000000514 00000 n 
+0000000642 00000 n 
+0000000838 00000 n 
+0000001589 00000 n 
+0000002352 00000 n 
+0000003101 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+3172
+%%EOF

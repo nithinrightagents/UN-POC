@@ -441,18 +441,75 @@ def test_concurrent_reviewer_dispositions_surfaces_already_decided(conn, client,
     esc_item = next(it for it in items if it.portal_id == portal_id)
 
     from review.escalations import dispose_escalation
-    dispose_escalation(repo, esc_item.item_id, "senior_reviewer_override", "reviewer-1", "Resolved first")
+    dispose_escalation(repo, esc_item.item_id, "senior_reviewer_decision", "reviewer-1", "Resolved first")
 
     # Second reviewer tries disposing through admin POST route
+    disputed_qids = esc_item.context.get("disagreements") or []
+    form_data = {
+        "resolution": "senior_reviewer_decision",
+        "notes": "Publish anyway",
+        "actor_id": "reviewer-2",
+    }
+    for qid in disputed_qids:
+        form_data[f"resolved__{qid}"] = "true"
+
     resp = client.post(
         f"/admin/projects/{cycle_id}/escalations/{esc_item.item_id}/dispose",
-        data={
-            "resolution": "published_unresolved",
-            "notes": "Publish anyway",
-            "actor_id": "reviewer-2",
-        },
+        data=form_data,
         follow_redirects=False,
     )
     assert resp.status_code == 303
     assert "already%20been%20decided" in resp.headers["location"] or "already" in resp.headers["location"].lower()
+
+
+def test_senior_reviewer_decision_closes_the_open_round_and_unblocks_publish(conn, client, settings):
+    """A Senior Reviewer decision settles the disputed indicators by fiat --
+    it must also close the round that raised them. Otherwise the round stays
+    'open' forever (only an assessor committing joint answers in their own
+    workspace ever closes one) and publish stays permanently blocked with
+    "reconciliation round is currently open" even though the disagreement
+    has in fact been resolved."""
+    repo = Repository(conn)
+    cycle_id, portal_id, session_id, questions, round_obj = _setup_cap_unit(repo, total=100, disputes=10)
+
+    assert repo.open_round_for_unit(session_id, portal_id) is not None
+
+    items = repo.list_escalations(session_id, unresolved_only=True)
+    esc_item = next(it for it in items if it.portal_id == portal_id)
+    disputed_qids = esc_item.context.get("disagreements") or []
+    assert len(disputed_qids) == 10
+
+    form_data = {
+        "resolution": "senior_reviewer_decision",
+        "notes": "Overriding to True for all disputed indicators",
+        "actor_id": "senior-reviewer-sarah",
+    }
+    for qid in disputed_qids:
+        form_data[f"resolved__{qid}"] = "true"
+
+    resp = client.post(
+        f"/admin/projects/{cycle_id}/escalations/{esc_item.item_id}/dispose",
+        data=form_data,
+        follow_redirects=False,
+    )
+    assert resp.status_code == 303
+    assert "error=" not in resp.headers["location"]
+
+    assert repo.open_round_for_unit(session_id, portal_id) is None
+    rounds = repo.list_rounds_for_unit(session_id, portal_id)
+    closed = next(r for r in rounds if r.round_id == round_obj.round_id)
+    assert closed.state == "resolved"
+
+    from api.finalize import publication_readiness
+
+    readiness = publication_readiness(repo, session_id, cycle_id, portal_id)
+    assert readiness.ready is True
+    assert readiness.blocking_reason is None
+
+    publish_resp = client.post(
+        f"/admin/projects/{cycle_id}/units/{portal_id}/publish",
+        data={"actor_id": "senior-reviewer-sarah"},
+        follow_redirects=False,
+    )
+    assert publish_resp.status_code == 303
 

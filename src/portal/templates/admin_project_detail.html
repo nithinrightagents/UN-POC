@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Admin — {{ cycle.name }} | EKAP{% endblock %}
 {% block head %}
-{% if any_run_in_progress %}
-<meta http-equiv="refresh" content="10">
-{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -31,13 +28,6 @@
 </div>
 {% endif %}
 
-{% if assess_error %}
-<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
-    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
-    <strong>Could not start AI assessment.</strong> {{ assess_error }}
-</div>
-{% endif %}
-
 {% if tolerance_error %}
 <div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
     <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
@@ -45,10 +35,42 @@
 </div>
 {% endif %}
 
-{% if units|length > 10 %}
-<div class="alert-box warning">
-    <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
-    <span><strong>{{ units|length }} target units in this project.</strong> AI assessment is billed per unit and is triggered one unit at a time &mdash; there is no bulk "assess all" action. Trigger runs deliberately to stay within budget.</span>
+{% if edit_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Indicator Not Editable:</strong> Default/master indicators are part of the standardized questionnaire and cannot have their content changed &mdash; retire it and add a custom replacement instead.
+</div>
+{% endif %}
+
+{% if lock_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Project Is Locked:</strong> Assessors are already assigned, so units and indicators can't be changed. Unassign them below to make changes.
+</div>
+{% endif %}
+
+{% if assign_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Assignment Failed:</strong> Both Assessor A and Assessor B need a valid email address.
+</div>
+{% endif %}
+
+{% if ingest_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    {% if ingest_error == "unreadable" %}
+    <strong>PDF Could Not Be Read:</strong> The file may be scanned, encrypted, or not a text-based PDF.
+    {% else %}
+    <strong>No Indicators Found:</strong> No page in this PDF matched the expected What/Why/How indicator-slide layout.
+    {% endif %}
+</div>
+{% endif %}
+
+{% if custom_set_saved %}
+<div class="alert-box alert-box--success" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-success-subtle, #dcfce7); border: 1px solid var(--color-success, #22c55e); color: var(--color-success-text, #166534);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-check"/></svg>
+    <strong>Custom Indicator Set Saved:</strong> "{{ cycle.questionnaire_ref }}" is now available for future projects of this scope.
 </div>
 {% endif %}
 
@@ -61,21 +83,19 @@
             </span>
             <span class="badge badge--neutral">{{ questions|length }} Indicators</span>
             <span class="badge badge--neutral">{{ units|length }} Target Units</span>
-            {% if any_run_in_progress %}
-            <span class="badge badge--flag" aria-live="polite">
-                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
-                AI Run In Progress (Auto-refreshing)
-            </span>
-            {% endif %}
         </div>
         <h1>{{ cycle.name }}</h1>
-        <p class="lead">Project Administration: manage indicators, assign target portals, trigger automated assessment runs, ingest MSQ submissions, and publish verified evaluations.</p>
+        <p class="lead">Project Administration: manage indicators, assign target portals, ingest MSQ reference documents, and publish verified evaluations.</p>
     </div>
-    <div class="page-actions">
+    <div class="page-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
         <a href="/admin/projects/{{ cycle.cycle_id }}/escalations" class="btn btn-primary" style="background-color: var(--color-brand-navy); border-color: var(--color-brand-navy);">
             <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
             <span>Arbitration &amp; Discrepancy Queue</span>
         </a>
+        <button type="button" class="btn btn-danger" onclick="openDeleteModal()">
+            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+            <span>Remove Project</span>
+        </button>
     </div>
 </div>
 
@@ -107,6 +127,53 @@
     </div>
 </div>
 
+<!-- Assign Assessors Section -->
+<div class="card" style="margin-bottom: 1.5rem; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle);">
+    {% if cycle.status == "locked" %}
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="margin: 0; font-size: 1rem;">Assessors Assigned</h3>
+                <span class="badge badge--yes" style="font-size: 0.75rem;">Locked</span>
+            </div>
+            <p class="muted" style="margin: 0; font-size: 0.85rem;">
+                Assessor A: <strong>{{ cycle.assessor_a_email }}</strong> &nbsp;&middot;&nbsp;
+                Assessor B: <strong>{{ cycle.assessor_b_email }}</strong>
+            </p>
+        </div>
+        <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/unassign-assessors" onsubmit="return confirm('Unassign both assessors and reopen units/indicators for editing?');">
+            <button type="submit" class="btn btn-sm">
+                <svg class="icon" aria-hidden="true"><use href="#icon-settings"/></svg>
+                <span>Unassign &amp; Reopen Setup</span>
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <h3 style="margin: 0; font-size: 1rem;">Assign Assessors</h3>
+        </div>
+        <p class="muted" style="margin: 0 0 0.75rem 0; font-size: 0.85rem;">
+            Once both assessors are assigned, this project's units and indicators lock -- finish setting those up first.
+        </p>
+        <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/assign-assessors" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="assessor_a_email" style="font-size: 0.8rem;">Assessor A Email</label>
+                <input type="email" id="assessor_a_email" name="assessor_a_email" placeholder="assessor.a@example.org" required style="padding: 0.375rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="assessor_b_email" style="font-size: 0.8rem;">Assessor B Email</label>
+                <input type="email" id="assessor_b_email" name="assessor_b_email" placeholder="assessor.b@example.org" required style="padding: 0.375rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary" style="align-self: flex-end;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                <span>Assign &amp; Lock</span>
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
 <!-- Indicators Section -->
 <div class="card">
     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
@@ -117,7 +184,25 @@
                     {{ cycle.questionnaire_ref }}
                 </span>
             </div>
-            <p class="muted">Structured indicators evaluated by AI and blind human assessors with official What, Why, and How scoring criteria.</p>
+            <p class="muted">Structured indicators evaluated independently by blind human Assessors A and B with official What, Why, and How scoring criteria.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            {% if pending_indicator_count %}
+            <a href="/admin/projects/{{ cycle.cycle_id }}/indicators/review" class="btn btn-sm" style="background-color: var(--color-warning-subtle, #fef9c3); border-color: var(--color-warning, #eab308); color: var(--color-warning-text, #854d0e);">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                <span>Review Pending Indicators ({{ pending_indicator_count }})</span>
+            </a>
+            {% endif %}
+            {% if cycle.status != "locked" %}
+            <input type="text" id="customSetLabelInput" placeholder="Custom set name (optional)" style="padding: 0.35rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs); width: 220px;">
+            <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/save-custom-set" id="saveCustomSetForm" onsubmit="return false;">
+                <input type="hidden" name="label" id="saveCustomSetLabelField">
+                <button type="button" class="btn btn-sm" onclick="submitSaveCustomSet()">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+                    <span>Save as Custom Indicator Set</span>
+                </button>
+            </form>
+            {% endif %}
         </div>
     </div>
 
@@ -125,22 +210,32 @@
         <table class="data-table" aria-label="Project Indicators Table">
             <thead>
                 <tr>
+                    <th scope="col" style="width: 34px;">
+                        <input type="checkbox" id="questionsSelectAll" aria-label="Select all indicators" onchange="toggleAllQuestionChecks(this)">
+                    </th>
                     <th scope="col" style="width: 130px;">Code</th>
                     <th scope="col" style="width: 180px;">Dimension / Module</th>
                     <th scope="col">Evaluation Indicator &amp; Scoring Guidance</th>
                     <th scope="col" style="width: 140px;">Evidence Locus</th>
+                    <th scope="col" style="width: 160px;">Lifecycle</th>
                 </tr>
             </thead>
             <tbody>
                 {% for q in questions %}
-                <tr>
+                <tr{% if q.status == 'retired' %} style="opacity: 0.6;"{% endif %}>
+                    <td style="vertical-align: top;">
+                        <input type="checkbox" class="question-select" value="{{ q.question_id }}" aria-label="Select indicator {{ q.indicator_id or q.question_id }}" onchange="syncQuestionsBulkBar()">
+                    </td>
                     <td style="vertical-align: top;">
                         <code class="question-code">{{ q.indicator_id or q.question_id }}</code>
-                        {% if q.is_custom %}
-                        <div style="margin-top: 0.25rem;">
+                        <div style="margin-top: 0.25rem; display: flex; flex-direction: column; gap: 0.2rem; align-items: flex-start;">
+                            {% if q.is_custom %}
                             <span class="badge badge--warning" style="font-size: 0.65rem; padding: 0.1rem 0.35rem;">Custom</span>
+                            {% endif %}
+                            {% if q.status == 'retired' %}
+                            <span class="badge badge--no" style="font-size: 0.65rem; padding: 0.1rem 0.35rem;">Retired</span>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </td>
                     <td style="vertical-align: top;">
                         <span class="badge badge--neutral" style="font-weight: 600;">
@@ -200,10 +295,60 @@
                             {{ q.evidence_locus.value if q.evidence_locus else 'national_portal_only' }}
                         </span>
                     </td>
+                    <td style="vertical-align: top;">
+                        <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
+                            {% if cycle.status == "locked" %}
+                            <span class="badge badge--neutral" style="font-size: 0.7rem;">Locked</span>
+                            {% elif q.status == 'retired' %}
+                            <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/{{ q.question_id }}/reactivate">
+                                <input type="hidden" name="actor_id" value="senior-reviewer">
+                                <button type="submit" class="btn btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">
+                                    <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-check"/></svg>
+                                    <span>Reactivate</span>
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/{{ q.question_id }}/retire" onsubmit="return false;">
+                                <input type="hidden" name="actor_id" value="senior-reviewer">
+                                <button type="button" class="btn btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem; background-color: var(--color-danger-subtle, #fee2e2); border-color: var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);" onclick="confirmAndSubmit(this.form, 'Retire this indicator?', 'It will stop counting toward assessment progress, discrepancy checks, and publication for this cycle. Past submitted answers are kept for audit.', 'Retire')">
+                                    <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-x"/></svg>
+                                    <span>Retire</span>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            {% if q.is_custom and cycle.status != "locked" %}
+                            <details>
+                                <summary style="cursor: pointer; font-size: 0.75rem; color: var(--color-brand-primary); font-weight: 600;">Edit</summary>
+                                <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/{{ q.question_id }}/edit" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; min-width: 260px;">
+                                    <input type="hidden" name="actor_id" value="senior-reviewer">
+                                    <input type="text" name="title" value="{{ q.title or '' }}" required placeholder="Title" style="padding: 0.35rem; font-size: 0.8rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                                    <select name="module" required style="padding: 0.35rem; font-size: 0.8rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                                        {% for m in ["Institutional Framework", "Content Provision", "Service Provision", "E-Participation", "Technology", "E-Government Literacy", "Custom Dimension"] %}
+                                        <option value="{{ m }}" {% if q.question_class == m %}selected{% endif %}>{{ m }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="evidence_locus" required style="padding: 0.35rem; font-size: 0.8rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                                        <option value="national_portal_only" {% if q.evidence_locus and q.evidence_locus.value == "national_portal_only" %}selected{% endif %}>National Portal Only</option>
+                                        <option value="any_government_domain" {% if q.evidence_locus and q.evidence_locus.value == "any_government_domain" %}selected{% endif %}>Any Government Domain</option>
+                                    </select>
+                                    <textarea name="what" rows="2" required placeholder="WHAT" style="padding: 0.35rem; font-size: 0.8rem; font-family: inherit; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">{{ q.what or '' }}</textarea>
+                                    <textarea name="why" rows="2" required placeholder="WHY" style="padding: 0.35rem; font-size: 0.8rem; font-family: inherit; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">{{ q.why or '' }}</textarea>
+                                    <textarea name="how" rows="2" required placeholder="HOW" style="padding: 0.35rem; font-size: 0.8rem; font-family: inherit; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">{{ (q.how.scoring_guidance if q.how is mapping else q.how) or '' }}</textarea>
+                                    <input type="text" name="benchmark_case" value="{{ q.benchmark_case or '' }}" placeholder="Benchmark case (optional)" style="padding: 0.35rem; font-size: 0.8rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                                    <button type="submit" class="btn btn-sm btn-primary" style="font-size: 0.75rem;">
+                                        <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-check"/></svg>
+                                        <span>Save Changes</span>
+                                    </button>
+                                </form>
+                            </details>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 2rem;" class="muted">
+                    <td colspan="6" style="text-align: center; padding: 2rem;" class="muted">
                         No indicators added to this project yet. Use the form below to add indicators.
                     </td>
                 </tr>
@@ -211,6 +356,31 @@
             </tbody>
         </table>
     </div>
+
+    {% if cycle.status != "locked" %}
+    <!-- Bulk Indicator Actions Bar -->
+    <div id="questionsBulkBar" style="display: none; align-items: center; gap: 0.75rem; flex-wrap: wrap; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; margin-bottom: 1.25rem;">
+        <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary);">
+            <span id="questionsSelectedCount">0</span> indicator(s) selected
+        </span>
+        <button type="button" class="btn btn-sm" style="background-color: var(--color-danger-subtle, #fee2e2); border-color: var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);" onclick="submitQuestionsBulkAction('retire')">
+            <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+            <span>Retire Selected</span>
+        </button>
+        <button type="button" class="btn btn-sm" onclick="submitQuestionsBulkAction('reactivate')">
+            <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
+            <span>Reactivate Selected</span>
+        </button>
+        <button type="button" class="btn btn-sm" style="margin-left: auto;" onclick="clearQuestionSelection()">
+            <span>Clear Selection</span>
+        </button>
+    </div>
+    <form id="questionsBulkRetireForm" method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/bulk-retire" style="display: none;">
+        <input type="hidden" name="actor_id" value="senior-reviewer">
+    </form>
+    <form id="questionsBulkReactivateForm" method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/bulk-reactivate" style="display: none;">
+        <input type="hidden" name="actor_id" value="senior-reviewer">
+    </form>
 
     <!-- Add Indicator Form -->
     <details style="background-color: var(--color-bg-surface-subtle); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
@@ -220,7 +390,7 @@
         </summary>
         
         <div style="background-color: var(--color-info-bg); border: 1px solid var(--color-info-border); border-radius: var(--radius-xs); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--color-info-text);">
-            <strong>Questionnaire Set Customization:</strong> Adding a custom indicator will automatically branch this project's questionnaire into a distinct <strong>Custom Questionnaire Set</strong>, preserving the master template for other survey cycles.
+            <strong>Questionnaire Set Customization:</strong> Adding a custom indicator branches this project's questionnaire into a distinct, named <strong>Custom Questionnaire Set</strong> -- the master template is left untouched for other survey cycles. This custom set is saved and becomes available to admins as a selectable questionnaire when creating future projects of the same scope ({{ "National OSI" if cycle.project_type.value == "national_osi" else "LOSI" }}).
         </div>
 
         <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions" style="margin-top: 1rem;">
@@ -285,18 +455,92 @@
             </div>
         </form>
     </details>
+
+    <!-- Upload Indicator PDF -->
+    <details style="background-color: var(--color-bg-surface-subtle); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle); margin-top: 0.75rem;">
+        <summary style="font-weight: 600; cursor: pointer; color: var(--color-brand-primary); display: flex; align-items: center; gap: 0.4rem; font-size: 1rem;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-upload"/></svg>
+            <span>Upload Indicator PDF (Auto-Ingest for Review)</span>
+        </summary>
+
+        <div style="background-color: var(--color-info-bg); border: 1px solid var(--color-info-border); border-radius: var(--radius-xs); padding: 0.75rem 1rem; margin-top: 1rem; font-size: 0.85rem; color: var(--color-info-text);">
+            Upload a module PDF in the same What / Why / How slide layout used to build the default questionnaire. Every matching page is parsed as a <strong>candidate</strong> indicator -- nothing is added to this project until you review and approve each one on the next screen.
+        </div>
+
+        <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/indicators/upload" enctype="multipart/form-data" style="margin-top: 1rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="ingest_module">Dimension / Module Name *</label>
+                    <input type="text" id="ingest_module" name="module" placeholder="e.g. Cybersecurity" required>
+                </div>
+                <div class="form-group">
+                    <label for="ingest_prefix">Indicator Code Prefix (Optional)</label>
+                    <input type="text" id="ingest_prefix" name="prefix" placeholder="e.g. SEC">
+                </div>
+                <div class="form-group">
+                    <label for="ingest_evidence_locus">Evidence Locus *</label>
+                    <select id="ingest_evidence_locus" name="evidence_locus" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+                        <option value="national_portal_only">National Portal Only (Strict Locus)</option>
+                        <option value="any_government_domain">Any Official Government Domain</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ingest_pdf_file">Module PDF *</label>
+                <input type="file" id="ingest_pdf_file" name="pdf_file" accept="application/pdf" required>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" style="background-color: var(--color-brand-primary);">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-upload"/></svg>
+                    <span>Ingest PDF for Review</span>
+                </button>
+            </div>
+        </form>
+    </details>
+    {% else %}
+    <p class="muted">Project is locked -- unassign assessors to edit indicators.</p>
+    {% endif %}
 </div>
 
 <!-- Units Management Section -->
-<div class="section-title">
-    <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
-    <span>Monitored Units (Countries / Cities)</span>
+<div class="section-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
+        <span>Monitored Units (Countries / Cities)</span>
+    </div>
+    {% if units and cycle.status != "locked" %}
+    <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); text-transform: none;">
+        <input type="checkbox" id="unitsSelectAll" aria-label="Select all units" onchange="toggleAllUnitChecks(this)">
+        Select All Units
+    </label>
+    {% endif %}
 </div>
+
+{% if cycle.status != "locked" %}
+<!-- Bulk Unit Actions Bar -->
+<div id="unitsBulkBar" style="display: none; align-items: center; gap: 0.75rem; flex-wrap: wrap; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; margin-bottom: 1rem;">
+    <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary);">
+        <span id="unitsSelectedCount">0</span> unit(s) selected
+    </span>
+    <button type="button" class="btn btn-sm btn-danger" onclick="submitUnitsBulkRemove()">
+        <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+        <span>Remove Selected Units</span>
+    </button>
+    <button type="button" class="btn btn-sm" style="margin-left: auto;" onclick="clearUnitSelection()">
+        <span>Clear Selection</span>
+    </button>
+</div>
+<form id="unitsBulkRemoveForm" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/bulk-remove" style="display: none;"></form>
+{% endif %}
 
 {% for row in units %}
 <div class="card" style="border-left: 4px solid var(--color-brand-primary);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
-        <div>
+        <div style="display: flex; align-items: flex-start; gap: 0.65rem;">
+            {% if cycle.status != "locked" %}
+            <input type="checkbox" class="unit-select" value="{{ row.portal.portal_id }}" aria-label="Select unit {{ row.portal.display_name or row.portal.country_id }}" onchange="syncUnitsBulkBar()" style="margin-top: 0.3rem;">
+            {% endif %}
+            <div>
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
                 <h3 style="margin-bottom: 0; font-size: 1.25rem;">{{ row.portal.display_name or row.portal.country_id }}</h3>
                 <span class="badge badge--neutral">{{ row.portal.unit_type|upper }}</span>
@@ -309,17 +553,16 @@
                 <span class="badge badge--neutral">Unpublished</span>
                 {% endif %}
             </div>
+            {% if row.portal.resolved_url %}
             <p class="muted">
                 Official Portal:
-                {% if row.portal.resolved_url %}
                 <a href="{{ row.portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 500; word-break: break-all;">
                     {{ row.portal.resolved_url }}
                     <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
                 </a>
-                {% else %}
-                <span>No URL configured &mdash; link resolution searches live per question</span>
-                {% endif %}
             </p>
+            {% endif %}
+            </div>
         </div>
 
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -419,9 +662,17 @@
 
     <!-- Actions Toolbar -->
     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding-top: 0.75rem; border-top: 1px solid var(--color-border-subtle);">
+        {% if row.msq %}
+        <span class="badge badge--yes" style="font-size: 0.75rem;" title="{{ row.msq.source_filename }}">
+            <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-check"/></svg>
+            MSQ on file: {{ row.msq.source_filename }}
+        </span>
+        {% else %}
+        <span class="badge badge--neutral" style="font-size: 0.75rem;">No MSQ uploaded</span>
+        {% endif %}
         <form class="inline" method="post" enctype="multipart/form-data" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/msq" style="background-color: var(--color-bg-surface-subtle); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
 
-            <label for="msq_{{ row.portal.portal_id }}" style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); margin-right: 0.25rem;">MSQ PDF:</label>
+            <label for="msq_{{ row.portal.portal_id }}" style="font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); margin-right: 0.25rem;">{{ "Replace MSQ PDF:" if row.msq else "MSQ PDF:" }}</label>
             <input type="file" id="msq_{{ row.portal.portal_id }}" name="msq_file" accept="application/pdf" required style="display: inline-block; font-size: 0.8rem;">
             <button type="submit" class="btn btn-sm">
                 <svg class="icon" aria-hidden="true"><use href="#icon-upload"/></svg>
@@ -431,6 +682,15 @@
 
         {% if row.readiness and not row.readiness.ready and row.readiness.blocking_reason %}
         <span style="font-size: 0.8rem; color: #b45309; max-width: 350px;">{{ row.readiness.blocking_reason }}</span>
+        {% endif %}
+
+        {% if cycle.status != "locked" %}
+        <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/remove" onsubmit="return false;">
+            <button class="btn btn-sm btn-danger" type="button" data-unit-name="{{ row.portal.display_name or row.portal.country_id }}" onclick="confirmAndSubmit(this.form, 'Remove ' + this.dataset.unitName + ' from this project?', 'Its submissions, MSQ document, and published scorecard (if any) are deleted too.', 'Remove Unit')">
+                <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                <span>Remove Unit</span>
+            </button>
+        </form>
         {% endif %}
 
         <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/publish" style="margin-left: auto;">
@@ -447,6 +707,60 @@
 </div>
 {% endfor %}
 
+<!-- Bulk Add Countries Card -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <div>
+            <h3>Bulk Add Countries</h3>
+            <p class="muted">Search, select any number of countries, and tag them all as target units in one step. Only countries not already monitored in this project are listed.</p>
+        </div>
+        <div class="stat-icon" style="width: 36px; height: 36px;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+        </div>
+    </div>
+
+    {% if cycle.status == "locked" %}
+    <p class="muted" style="margin: 0;">Project is locked -- unassign assessors to edit units.</p>
+    {% else %}
+    {% set available_countries = countries | rejectattr("code", "in", cycle.country_set) | list %}
+    {% if available_countries %}
+    <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/bulk-add" id="bulkAddCountriesForm">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem;">
+            <input type="search" id="countrySearchFilter" placeholder="Search countries..." oninput="filterCountryOptions()" style="flex: 1; min-width: 220px; padding: 0.5rem 0.75rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
+            {% if cycle.project_type.value == "national_osi" %}
+            <input type="hidden" name="unit_type" value="country">
+            <span class="badge badge--neutral" style="padding: 0.5rem 0.75rem;">Tagging as National Portal (Country)</span>
+            {% else %}
+            <input type="hidden" name="unit_type" value="city">
+            <span class="badge badge--neutral" style="padding: 0.5rem 0.75rem;">Tagging as Municipality Portal (City, using most-populous city)</span>
+            {% endif %}
+            <button type="button" class="btn btn-sm" onclick="selectAllVisibleCountries()">Select All Visible</button>
+            <button type="button" class="btn btn-sm" onclick="clearCountrySelection()">Clear</button>
+        </div>
+
+        <div style="max-height: 260px; overflow-y: auto; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.75rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.4rem 0.75rem;" id="countryOptionsGrid">
+            {% for c in available_countries %}
+            <label class="country-option" data-country-name="{{ c.name|lower }} {{ c.code|lower }}" style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+                <input type="checkbox" name="country_codes" value="{{ c.code }}" class="country-checkbox" onchange="syncBulkAddCount()">
+                <span>{{ c.name }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.75rem;">
+            <button class="primary" type="submit" id="bulkAddSubmitBtn" disabled>
+                <svg class="icon" aria-hidden="true"><use href="#icon-plus"/></svg>
+                <span>Add <span id="bulkAddSelectedCount">0</span> Selected Countries</span>
+            </button>
+            <span class="muted" style="font-size: 0.8rem;">{{ available_countries|length }} countries available to add.</span>
+        </div>
+    </form>
+    {% else %}
+    <p class="muted" style="margin: 0;">Every country is already monitored in this project.</p>
+    {% endif %}
+    {% endif %}
+</div>
+
 <!-- Add Unit Card -->
 <div class="card" style="margin-top: 2rem;">
     <div class="card-header">
@@ -458,6 +772,9 @@
             <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
         </div>
     </div>
+    {% if cycle.status == "locked" %}
+    <p class="muted" style="margin: 0;">Project is locked -- unassign assessors to edit units.</p>
+    {% else %}
     <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units" style="max-width: 680px;">
         <div class="grid-2" style="margin-bottom: 0;">
             <div class="form-group">
@@ -471,16 +788,19 @@
         </div>
 
         <div class="form-group">
-            <label for="url">Official Portal URL</label>
-            <input type="url" id="url" name="url" placeholder="https://www.borger.dk" required>
+            <label for="url">Official Portal URL <span class="muted" style="font-weight: 400;">(Optional)</span></label>
+            <input type="url" id="url" name="url" placeholder="https://www.borger.dk (optional)">
         </div>
 
         <div class="form-group">
             <label for="unit_type">Unit Classification</label>
-            <select id="unit_type" name="unit_type" required>
-                <option value="country">National Member State Portal (Country)</option>
-                <option value="city">Local Municipality Portal (City)</option>
-            </select>
+            {% if cycle.project_type.value == "national_osi" %}
+            <input type="hidden" id="unit_type" name="unit_type" value="country">
+            <p class="muted" style="margin: 0;">National Member State Portal (Country) -- fixed by this project's type.</p>
+            {% else %}
+            <input type="hidden" id="unit_type" name="unit_type" value="city">
+            <p class="muted" style="margin: 0;">Local Municipality Portal (City) -- fixed by this project's type.</p>
+            {% endif %}
         </div>
 
         <div style="margin-top: 0.5rem;">
@@ -490,6 +810,304 @@
             </button>
         </div>
     </form>
+    {% endif %}
 </div>
+
+<!-- Danger Zone Card -->
+<div class="card" style="margin-top: 2rem; border-left: 4px solid var(--color-danger, #ef4444); background-color: var(--color-bg-surface-subtle);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h3 style="color: var(--color-danger-text, #991b1b); margin-bottom: 0.25rem;">Delete Survey Project</h3>
+            <p class="muted" style="margin: 0;">Permanently remove this project cycle along with all registered target units, indicators, assessor submissions, and published scorecards.</p>
+        </div>
+        <button type="button" class="btn btn-danger" onclick="openDeleteModal()">
+            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+            <span>Delete Project Permanently</span>
+        </button>
+    </div>
+</div>
+
+<!-- In-UI Delete Confirmation Modal -->
+<div id="deleteProjectModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="if(event.target === this) closeDeleteModal()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-header" style="border-bottom: 2px solid var(--color-danger, #ef4444);">
+            <h3 id="modalTitle" style="color: var(--color-danger-text, #991b1b);">
+                <svg class="icon" aria-hidden="true" style="color: var(--color-danger, #ef4444);"><use href="#icon-alert-triangle"/></svg>
+                <span>Delete Survey Project</span>
+            </h3>
+            <button type="button" class="modal-close-btn" onclick="closeDeleteModal()" aria-label="Close dialog">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-top: 0; margin-bottom: 0.875rem; font-size: 0.95rem; color: var(--color-text-primary);">
+                Are you sure you want to delete <strong style="color: var(--color-brand-navy);">{{ cycle.name }}</strong> (<code>{{ cycle.cycle_id }}</code>)?
+            </p>
+            <div style="background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); border-radius: var(--radius-xs); padding: 0.875rem; color: var(--color-danger-text, #991b1b); font-size: 0.85rem;">
+                <strong>Warning: This action is permanent and cannot be undone.</strong>
+                <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
+                    <li><strong>{{ units|length }}</strong> target units and portal links will be deleted</li>
+                    <li><strong>{{ questions|length }}</strong> indicator specifications and scoring rules will be deleted</li>
+                    <li>All human assessor submissions (Role A &amp; Role B) will be wiped</li>
+                    <li>Reconciliation rounds, escalation items, and published reports will be removed</li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="closeDeleteModal()">
+                <span>Cancel</span>
+            </button>
+            <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/delete" style="margin: 0;">
+                <button type="submit" class="btn btn-danger" id="confirmDeleteBtn">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                    <span>Confirm &amp; Delete Project</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Generic In-UI Confirmation Modal (retire/reactivate/remove actions) -->
+<div id="genericConfirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="genericConfirmTitle" onclick="if(event.target === this) closeGenericConfirmModal()">
+    <div class="modal-dialog" role="document">
+        <div class="modal-header">
+            <h3 id="genericConfirmTitle" style="margin: 0;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-alert-triangle"/></svg>
+                <span id="genericConfirmTitleText">Confirm Action</span>
+            </h3>
+            <button type="button" class="modal-close-btn" onclick="closeGenericConfirmModal()" aria-label="Close dialog">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p id="genericConfirmDetail" class="muted" style="margin-top: 0;"></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" onclick="closeGenericConfirmModal()">
+                <span>Cancel</span>
+            </button>
+            <button type="button" class="btn btn-danger" id="genericConfirmActionBtn" onclick="runPendingConfirmAction()">
+                <span id="genericConfirmActionLabel">Confirm</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+var _pendingConfirmSubmitForm = null;
+
+function confirmAndSubmit(form, title, detail, actionLabel) {
+    var titleEl = document.getElementById("genericConfirmTitleText");
+    var detailEl = document.getElementById("genericConfirmDetail");
+    var actionEl = document.getElementById("genericConfirmActionLabel");
+    if (titleEl) titleEl.textContent = title;
+    if (detailEl) detailEl.textContent = detail || "";
+    if (actionEl) actionEl.textContent = actionLabel || "Confirm";
+    _pendingConfirmSubmitForm = form;
+
+    var modal = document.getElementById("genericConfirmModal");
+    if (modal) {
+        modal.style.display = "flex";
+        setTimeout(function() {
+            modal.classList.add("active");
+            var actionBtn = document.getElementById("genericConfirmActionBtn");
+            if (actionBtn) actionBtn.focus();
+        }, 10);
+    }
+}
+
+function closeGenericConfirmModal() {
+    var modal = document.getElementById("genericConfirmModal");
+    if (modal) {
+        modal.classList.remove("active");
+        setTimeout(function() {
+            modal.style.display = "none";
+        }, 150);
+    }
+    _pendingConfirmSubmitForm = null;
+}
+
+function runPendingConfirmAction() {
+    var form = _pendingConfirmSubmitForm;
+    closeGenericConfirmModal();
+    if (form) form.submit();
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        closeGenericConfirmModal();
+    }
+});
+
+function openDeleteModal() {
+    var modal = document.getElementById("deleteProjectModal");
+    if (modal) {
+        modal.style.display = "flex";
+        setTimeout(function() {
+            modal.classList.add("active");
+            var confirmBtn = document.getElementById("confirmDeleteBtn");
+            if (confirmBtn) confirmBtn.focus();
+        }, 10);
+    }
+}
+
+function submitSaveCustomSet() {
+    var labelInput = document.getElementById("customSetLabelInput");
+    var labelField = document.getElementById("saveCustomSetLabelField");
+    labelField.value = labelInput ? labelInput.value : "";
+    var form = document.getElementById("saveCustomSetForm");
+    confirmAndSubmit(
+        form,
+        "Save current indicators as a custom set?",
+        "This snapshots every active indicator in this project (including any retirements or edits) as a reusable questionnaire, offered to future projects of this same scope. Saving again later overwrites this snapshot.",
+        "Save Set"
+    );
+}
+
+// --- Bulk indicator (question) actions ---
+function syncQuestionsBulkBar() {
+    var checked = document.querySelectorAll(".question-select:checked");
+    var bar = document.getElementById("questionsBulkBar");
+    var countEl = document.getElementById("questionsSelectedCount");
+    if (countEl) countEl.textContent = checked.length;
+    if (bar) bar.style.display = checked.length > 0 ? "flex" : "none";
+
+    var all = document.querySelectorAll(".question-select");
+    var selectAll = document.getElementById("questionsSelectAll");
+    if (selectAll) selectAll.checked = all.length > 0 && checked.length === all.length;
+}
+
+function toggleAllQuestionChecks(source) {
+    document.querySelectorAll(".question-select").forEach(function(cb) {
+        cb.checked = source.checked;
+    });
+    syncQuestionsBulkBar();
+}
+
+function clearQuestionSelection() {
+    document.querySelectorAll(".question-select").forEach(function(cb) { cb.checked = false; });
+    var selectAll = document.getElementById("questionsSelectAll");
+    if (selectAll) selectAll.checked = false;
+    syncQuestionsBulkBar();
+}
+
+function submitQuestionsBulkAction(action) {
+    var checked = Array.prototype.slice.call(document.querySelectorAll(".question-select:checked"));
+    if (checked.length === 0) return;
+    var verb = action === "retire" ? "Retire" : "Reactivate";
+    var detail = action === "retire"
+        ? "They will stop counting toward assessment progress, discrepancy checks, and publication for this cycle. Past submitted answers are kept for audit."
+        : "";
+
+    var form = document.getElementById(action === "retire" ? "questionsBulkRetireForm" : "questionsBulkReactivateForm");
+    form.querySelectorAll("input[name='question_ids']").forEach(function(el) { el.remove(); });
+    checked.forEach(function(cb) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "question_ids";
+        input.value = cb.value;
+        form.appendChild(input);
+    });
+
+    confirmAndSubmit(form, verb + " " + checked.length + " selected indicator(s)?", detail, verb);
+}
+
+// --- Bulk unit actions ---
+function syncUnitsBulkBar() {
+    var checked = document.querySelectorAll(".unit-select:checked");
+    var bar = document.getElementById("unitsBulkBar");
+    var countEl = document.getElementById("unitsSelectedCount");
+    if (countEl) countEl.textContent = checked.length;
+    if (bar) bar.style.display = checked.length > 0 ? "flex" : "none";
+
+    var all = document.querySelectorAll(".unit-select");
+    var selectAll = document.getElementById("unitsSelectAll");
+    if (selectAll) selectAll.checked = all.length > 0 && checked.length === all.length;
+}
+
+function toggleAllUnitChecks(source) {
+    document.querySelectorAll(".unit-select").forEach(function(cb) {
+        cb.checked = source.checked;
+    });
+    syncUnitsBulkBar();
+}
+
+function clearUnitSelection() {
+    document.querySelectorAll(".unit-select").forEach(function(cb) { cb.checked = false; });
+    var selectAll = document.getElementById("unitsSelectAll");
+    if (selectAll) selectAll.checked = false;
+    syncUnitsBulkBar();
+}
+
+function submitUnitsBulkRemove() {
+    var checked = Array.prototype.slice.call(document.querySelectorAll(".unit-select:checked"));
+    if (checked.length === 0) return;
+
+    var form = document.getElementById("unitsBulkRemoveForm");
+    form.querySelectorAll("input[name='portal_ids']").forEach(function(el) { el.remove(); });
+    checked.forEach(function(cb) {
+        var input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "portal_ids";
+        input.value = cb.value;
+        form.appendChild(input);
+    });
+
+    confirmAndSubmit(
+        form,
+        "Remove " + checked.length + " selected unit(s) from this project?",
+        "Their submissions, MSQ documents, and published scorecards (if any) are deleted too.",
+        "Remove Units"
+    );
+}
+
+// --- Bulk add countries ---
+function filterCountryOptions() {
+    var query = (document.getElementById("countrySearchFilter").value || "").toLowerCase().trim();
+    document.querySelectorAll(".country-option").forEach(function(label) {
+        var matches = !query || label.getAttribute("data-country-name").indexOf(query) !== -1;
+        label.style.display = matches ? "flex" : "none";
+    });
+}
+
+function selectAllVisibleCountries() {
+    document.querySelectorAll(".country-option").forEach(function(label) {
+        if (label.style.display !== "none") {
+            var cb = label.querySelector(".country-checkbox");
+            if (cb) cb.checked = true;
+        }
+    });
+    syncBulkAddCount();
+}
+
+function clearCountrySelection() {
+    document.querySelectorAll(".country-checkbox").forEach(function(cb) { cb.checked = false; });
+    syncBulkAddCount();
+}
+
+function syncBulkAddCount() {
+    var checked = document.querySelectorAll(".country-checkbox:checked");
+    var countEl = document.getElementById("bulkAddSelectedCount");
+    var submitBtn = document.getElementById("bulkAddSubmitBtn");
+    if (countEl) countEl.textContent = checked.length;
+    if (submitBtn) submitBtn.disabled = checked.length === 0;
+}
+
+function closeDeleteModal() {
+    var modal = document.getElementById("deleteProjectModal");
+    if (modal) {
+        modal.classList.remove("active");
+        setTimeout(function() {
+            modal.style.display = "none";
+        }, 150);
+    }
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        closeDeleteModal();
+    }
+});
+</script>
 
 {% endblock %}

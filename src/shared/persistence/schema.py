@@ -400,6 +400,19 @@ CREATE TABLE IF NOT EXISTS tolerance_changes (
 
 CREATE INDEX IF NOT EXISTS idx_tolerance_changes_cycle
     ON tolerance_changes(cycle_id, changed_at);
+
+-- Pending Indicators: candidates parsed from an admin-uploaded PDF, staged
+-- here for review before admin approval turns one into a real question row.
+-- A reject is a straight DELETE (never scoring-relevant, nothing to audit).
+CREATE TABLE IF NOT EXISTS pending_indicators (
+    pending_id TEXT PRIMARY KEY,
+    cycle_id   TEXT NOT NULL,
+    data       TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_pending_indicators_cycle
+    ON pending_indicators(cycle_id, created_at);
 """
 
 
