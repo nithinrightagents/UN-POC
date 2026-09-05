@@ -16,10 +16,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from shared.persistence.repositories import Repository
 from shared.state.confidence import is_below_acceptance_threshold
 from shared.state.entities import EvidenceArtifact
 from shared.state.reason_tags import ReasonTag, is_blocked, prefill_reason_tag, reason_tag
-from shared.persistence.repositories import Repository
 
 
 @dataclass

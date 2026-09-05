@@ -1,0 +1,43 @@
+{
+  "template_id": "custom_test-save-custom-overwrite",
+  "name": "Save Custom Set Cycle — Custom Indicator Set (2 indicators)",
+  "description": "Custom indicator set branched from project 'Save Custom Set Cycle' (test-save-custom-overwrite) after an admin added indicators beyond the starting template.",
+  "version": "custom",
+  "is_master_template": false,
+  "project_type": "national_osi",
+  "total_questions": 2,
+  "questions": [
+    {
+      "question_id": "q1",
+      "indicator_id": null,
+      "module": null,
+      "title": null,
+      "text": "Indicator 1",
+      "what": null,
+      "why": null,
+      "how": null,
+      "benchmark_case": null,
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    },
+    {
+      "question_id": "q2",
+      "indicator_id": null,
+      "module": null,
+      "title": null,
+      "text": "Indicator 2",
+      "what": null,
+      "why": null,
+      "how": null,
+      "benchmark_case": null,
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": false,
+      "requires_authenticated_access": false
+    }
+  ]
+}

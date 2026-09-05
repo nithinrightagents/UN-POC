@@ -18,8 +18,11 @@ from urllib.parse import urlparse
 import httpx
 
 from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
 from shared.ratelimit.token_bucket import RateLimiter
 from shared.state.entities import LinkSource, ResolutionAttempt
+from shared.tools.linkresolution.admissibility import check_admissible
+from shared.tools.linkresolution.relevance import choose_best
 from shared.tools.linkresolution.sources.msq import resolve_from_msq
 from shared.tools.linkresolution.sources.prior_survey_kb import resolve_from_prior_survey_kb
 from shared.tools.linkresolution.sources.search import (
@@ -29,9 +32,6 @@ from shared.tools.linkresolution.sources.search import (
     search_for_link,
 )
 from shared.tools.linkresolution.sources.sitemap import resolve_from_sitemap
-from shared.tools.linkresolution.admissibility import check_admissible
-from shared.tools.linkresolution.relevance import choose_best
-from shared.persistence.repositories import Repository
 
 
 @dataclass

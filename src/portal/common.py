@@ -14,8 +14,6 @@ from shared.state.entities import (
 )
 
 
-
-
 def session_id_for_cycle(cycle_id: str) -> str:
     """One long-lived assessment session per cycle -- every AI pre-fill run
     and every human A/B submission for a cycle accumulates into it.

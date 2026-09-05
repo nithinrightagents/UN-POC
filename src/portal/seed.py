@@ -13,21 +13,18 @@ exercises the real MSQ parser against real content, not a synthetic sample.
 
 from __future__ import annotations
 
-import asyncio
 import pathlib
+from datetime import UTC
 
+from portal.assignment import create_units
 from portal.common import ensure_session
 from portal.msq import ingest_msq_pdf
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.questionnaires.registry import load_question_set
 from shared.state.entities import (
-    AgentRunState,
-    AssessorAgentRun,
     AssessorCompletion,
     AssessorRole,
-    ElementReference,
-    EvidenceArtifact,
     HumanAssessorSubmission,
     ProjectType,
     PublicationRecord,
@@ -83,9 +80,10 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
         repo.insert_cycle(cycle_losi)
 
     session_national = ensure_session(repo, cycle_national.cycle_id)
-    session_losi = ensure_session(repo, cycle_losi.cycle_id)
+    ensure_session(repo, cycle_losi.cycle_id)
 
     national_portals = []
+    new_national = []
     for code, name, url in _NATIONAL_UNITS:
         portal = repo.get_portal_by_country(cycle_national.cycle_id, code)
         if portal is None:
@@ -93,10 +91,13 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
                 portal_id=new_id("portal"), cycle_id=cycle_national.cycle_id, country_id=code,
                 resolved_url=url, unit_type="country", display_name=name,
             )
-            repo.insert_portal(portal)
+            new_national.append(portal)
         national_portals.append(portal)
+    if new_national:
+        create_units(repo, cycle_national.cycle_id, new_national)
 
     losi_portals = []
+    new_losi = []
     for code, name, url in _LOSI_UNITS:
         portal = repo.get_portal_by_country(cycle_losi.cycle_id, code)
         if portal is None:
@@ -104,28 +105,15 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
                 portal_id=new_id("portal"), cycle_id=cycle_losi.cycle_id, country_id=code,
                 resolved_url=url, unit_type="city", display_name=name,
             )
-            repo.insert_portal(portal)
+            new_losi.append(portal)
         losi_portals.append(portal)
+    if new_losi:
+        create_units(repo, cycle_losi.cycle_id, new_losi)
 
 
     if _DENMARK_MSQ_PATH.exists():
         doc = ingest_msq_pdf(str(_DENMARK_MSQ_PATH), cycle_national.cycle_id, "DK", _DENMARK_MSQ_PATH.name)
         repo.insert_msq_document(doc)
-        if getattr(settings, "google_cloud_project", None):
-            try:
-                from core.llm_factory import ModelProvider
-                from portal.msq import match_msq_links
-                provider = ModelProvider(
-                    settings.google_cloud_project,
-                    settings.google_cloud_location,
-                    settings.google_genai_use_vertexai,
-                    settings.google_api_key,
-                )
-                candidates = await match_msq_links(doc, questions_national, provider, settings.validator_model)
-                for candidate in candidates:
-                    repo.insert_msq_link_candidate(candidate)
-            except Exception:
-                pass
 
     denmark = next(p for p in national_portals if p.country_id == "DK")
     usa = next(p for p in national_portals if p.country_id == "US")
@@ -180,7 +168,8 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
                 )
             )
 
-    from datetime import datetime, timezone
+    from datetime import datetime
+
     from portal.discrepancy import recompute_portal_discrepancy
     from portal.tolerance import effective_tolerance
 
@@ -197,7 +186,7 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
     # Close Nigeria's round as exhausted so it enters persistent_discrepancy state
     ng_round = repo.open_round_for_unit(session_national, nigeria.portal_id)
     if ng_round:
-        repo.close_round(ng_round.round_id, "exhausted", datetime.now(timezone.utc))
+        repo.close_round(ng_round.round_id, "exhausted", datetime.now(UTC))
         recompute_portal_discrepancy(repo, session_national, nigeria.portal_id, q_ids, tol, cycle_id=cycle_national.cycle_id)
 
     usa_breakdown = {
@@ -232,20 +221,14 @@ def _seed_human_pair(
     questions: list[Question], disagree_on: set[str],
 ) -> None:
     for q in questions:
-        prefill = repo.latest_prefill(session_id, q.question_id, portal_id)
-        ai_answer = bool(prefill.answer) if (prefill and prefill.suggested) else True
-
-        answer_a = ai_answer
-        answer_b = (not ai_answer) if q.indicator_id in disagree_on else ai_answer
+        answer_a = True
+        answer_b = False if q.indicator_id in disagree_on else True
 
         repo.insert_human_submission(
             HumanAssessorSubmission(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal_id, role=AssessorRole.A,
                 assessor_actor_id="demo-assessor-a", answer=answer_a,
-                evidence_url=prefill.evidence_url if prefill else None,
-                ai_suggested_answer=prefill.answer if (prefill and prefill.suggested) else None,
-                ai_suggestion_accepted=(answer_a == prefill.answer) if (prefill and prefill.suggested) else None,
             )
         )
         repo.insert_human_submission(
@@ -253,9 +236,6 @@ def _seed_human_pair(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal_id, role=AssessorRole.B,
                 assessor_actor_id="demo-assessor-b", answer=answer_b,
-                evidence_url=prefill.evidence_url if prefill else None,
-                ai_suggested_answer=prefill.answer if (prefill and prefill.suggested) else None,
-                ai_suggestion_accepted=(answer_b == prefill.answer) if (prefill and prefill.suggested) else None,
             )
         )
 

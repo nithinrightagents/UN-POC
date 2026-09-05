@@ -56,12 +56,15 @@
         </div>
         <h1>{{ portal.display_name or portal.country_id }}</h1>
         <p class="lead">
+            {% if portal.resolved_url %}
             Official Portal:
             <a href="{{ portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 600;">
                 {{ portal.resolved_url }}
                 <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
             </a>
-            &mdash; Evaluate each indicator using the portal and cited evidence.
+            &mdash;
+            {% endif %}
+            Evaluate each indicator using verified evidence and official sources.
         </p>
 
         <!-- Progress and Completion Section -->
@@ -87,7 +90,6 @@
                 </div>
 
                 <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/complete" id="complete-assessment-form">
-                    <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="actor_id" value="{{ actor_id }}">
                     <button type="submit" id="btn-complete-assessment" class="primary" {% if not can_complete %}disabled title="Answer all indicators before declaring completion"{% endif %}>
                         <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
@@ -105,7 +107,6 @@
                 <label for="actor_id" style="font-size: 0.8rem;">Assessor Identifier</label>
                 <input type="text" id="actor_id" name="actor_id" value="{{ actor_id }}" style="font-size: 0.85rem; padding: 0.375rem 0.5rem;">
             </div>
-            <input type="hidden" name="role" value="{{ role }}">
             <button type="submit" class="btn-sm" style="width: 100%;">Update Assessor ID</button>
         </form>
     </div>
@@ -237,95 +238,8 @@
     </details>
     {% endif %}
 
-    <!-- AI Suggestion Accelerator -->
-    {% if row.ai and row.ai.suggested %}
-    <div class="ai-suggestion-box">
-        <div class="ai-suggestion-header">
-            <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
-                <span class="badge badge--ai">
-                    <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"/></svg>
-                    AI Suggested Answer
-                </span>
-                <strong style="color: var(--color-text-primary); font-size: 0.95rem;">
-                    {{ "Yes — Feature Present" if row.ai.answer else "No — Absent / Not Found" }}
-                </strong>
-                {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") %}
-                <span class="badge badge--neutral" style="font-size: 0.75rem; background-color: var(--color-warning-subtle, #fef3c7); color: #92400e;">
-                    Settled Dispute
-                </span>
-                {% endif %}
-                {% if row.ai.supplying_source_label %}
-                <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Where the evidence link came from">
-                    <span class="badge-dot"></span>
-                    Source: {{ row.ai.supplying_source_label }}
-                </span>
-                {% endif %}
-            </div>
-            <div class="ai-confidence-meter">
-                <span>Confidence:</span>
-                <span class="badge badge--neutral">{{ row.ai.confidence }}%</span>
-                {% if row.ai.confidence_gap is not none %}
-                <span class="muted" style="font-size: 0.75rem; cursor: help;" title="Confidence delta between the two independent AI assessor agents. A small gap indicates strong agreement between both models.">(Agent Gap: {{ row.ai.confidence_gap }}%)</span>
-                {% endif %}
-            </div>
-        </div>
-        {% if row.ai.justification %}
-        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem;">
-            <strong>Rationale:</strong> {{ row.ai.justification }}
-        </p>
-        {% endif %}
-        {% if row.ai.evidence_url %}
-        <p style="color: var(--color-text-secondary); margin-bottom: 0.25rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-            <strong>Evidence URL:</strong>
-            <a href="{{ row.ai.evidence_url }}" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">{{ row.ai.evidence_url }}</a>
-            {% if row.ai.supplying_source_label %}
-            <span class="badge badge--source badge--source-{{ row.ai.supplying_source }}" style="font-size: 0.75rem;" title="Source link origin: {{ row.ai.supplying_source_label }}">
-                <span class="badge-dot"></span>
-                {{ row.ai.supplying_source_label }}
-            </span>
-            {% endif %}
-        </p>
-        {% endif %}
-        {% if row.ai.agreement_outcome in ("resolved_dispute", "disputed") and (row.ai.resolver_reasoning or row.ai.unselected_position) %}
-        <div style="margin-top: 0.5rem; padding: 0.5rem 0.75rem; background-color: rgba(0,0,0,0.03); border-radius: var(--radius-xs); font-size: 0.85rem;">
-            {% if row.ai.resolver_reasoning %}
-            <div><strong>Resolver Characterization:</strong> {{ row.ai.resolver_reasoning }}</div>
-            {% endif %}
-            {% if row.ai.unselected_position %}
-            <div class="muted" style="margin-top: 0.25rem;">
-                Alternative Position: <strong>{{ "Yes" if row.ai.unselected_position.answer else "No" }}</strong> (Confidence: {{ row.ai.unselected_position.confidence }}%) &mdash; <em>"{{ row.ai.unselected_position.justification }}"</em>
-            </div>
-            {% endif %}
-        </div>
-        {% endif %}
-
-        <!-- Quick 1-Click Adopt AI Suggestion Button -->
-        <div style="margin-top: 0.6rem; display: flex; justify-content: flex-end;">
-            <button type="button" class="btn btn-sm btn-ai-fill" 
-                    data-qid="{{ row.question.question_id }}"
-                    data-answer="{{ 'true' if row.ai.answer else 'false' }}"
-                    data-evidence="{{ row.ai.evidence_url or '' }}"
-                    data-notes="Adopted findings: {{ row.ai.justification|e if row.ai.justification else '' }}"
-                    style="font-size: 0.775rem; background-color: #f0f9ff; color: #0369a1; border-color: #bae6fd;"
-                    title="Pre-fill form fields with AI suggested answer and evidence URL">
-                <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-sparkles"/></svg>
-                <span>Use AI Suggestion</span>
-            </button>
-        </div>
-    </div>
-    {% elif row.ai and not row.ai.suggested %}
-    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; background-color: var(--color-bg-surface-subtle); border-left: 3px solid var(--color-border-subtle);">
-        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
-        <span>{{ row.ai.reason_text or "No suggestion produced by AI prefill." }}</span>
-    </div>
-    {% else %}
-    <div class="alert-box" style="padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem;">
-        <svg class="icon" aria-hidden="true"><use href="#icon-bot"/></svg>
-        <span>No automated pre-fill available for this indicator. Please evaluate directly from the portal.</span>
-    </div>
-    {% endif %}
-
     <!-- Assessor Previous Submission Summary Container -->
+
     <div id="summary_container_{{ row.question.question_id }}">
         {% if row.mine %}
         <div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">
@@ -353,7 +267,6 @@
 
     <!-- Submission Form -->
     <form class="stack assessor-submit-form" method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/question/{{ row.question.question_id }}/submit" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-subtle);" data-qid="{{ row.question.question_id }}">
-        <input type="hidden" name="role" value="{{ role }}">
         <input type="hidden" name="actor_id" value="{{ actor_id }}">
         
         <div class="grid-2" style="margin-bottom: 0;">
@@ -565,31 +478,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // 1-Click AI Suggestion Fill
-    document.querySelectorAll(".btn-ai-fill").forEach(function(btn) {
-        btn.addEventListener("click", function() {
-            var qid = this.getAttribute("data-qid");
-            var answer = this.getAttribute("data-answer");
-            var evidence = this.getAttribute("data-evidence");
-            var notes = this.getAttribute("data-notes");
-
-            var answerSelect = document.getElementById("answer_" + qid);
-            var evidenceInput = document.getElementById("evidence_url_" + qid);
-            var notesTextarea = document.getElementById("notes_" + qid);
-
-            if (answerSelect) answerSelect.value = answer;
-            if (evidenceInput && evidence) evidenceInput.value = evidence;
-            if (notesTextarea && notes && !notesTextarea.value) notesTextarea.value = notes;
-
-            showToast("Populated AI suggestion for " + qid, "info");
-
-            if (answerSelect) {
-                answerSelect.focus();
-                answerSelect.style.borderColor = "var(--color-brand-primary)";
-                setTimeout(function() { answerSelect.style.borderColor = ""; }, 1200);
-            }
-        });
-    });
 
     // Filter Logic
     function applyFilters() {
@@ -700,22 +588,54 @@ document.addEventListener("DOMContentLoaded", function() {
                         badge.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg><span class="badge-label">Submitted</span>';
                     }
 
-                    // Update Summary Box
+                    // Update Summary Box (built via safe DOM APIs -- notes/evidence_url
+                    // are assessor-typed free text and must never be spliced into innerHTML)
                     var summaryContainer = document.getElementById("summary_container_" + qid);
                     if (summaryContainer) {
-                        var answerBadge = data.answer 
-                            ? '<span class="badge badge--yes">Yes</span>' 
-                            : '<span class="badge badge--no">No</span>';
-                        var evidenceHtml = data.evidence_url 
-                            ? '<div style="color: var(--color-text-secondary);">Evidence URL: <a href="' + data.evidence_url + '" target="_blank" rel="noopener noreferrer" style="word-break: break-all;">' + data.evidence_url + '</a></div>' 
-                            : '';
-                        var notesHtml = data.notes 
-                            ? '<div class="muted" style="margin-top: 0.25rem;">Notes: <em>"' + data.notes + '"</em></div>' 
-                            : '';
+                        var box = document.createElement("div");
+                        box.className = "submission-summary-box";
+                        box.style.cssText = "background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;";
 
-                        summaryContainer.innerHTML = '<div class="submission-summary-box" style="background-color: var(--color-bg-surface-subtle); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin: 0.75rem 0; border: 1px solid var(--color-border-subtle); font-size: 0.875rem;">' +
-                            '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;"><strong style="color: var(--color-text-primary);">Your Current Submission:</strong> ' + answerBadge + '</div>' +
-                            evidenceHtml + notesHtml + '</div>';
+                        var header = document.createElement("div");
+                        header.style.cssText = "display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;";
+                        var headerLabel = document.createElement("strong");
+                        headerLabel.style.color = "var(--color-text-primary)";
+                        headerLabel.textContent = "Your Current Submission:";
+                        var answerBadge = document.createElement("span");
+                        answerBadge.className = data.answer ? "badge badge--yes" : "badge badge--no";
+                        answerBadge.textContent = data.answer ? "Yes" : "No";
+                        header.appendChild(headerLabel);
+                        header.appendChild(answerBadge);
+                        box.appendChild(header);
+
+                        if (data.evidence_url) {
+                            var evidenceDiv = document.createElement("div");
+                            evidenceDiv.style.color = "var(--color-text-secondary)";
+                            evidenceDiv.appendChild(document.createTextNode("Evidence URL: "));
+                            var link = document.createElement("a");
+                            var isSafeUrl = /^https?:\/\//i.test(data.evidence_url);
+                            link.href = isSafeUrl ? data.evidence_url : "#";
+                            link.target = "_blank";
+                            link.rel = "noopener noreferrer";
+                            link.style.wordBreak = "break-all";
+                            link.textContent = data.evidence_url;
+                            evidenceDiv.appendChild(link);
+                            box.appendChild(evidenceDiv);
+                        }
+
+                        if (data.notes) {
+                            var notesDiv = document.createElement("div");
+                            notesDiv.className = "muted";
+                            notesDiv.style.marginTop = "0.25rem";
+                            var notesEm = document.createElement("em");
+                            notesEm.textContent = '"' + data.notes + '"';
+                            notesDiv.appendChild(document.createTextNode("Notes: "));
+                            notesDiv.appendChild(notesEm);
+                            box.appendChild(notesDiv);
+                        }
+
+                        summaryContainer.innerHTML = "";
+                        summaryContainer.appendChild(box);
                     }
                 }
 

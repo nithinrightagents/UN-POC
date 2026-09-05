@@ -15,22 +15,18 @@ Note: Do not delete these components; they support the 2-agent configuration.
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections import Counter
 from dataclasses import dataclass, field
-import logging
 from typing import Any
 from urllib.parse import urlparse
 
 import httpx
 
-logger = logging.getLogger(__name__)
-
 from agents.adjudicator.agreement import classify_agreement
 from agents.assessor.agent import AssessorAgent
 from agents.assessor.node import assessor_node
 from agents.resolver.agent import ResolverAgent
-from agents.validator.agent import ValidatorAgent
-from agents.validator.node import validator_node
 from core.llm_factory import ModelProvider
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
@@ -39,7 +35,6 @@ from core.telemetry.stage_events import StageEventLog
 from orchestration.prefill_writer import write_prefill
 from orchestration.routers.retry_loops import (
     _describe_disagreement,
-    _run_output_from_agent_run,
     materialize_evidence_artifact,
     run_validation_retry_loop,
 )
@@ -61,6 +56,8 @@ from shared.state.schemas import PortalInput, QuestionInput, RetryAddendum
 from shared.tools.browser import BrowserSession
 from shared.tools.linkresolution.chain import resolve_link
 from shared.tools.linkresolution.locus import evidence_permitted
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass

@@ -4,6 +4,7 @@ Replaces test_jurisdiction.py which tested the regex now deleted in T035.
 """
 
 import pytest
+
 from shared.prompts.profiles import build_prompt, render_rubric_section
 
 pytestmark = pytest.mark.unit

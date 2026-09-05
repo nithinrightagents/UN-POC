@@ -5,7 +5,8 @@ FR-057: Prior-cycle custom questions are excluded from new cycle questionnaire a
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
+
 from .entities import Question
 
 

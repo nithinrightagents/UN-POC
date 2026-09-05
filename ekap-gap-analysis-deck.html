@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Gap analysis of the UN DGB EGOVSURVEY and EGovKB platform, the case against continuing on the .NET path, and how the EKAP agentic assessment platform closes each registered gap.">
+<style>
+  html{ -webkit-text-size-adjust:100% }
+  body{ margin:0 }
+  img{ max-width:100% }
+  [hidden]{ display:none !important }
+</style>
+<title>The DNN Ceiling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400..600&display=swap">
+<style>
+/* ============ tokens: complete light palette on bare :root ============ */
+:root{
+  --paper:#E9EAEE; --surface:#FCFCFD; --surface-2:#F1F2F5; --surface-3:#E3E6EB;
+  --ink:#12161C; --ink-2:#454E5A; --ink-3:#79828E;
+  --rule:#D3D7DE; --rule-strong:#A9B1BC;
+  --blue:#245E96; --blue-soft:#DDE8F3; --blue-line:#9CBAD7;
+  --ochre:#9C5F16; --ochre-soft:#F4E7D3; --ochre-line:#D7B788;
+  --green:#2A6650; --green-soft:#DBEAE3; --green-line:#93BEAD;
+  --shadow:0 1px 2px rgba(18,22,28,.07), 0 14px 38px rgba(18,22,28,.11);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --u:1cqw;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#070A0D; --surface:#12171D; --surface-2:#1A212A; --surface-3:#232C36;
+    --ink:#E4E8ED; --ink-2:#A2ACB9; --ink-3:#6E7986;
+    --rule:#262E38; --rule-strong:#3B4550;
+    --blue:#7DB4E6; --blue-soft:#152738; --blue-line:#2E547A;
+    --ochre:#DCA75F; --ochre-soft:#2C2113; --ochre-line:#6A5029;
+    --green:#74B99A; --green-soft:#132620; --green-line:#2F5A48;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 38px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#070A0D; --surface:#12171D; --surface-2:#1A212A; --surface-3:#232C36;
+  --ink:#E4E8ED; --ink-2:#A2ACB9; --ink-3:#6E7986;
+  --rule:#262E38; --rule-strong:#3B4550;
+  --blue:#7DB4E6; --blue-soft:#152738; --blue-line:#2E547A;
+  --ochre:#DCA75F; --ochre-soft:#2C2113; --ochre-line:#6A5029;
+  --green:#74B99A; --green-soft:#132620; --green-line:#2F5A48;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 14px 38px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-optical-sizing:auto;
+  min-height:100dvh; display:flex; flex-direction:column;
+}
+:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
+
+/* ============ deck chrome ============ */
+.deck{flex:1; display:flex; align-items:center; justify-content:center; padding:calc(2vh) 2vw 0}
+.stage{
+  container-type:inline-size;
+  width:min(100%, calc((100dvh - 96px) * 16 / 9));
+  aspect-ratio:16/9;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  box-shadow:var(--shadow);
+  position:relative; overflow:hidden;
+}
+.slide{
+  position:absolute; inset:0;
+  display:none; flex-direction:column;
+  padding:calc(var(--u)*3.4) calc(var(--u)*4.2) calc(var(--u)*3);
+}
+.slide.is-on{display:flex}
+
+.head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:calc(var(--u)*2);
+  padding-bottom:calc(var(--u)*.9); border-bottom:1px solid var(--rule);
+  flex:0 0 auto;
+}
+.eyebrow{
+  font-family:var(--display); font-variation-settings:"wdth" 82,"wght" 620;
+  font-size:calc(var(--u)*.86); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--blue);
+}
+.folio{
+  font-family:var(--mono); font-size:calc(var(--u)*.86); color:var(--ink-3);
+  letter-spacing:.06em; font-variant-numeric:tabular-nums;
+}
+.body{flex:1 1 auto; min-height:0; display:flex; flex-direction:column; gap:calc(var(--u)*1.5); padding-top:calc(var(--u)*1.9)}
+
+h1,h2,h3{margin:0; font-family:var(--display); text-wrap:balance; line-height:1.04}
+h2{font-variation-settings:"wdth" 92,"wght" 700; font-size:calc(var(--u)*2.75); letter-spacing:-.012em}
+h3{font-variation-settings:"wdth" 88,"wght" 660; font-size:calc(var(--u)*1.28); letter-spacing:.005em}
+p{margin:0}
+.lead{font-size:calc(var(--u)*1.32); line-height:1.42; color:var(--ink-2); max-width:64ch}
+.txt{font-size:calc(var(--u)*1.06); line-height:1.46; color:var(--ink-2)}
+.sm{font-size:calc(var(--u)*.94); line-height:1.42; color:var(--ink-2)}
+.mono{font-family:var(--mono); font-size:.92em; letter-spacing:-.01em}
+strong{font-weight:600; color:var(--ink)}
+em{font-style:italic}
+
+/* ============ title slide ============ */
+.title-grid{flex:1; display:grid; grid-template-rows:1fr auto; gap:calc(var(--u)*2)}
+.title-main{display:flex; flex-direction:column; justify-content:center; gap:calc(var(--u)*1.6)}
+h1{
+  font-variation-settings:"wdth" 96,"wght" 780;
+  font-size:calc(var(--u)*6.6); letter-spacing:-.028em; line-height:.94;
+}
+h1 .thin{font-variation-settings:"wdth" 96,"wght" 300; color:var(--ink-3); display:block; font-size:.42em; letter-spacing:-.01em; margin-bottom:.5em}
+.rule-blue{height:calc(var(--u)*.3); width:calc(var(--u)*14); background:var(--blue)}
+.title-meta{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:calc(var(--u)*2);
+  border-top:1px solid var(--rule); padding-top:calc(var(--u)*1.3);
+}
+.meta-k{
+  font-family:var(--display); font-variation-settings:"wdth" 78,"wght" 620;
+  font-size:calc(var(--u)*.78); letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3);
+  display:block; margin-bottom:calc(var(--u)*.4);
+}
+.meta-v{font-size:calc(var(--u)*.96); line-height:1.35; color:var(--ink)}
+
+/* ============ generic panels ============ */
+.panel{background:var(--surface-2); border:1px solid var(--rule); padding:calc(var(--u)*1.5)}
+.panel-quiet{background:none; border:none; border-left:calc(var(--u)*.22) solid var(--rule-strong); padding:0 0 0 calc(var(--u)*1.3)}
+.cols{display:grid; gap:calc(var(--u)*2.2); flex:1; min-height:0}
+.c2{grid-template-columns:1fr 1fr}
+.c2w{grid-template-columns:1.15fr .85fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.stack{display:flex; flex-direction:column; gap:calc(var(--u)*1.1); min-height:0}
+
+/* ============ register table ============ */
+.reg{width:100%; border-collapse:collapse; font-size:calc(var(--u)*.84)}
+.reg thead th{
+  font-family:var(--display); font-variation-settings:"wdth" 78,"wght" 640;
+  font-size:calc(var(--u)*.72); letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3);
+  text-align:left; padding:0 calc(var(--u)*.8) calc(var(--u)*.5) 0;
+  border-bottom:1.5px solid var(--rule-strong);
+}
+.reg tbody td{
+  padding:calc(var(--u)*.44) calc(var(--u)*.8) calc(var(--u)*.44) 0;
+  border-bottom:1px solid var(--rule); vertical-align:top; line-height:1.3; color:var(--ink-2);
+}
+.reg tbody tr:last-child td{border-bottom:none}
+.reg .id{font-family:var(--mono); font-size:calc(var(--u)*.78); color:var(--ink-3); white-space:nowrap; font-variant-numeric:tabular-nums}
+.reg .what{color:var(--ink); font-family:var(--display); font-variation-settings:"wdth" 90,"wght" 600; font-size:calc(var(--u)*.88); line-height:1.24}
+.reg .ev{font-style:italic}
+.reg .ev cite{font-style:normal; font-family:var(--mono); font-size:calc(var(--u)*.7); color:var(--ink-3); display:block; margin-top:calc(var(--u)*.15)}
+.reg th.n-id,.reg td.n-id{width:5.5%}
+.reg th.n-sev,.reg td.n-sev{width:9%}
+
+.sev{
+  font-family:var(--display); font-variation-settings:"wdth" 76,"wght" 660;
+  font-size:calc(var(--u)*.72); letter-spacing:.1em; text-transform:uppercase;
+  padding:calc(var(--u)*.16) calc(var(--u)*.45); white-space:nowrap; display:inline-block;
+}
+.sev-h{background:var(--ochre-soft); color:var(--ochre); border:1px solid var(--ochre-line)}
+.sev-m{background:var(--surface-3); color:var(--ink-2); border:1px solid var(--rule-strong)}
+.sev-b{background:var(--green-soft); color:var(--green); border:1px solid var(--green-line)}
+.sev-x{background:var(--blue-soft); color:var(--blue); border:1px solid var(--blue-line)}
+
+/* ============ figure tiles ============ */
+.figs{display:grid; grid-template-columns:repeat(3,1fr); gap:calc(var(--u)*1.6)}
+.fig{border-top:calc(var(--u)*.24) solid var(--ochre); padding-top:calc(var(--u)*.9)}
+.fig .n{
+  font-family:var(--display); font-variation-settings:"wdth" 88,"wght" 740;
+  font-size:calc(var(--u)*3.5); line-height:.92; letter-spacing:-.03em;
+  color:var(--ink); font-variant-numeric:tabular-nums; display:block;
+}
+.fig .n small{font-size:.34em; font-variation-settings:"wdth" 88,"wght" 560; color:var(--ink-3); letter-spacing:0}
+.fig .l{font-size:calc(var(--u)*.92); color:var(--ink-2); line-height:1.36; margin-top:calc(var(--u)*.5)}
+.fig .basis{font-family:var(--mono); font-size:calc(var(--u)*.74); color:var(--ink-3); margin-top:calc(var(--u)*.4); line-height:1.35}
+
+/* ============ argument list (numbered = real sequence only where true) ============ */
+.args{display:flex; flex-direction:column; gap:calc(var(--u)*1.05)}
+.arg{display:grid; grid-template-columns:calc(var(--u)*8.5) 1fr; gap:calc(var(--u)*1.4); align-items:start;
+     padding-bottom:calc(var(--u)*1.05); border-bottom:1px solid var(--rule)}
+.arg:last-child{border-bottom:none; padding-bottom:0}
+.arg-k{
+  font-family:var(--display); font-variation-settings:"wdth" 74,"wght" 660;
+  font-size:calc(var(--u)*.78); letter-spacing:.11em; text-transform:uppercase;
+  color:var(--ochre); line-height:1.3; padding-top:calc(var(--u)*.16);
+}
+.arg-h{font-family:var(--display); font-variation-settings:"wdth" 92,"wght" 650; font-size:calc(var(--u)*1.14); color:var(--ink); margin-bottom:calc(var(--u)*.28)}
+.arg-b{font-size:calc(var(--u)*1.0); line-height:1.46; color:var(--ink-2); max-width:calc(var(--u)*70)}
+.arg-h{max-width:calc(var(--u)*70)}
+
+/* ============ pipeline ============ */
+.pipe{display:grid; grid-template-columns:repeat(7,1fr); gap:calc(var(--u)*.55)}
+.step{background:var(--surface-2); border:1px solid var(--rule); border-top:calc(var(--u)*.24) solid var(--blue); padding:calc(var(--u)*.85) calc(var(--u)*.7); display:flex; flex-direction:column; gap:calc(var(--u)*.35)}
+.step .sn{font-family:var(--mono); font-size:calc(var(--u)*.72); color:var(--ink-3); font-variant-numeric:tabular-nums}
+.step .st{font-family:var(--display); font-variation-settings:"wdth" 84,"wght" 660; font-size:calc(var(--u)*.94); color:var(--ink); line-height:1.14}
+.step .sd{font-size:calc(var(--u)*.8); line-height:1.34; color:var(--ink-2)}
+.step.hum{border-top-color:var(--green)}
+.step.ai{border-top-color:var(--ochre)}
+
+.legend{display:flex; gap:calc(var(--u)*1.8); flex-wrap:wrap; font-size:calc(var(--u)*.82); color:var(--ink-2); align-items:center}
+.legend span{display:flex; align-items:center; gap:calc(var(--u)*.45)}
+.swatch{width:calc(var(--u)*1.5); height:calc(var(--u)*.28); display:inline-block}
+
+/* ============ key/value rows ============ */
+.kv{display:flex; flex-direction:column}
+.kv > div{display:grid; grid-template-columns:auto 1fr; gap:calc(var(--u)*1.2); padding:calc(var(--u)*.52) 0; border-bottom:1px solid var(--rule); font-size:calc(var(--u)*.92); line-height:1.36}
+.kv > div:last-child{border-bottom:none}
+.kv dt, .kv .k{font-family:var(--mono); font-size:calc(var(--u)*.8); color:var(--ink-3); white-space:nowrap}
+.kv .v{color:var(--ink-2)}
+
+.ticklist{display:flex; flex-direction:column; gap:calc(var(--u)*.6)}
+.ticklist li{list-style:none; display:grid; grid-template-columns:calc(var(--u)*1.5) 1fr; gap:calc(var(--u)*.7); font-size:calc(var(--u)*.95); line-height:1.4; color:var(--ink-2)}
+.ticklist .mk{font-family:var(--mono); color:var(--green); font-size:calc(var(--u)*.95)}
+.ticklist.no .mk{color:var(--ochre)}
+ul{margin:0; padding:0}
+
+svg{display:block; width:100%; height:auto}
+
+/* ============ nav rail ============ */
+.rail{
+  flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:calc(1vw);
+  padding:14px 2vw 16px;
+}
+.rail-inner{display:flex; align-items:center; gap:10px; max-width:100%}
+.tick{
+  appearance:none; background:none; border:none; cursor:pointer; padding:6px 2px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.05em; color:var(--ink-3);
+  display:flex; flex-direction:column; align-items:center; gap:5px; min-width:26px;
+}
+.tick i{display:block; width:22px; height:2px; background:var(--rule-strong); transition:background .18s}
+.tick:hover i{background:var(--ink-3)}
+.tick[aria-current="true"]{color:var(--ink)}
+.tick[aria-current="true"] i{background:var(--blue); height:3px}
+.navbtn{
+  appearance:none; cursor:pointer; background:var(--surface); border:1px solid var(--rule);
+  color:var(--ink-2); font-family:var(--display); font-variation-settings:"wdth" 80,"wght" 600;
+  font-size:11px; letter-spacing:.09em; text-transform:uppercase; padding:7px 11px;
+}
+.navbtn:hover{border-color:var(--rule-strong); color:var(--ink)}
+.railmeta{font-family:var(--mono); font-size:11px; color:var(--ink-3); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important; animation:none!important}}
+
+/* ============ narrow screens: slides flow as a document ============ */
+@media (max-width:860px){
+  .deck{padding:0}
+  .stage{width:100%; aspect-ratio:auto; border-left:none; border-right:none; box-shadow:none; --u:2.5cqw}
+  .slide{position:static; display:flex!important; min-height:100dvh; border-bottom:1px solid var(--rule-strong)}
+  .rail{display:none}
+  .title-meta,.figs,.c2,.c2w,.c3{grid-template-columns:1fr!important}
+  .pipe{grid-template-columns:1fr 1fr}
+  .reg{font-size:calc(var(--u)*1.05)}
+}
+
+/* ============ print: one landscape page per slide ============ */
+@page{size:A4 landscape; margin:0}
+@media print{
+  :root{--paper:#fff; --surface:#fff; color-scheme:light}
+  body{background:#fff}
+  .deck{padding:0; display:block}
+  .rail{display:none}
+  .stage{width:100%; aspect-ratio:auto; border:none; box-shadow:none; --u:1.05cqw}
+  .slide{position:static; display:flex!important; height:100vh; break-after:page; page-break-after:always; border:none}
+  .slide:last-child{break-after:auto; page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<main class="deck">
+<div class="stage" id="stage">
+
+<!-- ============================ 01 ============================ -->
+<section class="slide is-on" id="s1" aria-label="Slide 1">
+  <div class="head"><span class="eyebrow">UN DESA &middot; DPIDG &middot; Digital Government Branch</span><span class="folio">01 / 11</span></div>
+  <div class="body title-grid">
+    <div class="title-main">
+      <div class="rule-blue"></div>
+      <h1><span class="thin">Gap analysis of EGOVSURVEY &amp; EGovKB</span>The DNN Ceiling</h1>
+      <p class="lead">Everything the current assessment platform cannot do is downstream of one decision: two applications pinned to DNN&nbsp;9.6.1 on ASP.NET WebForms, with the scoring engine living outside both of them. This deck registers those gaps against the Branch's own documentation, then shows what the EKAP agentic assessment platform already does about each one.</p>
+    </div>
+    <div class="title-meta">
+      <div><span class="meta-k">Assessed against</span><span class="meta-v">Existing DGB Applications and Infrastructure &mdash; A. Kariuki, 3 Mar 2025</span></div>
+      <div><span class="meta-k">Cross-referenced</span><span class="meta-v">EKAP Phase 3 &mdash; Technical Design Package, May 2026</span></div>
+      <div><span class="meta-k">Scope of the index</span><span class="meta-v">193 Member States (OSI) &middot; LOSI cities &middot; biennial cycle</span></div>
+      <div><span class="meta-k">Counter-proposal</span><span class="meta-v">EKAP AIQ &mdash; running platform, Python&nbsp;3.11 / FastAPI</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 02 ============================ -->
+<section class="slide" id="s2" aria-label="Slide 2">
+  <div class="head"><span class="eyebrow">I &middot; The system as documented</span><span class="folio">02 / 11</span></div>
+  <div class="body">
+    <h2>Two applications, one stack, and a scoring engine that isn't in either of them</h2>
+    <svg viewBox="0 0 1000 330" role="img" aria-label="As-is architecture: EGOVSURVEY and EGovKB on shared DNN infrastructure, joined by manual re-keying, with index calculation happening outside both systems">
+      <!-- access band -->
+      <rect x="0" y="0" width="1000" height="44" fill="var(--surface-2)" stroke="var(--rule)"></rect>
+      <text x="14" y="27" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--ink-2)">ACCESS &nbsp; UNHQ VPN &middot; Citrix NetScaler gateway &middot; RDP to servers &middot; UNHQ Active Directory <tspan fill="var(--ochre)">(explicitly NOT Azure AD)</tspan></text>
+
+      <!-- app boxes -->
+      <rect x="0" y="72" width="400" height="106" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1.5"></rect>
+      <text x="18" y="100" font-family="Archivo, sans-serif" font-weight="700" font-size="19" fill="var(--ink)">EGOVSURVEY</text>
+      <text x="18" y="124" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-2)">DNN 9.6.1 &middot; ASP.NET WebForms &middot; IIS</text>
+      <text x="18" y="146" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-3)">assessment intake &mdash; OSQ, MSQ, LGQ</text>
+      <text x="18" y="166" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-3)">NYVM2500</text>
+
+      <rect x="600" y="72" width="400" height="106" fill="var(--surface)" stroke="var(--rule-strong)" stroke-width="1.5"></rect>
+      <text x="618" y="100" font-family="Archivo, sans-serif" font-weight="700" font-size="19" fill="var(--ink)">EGovKB</text>
+      <text x="618" y="124" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-2)">DNN 9.6.1 &middot; ASP.NET WebForms &middot; IIS</text>
+      <text x="618" y="146" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-3)">public knowledge base &mdash; country / city pages</text>
+      <text x="618" y="166" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="var(--ink-3)">NYVM2500</text>
+
+      <!-- manual bridge -->
+      <line x1="404" y1="125" x2="596" y2="125" stroke="var(--ochre)" stroke-width="2" stroke-dasharray="7 6"></line>
+      <polygon points="596,125 583,119 583,131" fill="var(--ochre)"></polygon>
+      <text x="500" y="108" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="650" font-size="13" fill="var(--ochre)">HAND RE-KEY</text>
+      <text x="500" y="150" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ochre)">Value / Rank pairs,</text>
+      <text x="500" y="165" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11.5" fill="var(--ochre)">per country, per index</text>
+
+      <!-- external scoring -->
+      <rect x="290" y="205" width="420" height="58" fill="var(--ochre-soft)" stroke="var(--ochre-line)" stroke-dasharray="5 4"></rect>
+      <text x="500" y="230" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="700" font-size="15" fill="var(--ochre)">INDEX CALCULATION &mdash; OUTSIDE BOTH SYSTEMS</text>
+      <text x="500" y="251" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ochre)">spreadsheets + ad-hoc scripts &middot; no system of record</text>
+      <line x1="200" y1="178" x2="290" y2="228" stroke="var(--ochre-line)" stroke-width="1.5" stroke-dasharray="4 4"></line>
+      <line x1="800" y1="178" x2="710" y2="228" stroke="var(--ochre-line)" stroke-width="1.5" stroke-dasharray="4 4"></line>
+
+      <!-- data band -->
+      <rect x="0" y="288" width="1000" height="42" fill="var(--surface-2)" stroke="var(--rule)"></rect>
+      <text x="14" y="314" font-family="IBM Plex Mono, monospace" font-size="13" fill="var(--ink-2)">DATA &nbsp; NYVM2501 &middot; Microsoft SQL Server &middot; database <tspan fill="var(--ink)">SurveyEgov</tspan> &middot; EKBSRVY_ table family</text>
+    </svg>
+    <div class="panel-quiet">
+      <p class="txt"><strong>The load-bearing observation.</strong> EGOVSURVEY collects and EGovKB displays &mdash; but nothing in the documented architecture computes. The index that the whole exercise exists to produce is assembled in spreadsheets, then typed back into a public website by hand. Every gap in the register that follows is a consequence of that shape.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 03 ============================ -->
+<section class="slide" id="s3" aria-label="Slide 3">
+  <div class="head"><span class="eyebrow">II &middot; Gap register</span><span class="folio">03 / 11</span></div>
+  <div class="body">
+    <h2>Ten gaps, each evidenced from the Branch's own operations manual</h2>
+    <table class="reg">
+      <thead><tr><th class="n-id">ID</th><th style="width:23%">Gap</th><th>What the document actually says</th><th class="n-sev">Severity</th></tr></thead>
+      <tbody>
+        <tr><td class="n-id id">G-01</td><td class="what">No working project-creation path</td><td class="ev">&ldquo;On &lsquo;Project Manager&rsquo; page, duplicate the existing projects to create new projects. <strong>Don't use &lsquo;Add New Project&rsquo; button.</strong>&rdquo; New cycles are clones of the 2022 survey.<cite>DGB &sect;4.2.3</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-02</td><td class="what">Publication is manual data entry</td><td class="ev">&ldquo;Fill the Value/Rank pairs for each country and click &lsquo;Save&rsquo;&hellip; done for each Index Type separately.&rdquo; No import, no feed, no API.<cite>DGB &sect;5.2.2</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-03</td><td class="what">No system of record for the score</td><td class="ev">Index calculation is &ldquo;semi-manual&hellip; often outside EGOVSURVEY&rdquo;; publication is &ldquo;exported, transformed, and loaded&rdquo; into EGovKB.<cite>Phase 3 &sect;3.4&ndash;3.5</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-04</td><td class="what">Questionnaire authoring one click at a time</td><td class="ev">Add question &rarr; create stage &rarr; assign &rarr; reorder with arrows. &ldquo;The system does not permit you to move more than [one] question simultaneously.&rdquo;<cite>DGB &sect;4.2.4</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-05</td><td class="what">No discrepancy engine</td><td class="ev">A &ldquo;% Threshold&rdquo; field exists and is told to stay at 20 &mdash; but no detection, no reconciliation round, no arbitration queue is documented anywhere.<cite>DGB &sect;4.2.3</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-06</td><td class="what">Zero assisted pre-fill</td><td class="ev">Volunteers &ldquo;record observations, assign scores, and document supporting evidence such as screenshots and URLs&rdquo; by hand. Every judgement starts from a blank field.<cite>DGB &sect;4</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+        <tr><td class="n-id id">G-07</td><td class="what">Administration is geofenced</td><td class="ev">Admin login &ldquo;only accessible from UN on-site network&rdquo;; external access needs UNHQ VPN; servers reached by RDP on UNHQ AD, not Azure AD.<cite>DGB &sect;3.3, &sect;4.2.1</cite></td><td class="n-sev"><span class="sev sev-m">Medium</span></td></tr>
+        <tr><td class="n-id id">G-08</td><td class="what">No assessor lifecycle</td><td class="ev">Users are created in DNN's user manager; roles assigned by typing into a search box. No language, expertise, conflict-of-interest, training or performance record.<cite>DGB &sect;4.2.2</cite></td><td class="n-sev"><span class="sev sev-m">Medium</span></td></tr>
+        <tr><td class="n-id id">G-09</td><td class="what">No integration surface</td><td class="ev">The operations manual documents no API. The only connection between the two applications is a person copying figures between them.<cite>DGB, whole doc</cite></td><td class="n-sev"><span class="sev sev-m">Medium</span></td></tr>
+        <tr><td class="n-id id">G-10</td><td class="what">Single pinned platform version</td><td class="ev">&ldquo;Both applications are on DNN version 9.6.1&rdquo; &mdash; one framework, one version, both systems. One blast radius.<cite>DGB &sect;3.1</cite></td><td class="n-sev"><span class="sev sev-h">High</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ 04 ============================ -->
+<section class="slide" id="s4" aria-label="Slide 4">
+  <div class="head"><span class="eyebrow">II &middot; Gap register &mdash; what it costs per cycle</span><span class="folio">04 / 11</span></div>
+  <div class="body">
+    <h2>The gaps are not inconveniences. They are the shape of the workload.</h2>
+    <div class="figs">
+      <div class="fig">
+        <span class="n">60,602</span>
+        <p class="l">human judgements per national cycle &mdash; <strong>every one starting from an empty field</strong></p>
+        <p class="basis">193 Member States &times; 157 indicators<br>(un_osi_2024_master) &times; 2 blind assessors</p>
+      </div>
+      <div class="fig">
+        <span class="n">1,930</span>
+        <p class="l">figures hand-typed into EGovKB before a single country page renders correctly</p>
+        <p class="basis">193 countries &times; 5 national indices<br>(EGDI, OSI, HCI, TII, EPI) &times; Value + Rank</p>
+      </div>
+      <div class="fig">
+        <span class="n">~50<small>%</small></span>
+        <p class="l">of assessment features change across eight years &mdash; against an authoring tool that reorders one question at a time</p>
+        <p class="basis">Feature evolution across biennial editions,<br>per DGB scoping</p>
+      </div>
+    </div>
+    <div class="cols c2" style="flex:0 0 auto">
+      <div class="panel">
+        <h3 style="color:var(--ochre)">Why it compounds rather than adds</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.7)">A cycle cannot start until a 2022 project is cloned (G-01) and its question set is hand-reordered into the current instrument (G-04). It cannot finish until discrepancies are pulled into a spreadsheet, resolved off-platform, scored off-platform (G-03, G-05), and re-typed into a public website index by index (G-02). The platform is absent at exactly the two moments &mdash; instrument setup and score publication &mdash; where errors are least recoverable.</p>
+      </div>
+      <div class="panel">
+        <h3 style="color:var(--blue)">And the evidence trail is the casualty</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.7)">Because arbitration and scoring happen in spreadsheets, the reasoning behind a published figure lives outside the system that publishes it. When a Member State queries its rank, the chain from portal observation &rarr; assessor answer &rarr; discrepancy resolution &rarr; published value cannot be reconstructed from the platform. That is a defensibility problem before it is an efficiency problem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 05 ============================ -->
+<section class="slide" id="s5" aria-label="Slide 5">
+  <div class="head"><span class="eyebrow">III &middot; The stack question</span><span class="folio">05 / 11</span></div>
+  <div class="body">
+    <h2>Why continuing on the .NET path is not favourable</h2>
+    <p class="lead" style="font-size:calc(var(--u)*1.06); color:var(--ink-3); border-left:calc(var(--u)*.22) solid var(--blue); padding-left:calc(var(--u)*1.1); max-width:none">Stated precisely, so the argument survives scrutiny: this is <strong>not</strong> a case against modern .NET as a language or runtime. It is a case against three specific things the current path carries forward &mdash; WebForms, the legacy schema, and a procurement-gated single AI vendor.</p>
+    <div class="args">
+      <div class="arg">
+        <div class="arg-k">Terminal<br>framework</div>
+        <div><p class="arg-h">WebForms is a closed road, not an old one</p><p class="arg-b">DNN 9.6.1 sits on ASP.NET WebForms, which runs only on .NET Framework 4.x &mdash; Windows-only, never ported to .NET Core or .NET 5+. It is maintained, not advanced. Building the next decade of EGDI on it means building on a branch with no forward path; a later migration is not deferred, it is guaranteed.</p></div>
+      </div>
+      <div class="arg">
+        <div class="arg-k">Inherited<br>ceiling</div>
+        <div><p class="arg-h">The Phase 3 design modernises the hosting, not the constraint</p><p class="arg-b">The incumbent technical design pins the target to &ldquo;compatibility with the Microsoft stack (IIS, SQL Server, .NET)&rdquo;, extends the legacy <span class="mono">EKBSRVY_</span> tables as its baseline schema, and keeps &ldquo;UNHQ Active Directory (NOT Azure AD); VPN-based admin access&rdquo;. Moving that to Azure relocates the server. It does not lift the ceiling &mdash; the new system inherits the old system's identity model and data model on day one.</p></div>
+      </div>
+      <div class="arg">
+        <div class="arg-k">AI as a<br>phase 3 item</div>
+        <div><p class="arg-h">The capability that justifies the rebuild arrives last</p><p class="arg-b">The incumbent roadmap places AOSQ in &ldquo;Phase 3 &mdash; Optimization&rdquo;, after Foundation and after Toolkit. The pre-fill that removes the 60,602-judgement problem is the third thing delivered, not the first. Meanwhile it is bound to a single approved vendor (Azure OpenAI, ARB 2023-158): model selection becomes a procurement decision on an ARB cycle, in a field that re-baselines every few months.</p></div>
+      </div>
+      <div class="arg">
+        <div class="arg-k">Ecosystem<br>mismatch</div>
+        <div><p class="arg-b" style="padding-top:calc(var(--u)*.1)"><strong style="font-family:var(--display); font-variation-settings:'wdth' 92,'wght' 650">The agentic layer's ecosystem is Python-first.</strong> Agent orchestration, headless browser traversal of live government portals, document extraction, retrieval, evaluation harnesses &mdash; the working libraries are Python. Implementing that layer in .NET means reimplementing it or bridging to Python anyway, so the stack decision buys a second runtime rather than avoiding one.</p></div>
+      </div>
+      <div class="arg">
+        <div class="arg-k">Operating<br>model</div>
+        <div><p class="arg-b" style="padding-top:calc(var(--u)*.1)"><strong style="font-family:var(--display); font-variation-settings:'wdth' 92,'wght' 650">Windows / IIS / RDP / VPN constrains delivery, not just runtime.</strong> On-premises AD with RDP administration and manual deployments rules out modern SSO and MFA, rules out ordinary CI/CD, and narrows the hiring pool to Windows-server operations &mdash; against a project that must be staffed as individually-contracted consultants rather than a vendor team.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 06 ============================ -->
+<section class="slide" id="s6" aria-label="Slide 6">
+  <div class="head"><span class="eyebrow">IV &middot; What we built</span><span class="folio">06 / 11</span></div>
+  <div class="body">
+    <h2>EKAP AIQ &mdash; the full cycle in one system, running today</h2>
+    <div class="pipe">
+      <div class="step"><span class="sn">01</span><span class="st">Author</span><span class="sd">Cycle, indicator set, 193 units auto-tagged. Master templates protected; edits branch a custom set.</span></div>
+      <div class="step hum"><span class="sn">02</span><span class="st">Assign &amp; lock</span><span class="sd">Assessors A and B assigned; unit list and indicator set freeze server-side.</span></div>
+      <div class="step ai"><span class="sn">03</span><span class="st">AI pre-fill</span><span class="sd">Live portal traversal, two independent agents, resolver, validation gate. A suggestion, never an answer.</span></div>
+      <div class="step hum"><span class="sn">04</span><span class="st">Blind A/B</span><span class="sd">Two assessors work independently with evidence URL and notes. Neither sees the other.</span></div>
+      <div class="step"><span class="sn">05</span><span class="st">Detect</span><span class="sd">On second declaration, disagreement rate is computed against the cycle tolerance.</span></div>
+      <div class="step hum"><span class="sn">06</span><span class="st">Reconcile &amp; arbitrate</span><span class="sd">One joint round; if exhausted, Senior Reviewer arbitration with both entries side by side.</span></div>
+      <div class="step"><span class="sn">07</span><span class="st">Publish</span><span class="sd">Score and per-indicator breakdown to the public scorecard. No export/import step.</span></div>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--blue)"></i>system</span>
+      <span><i class="swatch" style="background:var(--green)"></i>human authority</span>
+      <span><i class="swatch" style="background:var(--ochre)"></i>AI assistance</span>
+    </div>
+    <div class="cols c2w" style="flex:1; min-height:0">
+      <div class="panel">
+        <h3>The stack</h3>
+        <div class="kv" style="margin-top:calc(var(--u)*.6)">
+          <div><span class="k">runtime</span><span class="v">Python 3.11 &middot; FastAPI &middot; Uvicorn</span></div>
+          <div><span class="k">agents</span><span class="v">Google ADK &middot; model-pluggable via <span class="mono">AIQ_AGENT_MODELS</span>, not vendor-pinned</span></div>
+          <div><span class="k">traversal</span><span class="v">Playwright &mdash; real browser against live government portals</span></div>
+          <div><span class="k">store</span><span class="v">Append-only schema; every answer, revision and disposition retained</span></div>
+          <div><span class="k">interfaces</span><span class="v">Admin &middot; Assessor &middot; Public KB &middot; Review, plus headless <span class="mono">/api/v1</span></span></div>
+          <div><span class="k">auth</span><span class="v">Credential-free by design &mdash; ADC; <span class="mono">aiq verify no-credentials</span> enforces it</span></div>
+        </div>
+      </div>
+      <div class="panel-quiet">
+        <h3 style="color:var(--blue)">API-first, so EGovKB survives</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.7)">Cycles, questions, units, assessment runs, role-scoped human answers and publication are all addressable over <span class="mono">/api/v1</span>. The public knowledge base does not have to be rebuilt to benefit &mdash; it can consume the same records the assessor portal writes, which removes G-02 and G-09 without touching EGovKB's front end.</p>
+        <p class="txt" style="margin-top:calc(var(--u)*.9)">This is the integration surface the Phase 3 design specifies as a requirement. It exists now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 07 ============================ -->
+<section class="slide" id="s7" aria-label="Slide 7">
+  <div class="head"><span class="eyebrow">IV &middot; Gap &rarr; resolution</span><span class="folio">07 / 11</span></div>
+  <div class="body">
+    <h2>Each registered gap, against the mechanism that closes it</h2>
+    <table class="reg">
+      <thead><tr><th class="n-id">ID</th><th style="width:21%">Gap</th><th>Mechanism in the platform</th><th class="n-sev">State</th></tr></thead>
+      <tbody>
+        <tr><td class="n-id id">G-01</td><td class="what">No project creation</td><td>Create Survey Project takes an identifier, scope (National OSI / LOSI) and questionnaire, then auto-tags all 193 Member States. Cloning a 2022 project is no longer the method.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-02</td><td class="what">Manual publication</td><td>Senior Reviewer presses Publish; the public scorecard reads the same <span class="mono">PublicationRecord</span> row. Zero re-keying between assessment and public data.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-03</td><td class="what">No system of record</td><td>Scoring resolves inside the platform with an explicit precedence order &mdash; arbitrated answer, then joint settlement, then A/B consensus &mdash; on an append-only store.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-04</td><td class="what">Question authoring</td><td>Indicator add / retire / reactivate with bulk actions; PDF module upload auto-ingests candidate indicators into a review queue rather than into the live instrument.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-05</td><td class="what">No discrepancy engine</td><td>Automatic detection on second declaration against a configurable tolerance (default 5%), one reconciliation round, then Senior Reviewer arbitration. Detailed overleaf.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-06</td><td class="what">No pre-fill</td><td>Two independent assessor agents traverse the live portal, a resolver settles their disputes, a final validation gate guards delivery &mdash; then a human accepts, edits or overrides.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-07</td><td class="what">Geofenced admin</td><td>Browser-reachable portal with no on-premises dependency; identity via ADC with no credentials in configuration. Final IAM binding remains a UN OICT decision.</td><td class="n-sev"><span class="sev sev-x">Partly &mdash; OICT</span></td></tr>
+        <tr><td class="n-id id">G-08</td><td class="what">No assessor lifecycle</td><td>Role-scoped assignment, per-role declarations and per-assessor attribution on every answer exist. Language / expertise / conflict-of-interest profiling is specified, not yet built.</td><td class="n-sev"><span class="sev sev-x">Partial</span></td></tr>
+        <tr><td class="n-id id">G-09</td><td class="what">No integration surface</td><td>Headless REST API under <span class="mono">/api/v1</span> covering cycles, questions, units, runs, role-scoped answers and publication, key-authenticated.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+        <tr><td class="n-id id">G-10</td><td class="what">Pinned platform</td><td>No CMS framework in the dependency path at all. The assessment engine is application code, so no third-party platform version gates a UN survey cycle.</td><td class="n-sev"><span class="sev sev-b">Built</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================ 08 ============================ -->
+<section class="slide" id="s8" aria-label="Slide 8">
+  <div class="head"><span class="eyebrow">IV &middot; The mechanism that matters</span><span class="folio">08 / 11</span></div>
+  <div class="body">
+    <h2>Discrepancy handling, in the platform instead of in a spreadsheet</h2>
+    <div class="cols c2w" style="flex:1; min-height:0">
+      <div class="stack">
+        <p class="sm">Four seeded demonstration units, each frozen at a different disagreement rate over a 20-indicator slice. The tolerance is the only thing deciding what happens next &mdash; and it is a project setting, editable while the project is locked.</p>
+        <svg viewBox="0 0 660 340" role="img" aria-label="Bar chart of assessor disagreement rate for four demonstration units against the 5 percent tolerance line: Denmark 0 percent, Vietnam 5 percent, Peru 10 percent, Nigeria 15 percent">
+          <!-- gridlines + y labels -->
+          <g font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--ink-3)">
+            <line x1="54" y1="262" x2="470" y2="262" stroke="var(--rule-strong)" stroke-width="1.5"></line>
+            <line x1="54" y1="204" x2="470" y2="204" stroke="var(--rule)"></line>
+            <line x1="54" y1="146" x2="470" y2="146" stroke="var(--rule)"></line>
+            <line x1="54" y1="88" x2="470" y2="88" stroke="var(--rule)"></line>
+            <line x1="54" y1="30" x2="470" y2="30" stroke="var(--rule)"></line>
+            <text x="44" y="266" text-anchor="end">0%</text>
+            <text x="44" y="208" text-anchor="end">5%</text>
+            <text x="44" y="150" text-anchor="end">10%</text>
+            <text x="44" y="92" text-anchor="end">15%</text>
+            <text x="44" y="34" text-anchor="end">20%</text>
+          </g>
+          <!-- bars -->
+          <rect x="61" y="260" width="78" height="2" fill="var(--green)"></rect>
+          <rect x="166" y="204" width="78" height="58" fill="var(--green)"></rect>
+          <rect x="271" y="146" width="78" height="116" fill="var(--ochre)"></rect>
+          <rect x="376" y="88" width="78" height="174" fill="var(--ochre)"></rect>
+          <!-- tolerance reference line, labelled clear of the bars -->
+          <line x1="54" y1="204" x2="496" y2="204" stroke="var(--blue)" stroke-width="2" stroke-dasharray="8 5"></line>
+          <text x="504" y="200" font-family="Archivo, sans-serif" font-weight="700" font-size="13" fill="var(--blue)">TOLERANCE 5%</text>
+          <text x="504" y="218" font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--blue)">default, per-project</text>
+          <!-- value labels -->
+          <g font-family="Archivo, sans-serif" font-weight="740" font-size="17" text-anchor="middle">
+            <text x="100" y="251" fill="var(--green)">0%</text>
+            <text x="205" y="195" fill="var(--green)">5%</text>
+            <text x="310" y="137" fill="var(--ochre)">10%</text>
+            <text x="415" y="79" fill="var(--ochre)">15%</text>
+          </g>
+          <!-- x labels -->
+          <g text-anchor="middle">
+            <g font-family="Archivo, sans-serif" font-weight="660" font-size="14.5" fill="var(--ink)">
+              <text x="100" y="286">Denmark</text><text x="205" y="286">Vietnam</text>
+              <text x="310" y="286">Peru</text><text x="415" y="286">Nigeria</text>
+            </g>
+            <g font-family="IBM Plex Mono, monospace" font-size="11" fill="var(--ink-2)">
+              <text x="100" y="306">consensus</text><text x="100" y="321">&rarr; publish</text>
+              <text x="205" y="306">within tolerance</text><text x="205" y="321">&rarr; publish</text>
+              <text x="310" y="306">round opens</text><text x="310" y="321">&rarr; joint review</text>
+              <text x="415" y="306">round exhausted</text><text x="415" y="321">&rarr; arbitration</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <h3>The rules that make it defensible</h3>
+          <ul class="ticklist" style="margin-top:calc(var(--u)*.75)">
+            <li><span class="mk">&mdash;</span><span>A round opens only once <strong>both</strong> roles declare complete &mdash; a partial assessor cannot trip a false alarm.</span></li>
+            <li><span class="mk">&mdash;</span><span><strong>One round only.</strong> If the assessors do not converge, it force-closes as exhausted and escalates rather than looping.</span></li>
+            <li><span class="mk">&mdash;</span><span>Arbitration shows the Senior Reviewer <strong>both entries</strong> &mdash; each answer, evidence link and note &mdash; so no one decides blind.</span></li>
+            <li><span class="mk">&mdash;</span><span>A resolved case <strong>retains the tolerance</strong> in force when it was raised, so a later settings change cannot rewrite history.</span></li>
+            <li><span class="mk">&mdash;</span><span>Reopening requires a written reason; arbitrating requires a Yes/No on every disputed indicator, enforced server-side.</span></li>
+          </ul>
+        </div>
+        <p class="sm" style="color:var(--ink-3)">Against G-05: the current platform has a &ldquo;% Threshold&rdquo; field and an instruction to leave it at 20. Nothing reads it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 09 ============================ -->
+<section class="slide" id="s9" aria-label="Slide 9">
+  <div class="head"><span class="eyebrow">IV &middot; Governance</span><span class="folio">09 / 11</span></div>
+  <div class="body">
+    <h2>What the AI is not permitted to do &mdash; and how that is enforced</h2>
+    <p class="lead">The Phase 3 design sets the right constraint: human-in-the-loop is mandatory, and no AI involvement in official index scoring. We agree entirely. The difference is that we meet it in the first release rather than the third, and we enforce it in the test suite rather than in policy prose.</p>
+    <div class="cols c2" style="flex:1; min-height:0">
+      <div class="panel">
+        <h3 style="color:var(--green)">Human authority, structurally</h3>
+        <ul class="ticklist" style="margin-top:calc(var(--u)*.75)">
+          <li><span class="mk">&check;</span><span>Assessors hold 100% authority to accept, edit or override a suggestion. Human answers take publication precedence unconditionally.</span></li>
+          <li><span class="mk">&check;</span><span>Re-running pre-fill preserves every human submission &mdash; a re-run cannot overwrite a person's work.</span></li>
+          <li><span class="mk">&check;</span><span>Every declined suggestion carries an unambiguous reason: <span class="mono">no_usable_evidence</span>, <span class="mono">unresolved_disagreement</span>, <span class="mono">failed_final_validation</span>, <span class="mono">budget_reached</span>. Silence is never a verdict.</span></li>
+          <li><span class="mk">&check;</span><span>A per-unit run budget caps spend; the pipeline stops and says so rather than degrading quietly.</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3 style="color:var(--blue)">Auditability, executably</h3>
+        <div class="kv" style="margin-top:calc(var(--u)*.7)">
+          <div><span class="k">verify independence</span><span class="v">Asserts the two assessor agents never see one another's output &mdash; the assumption blind A/B rests on</span></div>
+          <div><span class="k">verify evidence</span><span class="v">Every suggestion traces to a retrieved source</span></div>
+          <div><span class="k">verify resume</span><span class="v">An interrupted batch resumes without duplicating or losing work</span></div>
+          <div><span class="k">verify no-credentials</span><span class="v">No secret has entered the audited configuration snapshot</span></div>
+          <div><span class="k">telemetry cost</span><span class="v">Per-session spend, timings and fetch log</span></div>
+        </div>
+        <p class="sm" style="margin-top:calc(var(--u)*.9); color:var(--ink-3)">Run <span class="mono">pytest -m independence</span> to execute the assertions that make the method defensible. A reviewer can check the claim rather than accept it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section class="slide" id="s10" aria-label="Slide 10">
+  <div class="head"><span class="eyebrow">V &middot; Position</span><span class="folio">10 / 11</span></div>
+  <div class="body">
+    <h2>Recommendation: prove the engine on one cycle before committing to a rewrite</h2>
+    <div class="cols c3" style="flex:0 0 auto">
+      <div class="panel" style="border-top:calc(var(--u)*.28) solid var(--green)">
+        <h3>1 &middot; Run in parallel</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.6)">Take one live cycle &mdash; a LOSI city set or a regional OSI slice &mdash; through the platform alongside the existing process. Compare published figures against the assessors' own results. The Phase 3 plan already calls for a parallel-run transition period; this uses it as evidence rather than as insurance.</p>
+      </div>
+      <div class="panel" style="border-top:calc(var(--u)*.28) solid var(--blue)">
+        <h3>2 &middot; Keep EGovKB</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.6)">EGovKB stays the public face and consumes <span class="mono">/api/v1</span> instead of hand-typed Value/Rank pairs. That closes the two highest-cost gaps &mdash; G-02 and G-09 &mdash; with no public-facing change, no migration, and no procurement decision required first.</p>
+      </div>
+      <div class="panel" style="border-top:calc(var(--u)*.28) solid var(--ochre)">
+        <h3>3 &middot; Defer the .NET rewrite</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.6)">Nothing above requires resolving the stack question today. It does mean the decision gets made with a working assessment engine in hand and a measured comparison on the table, rather than from a design document alone.</p>
+      </div>
+    </div>
+    <div class="cols c2" style="flex:1; min-height:0; align-items:start">
+      <div class="panel-quiet">
+        <h3 style="color:var(--green)">What we can demonstrate now</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.6)">The full lifecycle end to end, on seeded projects frozen at each state: authoring and lock, blind A/B intake, automatic detection, joint reconciliation, Senior Reviewer arbitration, publication, and the public scorecard. Plus real MSQ ingestion from 50-page Member State submissions and live portal traversal.</p>
+      </div>
+      <div class="panel-quiet" style="border-left-color:var(--ochre-line)">
+        <h3 style="color:var(--ochre)">What is genuinely not ours to decide</h3>
+        <p class="txt" style="margin-top:calc(var(--u)*.6)">OICT hosting and ARB approval. The final IAM binding. Migration of the historical <span class="mono">EKBSRVY_</span> record &mdash; which must happen regardless of stack, and which we should scope early because it is the one piece of work no architecture choice makes easier. We are not proposing to pre-empt any of these.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section class="slide" id="s11" aria-label="Slide 11">
+  <div class="head"><span class="eyebrow">Appendix &middot; Sources and verification</span><span class="folio">11 / 11</span></div>
+  <div class="body">
+    <div class="cols c2w" style="flex:1; min-height:0">
+      <div class="stack">
+        <h3>Documents this analysis is drawn from</h3>
+        <div class="kv">
+          <div><span class="k">DGB</span><span class="v"><strong>Existing DGB Applications and Infrastructure</strong> &mdash; A. Kariuki, Digital Governance Branch, 3 March 2025. 24pp. Sections cited: 3.1 stack, 3.3 hosting access, 4.2.1&ndash;4.2.4 EGOVSURVEY operations, 5.2.2 EGovKB data update.</span></div>
+          <div><span class="k">Phase 3</span><span class="v"><strong>EKAP Technical Design Package</strong> &mdash; Deliverable 3, May 2026. Sections cited: 3.4&ndash;3.5 current workflow and known limitations, 4.2 design principles, 4.4 hosting, 6.7 AI and AOSQ, 6.10 RBAC, 11.1 roadmap.</span></div>
+          <div><span class="k">Scoping</span><span class="v">UN e-government assessment automation scoping notes &mdash; index composition, feature evolution rate, consultant-led delivery constraint.</span></div>
+          <div><span class="k">Instrument</span><span class="v"><span class="mono">un_osi_2024_master</span> &mdash; 157 indicators, What / Why / How structure, held as a protected master template.</span></div>
+        </div>
+        <p class="sm" style="color:var(--ink-3)">Every quotation in the gap register on slide 03 is verbatim from the DGB operations manual. Nothing in the register is inferred.</p>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <h3>Reproduce the demonstration</h3>
+          <div class="kv" style="margin-top:calc(var(--u)*.6)">
+            <div><span class="k">aiq db init</span><span class="v">Create the append-only schema</span></div>
+            <div><span class="k">aiq seed lifecycle-demo</span><span class="v">Seed the six lifecycle stages, including the four units charted on slide 08</span></div>
+            <div><span class="k">aiq serve</span><span class="v">Admin, Assessor, Public KB, Review and <span class="mono">/api/v1</span></span></div>
+            <div><span class="k">pytest -m independence</span><span class="v">The assertions that make the method defensible</span></div>
+          </div>
+        </div>
+        <div class="panel-quiet">
+          <p class="txt">The seed is idempotent &mdash; it never overwrites a cycle that already exists, so the demonstration can be re-run against a clean state before any session.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<nav class="rail" aria-label="Slide navigation">
+  <div class="rail-inner">
+    <button class="navbtn" id="prev" aria-label="Previous slide">&larr; Prev</button>
+    <div id="ticks" style="display:flex; gap:2px"></div>
+    <button class="navbtn" id="next" aria-label="Next slide">Next &rarr;</button>
+    <span class="railmeta" id="counter">01 / 11</span>
+    <button class="navbtn" id="printbtn" title="Print or save as PDF — choose landscape">PDF</button>
+  </div>
+</nav>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var titles = ['Title','As-is architecture','Gap register','Cost per cycle','The stack question','What we built','Gap to resolution','Discrepancy mechanism','Governance','Recommendation','Sources'];
+  var ticks = document.getElementById('ticks');
+  var counter = document.getElementById('counter');
+  var i = 0;
+
+  slides.forEach(function(s, n){
+    var b = document.createElement('button');
+    b.className = 'tick';
+    b.type = 'button';
+    b.title = titles[n] || ('Slide ' + (n+1));
+    b.setAttribute('aria-label', 'Go to slide ' + (n+1) + ': ' + b.title);
+    b.innerHTML = '<span>' + String(n+1).padStart(2,'0') + '</span><i></i>';
+    b.addEventListener('click', function(){ go(n); });
+    ticks.appendChild(b);
+  });
+  var tickEls = Array.prototype.slice.call(ticks.children);
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function go(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('is-on', k === i); });
+    tickEls.forEach(function(t, k){ t.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+    counter.textContent = pad(i+1) + ' / ' + pad(slides.length);
+    if (history.replaceState) history.replaceState(null, '', '#' + (i+1));
+  }
+
+  document.getElementById('prev').addEventListener('click', function(){ go(i-1); });
+  document.getElementById('next').addEventListener('click', function(){ go(i+1); });
+  document.getElementById('printbtn').addEventListener('click', function(){ window.print(); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'n'){ e.preventDefault(); go(i+1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'p'){ e.preventDefault(); go(i-1); }
+    else if (k === 'Home'){ e.preventDefault(); go(0); }
+    else if (k === 'End'){ e.preventDefault(); go(slides.length-1); }
+  });
+
+  var x0 = null;
+  var stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', function(e){ x0 = e.changedTouches[0].clientX; }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 55) go(dx < 0 ? i+1 : i-1);
+    x0 = null;
+  }, {passive:true});
+
+  var start = parseInt((location.hash || '').replace('#',''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>

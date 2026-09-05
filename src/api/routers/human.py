@@ -6,6 +6,8 @@ from fastapi import APIRouter, Depends, Query, status
 
 from api.deps import make_repo_dependency
 from api.schemas import (
+    Conflict,
+    Forbidden,
     HumanAnswerItem,
     HumanAnswersResponse,
     HumanSubmissionRequest,
@@ -13,6 +15,7 @@ from api.schemas import (
     InvalidRequest,
     NotFound,
 )
+from portal.assignment import resolve_actor_role
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.tolerance import effective_tolerance
@@ -57,12 +60,27 @@ def build_human_router(database_path: str, settings: Settings) -> APIRouter:
             )
 
         try:
-            role = AssessorRole(body.role)
+            assessor_role = AssessorRole(body.role)
         except ValueError:
             raise InvalidRequest(
                 f"Invalid role '{body.role}'. Must be 'A' or 'B'.",
                 details={"field": "role", "value": body.role},
             )
+
+        assigned_role = resolve_actor_role(repo, cycle_id, portal_id, body.actor_id)
+        if assigned_role is None:
+            raise Forbidden(
+                "You are not assigned to this unit.",
+                details={"actor_id": body.actor_id, "portal_id": portal_id},
+            )
+
+        if assessor_role != assigned_role:
+            raise Conflict(
+                f"Requested role '{body.role}' contradicts assigned role '{assigned_role.value}'.",
+                details={"assigned_role": assigned_role.value, "requested_role": body.role},
+            )
+
+        role = assigned_role
 
         session_id = ensure_session(repo, cycle_id)
 
@@ -116,6 +134,7 @@ def build_human_router(database_path: str, settings: Settings) -> APIRouter:
         cycle_id: str,
         portal_id: str,
         role: str = Query(..., description="Assessor role 'A' or 'B'"),
+        actor_id: str | None = Query(None, description="Assessor actor id"),
         repo: Repository = Depends(get_repo),
     ):
         cycle = repo.get_cycle(cycle_id)
@@ -138,6 +157,19 @@ def build_human_router(database_path: str, settings: Settings) -> APIRouter:
                 f"Invalid role '{role}'. Must be 'A' or 'B'.",
                 details={"field": "role", "value": role},
             )
+
+        if actor_id is not None:
+            assigned_role = resolve_actor_role(repo, cycle_id, portal_id, actor_id)
+            if assigned_role is None:
+                raise Forbidden(
+                    "You are not assigned to this unit.",
+                    details={"actor_id": actor_id, "portal_id": portal_id},
+                )
+            if assessor_role != assigned_role:
+                raise Conflict(
+                    f"Requested role '{role}' contradicts assigned role '{assigned_role.value}'.",
+                    details={"assigned_role": assigned_role.value, "requested_role": role},
+                )
 
         session_id = ensure_session(repo, cycle_id)
         questions = repo.list_questions(cycle_id)

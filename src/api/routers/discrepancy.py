@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, status
 
 from api.deps import make_repo_dependency
@@ -233,7 +234,7 @@ def build_discrepancy_router(database_path: str, settings: Settings) -> APIRoute
                 details={"field": "justification"},
             )
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         joint = JointAnswer(
             joint_answer_id=new_id("joint"),
             session_id=session_id,
@@ -364,7 +365,7 @@ def build_discrepancy_router(database_path: str, settings: Settings) -> APIRoute
         if not ok:
             raise Conflict("Escalation has already been decided by another reviewer.")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         return EscalationDispositionResponse(
             item_id=item_id,
             resolution=body.resolution,

@@ -1,12 +1,19 @@
 """Unit tests for Phase 10 telemetry reports and hygiene (T110, T111)."""
 
 import sqlite3
-from shared.persistence.schema import DDL
+from datetime import UTC
+
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
-from core.telemetry.reports import get_cost_report, get_fetches_report, get_telemetry_summary, get_timings_report
+from core.telemetry.reports import (
+    get_cost_report,
+    get_fetches_report,
+    get_telemetry_summary,
+    get_timings_report,
+)
 from core.telemetry.stage_events import StageEventLog
 from core.telemetry.verify import verify_no_credentials, verify_telemetry_hygiene
+from shared.persistence.schema import DDL
 
 
 def test_telemetry_reports_and_hygiene():
@@ -16,8 +23,8 @@ def test_telemetry_reports_and_hygiene():
 
     session_id = "sess-tel-1"
 
-    from datetime import datetime, timezone
-    now = datetime.now(timezone.utc)
+    from datetime import datetime
+    now = datetime.now(UTC)
 
     # 1. Log telemetry data
     fetch_log = FetchLog(conn, session_id)

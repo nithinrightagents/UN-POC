@@ -10,11 +10,13 @@ from api.schemas import (
     CompletionCreateRequest,
     CompletionCreateResponse,
     CompletionsStatusResponse,
+    Conflict,
+    Forbidden,
     IncompleteAssessment,
-    InvalidRequest,
     NotFound,
     RoleCompletionStatus,
 )
+from portal.assignment import resolve_actor_role
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.tolerance import effective_tolerance
@@ -22,7 +24,6 @@ from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorCompletion,
-    AssessorRole,
     new_id,
 )
 
@@ -57,13 +58,20 @@ def build_completions_router(
                 details={"portal_id": portal_id, "cycle_id": cycle_id},
             )
 
-        try:
-            role_enum = AssessorRole(body.role)
-        except ValueError:
-            raise InvalidRequest(
-                f"Invalid role '{body.role}'. Must be 'A' or 'B'.",
-                details={"field": "role", "value": body.role},
+        assigned_role = resolve_actor_role(repo, cycle_id, portal_id, body.actor_id)
+        if assigned_role is None:
+            raise Forbidden(
+                "You are not assigned to this unit.",
+                details={"actor_id": body.actor_id, "portal_id": portal_id},
             )
+
+        if body.role != assigned_role.value:
+            raise Conflict(
+                f"Requested role '{body.role}' contradicts assigned role '{assigned_role.value}'.",
+                details={"assigned_role": assigned_role.value, "requested_role": body.role},
+            )
+
+        role_enum = assigned_role
 
         session_id = ensure_session(repo, cycle_id)
         questions = repo.list_questions(cycle_id)
@@ -99,7 +107,7 @@ def build_completions_router(
             session_id=session_id,
             cycle_id=cycle_id,
             portal_id=portal_id,
-            role=body.role,
+            role=assigned_role.value,
             actor_id=body.actor_id,
             indicator_count_at_declaration=total_indicators,
         )

@@ -8,7 +8,7 @@ and truncation markers from units and agent runs into a frozen trace.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Tuple
+from typing import Any
 
 from shared.persistence.repositories import Repository
 
@@ -38,7 +38,7 @@ class UnitResolutionTrace:
 
 def read_unit_traces(
     repo: Repository, session_id: str
-) -> dict[Tuple[str, str], UnitResolutionTrace]:
+) -> dict[tuple[str, str], UnitResolutionTrace]:
     """Read all units for a session and lift resolution traces.
 
     Returns mapping of (question_id, portal_id) -> UnitResolutionTrace.
@@ -48,17 +48,17 @@ def read_unit_traces(
     adjudications = repo.list_all_adjudication_results_for_session(session_id)
 
     # Group runs and adjudications by (question_id, portal_id)
-    runs_by_key: dict[Tuple[str, str], list] = {}
+    runs_by_key: dict[tuple[str, str], list] = {}
     for run in agent_runs:
         key = (run.question_id, run.portal_id)
         runs_by_key.setdefault(key, []).append(run)
 
-    adj_by_key: dict[Tuple[str, str], Any] = {}
+    adj_by_key: dict[tuple[str, str], Any] = {}
     for adj in adjudications:
         key = (adj.question_id, adj.portal_id)
         adj_by_key[key] = adj
 
-    traces: dict[Tuple[str, str], UnitResolutionTrace] = {}
+    traces: dict[tuple[str, str], UnitResolutionTrace] = {}
 
     for u in units:
         if isinstance(u, dict):

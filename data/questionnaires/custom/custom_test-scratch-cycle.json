@@ -1,0 +1,30 @@
+{
+  "template_id": "custom_test-scratch-cycle",
+  "name": "Scratch Custom Set",
+  "description": "Custom indicator set branched from project 'Scratch Survey Cycle' (test-scratch-cycle) after an admin added indicators beyond the starting template.",
+  "version": "custom",
+  "is_master_template": false,
+  "project_type": "national_osi",
+  "total_questions": 1,
+  "questions": [
+    {
+      "question_id": "SCRATCH-01",
+      "indicator_id": "SCRATCH-01",
+      "module": null,
+      "title": "Scratch Test Indicator",
+      "text": "Scratch Test Indicator",
+      "what": "What description",
+      "why": "Why description",
+      "how": {
+        "criteria_for_yes": "Yes criteria",
+        "criteria_for_no": "No criteria"
+      },
+      "benchmark_case": null,
+      "reference_links": [],
+      "answer_type": "binary",
+      "evidence_locus": "national_portal_only",
+      "is_custom": true,
+      "requires_authenticated_access": false
+    }
+  ]
+}

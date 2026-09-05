@@ -2,6 +2,7 @@
 
 import json
 import sqlite3
+
 import pytest
 
 from core.telemetry.cost_ledger import CostLedger
@@ -15,14 +16,21 @@ from shared.state.entities import (
     AgentRunState,
     AnswerType,
     AssessorAgentRun,
+    ElementReference,
+    EvidenceArtifact,
     EvidenceLocus,
+    MSQLinkCandidate,
     PrefillReason,
+    PriorSurveyLink,
     Question,
     SurveyCycle,
     TargetPortal,
     UnitState,
+    new_id,
 )
 from shared.tools.browser import PageResult
+from shared.tools.element_ref import text_hash
+from shared.tools.linkresolution.chain import resolve_link
 
 pytestmark = pytest.mark.unit
 
@@ -97,10 +105,6 @@ def _setup_pipeline_env():
     cost_ledger = CostLedger(conn, "s-pipe")
 
     return repo, conn, settings, fetch_log, stage_log, cost_ledger, portal
-
-
-from shared.tools.element_ref import text_hash
-from shared.state.entities import ElementReference, EvidenceArtifact
 
 
 def _insert_validated_run(
@@ -262,7 +266,7 @@ async def test_pipeline_headless_invariants_scenario_1():
     _insert_validated_run(repo, "s-pipe", q1.question_id, portal.portal_id, "run-q1-1", 0, True, 90)
     _insert_validated_run(repo, "s-pipe", q1.question_id, portal.portal_id, "run-q1-2", 1, True, 85)
 
-    summary = await run_batch(
+    await run_batch(
         repo=repo,
         settings=settings,
         session_id="s-pipe",
@@ -290,10 +294,6 @@ async def test_pipeline_headless_invariants_scenario_1():
     prefills = repo.list_prefills_for_run("job-pipe-batch")
     assert len(prefills) == 2
     assert {p.question_id for p in prefills} == {q1.question_id, q2.question_id}
-
-
-from shared.state.entities import MSQLinkCandidate, PriorSurveyLink, new_id
-from shared.tools.linkresolution.chain import resolve_link
 
 
 @pytest.mark.asyncio

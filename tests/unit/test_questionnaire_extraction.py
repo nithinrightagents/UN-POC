@@ -3,9 +3,9 @@
 import json
 import pathlib
 import sqlite3
-import pytest
 
 from shared.persistence.repositories import Repository
+from shared.persistence.serialization import from_json, to_json
 from shared.state.entities import (
     AnswerType,
     EvidenceLocus,
@@ -13,7 +13,6 @@ from shared.state.entities import (
     Question,
     SurveyCycle,
 )
-from shared.persistence.serialization import from_json, to_json
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 

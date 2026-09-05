@@ -8,14 +8,15 @@ FR-024's confidence cap is directly observable in the UI.
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
+from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AdjudicationResult,
-    AssessmentSession,
-    AssessorAgentRun,
     AgentRunState,
     AnswerType,
+    AssessmentSession,
+    AssessorAgentRun,
     ElementReference,
     EscalationReason,
     EvidenceArtifact,
@@ -32,7 +33,6 @@ from shared.state.entities import (
     UnitState,
     new_id,
 )
-from shared.persistence.repositories import Repository
 
 
 def seed_demo_review(conn: sqlite3.Connection) -> dict:
@@ -100,7 +100,7 @@ def seed_demo_review(conn: sqlite3.Connection) -> dict:
     repo.insert_question(q_complete)
     repo.insert_question(q_broken)
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # --- Complete assessment: two agents agree, evidence intact -----------
     evidence = EvidenceArtifact(

@@ -1,13 +1,13 @@
 """Tests for assessor completion declaration and readiness (spec 008 US1, Scenario 5)."""
 
 import sqlite3
+from datetime import UTC
+
 import pytest
 from fastapi.testclient import TestClient
 
-from api.app import build_api_router, install_api_error_handlers
 from api.finalize import publication_readiness
 from portal.common import ensure_session
-from fastapi import FastAPI
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
@@ -15,12 +15,15 @@ from shared.state.entities import (
     AnswerType,
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     EvidenceLocus,
     HumanAssessorSubmission,
     ProjectType,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -91,6 +94,16 @@ def test_refusal_names_outstanding_indicators(client: TestClient, auth: dict[str
         resolved_url="https://borger.dk",
     )
     repo.insert_portal(portal)
+
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
 
     q1 = Question(
         question_id=f"{cycle_id}:1.1.1",
@@ -367,9 +380,12 @@ def test_redeclaration_appends_second_row_without_mutating_first():
 
 
 def test_scenario_7_completions_survive_rounds_and_gating(conn):
-    from datetime import datetime, timezone
-    from portal.reconciliation import close_round_if_complete, open_automatic_round, open_reviewer_round
-    from shared.config.settings import Settings
+    from datetime import datetime
+
+    from portal.reconciliation import (
+        close_round_if_complete,
+        open_automatic_round,
+    )
     from shared.state.entities import JointAnswer
 
     repo = Repository(conn)
@@ -506,7 +522,7 @@ def test_scenario_7_completions_survive_rounds_and_gating(conn):
                 "submitted_by_role": "A",
                 "submitted_by_actor_id": "actor-a",
             },
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
     )
     settings = Settings()

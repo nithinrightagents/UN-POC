@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Admin — Assessor Directory | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/admin">Admin</a>
+    <span>/</span>
+    <span>Assessors</span>
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Assessor Directory</h1>
+        <p class="lead">Accredited expert assessor roster loaded from authoritative reference source data for unit assignment.</p>
+    </div>
+    <div class="page-actions">
+        <a href="/admin" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#icon-settings"/></svg>
+            <span>Back to Projects</span>
+        </a>
+    </div>
+</div>
+
+<div class="alert-box" style="margin-bottom: 1.5rem;">
+    <svg class="icon icon-lg" aria-hidden="true" style="color: var(--color-brand-primary);"><use href="#icon-info"/></svg>
+    <div>
+        <strong>Read-Only Reference Data (FR-DB-007)</strong>
+        <div class="muted" style="margin-top: 0.25rem;">
+            Assessor profiles, credentials, and availability are maintained in the external assessor database. The directory below reflects the local ingested reference copy used for verbatim unit staffing. Assessor lifecycle operations (create, edit, deactivate) are handled exclusively in the authoritative external system.
+        </div>
+    </div>
+</div>
+
+<div class="section-title">
+    <svg class="icon" aria-hidden="true"><use href="#icon-users"/></svg>
+    <span>Ingested Assessor Roster ({{ assessors|length }})</span>
+</div>
+
+<div class="table-responsive">
+    <table class="data-table" aria-label="Assessor Directory Table">
+        <thead>
+            <tr>
+                <th scope="col">Assessor ID</th>
+                <th scope="col">Full Name</th>
+                <th scope="col">Contact Email</th>
+                <th scope="col">Organisation</th>
+                <th scope="col">Working Languages</th>
+                <th scope="col">Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in assessors %}
+            <tr>
+                <td>
+                    <code style="font-weight: 700; color: var(--color-brand-primary);">{{ a.assessor_id }}</code>
+                </td>
+                <td>
+                    <strong style="color: var(--color-text-primary); font-size: 0.95rem;">{{ a.display_name }}</strong>
+                </td>
+                <td>
+                    <a href="mailto:{{ a.email }}" style="color: var(--color-text-secondary); text-decoration: underline;">{{ a.email }}</a>
+                </td>
+                <td>
+                    {% if a.organisation %}
+                    <span>{{ a.organisation }}</span>
+                    {% else %}
+                    <span class="muted">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if a.languages %}
+                    <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                        {% for lang in a.languages %}
+                        <span class="badge badge--neutral">{{ lang }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <span class="muted">—</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if a.notes %}
+                    <span style="font-size: 0.85rem; color: var(--color-text-muted);">{{ a.notes }}</span>
+                    {% else %}
+                    <span class="muted">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 2rem;" class="muted">
+                    No assessor records found in database. Ingest reference data to populate.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

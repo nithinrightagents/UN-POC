@@ -21,14 +21,13 @@ from agents.assessor.agent import _RESPONSE_SCHEMA
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
 from core.telemetry.stage_events import StageEventLog
-from orchestration.scheduler import process_unit
+from orchestration.scheduler import UnitOutcome, process_unit
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
 from shared.prompts.profiles import build_prompt
 from shared.state.entities import (
     AnswerType,
-    EscalationReason,
     EvidenceLocus,
     PrefillReason,
     Question,
@@ -153,7 +152,7 @@ def _portal() -> TargetPortal:
     return TargetPortal(portal_id="p1", cycle_id="c1", country_id="XX")
 
 
-async def _run(repo, settings, provider) -> "UnitOutcome":
+async def _run(repo, settings, provider) -> UnitOutcome:
     stage_log = StageEventLog.__new__(StageEventLog)
     stage_log.timed = lambda *a, **k: _NullContext()
     cost_ledger = CostLedger.__new__(CostLedger)

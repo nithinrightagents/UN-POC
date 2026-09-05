@@ -64,7 +64,7 @@ def check_admissible(url: str | None) -> AdmissibilityCheck:
         )
 
     # Frozen web archives and historical snapshots (e.g. 19january2021snapshot.epa.gov).
-    if any("snapshot" in l or "archive" in l for l in labels):
+    if any("snapshot" in part or "archive" in part for part in labels):
         return AdmissibilityCheck(
             False, f"{host} is a frozen archive/snapshot, not live content"
         )

@@ -16,9 +16,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from shared.persistence.repositories import Repository
 from shared.state.entities import TERMINAL_UNIT_STATES, UnitState
 from shared.state.reason_tags import is_blocked
-from shared.persistence.repositories import Repository
 
 _TERMINAL = {s.value for s in TERMINAL_UNIT_STATES}
 

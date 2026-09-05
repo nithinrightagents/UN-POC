@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block title %}Admin — Questionnaires &amp; Indicator Sets | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/admin">Admin</a>
+    <span>/</span>
+    <span>Questionnaires</span>
+</div>
+
+{% if deleted %}
+<div class="alert-box alert-box--success" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-success-subtle, #dcfce7); border: 1px solid var(--color-success, #22c55e); color: var(--color-success-text, #166534);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-check"/></svg>
+    <strong>Questionnaire Deleted:</strong> {% if deleted_name %}"{{ deleted_name }}" has been removed from the registry.{% else %}The selected questionnaire was successfully deleted.{% endif %}
+</div>
+{% endif %}
+
+{% if error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>Action Refused:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Questionnaires &amp; Indicator Sets</h1>
+        <p class="lead">Browse, inspect, and manage standardized UN assessment questionnaires, custom indicator branches, and thematic evaluation packs.</p>
+    </div>
+    <div class="page-actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <a href="/admin" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#icon-arrow-left"/></svg>
+            <span>Back to Survey Projects</span>
+        </a>
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--color-brand-primary-subtle); color: var(--color-brand-primary);">
+            <svg class="icon" aria-hidden="true"><use href="#icon-layers"/></svg>
+        </div>
+        <div class="stat-value">{{ question_sets|length }}</div>
+        <div class="stat-label">Total Questionnaires</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">
+            <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+        </div>
+        <div class="stat-value">{{ templates_count }}</div>
+        <div class="stat-label">Master Templates</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--color-role-b-bg); color: var(--color-role-b-text);">
+            <svg class="icon" aria-hidden="true"><use href="#icon-file-text"/></svg>
+        </div>
+        <div class="stat-value">{{ custom_count }}</div>
+        <div class="stat-label">Custom Indicator Sets</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: var(--color-bg-surface-subtle); color: var(--color-text-secondary);">
+            <svg class="icon" aria-hidden="true"><use href="#icon-bar-chart"/></svg>
+        </div>
+        <div class="stat-value">{{ modules_count }}</div>
+        <div class="stat-label">Thematic Modules</div>
+    </div>
+</div>
+
+<!-- Controls Bar: Filter Tabs & Search -->
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" role="tablist" aria-label="Questionnaire Categories">
+            <button type="button" class="btn btn-sm btn-primary q-filter-tab active" data-filter="all" id="tab-all">
+                All Questionnaires ({{ question_sets|length }})
+            </button>
+            <button type="button" class="btn btn-sm q-filter-tab" data-filter="template" id="tab-template" style="background-color: var(--color-bg-surface-subtle);">
+                Master Templates ({{ templates_count }})
+            </button>
+            <button type="button" class="btn btn-sm q-filter-tab" data-filter="custom" id="tab-custom" style="background-color: var(--color-bg-surface-subtle);">
+                Custom Sets ({{ custom_count }})
+            </button>
+            <button type="button" class="btn btn-sm q-filter-tab" data-filter="module" id="tab-module" style="background-color: var(--color-bg-surface-subtle);">
+                Thematic Modules ({{ modules_count }})
+            </button>
+        </div>
+        <div style="position: relative; min-width: 260px; max-width: 380px; flex: 1;">
+            <input type="text" id="questionnaireSearchInput" placeholder="Filter questionnaires by name or ID..." style="width: 100%; padding-left: 2rem; font-size: 0.85rem;" aria-label="Search questionnaires">
+            <svg class="icon" aria-hidden="true" style="position: absolute; left: 0.65rem; top: 50%; transform: translateY(-50%); width: 0.9rem; height: 0.9rem; color: var(--color-text-muted);"><use href="#icon-search"/></svg>
+        </div>
+    </div>
+</div>
+
+<!-- Questionnaires Table -->
+<div class="table-responsive">
+    <table class="data-table" id="questionnairesTable" aria-label="Questionnaires Catalog">
+        <thead>
+            <tr>
+                <th scope="col" style="min-width: 220px;">Questionnaire &amp; Slug</th>
+                <th scope="col">Category &amp; Scope</th>
+                <th scope="col">Indicators</th>
+                <th scope="col">Description</th>
+                <th scope="col" style="text-align: right; min-width: 200px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in question_sets %}
+            <tr class="q-row" data-kind="{{ s.kind }}" data-scope="{{ s.scope or '' }}" data-label="{{ s.label|lower }}" data-id="{{ s.set_id|lower }}">
+                <td>
+                    <div style="font-weight: 700; color: var(--color-text-primary); font-size: 0.95rem;">
+                        <a href="/admin/questionnaires/{{ s.set_id }}" style="color: inherit; text-decoration: none;">{{ s.label }}</a>
+                    </div>
+                    <code style="color: var(--color-text-muted); font-size: 0.8rem;">{{ s.set_id }}</code>
+                </td>
+                <td>
+                    <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
+                        {% if s.kind == "template" %}
+                        <span class="badge badge--ai">
+                            <span class="badge-dot"></span>
+                            Master Template
+                        </span>
+                        {% elif s.kind == "custom" %}
+                        <span class="badge badge--role-b">
+                            <span class="badge-dot"></span>
+                            Custom Set
+                        </span>
+                        {% else %}
+                        <span class="badge badge--neutral">
+                            Thematic Module
+                        </span>
+                        {% endif %}
+
+                        {% if s.scope == "national_osi" %}
+                        <span class="badge badge--neutral" style="font-size: 0.75rem;">National OSI</span>
+                        {% elif s.scope == "losi_city" %}
+                        <span class="badge badge--neutral" style="font-size: 0.75rem;">LOSI City</span>
+                        {% else %}
+                        <span class="badge badge--neutral" style="font-size: 0.75rem; opacity: 0.8;">Modular Fragment</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+                    <div style="font-size: 0.95rem; font-weight: 700; color: var(--color-text-primary);">
+                        {{ s.question_count }}
+                    </div>
+                    <span class="muted" style="font-size: 0.75rem;">questions</span>
+                </td>
+                <td>
+                    <div class="muted" style="font-size: 0.85rem; max-width: 320px; line-height: 1.4;">
+                        {{ s.description or s.label }}
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div style="display: inline-flex; gap: 0.5rem; align-items: center; justify-content: flex-end;">
+                        <a href="/admin/questionnaires/{{ s.set_id }}" class="btn btn-sm btn-primary">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-eye"/></svg>
+                            <span>View Indicators</span>
+                        </a>
+                        {% if s.is_custom %}
+                        <button type="button" class="btn btn-sm btn-danger" data-set-id="{{ s.set_id }}" data-label="{{ s.label }}" onclick="openDeleteModal(this.dataset.setId, this.dataset.label)">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                            <span>Delete</span>
+                        </button>
+                        {% else %}
+                        <span class="badge badge--neutral" title="Standard system template is protected from deletion" style="font-size: 0.75rem; padding: 0.35rem 0.5rem; opacity: 0.75;">
+                            Protected
+                        </span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 2rem;" class="muted">
+                    No questionnaires available in the registry.
+                </td>
+            </tr>
+            {% endfor %}
+            <tr id="noMatchesRow" style="display: none;">
+                <td colspan="5" style="text-align: center; padding: 2rem;" class="muted">
+                    No questionnaires match the current filter or search criteria.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Deletion Confirmation Modal -->
+<div id="deleteModalBackdrop" class="modal-backdrop" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-card" style="background: var(--color-bg-surface); border-radius: var(--radius-md); max-width: 520px; width: 90%; box-shadow: var(--shadow-lg); border: 1px solid var(--color-border-subtle); overflow: hidden;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 32px; height: 32px; border-radius: var(--radius-full); background: var(--color-danger-subtle, #fee2e2); color: var(--color-danger, #ef4444); display: flex; align-items: center; justify-content: center;">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                </div>
+                <h3 style="margin: 0; font-size: 1.1rem;">Delete Custom Questionnaire</h3>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="closeDeleteModal()" style="border: none; background: transparent; padding: 0.25rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-x"/></svg>
+            </button>
+        </div>
+        <div style="padding: 1.5rem;">
+            <p style="margin-bottom: 1rem; color: var(--color-text-secondary); line-height: 1.5;">
+                Are you sure you want to permanently delete <strong id="deleteQuestionnaireName" style="color: var(--color-text-primary);"></strong>?
+            </p>
+            <div class="alert-box alert-box--warning" style="padding: 0.75rem; border-radius: var(--radius-xs); background-color: var(--color-warning-subtle, #fef9c3); border: 1px solid var(--color-warning, #eab308); color: var(--color-warning-text, #854d0e); font-size: 0.85rem; line-height: 1.4;">
+                This will delete the saved custom questionnaire file from disk. Existing survey projects already in progress will retain their indicators in the database.
+            </div>
+        </div>
+        <div style="padding: 1rem 1.5rem; background: var(--color-bg-surface-subtle); border-top: 1px solid var(--color-border-subtle); display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn" onclick="closeDeleteModal()">Cancel</button>
+            <form id="deleteQuestionnaireForm" method="post" action="" style="margin: 0;">
+                <button type="submit" class="btn btn-danger">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                    <span>Permanently Delete</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var activeFilter = "all";
+    var searchInput = document.getElementById("questionnaireSearchInput");
+    var filterTabs = document.querySelectorAll(".q-filter-tab");
+    var rows = document.querySelectorAll(".q-row");
+    var noMatchesRow = document.getElementById("noMatchesRow");
+
+    function applyFilters() {
+        var query = (searchInput.value || "").trim().toLowerCase();
+        var visibleCount = 0;
+
+        rows.forEach(function(row) {
+            var kind = row.getAttribute("data-kind");
+            var label = row.getAttribute("data-label");
+            var id = row.getAttribute("data-id");
+
+            var matchesTab = (activeFilter === "all") || (kind === activeFilter);
+            var matchesQuery = !query || (label.indexOf(query) !== -1) || (id.indexOf(query) !== -1);
+
+            if (matchesTab && matchesQuery) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        if (noMatchesRow) {
+            noMatchesRow.style.display = (visibleCount === 0) ? "" : "none";
+        }
+    }
+
+    filterTabs.forEach(function(tab) {
+        tab.addEventListener("click", function() {
+            filterTabs.forEach(function(t) {
+                t.classList.remove("active", "btn-primary");
+                t.style.backgroundColor = "var(--color-bg-surface-subtle)";
+            });
+            tab.classList.add("active", "btn-primary");
+            tab.style.backgroundColor = "";
+            activeFilter = tab.getAttribute("data-filter");
+            applyFilters();
+        });
+    });
+
+    if (searchInput) {
+        searchInput.addEventListener("input", applyFilters);
+    }
+
+    // Modal helpers
+    window.openDeleteModal = function(setId, label) {
+        var modal = document.getElementById("deleteModalBackdrop");
+        var nameSpan = document.getElementById("deleteQuestionnaireName");
+        var form = document.getElementById("deleteQuestionnaireForm");
+
+        if (modal && nameSpan && form) {
+            nameSpan.textContent = label;
+            form.action = "/admin/questionnaires/" + encodeURIComponent(setId) + "/delete";
+            modal.style.display = "flex";
+        }
+    };
+
+    window.closeDeleteModal = function() {
+        var modal = document.getElementById("deleteModalBackdrop");
+        if (modal) {
+            modal.style.display = "none";
+        }
+    };
+
+    // Close on backdrop click or ESC
+    var modalBackdrop = document.getElementById("deleteModalBackdrop");
+    if (modalBackdrop) {
+        modalBackdrop.addEventListener("click", function(e) {
+            if (e.target === modalBackdrop) closeDeleteModal();
+        });
+    }
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") closeDeleteModal();
+    });
+})();
+</script>
+
+{% endblock %}

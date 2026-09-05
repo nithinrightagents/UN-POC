@@ -1,5 +1,6 @@
 import json
 import sqlite3
+
 from benchmark.compare import compare_diagnostic_runs
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL

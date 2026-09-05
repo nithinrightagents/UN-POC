@@ -2,11 +2,11 @@
 
 import json
 import sqlite3
+
 import pytest
 
 from agents.adjudicator.agreement import classify_agreement
 from agents.resolver.agent import ResolverAgent
-from agents.resolver.schema import ResolverDecision
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
 from core.telemetry.stage_events import StageEventLog
@@ -18,6 +18,8 @@ from shared.state.entities import (
     AgentRunState,
     AnswerType,
     AssessorAgentRun,
+    ElementReference,
+    EvidenceArtifact,
     EvidenceLocus,
     PrefillReason,
     Question,
@@ -26,6 +28,7 @@ from shared.state.entities import (
     UnitState,
 )
 from shared.tools.browser import PageResult
+from shared.tools.element_ref import text_hash
 
 pytestmark = pytest.mark.unit
 
@@ -118,10 +121,6 @@ def _setup_env():
     cost_ledger = CostLedger(conn, "s-res")
 
     return repo, conn, settings, fetch_log, stage_log, cost_ledger, portal
-
-
-from shared.tools.element_ref import text_hash
-from shared.state.entities import ElementReference, EvidenceArtifact
 
 
 def _insert_run(

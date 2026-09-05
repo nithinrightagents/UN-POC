@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
-from shared.state.entities import BenchmarkSet, GroundTruthAnswer, new_id
 from shared.persistence.benchmark_repo import BenchmarkRepository
+from shared.state.entities import BenchmarkSet, GroundTruthAnswer, new_id
 
 
 class BenchmarkStore:
@@ -40,7 +40,7 @@ class BenchmarkStore:
     def load_from_json(self, json_path: str | Path, set_id: str, set_name: str) -> BenchmarkSet:
         """Load benchmark set from a JSON file."""
         path = Path(json_path)
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             data = json.load(f)
 
         b_set = BenchmarkSet(set_id=set_id, name=set_name, labelled_by_class=True)

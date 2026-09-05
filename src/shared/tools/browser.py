@@ -13,10 +13,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from playwright.async_api import Browser, Page, TimeoutError as PlaywrightTimeoutError, async_playwright
+from playwright.async_api import Browser, Page, async_playwright
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
-from shared.ratelimit.token_bucket import RateLimiter
 from core.telemetry.fetch_log import FetchLog
+from shared.ratelimit.token_bucket import RateLimiter
 
 
 @dataclass

@@ -6,11 +6,13 @@ from fastapi.testclient import TestClient
 from api.finalize import final_answer
 from portal.common import ensure_session
 from shared.persistence.repositories import Repository
+from shared.state.entities import AssignmentSource, RoleAssignment, UnitAssessorAssignment, new_id
 
 pytestmark = pytest.mark.unit
 
 
-def test_human_submissions_role_scoped_and_blind(client: TestClient, auth: dict[str, str]):
+def test_human_submissions_role_scoped_and_blind(client: TestClient, auth: dict[str, str], conn):
+    repo = Repository(conn)
     # 1. Setup cycle, 2 questions, 1 unit
     client.post(
         "/api/v1/cycles",
@@ -33,6 +35,15 @@ def test_human_submissions_role_scoped_and_blind(client: TestClient, auth: dict[
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id="blind-cycle",
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="assessor-alice", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="assessor-bob", source=AssignmentSource.MAPPING),
+        )
+    )
 
     # 2. Submit answer for B.1 as Role A
     sub_a = client.post(
@@ -213,6 +224,15 @@ def test_human_submissions_feed_into_final_answer(client: TestClient, auth: dict
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id="feed-cycle",
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="a1", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="b1", source=AssignmentSource.MAPPING),
+        )
+    )
     qid = "feed-cycle:F.1"
     session_id = ensure_session(repo, "feed-cycle")
 
@@ -266,7 +286,7 @@ def test_prefill_endpoint_blind_to_human_roles(client: TestClient, auth: dict[st
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
-    session_id = ensure_session(repo, "blind-pf-cycle")
+    ensure_session(repo, "blind-pf-cycle")
 
     # Assessor A and B submit answers
     client.post(
@@ -328,6 +348,16 @@ def test_cross_route_blindness_preservation_sc011(client: TestClient, auth: dict
     alice_note = "Alice secret note about portal layout 42"
     bob_note = "Bob secret note about missing certificate 88"
 
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id=alice_actor, source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id=bob_actor, source=AssignmentSource.MAPPING),
+        )
+    )
+
     # Alice submits Q1=True, Q2=True
     client.post(
         f"/api/v1/cycles/{cycle_id}/units/{portal_id}/human-answers",
@@ -353,13 +383,13 @@ def test_cross_route_blindness_preservation_sc011(client: TestClient, auth: dict
     )
 
     # 1. Check GET /assessor questionnaire in Role A
-    res_assessor_a = client.get(f"/assessor/{cycle_id}/{portal_id}?role=A")
+    res_assessor_a = client.get(f"/assessor/{cycle_id}/{portal_id}?actor_id={alice_actor}")
     assert res_assessor_a.status_code == 200
     assert bob_actor not in res_assessor_a.text
     assert bob_note not in res_assessor_a.text
 
     # Check GET /assessor questionnaire in Role B
-    res_assessor_b = client.get(f"/assessor/{cycle_id}/{portal_id}?role=B")
+    res_assessor_b = client.get(f"/assessor/{cycle_id}/{portal_id}?actor_id={bob_actor}")
     assert res_assessor_b.status_code == 200
     assert alice_actor not in res_assessor_b.text
     assert alice_note not in res_assessor_b.text

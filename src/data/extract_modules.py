@@ -588,7 +588,6 @@ LOSI_MODULE_CONFIGS = [
 
 
 def extract_losi_module(module_cfg: dict[str, Any]) -> list[dict[str, Any]]:
-    m_id = module_cfg["id"]
     m_prefix = module_cfg["prefix"]
     m_name = module_cfg["name"]
     m_locus = module_cfg["evidence_locus_default"]

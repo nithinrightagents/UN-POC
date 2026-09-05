@@ -1,5 +1,6 @@
 import pytest
-from benchmark.urlmatch import normalize_url, urls_equivalent
+
+from benchmark.urlmatch import urls_equivalent
 
 
 @pytest.mark.parametrize(

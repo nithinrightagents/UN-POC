@@ -5,6 +5,7 @@ without requiring the portal_exhausted flag, while portal evidence is preferred 
 """
 
 import pytest
+
 from shared.tools.linkresolution.locus import evidence_permitted
 
 pytestmark = pytest.mark.unit

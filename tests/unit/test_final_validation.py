@@ -12,6 +12,7 @@ VALIDATED_PASS, a prefill is produced without a second gate.
 
 import json
 import sqlite3
+
 import pytest
 
 from core.telemetry.cost_ledger import CostLedger
@@ -28,13 +29,13 @@ from shared.state.entities import (
     ElementReference,
     EvidenceArtifact,
     EvidenceLocus,
-    PrefillReason,
     Question,
     SurveyCycle,
     TargetPortal,
     UnitState,
 )
 from shared.tools.browser import PageResult
+from shared.tools.element_ref import text_hash
 
 pytestmark = pytest.mark.unit
 
@@ -129,9 +130,6 @@ def _setup_env():
     cost_ledger = CostLedger(conn, "s-fval")
 
     return repo, conn, settings, fetch_log, stage_log, cost_ledger, portal
-
-
-from shared.tools.element_ref import text_hash
 
 
 def _insert_run_with_evidence(

@@ -7,14 +7,13 @@ and escalation counts.
 
 from __future__ import annotations
 
-import sqlite3
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 
 from benchmark.store import BenchmarkStore
 from shared.config.settings import Settings
-from shared.state.entities import BenchmarkRunResult, new_id
 from shared.persistence.benchmark_repo import BenchmarkRepository
 from shared.persistence.repositories import Repository
+from shared.state.entities import BenchmarkRunResult, new_id
 
 if TYPE_CHECKING:
     pass
@@ -61,11 +60,11 @@ def compute_benchmark_measures(
     total_pairs = len(ground_truths)
     correct_count = 0
 
-    class_correct: Dict[str, int] = {}
-    class_total: Dict[str, int] = {}
+    class_correct: dict[str, int] = {}
+    class_total: dict[str, int] = {}
 
-    band_correct: Dict[str, int] = {}
-    band_total: Dict[str, int] = {}
+    band_correct: dict[str, int] = {}
+    band_total: dict[str, int] = {}
 
     discrepancy_count = 0
     total_adjudicated = len(adj_results)
@@ -113,7 +112,7 @@ def compute_benchmark_measures(
 
     # Escalation counts by reason
     esc_items = repo.list_escalations(session_id)
-    escalations_by_reason: Dict[str, int] = {}
+    escalations_by_reason: dict[str, int] = {}
     for esc in esc_items:
         reason_str = esc.reason.value if hasattr(esc.reason, "value") else str(esc.reason)
         escalations_by_reason[reason_str] = escalations_by_reason.get(reason_str, 0) + 1

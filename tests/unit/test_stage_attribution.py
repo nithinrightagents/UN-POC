@@ -1,5 +1,4 @@
-import pytest
-from benchmark.attribution import PipelineStage, StageAttribution, attribute
+from benchmark.attribution import PipelineStage, attribute
 from benchmark.trace import UnitResolutionTrace
 from shared.state.entities import GroundTruthAnswer, new_id
 

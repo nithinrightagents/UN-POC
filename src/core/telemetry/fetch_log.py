@@ -9,10 +9,10 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from shared.state.entities import new_id
 from shared.persistence.serialization import to_json
+from shared.state.entities import new_id
 
 
 @dataclass
@@ -33,7 +33,7 @@ class FetchLog:
         self.session_id = session_id
 
     def record(self, domain: str, caller_class: str, wait_seconds: float, status: str = "ok") -> None:
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         record = FetchRecord(
             fetch_id=new_id("fetch"),
             session_id=self.session_id,

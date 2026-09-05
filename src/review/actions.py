@@ -8,12 +8,12 @@ acting person's identity and a timestamp (FR-045).
 
 from __future__ import annotations
 
+from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorAction,
     AssessorDecision,
     new_id,
 )
-from shared.persistence.repositories import Repository
 
 
 class MissingRejectionReasonError(ValueError):

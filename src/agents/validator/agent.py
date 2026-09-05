@@ -18,15 +18,20 @@ from __future__ import annotations
 import json
 import re
 
+from agents.validator.tools.evidence_verification import verify_with_retry
 from core.base_agent import BaseAgent
 from core.llm_factory import ModelProvider, estimate_cost
-from shared.state.schemas import AssessorAgentOutput
-from agents.validator.tools.evidence_verification import verify_with_retry
-from shared.config.settings import Settings
-from shared.state.entities import ElementReference, ValidationResult, VerificationOutcome, new_id, utcnow
-from shared.tools.browser import BrowserSession
 from core.telemetry.cost_ledger import CostLedger
 from core.telemetry.fetch_log import FetchLog
+from shared.config.settings import Settings
+from shared.state.entities import (
+    ElementReference,
+    ValidationResult,
+    VerificationOutcome,
+    new_id,
+)
+from shared.state.schemas import AssessorAgentOutput
+from shared.tools.browser import BrowserSession
 
 _JUDGMENT_SCHEMA = {
     "type": "object",
@@ -112,8 +117,6 @@ async def validate_agent_output(
         settings.verification_attempt_bound,
         timeout_ms=settings.page_navigation_timeout_ms,
     )
-
-    verified_at = utcnow() if verification_result.outcome == "confirmed" else None
 
     if verification_result.outcome == "target_unreachable":
         # FR-088: NOT a quality failure. Caller escalates as unverifiable target.

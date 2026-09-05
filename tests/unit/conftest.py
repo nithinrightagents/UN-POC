@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -54,7 +54,7 @@ def fake_runner():
 
     try:
         with patch("api.jobs.run_assessment_job", new_callable=AsyncMock) as mock_jobs_run, \
-             patch("api.runner.run_assessment_job", new_callable=AsyncMock) as mock_runner_run:
+             patch("api.runner.run_assessment_job", new_callable=AsyncMock):
             yield mock_jobs_run
     except (ImportError, AttributeError):
         yield AsyncMock()
@@ -126,7 +126,7 @@ def seeded_prefills(conn):
             for k in ("answer", "confidence", "justification", "evidence_url", "supplying_source", "reason", "terminal_state", "agreement_outcome", "confidence_gap", "resolver_decision", "unselected_position", "position_run_ids"):
                 if k not in data_dict and k in r:
                     data_dict[k] = r[k]
-            created_at = r.get("created_at", datetime.now(timezone.utc).isoformat())
+            created_at = r.get("created_at", datetime.now(UTC).isoformat())
             cursor.execute(
                 """
                 INSERT INTO prefills (prefill_id, run_id, session_id, cycle_id, question_id, portal_id, suggested, data, created_at)
@@ -143,7 +143,7 @@ def completed_unit(conn):
     def _complete(session_id: str, cycle_id: str, portal_id: str, questions: list[str], *, roles=("A", "B"), answers=None):
         cursor = conn.cursor()
         answers = answers or {}
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         for role in roles:
             for qid in questions:
                 ans = answers.get(qid, True)
@@ -189,7 +189,7 @@ def two_assessor_unit(conn):
         actor_b: str = "actor-B",
     ):
         cursor = conn.cursor()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         for qid, (a_ans, b_ans) in pair_map.items():
             if a_ans is not None:
                 sub_id_a = f"sub-{uuid.uuid4().hex[:10]}"
@@ -256,7 +256,7 @@ def open_round(conn):
         tolerance_at_open: float = 0.05,
     ) -> str:
         round_id = f"rnd-{uuid.uuid4().hex[:10]}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         data = {
             "disputed_question_ids": disputed_question_ids,
             "rate_at_open": rate_at_open,
@@ -303,7 +303,7 @@ def both_declared(conn):
         actor_b: str = "actor-B",
     ):
         cursor = conn.cursor()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         cursor.execute(
             """
             INSERT INTO assessor_completions (
@@ -322,4 +322,92 @@ def both_declared(conn):
         )
         conn.commit()
     return _declare
+
+
+@pytest.fixture
+def ingested(conn):
+    from portal.assignment import ingest_assessor_source
+    from shared.persistence.repositories import Repository
+
+    return ingest_assessor_source(Repository(conn))
+
+
+@pytest.fixture
+def staffed_unit(conn):
+    """Factory returning a TargetPortal with a known pair assigned."""
+    from shared.persistence.repositories import Repository
+    from shared.state.entities import (
+        AssignmentSource,
+        RoleAssignment,
+        TargetPortal,
+        UnitAssessorAssignment,
+        new_id,
+        utcnow,
+    )
+
+    repo = Repository(conn)
+
+    def _create(
+        cycle_id: str,
+        country_id: str = "DK",
+        unit_type: str = "country",
+        assessor_a_id: str = "asr-001",
+        assessor_b_id: str = "asr-007",
+    ) -> TargetPortal:
+        portal = TargetPortal(
+            portal_id=new_id("portal"),
+            cycle_id=cycle_id,
+            country_id=country_id,
+            resolved_url=None,
+            unit_type=unit_type,
+            display_name=country_id,
+        )
+        repo.insert_portal(portal)
+        assignment = UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal.portal_id,
+            role_a=RoleAssignment(
+                assessor_id=assessor_a_id, source=AssignmentSource.MAPPING, set_at=utcnow()
+            ),
+            role_b=RoleAssignment(
+                assessor_id=assessor_b_id, source=AssignmentSource.MAPPING, set_at=utcnow()
+            ),
+        )
+        repo.upsert_unit_assignment(assignment)
+        return portal
+
+    return _create
+
+
+@pytest.fixture
+def legacy_cycle(conn):
+    """Factory writing a survey_cycles row whose raw data JSON carries assessor_a_email/assessor_b_email."""
+
+    def _create(
+        cycle_id: str,
+        assessor_a_email: str = "a.okonkwo@ekap-demo.org",
+        assessor_b_email: str = "f.zahra@ekap-demo.org",
+        status: str = "locked",
+        country_set: list[str] | None = None,
+    ) -> str:
+        payload = {
+            "cycle_id": cycle_id,
+            "name": f"Legacy Cycle {cycle_id}",
+            "questionnaire_ref": "test_ref",
+            "country_set": country_set or ["DK", "SE"],
+            "status": status,
+            "project_type": "national_osi",
+            "assessor_a_email": assessor_a_email,
+            "assessor_b_email": assessor_b_email,
+        }
+        conn.execute(
+            "INSERT INTO survey_cycles (cycle_id, data) VALUES (?, ?)",
+            (cycle_id, json.dumps(payload)),
+        )
+        conn.commit()
+        return cycle_id
+
+    return _create
+
 

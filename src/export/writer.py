@@ -7,14 +7,12 @@ Enforces invariants and records export audit metadata.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Sequence
 
-from shared.state.entities import AnswerExport, SessionMode, UnitState, utcnow, new_id
-from shared.state.reason_tags import is_blocked, reason_tag
 from export.invariants import validate_export_record, validate_export_set
 from shared.persistence.repositories import Repository
+from shared.state.entities import AnswerExport, SessionMode, UnitState, new_id, utcnow
+from shared.state.reason_tags import is_blocked, reason_tag
 
 
 def export_cycle_answers(
@@ -31,20 +29,18 @@ def export_cycle_answers(
 
     questions = repo.list_questions(cycle_id)
     portals = repo.list_portals(cycle_id)
-    portals_by_id = {p.portal_id: p for p in portals}
 
     # Find sessions for cycle (production only)
     sessions = repo.list_sessions_for_cycle(cycle_id) if hasattr(repo, "list_sessions_for_cycle") else []
     if not sessions:
         # Fallback: get all sessions
         rows = repo.conn.execute("SELECT data FROM assessment_sessions WHERE cycle_id = ?", (cycle_id,)).fetchall()
-        from shared.state.entities import AssessmentSession
         from shared.persistence.serialization import from_json
+        from shared.state.entities import AssessmentSession
         sessions = [from_json(r["data"], AssessmentSession) for r in rows]
 
     # Filter out benchmark sessions (E2)
     prod_sessions = [s for s in sessions if s.mode != SessionMode.BENCHMARK]
-    prod_session_ids = {s.session_id for s in prod_sessions}
 
     delivered_records = []
     excluded_items = []
@@ -107,7 +103,6 @@ def export_cycle_answers(
                 continue
 
             # Delivered (or blocked-with-a-human-decision) unit
-            consensus_answer = unit.get("consensus_answer")
             consensus_confidence = unit.get("consensus_confidence", 80)
             below_thresh = bool(unit.get("below_acceptance_threshold", False))
 

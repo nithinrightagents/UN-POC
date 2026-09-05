@@ -17,7 +17,6 @@ from shared.state.entities import link_source_display_name
 from shared.state.reason_tags import prefill_reason_tag
 
 
-
 def build_prefills_router(
     database_path: str, settings: Settings
 ) -> APIRouter:

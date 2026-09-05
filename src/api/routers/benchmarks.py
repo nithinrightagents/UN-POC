@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+
 from fastapi import APIRouter, Depends
 
 from api.deps import make_repo_dependency
@@ -15,7 +16,6 @@ from api.schemas import (
     DiagnosticCompareResponse,
     DiagnosticRunRequest,
     DiagnosticRunResponse,
-    NotFound,
 )
 from benchmark.compare import compare_benchmark_runs, compare_diagnostic_runs
 from benchmark.diagnostics import run_diagnostic

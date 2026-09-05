@@ -154,7 +154,6 @@
                 </div>
                 {% else %}
                 <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/reconcile/{{ row.question.question_id }}/joint" style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); padding: 1rem;">
-                    <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="actor_id" value="{{ actor_id }}">
                     <div style="font-weight: 600; font-size: 0.9rem; margin-bottom: 0.75rem;">Commit Joint Answer:</div>
                     

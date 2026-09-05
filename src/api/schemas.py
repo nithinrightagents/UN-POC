@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from typing import Any
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 # --- Error Envelope & Exceptions (T020) -------------------------------------
 
@@ -41,6 +41,15 @@ class Unauthorized(ApiError):
         details: dict[str, Any] | None = None,
     ) -> None:
         super().__init__("unauthorized", 401, message, details)
+
+
+class Forbidden(ApiError):
+    def __init__(
+        self,
+        message: str = "Forbidden.",
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__("forbidden", 403, message, details)
 
 
 class NotConfigured(ApiError):

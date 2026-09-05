@@ -10,7 +10,11 @@ from dataclasses import dataclass
 
 from portal.discrepancy import find_resolved_answer
 from shared.persistence.repositories import Repository
-from shared.state.entities import AssessorRole
+from shared.state.entities import (
+    AssessorRole,
+    HumanAssessorSubmission,
+    Question,
+)
 
 
 @dataclass(frozen=True)

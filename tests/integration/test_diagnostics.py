@@ -1,6 +1,7 @@
 import json
 import sqlite3
-import httpx
+from unittest.mock import patch
+
 import pytest
 
 from benchmark.attribution import PipelineStage
@@ -10,17 +11,16 @@ from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
 from shared.state.entities import (
-    EvidenceLocus,
-    Question,
     AnswerType,
-    TargetPortal,
-    PriorSurveyLink,
+    EvidenceLocus,
     LinkSource,
+    PriorSurveyLink,
+    Question,
     ResolutionAttempt,
+    TargetPortal,
     new_id,
 )
 from shared.tools.browser import BrowserSession, PageResult
-from unittest.mock import patch
 
 
 class FakePage:

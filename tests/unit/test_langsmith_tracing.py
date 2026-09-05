@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-import os
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -103,6 +102,7 @@ def test_is_tracing_enabled_case_insensitive(monkeypatch):
 
 def test_safe_run_handle_patch_and_end():
     from unittest.mock import MagicMock
+
     from core.telemetry.langsmith_tracing import SafeRunHandle
 
     mock_run = MagicMock()

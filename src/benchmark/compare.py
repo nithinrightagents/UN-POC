@@ -8,7 +8,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from shared.state.entities import BenchmarkRunResult
 from shared.persistence.benchmark_repo import BenchmarkRepository
 from shared.persistence.repositories import Repository
 

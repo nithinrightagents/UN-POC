@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
 
 from agents.resolver.prompts import (
-    RESOLVER_SYSTEM_INSTRUCTION,
     _RESOLVER_JSON_SCHEMA,
+    RESOLVER_SYSTEM_INSTRUCTION,
     build_resolver_prompt,
 )
 from agents.resolver.schema import ResolverDecision

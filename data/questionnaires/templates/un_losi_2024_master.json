@@ -4,6 +4,7 @@
   "description": "Official UN DESA Local Online Service Index (LOSI) municipal indicator catalog extracted from city evaluation modules.",
   "version": "2024.1",
   "is_master_template": false,
+  "project_type": "losi_city",
   "total_questions": 95,
   "questions": [
     {

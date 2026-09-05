@@ -12,13 +12,13 @@ only the retry decision, the addendum content, and the retry counter.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable
+from typing import Any
 
-from shared.state.schemas import AssessorAgentOutput, RetryAddendum
-from shared.state.confidence import evaluate_confidence_gate
 from core.telemetry.langsmith_tracing import confidence_gate_trace
-
+from shared.state.confidence import evaluate_confidence_gate
+from shared.state.schemas import AssessorAgentOutput, RetryAddendum
 
 AssessOnce = Callable[[RetryAddendum | None], Awaitable[AssessorAgentOutput]]
 

@@ -1,0 +1,2036 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UN EKAP Modernization — Phase 1 Portal &amp; Phase 2 AI Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body, h1, h2, h3, h4, p, ul, li, figure, table, th, td { margin: 0; padding: 0; }
+  ul { list-style: none; }
+  img, svg { max-width: 100%; display: block; }
+
+  /* ==========================================================================
+     Theme 1: Light (Clean Editorial / Crisp Paper)
+     ========================================================================== */
+  :root, :root[data-theme="light"] {
+    --ground:          #F8FAFC;
+    --surface:         #FFFFFF;
+    --surface-2:       #F1F5F9;
+    --surface-3:       #E2E8F0;
+    --ink:             #0F172A;
+    --ink-soft:        #475569;
+    --ink-faint:       #64748B;
+    --rule:            #CBD5E1;
+    --rule-soft:       #E2E8F0;
+    --accent:          #0072CE;
+    --accent-hover:    #005FA3;
+    --accent-soft:     rgba(0, 114, 206, 0.08);
+    --accent-border:   rgba(0, 114, 206, 0.22);
+    --signal:          #D97706;
+    --signal-soft:     rgba(217, 119, 6, 0.08);
+    --signal-border:   rgba(217, 119, 6, 0.25);
+    --danger:          #DC2626;
+    --danger-soft:     rgba(220, 38, 38, 0.06);
+    --danger-border:   rgba(220, 38, 38, 0.22);
+    --verified:        #059669;
+    --verified-soft:   rgba(5, 150, 105, 0.08);
+    --verified-border: rgba(5, 150, 105, 0.22);
+    --shadow-sm:       0 1px 2px rgba(15,23,42,.05);
+    --shadow-md:       0 4px 12px -2px rgba(15,23,42,.08), 0 2px 4px -2px rgba(15,23,42,.04);
+    --shadow-lg:       0 12px 24px -4px rgba(15,23,42,.1), 0 4px 6px -4px rgba(15,23,42,.04);
+
+    --sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --serif: "Palatino Linotype", "Iowan Old Style", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: "Fira Code", "Cascadia Mono", "SF Mono", ui-monospace, Consolas, monospace;
+  }
+
+  /* ==========================================================================
+     Theme 2: Dark (Onyx Minimal / High Contrast)
+     ========================================================================== */
+  :root[data-theme="dark"] {
+    --ground:          #080B11;
+    --surface:         #0E1422;
+    --surface-2:       #141C2E;
+    --surface-3:       #1B253D;
+    --ink:             #F8FAFC;
+    --ink-soft:        #94A3B8;
+    --ink-faint:       #64748B;
+    --rule:            rgba(255, 255, 255, 0.12);
+    --rule-soft:       rgba(255, 255, 255, 0.06);
+    --accent:          #38BDF8;
+    --accent-hover:    #7DD3FC;
+    --accent-soft:     rgba(56, 189, 248, 0.08);
+    --accent-border:   rgba(56, 189, 248, 0.25);
+    --signal:          #FBBF24;
+    --signal-soft:     rgba(251, 191, 36, 0.08);
+    --signal-border:   rgba(251, 191, 36, 0.25);
+    --danger:          #FB7185;
+    --danger-soft:     rgba(251, 113, 133, 0.08);
+    --danger-border:   rgba(251, 113, 133, 0.25);
+    --verified:        #34D399;
+    --verified-soft:   rgba(52, 211, 153, 0.08);
+    --verified-border: rgba(52, 211, 153, 0.25);
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.4);
+    --shadow-md:       0 4px 16px -2px rgba(0,0,0,.5);
+    --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.7);
+  }
+
+  /* ==========================================================================
+     Theme 3: Deep Forest (Nordic Pine & Emerald Slate)
+     ========================================================================== */
+  :root[data-theme="forest"] {
+    --ground:          #081411;
+    --surface:         #0E1F1B;
+    --surface-2:       #152B26;
+    --surface-3:       #1D3B34;
+    --ink:             #F0FDF4;
+    --ink-soft:        #94A3B8;
+    --ink-faint:       #64748B;
+    --rule:            rgba(255, 255, 255, 0.12);
+    --rule-soft:       rgba(255, 255, 255, 0.06);
+    --accent:          #2DD4BF;
+    --accent-hover:    #5EEAD4;
+    --accent-soft:     rgba(45, 212, 191, 0.1);
+    --accent-border:   rgba(45, 212, 191, 0.26);
+    --signal:          #FBBF24;
+    --signal-soft:     rgba(251, 191, 36, 0.1);
+    --signal-border:   rgba(251, 191, 36, 0.25);
+    --danger:          #FB7185;
+    --danger-soft:     rgba(251, 113, 133, 0.1);
+    --danger-border:   rgba(251, 113, 133, 0.25);
+    --verified:        #34D399;
+    --verified-soft:   rgba(52, 211, 153, 0.1);
+    --verified-border: rgba(52, 211, 153, 0.25);
+    --shadow-sm:       0 1px 2px rgba(0,0,0,.45);
+    --shadow-md:       0 4px 16px -2px rgba(0,0,0,.55);
+    --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.75);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+      --ground:          #080B11;
+      --surface:         #0E1422;
+      --surface-2:       #141C2E;
+      --surface-3:       #1B253D;
+      --ink:             #F8FAFC;
+      --ink-soft:        #94A3B8;
+      --ink-faint:       #64748B;
+      --rule:            rgba(255, 255, 255, 0.12);
+      --rule-soft:       rgba(255, 255, 255, 0.06);
+      --accent:          #38BDF8;
+      --accent-hover:    #7DD3FC;
+      --accent-soft:     rgba(56, 189, 248, 0.08);
+      --accent-border:   rgba(56, 189, 248, 0.25);
+      --signal:          #FBBF24;
+      --signal-soft:     rgba(251, 191, 36, 0.08);
+      --signal-border:   rgba(251, 191, 36, 0.25);
+      --danger:          #FB7185;
+      --danger-soft:     rgba(251, 113, 133, 0.08);
+      --danger-border:   rgba(251, 113, 133, 0.25);
+      --verified:        #34D399;
+      --verified-soft:   rgba(52, 211, 153, 0.08);
+      --verified-border: rgba(52, 211, 153, 0.25);
+      --shadow-sm:       0 1px 2px rgba(0,0,0,.4);
+      --shadow-md:       0 4px 16px -2px rgba(0,0,0,.5);
+      --shadow-lg:       0 12px 28px -4px rgba(0,0,0,.7);
+    }
+  }
+
+  /* ---- Presentation Viewport ---- */
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: clamp(.86rem, 1.1vw, .98rem);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3.5px;
+    background: linear-gradient(90deg, var(--accent), var(--verified));
+    transition: width .35s ease;
+    z-index: 100;
+  }
+
+  #deck {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    padding: clamp(16px, 2.4vw, 36px) clamp(20px, 3.4vw, 52px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.4vw, 16px);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity .35s cubic-bezier(0.16, 1, 0.3, 1), transform .35s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    will-change: transform, opacity;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+  .slide.exit-left { opacity: 0; transform: translateX(-6%); pointer-events: none; }
+
+  .slide-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-soft);
+    flex-shrink: 0;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: clamp(.62rem, .78vw, .7rem);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-size: clamp(.65rem, .8vw, .72rem);
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+    background: var(--surface-2);
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-soft);
+    font-weight: 600;
+  }
+
+  .slide-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.3vw, 16px);
+    justify-content: flex-start;
+    min-height: 0;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.85rem, 3.6vw, 2.9rem);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    line-height: 1.16;
+    letter-spacing: -.01em;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h2 em { font-style: normal; color: var(--accent); font-weight: 600; }
+  .lede { color: var(--ink-soft); max-width: 72ch; font-size: clamp(.88rem, 1.2vw, 1.02rem); line-height: 1.5; }
+
+  /* ---- Title Slide ---- */
+  .title-slide { justify-content: space-between; }
+  .title-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 16px;
+    margin-top: auto;
+  }
+  .title-meta > div {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 6px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .title-meta .k {
+    display: block; font-family: var(--mono);
+    font-size: clamp(1.2rem, 2.2vw, 1.75rem);
+    color: var(--accent); font-weight: 700;
+    font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .title-meta .v {
+    display: block; margin-top: 4px;
+    font-size: clamp(.7rem, .9vw, .8rem);
+    color: var(--ink-soft); font-weight: 500;
+  }
+
+  /* ---- Challenge vs Resolution Paired Cards ---- */
+  .pain-solution-pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(10px, 1.4vw, 14px);
+  }
+  @media (min-width: 860px) {
+    .pain-solution-pair { grid-template-columns: 1fr 1fr; }
+  }
+
+  .pain-card, .solution-card {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    padding: clamp(12px, 1.5vw, 16px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+
+  .pain-card {
+    border: 1px solid var(--danger-border);
+    border-left: 3.5px solid var(--danger);
+    background: linear-gradient(180deg, var(--danger-soft) 0%, var(--surface-2) 22%);
+  }
+
+  .solution-card {
+    border: 1px solid var(--verified-border);
+    border-left: 3.5px solid var(--verified);
+    background: linear-gradient(180deg, var(--verified-soft) 0%, var(--surface-2) 22%);
+  }
+
+  .card-header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tag-pain {
+    font-family: var(--mono);
+    font-size: clamp(.58rem, .72vw, .65rem);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--danger);
+    background: var(--danger-soft);
+    border: 1px solid var(--danger-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .tag-solution {
+    font-family: var(--mono);
+    font-size: clamp(.58rem, .72vw, .65rem);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--verified);
+    background: var(--verified-soft);
+    border: 1px solid var(--verified-border);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: clamp(.88rem, 1.1vw, .98rem);
+    color: var(--ink);
+    line-height: 1.25;
+  }
+
+  .card-detail {
+    font-size: clamp(.76rem, .95vw, .84rem);
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .card-detail b { color: var(--ink); font-weight: 600; }
+
+  .bullet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .bullet-list li {
+    font-size: clamp(.74rem, .92vw, .82rem);
+    color: var(--ink-soft);
+    line-height: 1.4;
+    position: relative;
+    padding-left: 18px;
+    text-align: left;
+  }
+  .bullet-list li b { color: var(--ink); font-weight: 600; }
+  .pain-card .bullet-list li::before {
+    content: "✕";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--danger);
+    font-weight: 800;
+    font-size: .82em;
+    line-height: 1.4;
+  }
+  .solution-card .bullet-list li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--verified);
+    font-weight: 800;
+    font-size: .92em;
+    line-height: 1.4;
+  }
+
+  .tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .tech-badge {
+    font-family: var(--mono);
+    font-size: clamp(.55rem, .7vw, .62rem);
+    background: var(--surface-3);
+    color: var(--ink-soft);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--rule-soft);
+    font-weight: 500;
+  }
+
+  /* ---- Matrix Comparison Table ---- */
+  .matrix-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(.72rem, .92vw, .82rem);
+    text-align: left;
+  }
+
+  .matrix-table th {
+    background: var(--surface-2);
+    padding: 9px 12px;
+    font-family: var(--mono);
+    font-size: clamp(.6rem, .75vw, .68rem);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    border-bottom: 1px solid var(--rule);
+    font-weight: 700;
+  }
+
+  .matrix-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--rule-soft);
+    color: var(--ink-soft);
+    vertical-align: middle;
+  }
+
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-table tr:hover td { background: var(--surface-2); }
+  .matrix-table td.dim-name { font-weight: 600; color: var(--ink); font-family: var(--mono); font-size: clamp(.68rem, .85vw, .75rem); }
+  .matrix-table td.current-state { color: var(--danger); background: var(--danger-soft); }
+  .matrix-table td.future-state { color: var(--verified); font-weight: 600; background: var(--verified-soft); }
+
+  /* ---- 2-Row Flow Grid (Slide 8) ---- */
+  .flow-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 600px) {
+    .flow-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 900px) {
+    .flow-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .flow-step {
+    border: 1px solid var(--rule-soft); border-top: 3.5px solid var(--rule);
+    background: var(--surface-2); padding: 9px 10px 11px;
+    display: flex; flex-direction: column; gap: 4px;
+    border-radius: 4px; box-shadow: var(--shadow-sm);
+  }
+  .flow-step .who { font-family: var(--mono); font-size: clamp(.55rem, .7vw, .62rem); letter-spacing: .1em; text-transform: uppercase; font-weight: 700; }
+  .flow-step b { font-size: clamp(.74rem, .95vw, .84rem); font-weight: 700; line-height: 1.2; color: var(--ink); }
+  .flow-step span { font-size: clamp(.66rem, .85vw, .75rem); color: var(--ink-soft); line-height: 1.35; }
+  
+  .flow-step.admin   { border-top-color: #818CF8; background: rgba(129,140,248,0.06); }
+  .flow-step.admin .who { color: #818CF8; }
+  .flow-step.ai      { border-top-color: var(--accent); background: var(--accent-soft); }
+  .flow-step.ai .who { color: var(--accent); }
+  .flow-step.human   { border-top-color: var(--rule); }
+  .flow-step.human .who { color: var(--ink-faint); }
+  .flow-step.gate    { border-top-color: var(--signal); background: var(--signal-soft); }
+  .flow-step.gate .who { color: var(--signal); }
+  .flow-step.pub     { border-top-color: var(--verified); background: var(--verified-soft); }
+  .flow-step.pub .who { color: var(--verified); }
+
+  /* ---- AI / Technical Stack Layering ---- */
+  .stack { display: grid; gap: 1px; background: var(--rule-soft); border: 1px solid var(--rule-soft); border-radius: 6px; overflow: hidden; }
+  .layer {
+    background: var(--surface); display: grid; grid-template-columns: 8.5rem 1fr; gap: 12px;
+    padding: clamp(8px, 1.1vw, 12px) clamp(10px, 1.4vw, 16px); align-items: baseline;
+  }
+  @media (max-width: 640px) { .layer { grid-template-columns: 1fr; gap: 3px; } }
+  .layer .stage { font-family: var(--mono); font-size: clamp(.6rem, .78vw, .68rem); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .layer p { font-size: clamp(.76rem, .98vw, .86rem); color: var(--ink-soft); line-height: 1.4; }
+  .layer p b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Facts / Grid Stats ---- */
+  .facts { display: grid; gap: 10px; }
+  @media (min-width: 700px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+  .fact {
+    background: var(--surface-2); border: 1px solid var(--rule-soft); border-radius: 6px;
+    padding: clamp(10px, 1.3vw, 14px); display: flex; gap: 12px; align-items: baseline;
+    box-shadow: var(--shadow-sm);
+  }
+  .fact .n {
+    font-family: var(--mono); font-size: clamp(1rem, 1.5vw, 1.3rem); color: var(--accent);
+    font-weight: 700; font-variant-numeric: tabular-nums; flex-shrink: 0; white-space: nowrap;
+  }
+  .fact div { min-width: 0; }
+  .fact div b { display: block; font-size: clamp(.8rem, 1.05vw, .9rem); font-weight: 700; color: var(--ink); }
+  .fact div span { display: block; font-size: clamp(.7rem, .9vw, .78rem); color: var(--ink-soft); margin-top: 2px; line-height: 1.35; }
+
+  /* ---- Columns & Notes ---- */
+  .cols { display: grid; gap: clamp(12px, 1.8vw, 20px); }
+  @media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr; } }
+  .col h3 {
+    font-family: var(--mono); font-size: clamp(.6rem, .78vw, .68rem); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); padding-bottom: 5px; border-bottom: 1px solid var(--rule-soft); margin-bottom: 8px; font-weight: 700;
+  }
+  .col p { font-size: clamp(.76rem, .98vw, .86rem); color: var(--ink-soft); line-height: 1.45; }
+  .col p + p { margin-top: 6px; }
+  .col p b { color: var(--ink); font-weight: 600; }
+  .col ul { display: flex; flex-direction: column; gap: 8px; }
+  .col li {
+    font-size: clamp(.76rem, .98vw, .86rem);
+    color: var(--ink-soft);
+    line-height: 1.45;
+    position: relative;
+    padding-left: 18px;
+    text-align: left;
+  }
+  .col li b { color: var(--ink); font-weight: 600; }
+  .col li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-weight: 700;
+    line-height: 1.45;
+  }
+
+  .rule-note {
+    border: 1px solid var(--accent-border);
+    border-left: 3.5px solid var(--accent);
+    padding: 8px 12px;
+    background: var(--accent-soft);
+    border-radius: 6px;
+    font-size: clamp(.78rem, 1.02vw, .88rem);
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+  .rule-note b { color: var(--ink); font-weight: 600; }
+
+  .footnote { font-size: clamp(.68rem, .85vw, .76rem); color: var(--ink-faint); border-top: 1px solid var(--rule-soft); padding-top: 7px; flex-shrink: 0; line-height: 1.35; }
+  .footnote b { color: var(--ink-soft); font-weight: 600; }
+
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ---- API Endpoint Grid & Layout (Slide 11) ---- */
+  .api-grid {
+    display: grid;
+    gap: clamp(8px, 1.1vw, 12px);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .api-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1100px) {
+    .api-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .api-card {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 6px;
+    padding: clamp(9px, 1.1vw, 13px);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .api-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .api-card-title {
+    font-family: var(--mono);
+    font-size: clamp(.65rem, .8vw, .72rem);
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .api-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .api-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .api-route {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: clamp(.64rem, .78vw, .72rem);
+    flex-wrap: nowrap;
+  }
+
+  .badge-method {
+    font-family: var(--mono);
+    font-size: clamp(.54rem, .66vw, .6rem);
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: .04em;
+    flex-shrink: 0;
+  }
+
+  .badge-get {
+    background: var(--verified-soft);
+    color: var(--verified);
+    border: 1px solid var(--verified-border);
+  }
+
+  .badge-post {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+  }
+
+  .badge-patch {
+    background: var(--signal-soft);
+    color: var(--signal);
+    border: 1px solid var(--signal-border);
+  }
+
+  .api-path {
+    color: var(--ink);
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .api-desc {
+    color: var(--ink-soft);
+    font-size: clamp(.63rem, .76vw, .7rem);
+    line-height: 1.35;
+    padding-left: 2px;
+  }
+
+  .api-specs-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 2px;
+  }
+
+  .api-spec-pill {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-radius: 5px;
+    padding: 6px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .api-spec-pill .k {
+    font-family: var(--mono);
+    font-size: clamp(.56rem, .7vw, .62rem);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--accent);
+  }
+
+  .api-spec-pill .v {
+    font-size: clamp(.65rem, .8vw, .72rem);
+    color: var(--ink-soft);
+    line-height: 1.3;
+  }
+
+  /* ---- Navigation Bar ---- */
+  #nav {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 8px 20px; background: var(--surface); border-top: 1px solid var(--rule-soft); user-select: none;
+    z-index: 90;
+    backdrop-filter: blur(12px);
+  }
+  .nav-group { display: flex; align-items: center; gap: 8px; }
+  #nav button, #nav select {
+    background: var(--surface-2); border: 1px solid var(--rule); color: var(--ink-soft);
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 600;
+    padding: 5px 11px; border-radius: 4px; cursor: pointer; transition: all .15s ease;
+  }
+  #nav button:hover:not(:disabled), #nav select:hover {
+    background: var(--accent); border-color: var(--accent); color: #081411;
+    box-shadow: 0 0 12px var(--accent-soft);
+  }
+  :root[data-theme="light"] #nav button:hover:not(:disabled),
+  :root[data-theme="light"] #nav select:hover {
+    color: #fff;
+  }
+  :root[data-theme="dark"] #nav button:hover:not(:disabled),
+  :root[data-theme="dark"] #nav select:hover {
+    color: #fff;
+  }
+  #nav button:disabled { opacity: .3; cursor: default; }
+  #nav-counter { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; color: var(--ink-faint); font-variant-numeric: tabular-nums; min-width: 55px; text-align: center; font-weight: 600; }
+
+  #dots { display: flex; gap: 6px; align-items: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--rule); transition: all .2s ease; cursor: pointer; border: none; padding: 0; }
+  .dot.active { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 8px var(--accent); }
+
+  #click-hint {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    pointer-events: none; z-index: 50; opacity: 0; animation: hint-fade 2.8s ease 0.8s forwards;
+  }
+  #click-hint span {
+    background: rgba(15,23,42,.85); color: #fff; font-family: var(--mono); font-size: .72rem;
+    letter-spacing: .14em; text-transform: uppercase; padding: 9px 20px; border-radius: 4px; backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  @keyframes hint-fade { 0% { opacity: 0; } 20% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+
+  @media print {
+    html, body { height: auto; overflow: visible; }
+    #progress-bar, #nav, #dots, #click-hint { display: none !important; }
+    #deck { overflow: visible; height: auto; }
+    .slide { position: relative; opacity: 1 !important; transform: none !important; pointer-events: auto; break-after: page; min-height: 100vh; height: auto; padding: 32px; }
+    .slide.exit-left { display: none; }
+  }
+
+  /* ==========================================================================
+     Phase System (v2) — Phase 1 = Built Portal, Phase 2 = AI Layer
+     ========================================================================== */
+  .phase-pill {
+    font-family: var(--mono);
+    font-size: clamp(.55rem, .7vw, .62rem);
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .phase-pill.p1 { color: var(--verified); background: var(--verified-soft); border: 1px solid var(--verified-border); }
+  .phase-pill.p2 { color: var(--signal);   background: var(--signal-soft);   border: 1px solid var(--signal-border); }
+
+  .head-right { display: flex; align-items: center; gap: 8px; }
+
+  :root[data-theme="light"] .slide.phase-1 .eyebrow,
+  .slide.phase-1 .eyebrow { color: var(--verified); }
+  .slide.phase-1 .eyebrow::before { background: var(--verified); }
+  .slide.phase-2 .eyebrow { color: var(--signal); }
+  .slide.phase-2 .eyebrow::before { background: var(--signal); }
+  .slide.phase-1 h2 em { color: var(--verified); }
+  .slide.phase-2 h2 em { color: var(--signal); }
+  .slide.phase-1 .layer .stage { color: var(--verified); }
+  .slide.phase-2 .layer .stage { color: var(--signal); }
+  .slide.phase-1 .col h3 { color: var(--verified); }
+  .slide.phase-2 .col h3 { color: var(--signal); }
+  .slide.phase-1 .fact .n { color: var(--verified); }
+  .slide.phase-2 .fact .n { color: var(--signal); }
+  .slide.phase-1 .api-card-title { color: var(--verified); }
+  .slide.phase-2 .api-card-title { color: var(--signal); }
+  .slide.phase-1 .col li::before { color: var(--verified); }
+  .slide.phase-2 .col li::before { color: var(--signal); }
+  .slide.phase-1 .rule-note { border-color: var(--verified-border); border-left-color: var(--verified); background: var(--verified-soft); }
+  .slide.phase-2 .rule-note { border-color: var(--signal-border);   border-left-color: var(--signal);   background: var(--signal-soft); }
+
+  /* ---- Inline phase tags inside the pain-point summary table ---- */
+  .tag-p1, .tag-p2 {
+    font-family: var(--mono);
+    font-size: clamp(.54rem, .68vw, .6rem);
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .tag-p1 { color: var(--verified); background: var(--verified-soft); border: 1px solid var(--verified-border); }
+  .tag-p2 { color: var(--signal);   background: var(--signal-soft);   border: 1px solid var(--signal-border); }
+
+  .matrix-table td.phase-cell { text-align: center; background: transparent; width: 1%; }
+  .matrix-table.summary-table td { font-size: clamp(.7rem, .88vw, .78rem); padding: 7px 11px; }
+  .matrix-table.summary-table td.pain-cell { color: var(--danger); background: var(--danger-soft); }
+  .matrix-table.summary-table td.fix-cell { color: var(--ink-soft); }
+  .matrix-table.summary-table td.fix-cell b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Phase divider hero ---- */
+  .phase-hero {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.4vw, 16px);
+    justify-content: center;
+    flex: 1;
+  }
+  .phase-hero .kicker {
+    font-family: var(--mono);
+    font-size: clamp(.62rem, .78vw, .7rem);
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .slide.phase-1 .phase-hero .kicker { color: var(--verified); }
+  .slide.phase-2 .phase-hero .kicker { color: var(--signal); }
+
+  /* ---- Status chips (built / planned) ---- */
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: var(--mono);
+    font-size: clamp(.56rem, .7vw, .63rem);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--rule-soft);
+    background: var(--surface-2);
+    color: var(--ink-soft);
+  }
+  .chip.built   { color: var(--verified); background: var(--verified-soft); border-color: var(--verified-border); }
+  .chip.planned { color: var(--signal);   background: var(--signal-soft);   border-color: var(--signal-border); }
+
+  /* ---- Numbered pipeline (AI prefill) ---- */
+  .pipeline { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .pipeline { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1050px) { .pipeline { grid-template-columns: repeat(3, 1fr); } }
+  .pipe-step {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-top: 3px solid var(--signal);
+    border-radius: 5px;
+    padding: 9px 11px 11px;
+    display: flex; flex-direction: column; gap: 4px;
+    box-shadow: var(--shadow-sm);
+  }
+  .pipe-step .step-n {
+    font-family: var(--mono); font-size: clamp(.55rem, .7vw, .62rem);
+    letter-spacing: .1em; text-transform: uppercase; font-weight: 700; color: var(--signal);
+  }
+  .pipe-step b { font-size: clamp(.75rem, .95vw, .84rem); font-weight: 700; line-height: 1.2; color: var(--ink); }
+  .pipe-step span { font-size: clamp(.67rem, .85vw, .75rem); color: var(--ink-soft); line-height: 1.35; }
+
+  /* ---- Roadmap split ---- */
+  .roadmap { display: grid; gap: clamp(10px, 1.4vw, 16px); grid-template-columns: 1fr; }
+  @media (min-width: 820px) { .roadmap { grid-template-columns: 1fr 1fr; } }
+  .roadmap-col {
+    border: 1px solid var(--rule-soft);
+    border-radius: 8px;
+    padding: clamp(11px, 1.4vw, 15px);
+    background: var(--surface-2);
+    display: flex; flex-direction: column; gap: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+  .roadmap-col.r1 { border-left: 3.5px solid var(--verified); }
+  .roadmap-col.r2 { border-left: 3.5px solid var(--signal); }
+  .roadmap-col h3 {
+    font-family: var(--mono); font-size: clamp(.6rem, .78vw, .68rem);
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 700;
+    padding-bottom: 5px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .roadmap-col.r1 h3 { color: var(--verified); }
+  .roadmap-col.r2 h3 { color: var(--signal); }
+  .roadmap-col ol { list-style: none; display: flex; flex-direction: column; gap: 7px; counter-reset: rstep; }
+  .roadmap-col li {
+    font-size: clamp(.73rem, .92vw, .82rem); color: var(--ink-soft); line-height: 1.4;
+    position: relative; padding-left: 24px; counter-increment: rstep;
+  }
+  .roadmap-col li b { color: var(--ink); font-weight: 600; }
+  .roadmap-col li::before {
+    content: counter(rstep, decimal-leading-zero);
+    position: absolute; left: 0; top: 0;
+    font-family: var(--mono); font-size: .82em; font-weight: 700;
+  }
+  .roadmap-col.r1 li::before { color: var(--verified); }
+  .roadmap-col.r2 li::before { color: var(--signal); }
+
+  /* ==========================================================================
+     v2.1 — Pre-fill process strip, assistant slide, closing slide
+     ========================================================================== */
+  .proc-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 5px;
+    padding: 2px 0;
+  }
+  .proc-node {
+    flex: 1 1 128px;
+    min-width: 118px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-top: 3px solid var(--rule);
+    border-radius: 4px;
+    padding: 7px 9px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: var(--shadow-sm);
+  }
+  .proc-node .pn {
+    font-family: var(--mono);
+    font-size: clamp(.52rem, .66vw, .58rem);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+  .proc-node b { font-size: clamp(.7rem, .88vw, .78rem); font-weight: 700; line-height: 1.2; color: var(--ink); }
+  .proc-node span.d { font-size: clamp(.62rem, .78vw, .69rem); color: var(--ink-soft); line-height: 1.3; }
+  .proc-node.ai    { border-top-color: var(--signal);   background: var(--signal-soft); }
+  .proc-node.ai .pn { color: var(--signal); }
+  .proc-node.check { border-top-color: var(--accent);   background: var(--accent-soft); }
+  .proc-node.check .pn { color: var(--accent); }
+  .proc-node.human { border-top-color: var(--verified); background: var(--verified-soft); }
+  .proc-node.human .pn { color: var(--verified); }
+
+  .proc-arrow {
+    align-self: center;
+    font-family: var(--mono);
+    font-size: .8rem;
+    color: var(--ink-faint);
+    flex: 0 0 auto;
+    padding: 0 1px;
+  }
+  @media (max-width: 900px) { .proc-arrow { display: none; } }
+
+  .proc-legend {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    font-family: var(--mono);
+    font-size: clamp(.56rem, .7vw, .63rem);
+    letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
+    color: var(--ink-faint);
+  }
+  .proc-legend i { font-style: normal; display: inline-flex; align-items: center; gap: 5px; }
+  .proc-legend i::before { content: ""; width: 9px; height: 3px; border-radius: 2px; display: inline-block; }
+  .proc-legend i.ai::before    { background: var(--signal); }
+  .proc-legend i.check::before { background: var(--accent); }
+  .proc-legend i.human::before { background: var(--verified); }
+
+  /* ---- Question / answer exemplar cards (assistant slide) ---- */
+  .ask-grid { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .ask-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1120px) { .ask-grid { grid-template-columns: repeat(4, 1fr); } }
+  .ask-card {
+    background: var(--surface-2);
+    border: 1px solid var(--rule-soft);
+    border-left: 3px solid var(--signal);
+    border-radius: 5px;
+    padding: 9px 11px 10px;
+    display: flex; flex-direction: column; gap: 5px;
+    box-shadow: var(--shadow-sm);
+  }
+  .ask-card .role {
+    font-family: var(--mono);
+    font-size: clamp(.53rem, .68vw, .6rem);
+    letter-spacing: .1em; text-transform: uppercase; font-weight: 700;
+    color: var(--signal);
+  }
+  .ask-card q {
+    font-size: clamp(.72rem, .9vw, .8rem);
+    color: var(--ink); line-height: 1.35; font-weight: 600; quotes: "\201C" "\201D";
+  }
+  .ask-card .src {
+    font-size: clamp(.62rem, .78vw, .69rem);
+    color: var(--ink-soft); line-height: 1.3;
+    padding-top: 5px; border-top: 1px solid var(--rule-soft);
+  }
+  .ask-card .src b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Closing slide ---- */
+  .closing {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; gap: clamp(12px, 1.8vw, 20px);
+  }
+  .closing h1 { font-size: clamp(2.4rem, 5vw, 4.2rem); }
+  .closing .sub { color: var(--ink-soft); max-width: 62ch; font-size: clamp(.9rem, 1.2vw, 1.04rem); line-height: 1.55; }
+  .closing .divider { width: 64px; height: 2px; background: var(--accent); border-radius: 2px; }
+  .closing .recap {
+    display: grid; gap: 10px; width: 100%; max-width: 820px;
+    grid-template-columns: 1fr; text-align: left;
+  }
+  @media (min-width: 760px) { .closing .recap { grid-template-columns: 1fr 1fr; } }
+  .recap-card {
+    border: 1px solid var(--rule-soft); border-radius: 7px;
+    background: var(--surface-2); padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow-sm);
+  }
+  .recap-card.r1 { border-left: 3.5px solid var(--verified); }
+  .recap-card.r2 { border-left: 3.5px solid var(--signal); }
+  .recap-card .rk {
+    font-family: var(--mono); font-size: clamp(.56rem, .7vw, .63rem);
+    letter-spacing: .12em; text-transform: uppercase; font-weight: 700;
+  }
+  .recap-card.r1 .rk { color: var(--verified); }
+  .recap-card.r2 .rk { color: var(--signal); }
+  .recap-card p { font-size: clamp(.74rem, .92vw, .82rem); color: var(--ink-soft); line-height: 1.4; }
+  .recap-card p b { color: var(--ink); font-weight: 600; }
+  .closing .org {
+    font-family: var(--mono); font-size: clamp(.62rem, .78vw, .7rem);
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div id="deck" role="region" aria-label="Presentation slides" tabindex="0">
+
+
+  <!-- 01 — Title & Executive Summary -->
+  <section class="slide active" id="s1" aria-label="Slide 1 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">RightAgents Technologies · Executive Briefing</span>
+      <span class="num">01 / 14</span>
+    </div>
+    <div class="slide-body title-slide">
+      <div>
+        <h1>UN EKAP Modernization:<br>The Portal First, Then the Intelligence</h1>
+        <p class="lede" style="margin-top:14px">A two-phase programme for modernizing the UN e-Government assessment process. <b>Phase&nbsp;1 delivers the working assessment portal</b> — questionnaire management, blind double-entry, automatic discrepancy detection, senior arbitration and direct publishing — running entirely on deterministic logic with no AI in the loop. <b>Phase&nbsp;2 sets out proposed further steps</b> for layering AI on top of that proven portal, headlined by AI pre-fill of the questionnaire so assessors review evidence instead of hunting for it.</p>
+      </div>
+      <div class="title-meta">
+        <div><span class="k">193</span><span class="v">UN Member States assessed every 2 years</span></div>
+        <div><span class="k">102 / 95</span><span class="v">National (OSI) / City (LOSI) indicators</span></div>
+        <div><span class="k">2&times;</span><span class="v">Independent blind assessors per unit</span></div>
+        <div><span class="k">2</span><span class="v">Phases: the delivered portal, then proposed AI</span></div>
+      </div>
+      <div class="chip-row" style="margin-top:10px">
+        <span class="chip built">Phase 1 · Portal — built and demonstrable end-to-end</span>
+        <span class="chip planned">Phase 2 · AI — proposed further steps, headlined by questionnaire pre-fill</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — Domain Primer & Scoping Boundary -->
+  <section class="slide" id="s2" aria-label="Slide 2 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Scope &amp; Boundaries</span>
+      <span class="num">02 / 14</span>
+    </div>
+    <div class="slide-body">
+      <h2>The Online Service Index is <em>one third</em> of the global e-Government Index</h2>
+      <div class="stack">
+        <div class="layer">
+          <span class="stage">OSI · 1/3</span>
+          <p><b>Online Service Index (Our Focus)</b> — Evaluated directly by UN DESA. Assesses <b>102 indicators</b> across national government portals, grouped into six modules: Institutional Framework, Service Provision, Content Provision, Technology, E-Participation and E-Government Literacy.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">TII · 1/3</span>
+          <p><b>Telecommunication Infrastructure Index (External)</b> — Measures internet access, mobile network coverage and broadband affordability. Data comes directly from the <b>International Telecommunication Union (ITU)</b>.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">HCI · 1/3</span>
+          <p><b>Human Capital Index (External)</b> — Evaluates adult literacy rates, school enrollment and education levels. Sourced directly from <b>UNESCO</b> and UN statistical databases.</p>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Project Focus:</b> This platform covers the <b>Online Service Index (102 indicators)</b> and its city counterpart <b>LOSI (95 indicators)</b>. Government questionnaires (MSQs) supply official links and reference material; final scores remain entirely determined by evaluating live public portals.
+      </div>
+      <p class="footnote"><b>Both toolkits are already loaded:</b> <code>un_osi_2024_master</code> (102 indicators) and <code>un_losi_2024_master</code> (95 indicators), each carrying the full <b>What / Why / How</b> guidance text per indicator across the same six-module structure.</p>
+    </div>
+  </section>
+
+  <!-- 03 — Pain Points Summary -->
+  <section class="slide" id="s3" aria-label="Slide 3 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Pain Points Summary</span>
+      <span class="num">03 / 14</span>
+    </div>
+    <div class="slide-body">
+      <h2>Nine Operational Pain Points — and <em>where each is addressed</em></h2>
+      <div class="matrix-wrap">
+        <table class="matrix-table summary-table">
+          <thead>
+            <tr>
+              <th>Area</th>
+              <th>Pain Point Today</th>
+              <th>How It Is Resolved</th>
+              <th>Where</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dim-name">01 · Data &amp; Audit</td>
+              <td class="pain-cell">Assessments scattered across Google Sheets and folders, with no record of who changed what</td>
+              <td class="fix-cell"><b>Single database of record</b> with a permanent activity log across cycles, units and answers</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">02 · Blindness</td>
+              <td class="pain-cell">No structural way to stop Assessor A and B from seeing each other's answers</td>
+              <td class="fix-cell"><b>Blindness enforced in the data layer</b> — role-scoped reads, not merely hidden UI</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">03 · Disagreement</td>
+              <td class="pain-cell">Reviewers manually eyeball A against B; no automatic warning when the two diverge</td>
+              <td class="fix-cell"><b>Automatic tolerance-breach detection</b> → reconciliation round → senior arbitration queue</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">04 · Question Churn</td>
+              <td class="pain-cell">Around half the indicators change each cycle, breaking multi-year comparability</td>
+              <td class="fix-cell"><b>Versioned questionnaires</b> — add, edit, retire and reactivate by branching a custom set rather than mutating the master</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">05 · Multi-City</td>
+              <td class="pain-cell">City toolkit locked to one city per country; regional studies rebuilt by hand</td>
+              <td class="fix-cell"><b>Any set of units per project</b> — all 193 member states, or an eight-city UK study, on the same engine</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">06 · Publishing</td>
+              <td class="pain-cell">Manual CSV export and re-upload between assessment sign-off and the public site</td>
+              <td class="fix-cell"><b>Publish from the review screen</b> — the record the reviewer approved becomes the public scorecard</td>
+              <td class="phase-cell"><span class="tag-p1">P1</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">07 · MSQ PDFs</td>
+              <td class="pain-cell">50-plus page government self-report questionnaires handed to assessors as unindexed raw PDFs</td>
+              <td class="fix-cell"><b>Automated link and claim extraction</b> from MSQs into a per-unit reference panel</td>
+              <td class="phase-cell"><span class="tag-p2">P2</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">08 · Manual Effort</td>
+              <td class="pain-cell">Every assessor answers 102 (or 95) indicators per unit starting from a blank form</td>
+              <td class="fix-cell"><b>AI pre-fill</b> proposes a draft answer with cited evidence; the assessor confirms, edits or overrides</td>
+              <td class="phase-cell"><span class="tag-p2">P2</span></td>
+            </tr>
+            <tr>
+              <td class="dim-name">09 · AI Reliability</td>
+              <td class="pain-cell">Earlier AI trials reached only about 80% accuracy, with random errors and failures behind login walls</td>
+              <td class="fix-cell"><b>Dual-model cross-check and live citation verification</b>, with anything the two models dispute or cannot verify escalated to a human</td>
+              <td class="phase-cell"><span class="tag-p2">P2</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footnote"><b>Cross-cutting constraint:</b> UN DESA cannot pay recurring SaaS subscriptions, and vendor procurement runs 12–24 months. Both phases therefore ship as a <b>self-hosted, open-technology stack</b> delivered under milestone-based consultancy — no monthly licence, no vendor lock-in.</p>
+    </div>
+  </section>
+
+  <!-- 04 — Phase 1 Scope Boundary -->
+  <section class="slide phase-1" id="s4" aria-label="Slide 4 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 1 · The Portal</span>
+      <div class="head-right">
+        <span class="phase-pill p1">Phase 1 · Built</span>
+        <span class="num">04 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div class="phase-hero">
+        <span class="kicker">Phase 1 — Scope Boundary</span>
+        <h2>The assessment portal, running end-to-end with <em>zero AI in the loop</em></h2>
+        <p class="lede">Phase&nbsp;1 is strictly the portal: the system of record, and the human workflow that runs on top of it. Every behaviour is deterministic and auditable — no model calls, no probabilistic output, nothing that has to be second-guessed before it can be trusted. That boundary is deliberate. The UN gets a complete, defensible assessment platform that stands on its own, and any AI proposed in Phase&nbsp;2 would be added to a workflow that is already proven rather than being load-bearing from day one.</p>
+        <div class="cols">
+          <div class="col">
+            <h3>In Scope — Phase 1</h3>
+            <ul>
+              <li><b>Questionnaire management:</b> master OSI/LOSI templates, custom indicator sets, add / edit / retire / reactivate, and PDF indicator ingestion into an approval queue.</li>
+              <li><b>Project &amp; unit setup:</b> create a cycle, tag all 193 member states or a custom city group, set per-unit portal URLs, attach MSQ documents.</li>
+              <li><b>Assessor assignment &amp; project lock:</b> assigning A and B freezes the unit list and the indicator set server-side.</li>
+              <li><b>Blind double-entry, discrepancy detection, reconciliation, senior arbitration, publishing and the public scorecard.</b></li>
+            </ul>
+          </div>
+          <div class="col">
+            <h3>Explicitly Out of Scope — Phase 1</h3>
+            <ul>
+              <li><b>No AI-suggested answers.</b> Assessors answer every indicator themselves.</li>
+              <li><b>No automated web research</b> or government-portal crawling.</li>
+              <li><b>No MSQ content mining.</b> MSQ PDFs are attached and readable, not parsed for evidence.</li>
+              <li><b>No model output of any kind</b> anywhere in the scoring path.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <p class="footnote"><b>One deterministic exception worth naming:</b> the admin PDF indicator ingestion is a <b>rule-based text parser</b>, not a model. Every extracted candidate is staged as a pending indicator awaiting explicit admin approval — nothing reaches a live questionnaire without a human clicking Approve.</p>
+    </div>
+  </section>
+
+  <!-- 05 — Phase 1 Lifecycle -->
+  <section class="slide phase-1" id="s5" aria-label="Slide 5 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 1 · Operational Lifecycle</span>
+      <div class="head-right">
+        <span class="phase-pill p1">Phase 1 · Built</span>
+        <span class="num">05 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>The 8-Stage Assessment &amp; Publishing Lifecycle — <em>every stage human-driven</em></h2>
+      <div class="flow-grid">
+        <div class="flow-step admin">
+          <span class="who">Stage 01 · Admin</span>
+          <b>Project Setup</b>
+          <span>Create a cycle, choose National OSI (102) or City LOSI (95), and tag the units to be assessed</span>
+        </div>
+        <div class="flow-step admin">
+          <span class="who">Stage 02 · Admin</span>
+          <b>Questionnaire Tailoring</b>
+          <span>Add, edit, retire or reactivate indicators — branching a custom set and leaving the master template untouched</span>
+        </div>
+        <div class="flow-step gate">
+          <span class="who">Stage 03 · Gate</span>
+          <b>Assign &amp; Lock</b>
+          <span>Assigning Assessor A and B freezes the unit list and indicator set so the discrepancy maths cannot shift mid-cycle</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 04 · Assessors</span>
+          <b>Blind Double-Entry</b>
+          <span>A and B answer independently — answer, evidence URL and notes — with neither able to read the other</span>
+        </div>
+        <div class="flow-step gate">
+          <span class="who">Stage 05 · Gate</span>
+          <b>Discrepancy Detection</b>
+          <span>Once both roles declare complete, the system compares them and opens a round only if divergence exceeds project tolerance (default 5%)</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 06 · Assessors</span>
+          <b>Reconciliation Round</b>
+          <span>Contested indicators only, shown side by side and no longer blind, each settled with a written joint justification</span>
+        </div>
+        <div class="flow-step human">
+          <span class="who">Stage 07 · Reviewer</span>
+          <b>Senior Arbitration</b>
+          <span>Anything unresolved after one round escalates: the reviewer reads both entries, then returns it for another round or decides each indicator</span>
+        </div>
+        <div class="flow-step pub">
+          <span class="who">Stage 08 · Public</span>
+          <b>Publish</b>
+          <span>The approved record becomes the public scorecard directly — no CSV export, no re-upload, no reformatting step</span>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Answer precedence at publish time:</b> a senior reviewer's arbitrated answer takes priority, then the assessors' joint reconciliation answer, then a straight A/B consensus. Every published score traces back to a named human decision.
+      </div>
+      <p class="footnote"><b>One-round rule:</b> a reconciliation round runs once. If assessors still disagree it is force-closed as <i>exhausted</i> and raised to the Senior Reviewer — no indefinite ping-pong between assessors.</p>
+    </div>
+  </section>
+
+  <!-- 06 — Phase 1 Integrity Controls -->
+  <section class="slide phase-1" id="s6" aria-label="Slide 6 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 1 · Integrity Controls</span>
+      <div class="head-right">
+        <span class="phase-pill p1">Phase 1 · Built</span>
+        <span class="num">06 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>What Keeps the Numbers Honest: <em>four enforced guarantees</em></h2>
+      <div class="stack">
+        <div class="layer">
+          <span class="stage">01. Lock</span>
+          <p><b>Assignment Freezes the Comparison Basis</b> — the moment Assessor A and B are assigned, the project locks. Adding, removing, retiring or bulk-editing units and indicators is refused at the route level, not merely hidden in the UI. The lock covers exactly the two things that would silently corrupt the discrepancy calculation if changed mid-assessment.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">02. Blindness</span>
+          <p><b>Role-Scoped Reads</b> — Assessor A cannot retrieve Assessor B's answers, evidence or notes while assessment is live. Blindness lifts only at reconciliation, and only for the indicators actually in dispute.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">03. Tolerance</span>
+          <p><b>Configurable Threshold, Both-Complete Trigger</b> — the divergence tolerance is per-project (default 5%) and remains editable while locked. A round opens only once <i>both</i> roles have declared complete, so a half-finished assessor cannot trip a false alarm.</p>
+        </div>
+        <div class="layer">
+          <span class="stage">04. Audit</span>
+          <p><b>Every Decision Attributed</b> — each answer, evidence link, joint settlement, arbitration disposition and publication is recorded against the actor who made it. The public scorecard reads from the same record the reviewer approved, so there is no untracked gap between decision and publication.</p>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Deliberately still editable while locked:</b> per-unit MSQ upload, project tolerance, the publish action, the discrepancy and arbitration queue, and project deletion. Locking is targeted, not a blanket freeze — and an <b>Unassign &amp; Reopen</b> escape hatch exists for a mistyped assessor email.
+      </div>
+      <p class="footnote"><b>Escalation is bounded by design:</b> the reviewer's two options are <i>return for another reconciliation round</i> (which requires a written reason) or <i>decide each disputed indicator directly</i> (which requires a Yes/No on every one, enforced server-side).</p>
+    </div>
+  </section>
+
+  <!-- 07 — Phase 1 Delivered Surface -->
+  <section class="slide phase-1" id="s7" aria-label="Slide 7 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 1 · Delivered Surface</span>
+      <div class="head-right">
+        <span class="phase-pill p1">Phase 1 · Built</span>
+        <span class="num">07 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>The Portal As Delivered: <em>three workspaces, one lifecycle</em></h2>
+      <div class="api-grid">
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">01. Admin Workspace</span>
+            <span class="tech-badge">Setup &amp; Governance</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">SETUP</span><span class="api-path">Create Survey Project</span></div>
+              <div class="api-desc">Pick scope (OSI / LOSI) and questionnaire; all 193 member states auto-tagged</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">UNITS</span><span class="api-path">Manage Monitored Units</span></div>
+              <div class="api-desc">Bulk add or remove countries, or register a city unit with its own portal URL</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-patch">LOCK</span><span class="api-path">Assign &amp; Lock / Unassign</span></div>
+              <div class="api-desc">Assign Assessor A and B; freezes units and indicators until deliberately reopened</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">CONFIG</span><span class="api-path">Project Tolerance</span></div>
+              <div class="api-desc">Set the divergence threshold that opens a reconciliation round</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">02. Questionnaire Management</span>
+            <span class="tech-badge">Indicator Control</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">VIEW</span><span class="api-path">Template Catalog</span></div>
+              <div class="api-desc">Master templates marked protected; branched custom sets listed separately</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">EDIT</span><span class="api-path">Add / Edit Indicator</span></div>
+              <div class="api-desc">Full What / Why / How authoring, branching a custom set rather than mutating the master</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-patch">CYCLE</span><span class="api-path">Retire &amp; Reactivate</span></div>
+              <div class="api-desc">Single or bulk, so a changed cycle stays traceable against previous ones</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">INGEST</span><span class="api-path">PDF Indicator Upload</span></div>
+              <div class="api-desc">Rule-based extraction into a pending queue; approve or reject each candidate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">03. Assessor Workspace</span>
+            <span class="tech-badge">Blind Entry</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">WORK</span><span class="api-path">Indicator Form</span></div>
+              <div class="api-desc">Answer, evidence URL and notes, auto-advancing to the next unanswered indicator</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">DECLARE</span><span class="api-path">Declare Complete</span></div>
+              <div class="api-desc">The explicit signal that arms discrepancy detection for that unit</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">COMPARE</span><span class="api-path">Reconciliation Workspace</span></div>
+              <div class="api-desc">Disputed indicators only, both sides visible with evidence and notes</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">SETTLE</span><span class="api-path">Commit Joint Answer</span></div>
+              <div class="api-desc">One agreed answer per contested indicator, with a mandatory written justification</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">04. Senior Reviewer</span>
+            <span class="tech-badge">Arbitration</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">QUEUE</span><span class="api-path">Discrepancy &amp; Arbitration Queue</span></div>
+              <div class="api-desc">Escalated units with their differing-answer rate and per-indicator A/B comparison</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">RETURN</span><span class="api-path">Reopen Reconciliation Round</span></div>
+              <div class="api-desc">Send it back to the assessors with a recorded, mandatory reason</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">DECIDE</span><span class="api-path">Arbitrate Each Indicator</span></div>
+              <div class="api-desc">A Yes/No on every disputed indicator, enforced server-side before submission</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">PUBLISH</span><span class="api-path">Publish Unit Score</span></div>
+              <div class="api-desc">Disabled until readiness is met; writes the record the public page reads</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">05. Public Surface</span>
+            <span class="tech-badge">Publishing</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">PUBLIC</span><span class="api-path">Published Cycle Index</span></div>
+              <div class="api-desc">Cycles appear publicly only once a unit within them has actually been published</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">PUBLIC</span><span class="api-path">Ranking Table</span></div>
+              <div class="api-desc">Ordered scores across every published unit in the cycle</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">PUBLIC</span><span class="api-path">Unit Scorecard</span></div>
+              <div class="api-desc">Published score with the full per-indicator breakdown behind it</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">TRACE</span><span class="api-path">Same Record, No Handoff</span></div>
+              <div class="api-desc">The public page reads the very row the reviewer wrote — no export or import step between them</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-card">
+          <div class="api-card-header">
+            <span class="api-card-title">06. Demonstration Harness</span>
+            <span class="tech-badge">Proof</span>
+          </div>
+          <div class="api-list">
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">SEED</span><span class="api-path">Six Pre-Seeded Lifecycle States</span></div>
+              <div class="api-desc">Assigned, in-progress, consensus, within-tolerance, round-open and exhausted</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">DEMO</span><span class="api-path">Live Lock Demonstration</span></div>
+              <div class="api-desc">Edits succeed before assignment and are refused after, shown against a project built live</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-get">DEMO</span><span class="api-path">Threshold Sensitivity</span></div>
+              <div class="api-desc">Tighten tolerance on a clean unit and watch a round open on the spot</div>
+            </div>
+            <div class="api-item">
+              <div class="api-route"><span class="badge-method badge-post">DEMO</span><span class="api-path">Arbitrate, Then Publish</span></div>
+              <div class="api-desc">Carry a contested unit from escalation all the way to its public scorecard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="footnote"><b>Every capability above is running today</b> against seeded demonstration projects covering Kenya, Brazil, Denmark, Vietnam, Peru and Nigeria — one per lifecycle state, so any stage can be shown on demand rather than described.</p>
+    </div>
+  </section>
+
+  <!-- 08 — Phase 2 Scope -->
+  <section class="slide phase-2" id="s8" aria-label="Slide 8 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 2 · Where AI Comes In</span>
+      <div class="head-right">
+        <span class="phase-pill p2">Phase 2 · Proposed</span>
+        <span class="num">08 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <div class="phase-hero">
+        <span class="kicker">Phase 2 — Scope Boundary</span>
+        <h2>AI is added <em>around</em> the portal, never inside the decision</h2>
+        <p class="lede">Phase&nbsp;2 is a set of proposed further steps. It would introduce AI at four points in and around the lifecycle — and at none of them would a model decide a score. The portal's stages, gates and audit trail from Phase&nbsp;1 would stay exactly as they are; AI simply arrives earlier in the process with evidence already gathered, so the human work shifts from <i>searching</i> to <i>verifying</i>. If none of this is taken up, or the AI layer is switched off later, Phase&nbsp;1 keeps running unchanged.</p>
+        <div class="facts">
+          <div class="fact">
+            <span class="n">01</span>
+            <div>
+              <b>AI Pre-Fill of the Questionnaire</b>
+              <span>The headline proposal. Would draft an answer plus cited evidence for each indicator, before the assessor opens the form</span>
+            </div>
+          </div>
+          <div class="fact">
+            <span class="n">02</span>
+            <div>
+              <b>MSQ Document Mining</b>
+              <span>Would read 50-plus page government self-reports and surface the official links and claims into a per-unit reference panel</span>
+            </div>
+          </div>
+          <div class="fact">
+            <span class="n">03</span>
+            <div>
+              <b>Accuracy Calibration Harness</b>
+              <span>Would score AI output against published UN 2024 results so precision is measured rather than asserted</span>
+            </div>
+          </div>
+          <div class="fact">
+            <span class="n">04</span>
+            <div>
+              <b>In-Portal AI Assistant</b>
+              <span>Would answer plain-language questions about a cycle by retrieving the portal's own records on its own initiative — read-only, always sourced</span>
+            </div>
+          </div>
+        </div>
+        <div class="rule-note">
+          <b>The governing principle for anything in this phase:</b> AI output would enter the portal as a <b>draft attached to an indicator</b>, never as a submitted answer. Blind double-entry, discrepancy detection, reconciliation, arbitration and publishing stay untouched — an assessor would still have to accept, edit or reject every single suggestion.
+        </div>
+      </div>
+      <p class="footnote"><b>Why this ordering:</b> the failure mode in earlier AI trials was not a weak model but the absence of a workflow to catch it. Phase&nbsp;1 provides that workflow first, so any suggestion proposed here would land in a system already designed to disagree with it.</p>
+    </div>
+  </section>
+
+  <!-- 09 — Phase 2 Headline: AI Prefill -->
+  <section class="slide phase-2" id="s9" aria-label="Slide 9 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 2 · Headline Proposal</span>
+      <div class="head-right">
+        <span class="phase-pill p2">Phase 2 · Proposed</span>
+        <span class="num">09 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>AI Pre-Fill for the Questionnaire: <em>the assessor reviews instead of researches</em></h2>
+      <p class="lede">Today an assessor opens a blank form and works through 102 (or 95) indicators for a single country or city, finding and reading the relevant government pages for each one. Pre-fill would invert that: before the assessor ever opens the unit, the system would already have proposed an answer for each indicator and attached the evidence it relied on. The assessor's job becomes confirming or correcting a cited draft — the same decision, reached far faster, with the reasoning visible. The steps below are the proposed shape of that pipeline.</p>
+      <div class="pipeline">
+        <div class="pipe-step">
+          <span class="step-n">Step 01</span>
+          <b>Resolve the Target Links</b>
+          <span>Three tiers in order: previously verified links for that unit, then official links declared by the government in its MSQ, then public web search as a last resort</span>
+        </div>
+        <div class="pipe-step">
+          <span class="step-n">Step 02</span>
+          <b>Search the Way a Citizen Would</b>
+          <span>Deliberately shallow navigation across top-level pages and main menus. A service a real citizen cannot find should not score as if it were available</span>
+        </div>
+        <div class="pipe-step">
+          <span class="step-n">Step 03</span>
+          <b>Draft Against the Indicator's Own Guidance</b>
+          <span>Each proposal is generated against that indicator's What / Why / How text, so the model answers the question the toolkit actually asks</span>
+        </div>
+        <div class="pipe-step">
+          <span class="step-n">Step 04</span>
+          <b>Cross-Check With a Second Model</b>
+          <span>Two independent models review each indicator separately — one on literal text, one on context — with no shared reasoning to correlate their mistakes</span>
+        </div>
+        <div class="pipe-step">
+          <span class="step-n">Step 05</span>
+          <b>Verify Every Citation Live</b>
+          <span>Each quoted snippet and link is re-tested against the real page. A citation that does not resolve invalidates the draft rather than decorating it</span>
+        </div>
+        <div class="pipe-step">
+          <span class="step-n">Step 06</span>
+          <b>Gate, Then Hand Over</b>
+          <span>Only drafts where both models agree and confidence clears the threshold surface as suggestions. Everything else, including anything behind a login, goes to the assessor unfilled and flagged</span>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>What the assessor sees:</b> a proposed answer, the exact quoted passage supporting it, a live link, the confidence figure, and whether both models agreed. Three actions are always available — <b>accept</b>, <b>edit</b>, or <b>override completely</b> — and every one of them is recorded against the assessor, not the model.
+      </div>
+      <p class="footnote"><b>Blindness would be preserved:</b> both assessors receive the same pre-fill drafts independently and still cannot see each other's submissions. Because A and B may accept or reject the same suggestion differently, discrepancy detection remains a genuine cross-check rather than two copies of one model's opinion.</p>
+    </div>
+  </section>
+
+  <!-- 10 — Phase 2 Reliability Engineering -->
+  <section class="slide phase-2" id="s10" aria-label="Slide 10 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 2 · Reliability Engineering</span>
+      <div class="head-right">
+        <span class="phase-pill p2">Phase 2 · Proposed</span>
+        <span class="num">10 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>Making Pre-Fill Trustworthy: <em>proposed answers to the known failure modes</em></h2>
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Known Failure Mode</th>
+              <th>Why It Happened Before</th>
+              <th>Proposed Countermeasure</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="dim-name">Fabricated evidence</td>
+              <td class="current-state">Model quoted text or links that were not on the page</td>
+              <td class="future-state"><b>Live citation verification:</b> every snippet and URL is re-fetched and matched against the actual page before the draft is shown</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Confident but wrong</td>
+              <td class="current-state">A single model with no second opinion, right roughly 80% of the time</td>
+              <td class="future-state"><b>Two independent models</b> reviewing separately; disagreement suppresses the suggestion instead of averaging it away</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Login walls</td>
+              <td class="current-state">Crawler stalled or guessed at authenticated services</td>
+              <td class="future-state"><b>Explicit escalation:</b> anything behind authentication is routed to the assessor unfilled and clearly marked, never inferred</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Over-deep crawling</td>
+              <td class="current-state">Buried pages found by machine that no citizen would ever reach</td>
+              <td class="future-state"><b>Shallow navigation limits</b> mirroring realistic citizen behaviour, so accessibility is scored as experienced, not as indexed</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Non-English portals</td>
+              <td class="current-state">Coverage thinned sharply outside English-language sites</td>
+              <td class="future-state"><b>Multilingual evaluation</b> across the major portal languages, with the original-language quote retained alongside the assessment</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Unmeasured accuracy</td>
+              <td class="current-state">Performance claimed anecdotally, never benchmarked</td>
+              <td class="future-state"><b>Calibration against published UN 2024 results</b> for known units, reported as precision and recall per module</td>
+            </tr>
+            <tr>
+              <td class="dim-name">Silent drift</td>
+              <td class="current-state">No visibility once a run was underway</td>
+              <td class="future-state"><b>Run telemetry:</b> per-indicator agreement rate, latency and cost surfaced to the admin for every batch</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rule-note">
+        <b>Proposed acceptance test:</b> pre-fill would only be turned on for real assessment once measured accuracy on benchmark units clears an agreed bar <i>and</i> the assessor override rate is visible. Until that point drafts can be generated for evaluation, while the portal continues to operate exactly as it does in Phase&nbsp;1.
+      </div>
+      <p class="footnote"><b>Failure would be quiet by design:</b> if the AI layer is unavailable, times out, or returns nothing for a unit, the assessor simply sees the ordinary blank Phase&nbsp;1 form. No stage of the lifecycle would depend on a model being reachable.</p>
+    </div>
+  </section>
+
+  <!-- 11 — Phase 2 Supporting Capabilities -->
+  <section class="slide phase-2" id="s11" aria-label="Slide 11 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 2 · Supporting Proposals</span>
+      <div class="head-right">
+        <span class="phase-pill p2">Phase 2 · Proposed</span>
+        <span class="num">11 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>Around the Pre-Fill: <em>two supporting proposals</em></h2>
+      <div class="cols">
+        <div class="col">
+          <h3>MSQ Document Mining</h3>
+          <ul>
+            <li><b>The problem:</b> each government submits a 50-plus page self-report questionnaire full of official service URLs. Today it reaches the assessor as a raw PDF with no index, so genuine evidence is routinely missed simply because nobody read page 38.</li>
+            <li><b>What is proposed:</b> the MSQ would be parsed on upload, surfacing the official links and declared claims into a per-unit reference panel alongside the indicator being assessed.</li>
+            <li><b>How it would feed pre-fill:</b> MSQ-declared links would become tier two of the link resolution chain — trusted above open web search, because the government itself named them.</li>
+            <li><b>What it explicitly would not be:</b> a scoring input. A government claiming a service exists never scores the indicator. The claim only tells the assessor and the AI <i>where to look</i>; the live portal still decides.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Accuracy Calibration Harness</h3>
+          <ul>
+            <li><b>Ground truth:</b> published UN 2024 results for known units provide a scored answer key to measure against.</li>
+            <li><b>What is measured:</b> precision and recall per module, agreement rate between the two models, and how often an assessor overrides an accepted suggestion.</li>
+            <li><b>Archetype coverage:</b> deliberately diverse portals — differing languages, platform maturity and site structures — so accuracy is not tuned to one style of government website.</li>
+            <li><b>Why it comes first:</b> the pre-fill quality bar would be set from this evidence rather than chosen arbitrarily, and re-run whenever a model or prompt changes.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rule-note">
+        <b>Everything AI-generated would stay visibly labelled.</b> A pre-filled answer an assessor accepted would be recorded as accepted-from-suggestion, distinctly from one they authored — so UN DESA could report exactly how much of a published cycle originated as an AI draft, a question a reviewer or auditor is entitled to ask.
+      </div>
+      <p class="footnote"><b>Hosting posture would be unchanged by Phase 2:</b> the AI layer runs against configurable model endpoints on UN-controlled infrastructure. No assessment data would leave the deployment boundary as a condition of using it.</p>
+    </div>
+  </section>
+
+  <!-- 12 — Phase 2 Proposal: AI Portal Assistant -->
+  <section class="slide phase-2" id="s12" aria-label="Slide 12 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Phase 2 · Proposal · AI Portal Assistant</span>
+      <div class="head-right">
+        <span class="phase-pill p2">Phase 2 · Proposed</span>
+        <span class="num">12 / 14</span>
+      </div>
+    </div>
+    <div class="slide-body">
+      <h2>An AI Assistant Inside the Portal: <em>ask in plain language, it retrieves on its own</em></h2>
+      <p class="lede">Everything the portal knows — every cycle, unit, indicator, answer, evidence link, disagreement, arbitration note and publication — already sits in one database. Today, getting an answer out of it means knowing which screen to open. The proposed assistant closes that gap: a chat panel in the portal where a user asks a question in ordinary language, and the assistant works out for itself which records to fetch, retrieves them, and answers with the sources attached. No report has to be built in advance for a question to be answerable.</p>
+      <div class="ask-grid">
+        <div class="ask-card">
+          <span class="role">Assessor asks</span>
+          <q>Which indicators have I not answered yet for Kenya, and which ones did we mark unavailable last cycle?</q>
+          <span class="src">Retrieves from <b>this assessor's own submissions</b> plus the previous cycle's published record — never the other assessor's live answers</span>
+        </div>
+        <div class="ask-card">
+          <span class="role">Senior Reviewer asks</span>
+          <q>Show me every unit still above tolerance, and for Peru what exactly did A and B disagree on?</q>
+          <span class="src">Retrieves from the <b>discrepancy and arbitration queue</b>, returning the per-indicator A/B comparison with both sets of evidence and notes</span>
+        </div>
+        <div class="ask-card">
+          <span class="role">Admin asks</span>
+          <q>Which projects are locked and awaiting assessment, and how many indicators changed between the two toolkits?</q>
+          <span class="src">Retrieves from <b>project status and questionnaire versions</b>, diffing the active indicator sets rather than reading a prepared report</span>
+        </div>
+        <div class="ask-card">
+          <span class="role">Analyst asks</span>
+          <q>How has Denmark moved across cycles, and which module drove the change?</q>
+          <span class="src">Retrieves from <b>published scorecards</b> only, breaking the movement down by module across cycles</span>
+        </div>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <h3>How It Retrieves Autonomously</h3>
+          <ul>
+            <li><b>It plans its own lookups.</b> From the question, the assistant decides which records it needs — project, unit, indicator, cycle, actor, date range — and fetches them itself, rather than being limited to a fixed set of canned reports.</li>
+            <li><b>It reads the portal's own material.</b> Assessment records, indicator What / Why / How guidance, attached MSQ documents and published scorecards are all in scope for retrieval.</li>
+            <li><b>It answers with sources.</b> Every statement carries the record it came from — project, unit, indicator, who entered it and when — with a link straight to that screen in the portal.</li>
+            <li><b>It says when it cannot find something</b> rather than filling the gap, because an unfounded answer about a live assessment is worse than no answer.</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>Guardrails</h3>
+          <ul>
+            <li><b>Read-only.</b> The assistant retrieves and explains. It never submits an answer, closes a reconciliation round, arbitrates a dispute or publishes a score.</li>
+            <li><b>Blindness enforced at the query layer.</b> It inherits the caller's permissions from the portal, so an assessor's assistant cannot surface the other assessor's live answers — the same rule the portal enforces, applied to retrieval.</li>
+            <li><b>Nothing unsourced.</b> An answer that cannot be tied to a portal record is not returned as fact.</li>
+            <li><b>Fully logged.</b> What was asked, what was retrieved and what was shown is recorded, so assistant usage is as auditable as any other portal action.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="footnote"><b>Why it is worth proposing:</b> the portal already holds the answers to most operational questions asked during a cycle — progress, disagreement, precedent, history. The assistant removes the navigation cost of getting to them, without adding a new place where data lives or a new way for a score to be set.</p>
+    </div>
+  </section>
+
+  <!-- 13 — Roadmap -->
+  <section class="slide" id="s13" aria-label="Slide 13 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Delivery Roadmap</span>
+      <span class="num">13 / 14</span>
+    </div>
+    <div class="slide-body">
+      <h2>Delivery Sequence: <em>the portal delivered, the AI proposed</em></h2>
+      <div class="roadmap">
+        <div class="roadmap-col r1">
+          <h3>Phase 1 · The Portal — Delivered</h3>
+          <ol>
+            <li><b>Data model &amp; questionnaire engine.</b> Cycles, units, indicators, custom sets, and both UN master toolkits loaded.</li>
+            <li><b>Admin workspace &amp; project lock.</b> Setup, unit management, indicator authoring, assign-and-lock enforced server-side.</li>
+            <li><b>Blind assessor workspace.</b> Role-scoped double-entry with evidence and notes, plus explicit completion declaration.</li>
+            <li><b>Discrepancy, reconciliation &amp; arbitration.</b> Tolerance-triggered rounds, joint settlement, senior reviewer queue with a bounded one-round rule.</li>
+            <li><b>Publishing &amp; public scorecard.</b> Approved records read directly by the public pages, with no export step between.</li>
+            <li><b>Demonstration harness.</b> Six seeded lifecycle states so any stage can be shown live on request.</li>
+          </ol>
+        </div>
+        <div class="roadmap-col r2">
+          <h3>Phase 2 · The AI Layer — Proposed Further Steps</h3>
+          <ol>
+            <li><b>Dual-model engine &amp; citizen navigation rules.</b> Two independent reviewers plus shallow-search limits that mirror real citizen behaviour.</li>
+            <li><b>Citation verification.</b> Live re-checking of every quoted passage and link, so a draft whose evidence does not resolve is discarded rather than shown.</li>
+            <li><b>AI pre-fill in the assessor workspace.</b> Drafts attached to indicators with accept / edit / override, fully labelled and attributed.</li>
+            <li><b>MSQ mining into the reference panel.</b> Official links and claims extracted per unit and wired in as tier two of link resolution.</li>
+            <li><b>Calibration against UN 2024 results.</b> Precision and recall per module across diverse portal archetypes, setting the quality bar from evidence.</li>
+            <li><b>Multilingual and portal-archetype hardening.</b> Coverage across major portal languages and site structures before general rollout.</li>
+            <li><b>In-portal AI assistant.</b> Plain-language retrieval across cycles, units, indicators and published records — role-scoped, read-only and sourced to the record.</li>
+          </ol>
+        </div>
+      </div>
+      <h3 style="font-family:var(--mono);font-size:clamp(.6rem,.78vw,.68rem);letter-spacing:.14em;text-transform:uppercase;color:var(--signal);font-weight:700;padding-bottom:5px;border-bottom:1px solid var(--rule-soft);margin-top:4px">AI Pre-Fill — The Process, End to End</h3>
+      <div class="proc-flow">
+        <div class="proc-node ai">
+          <span class="pn">01 · Resolve</span>
+          <b>Find the Links</b>
+          <span class="d">Previously verified links, then government-declared MSQ links, then public search</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node ai">
+          <span class="pn">02 · Search</span>
+          <b>Browse as a Citizen</b>
+          <span class="d">Shallow navigation only — top-level pages and main menus</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node ai">
+          <span class="pn">03 · Draft</span>
+          <b>Answer the Indicator</b>
+          <span class="d">Generated against that indicator's own What / Why / How guidance</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node check">
+          <span class="pn">04 · Cross-Check</span>
+          <b>Second Model Reviews</b>
+          <span class="d">Independently, with no shared reasoning between the two</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node check">
+          <span class="pn">05 · Verify</span>
+          <b>Re-Test the Citation</b>
+          <span class="d">Quote and link re-fetched live; unresolved evidence voids the draft</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node check">
+          <span class="pn">06 · Gate</span>
+          <b>Agree, or Escalate</b>
+          <span class="d">Disagreement, low confidence or a login wall → unfilled and flagged</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node human">
+          <span class="pn">07 · Decide</span>
+          <b>Assessor Accepts, Edits or Overrides</b>
+          <span class="d">Recorded against the assessor, labelled as accepted-from-suggestion</span>
+        </div>
+        <span class="proc-arrow">→</span>
+        <div class="proc-node human">
+          <span class="pn">08 · Unchanged</span>
+          <b>Phase 1 Lifecycle Runs</b>
+          <span class="d">Blind A/B, discrepancy, reconciliation, arbitration, publish</span>
+        </div>
+      </div>
+      <div class="proc-legend">
+        <i class="ai">AI research</i>
+        <i class="check">Automated verification</i>
+        <i class="human">Human decision — unchanged from Phase 1</i>
+      </div>
+      <p class="footnote"><b>Commercial posture, both phases:</b> self-hosted open-technology stack with no recurring licence fee, delivered as milestone-based technical consultancy to avoid the 12–24 month vendor procurement path, with full source, setup documentation and questionnaire tooling handed over.</p>
+    </div>
+  </section>
+
+  <!-- 14 — Closing -->
+  <section class="slide" id="s14" aria-label="Slide 14 of 14">
+    <div class="slide-head">
+      <span class="eyebrow">Closing</span>
+      <span class="num">14 / 14</span>
+    </div>
+    <div class="slide-body">
+      <div class="closing">
+        <h1>Thank You</h1>
+        <div class="divider"></div>
+        <p class="sub">Thank you for your time and for the access to the assessment process that made this work possible. We are glad to walk through any stage of the portal live, or to go deeper on any of the proposed next steps.</p>
+        <div class="recap">
+          <div class="recap-card r1">
+            <span class="rk">Phase 1 · Delivered</span>
+            <p><b>The assessment portal, working end to end.</b> Questionnaire management, blind double-entry, discrepancy detection, reconciliation, senior arbitration and publishing — deterministic, auditable, and demonstrable today against six seeded lifecycle states.</p>
+          </div>
+          <div class="recap-card r2">
+            <span class="rk">Phase 2 · Proposed</span>
+            <p><b>Four further steps, for discussion.</b> AI pre-fill of the questionnaire, MSQ document mining, an accuracy calibration harness, and an in-portal AI assistant — each layered around the portal, none of them deciding a score.</p>
+          </div>
+        </div>
+        <span class="org">RightAgents Technologies · UN EKAP Modernization</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Navigation Bar -->
+<nav id="nav" aria-label="Slide navigation">
+  <div class="nav-group">
+    <button id="btn-prev" aria-label="Previous slide" disabled>&larr; Prev</button>
+    <button id="btn-next" aria-label="Next slide">Next →</button>
+    <span id="nav-counter" aria-live="polite">1 / 14</span>
+  </div>
+
+  <div id="dots" role="tablist" aria-label="Slide dots navigation"></div>
+
+  <div class="nav-group">
+    <select id="slide-select" aria-label="Jump directly to slide">
+      <option value="0">01. Executive Summary</option>
+      <option value="1">02. Index Scope &amp; Boundaries</option>
+      <option value="2">03. Pain Points Summary</option>
+      <option value="3">04. Phase 1 — Portal Scope</option>
+      <option value="4">05. Phase 1 — Assessment Lifecycle</option>
+      <option value="5">06. Phase 1 — Integrity Controls</option>
+      <option value="6">07. Phase 1 — Delivered Surface</option>
+      <option value="7">08. Phase 2 — Where AI Comes In</option>
+      <option value="8">09. Phase 2 — AI Questionnaire Pre-Fill</option>
+      <option value="9">10. Phase 2 — Reliability Engineering</option>
+      <option value="10">11. Phase 2 — MSQ Mining &amp; Calibration</option>
+      <option value="11">12. Phase 2 — In-Portal AI Assistant</option>
+      <option value="12">13. Delivery Roadmap</option>
+      <option value="13">14. Thank You</option>
+    </select>
+    <button id="btn-theme" aria-label="Switch presentation theme" title="Switch Theme (Press T)">&#9728;&#65039; Light</button>
+  </div>
+</nav>
+
+<!-- First-visit hint -->
+<div id="click-hint" aria-hidden="true"><span>Use Next / Prev buttons, Keyboard (→ / Space / Enter), or Select dropdown to advance</span></div>
+<script>
+(function () {
+  'use strict';
+
+  var slides      = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total       = slides.length;
+  var current     = 0;
+  var animating   = false;
+
+  var progressBar = document.getElementById('progress-bar');
+  var counter     = document.getElementById('nav-counter');
+  var btnPrev     = document.getElementById('btn-prev');
+  var btnNext     = document.getElementById('btn-next');
+  var btnTheme    = document.getElementById('btn-theme');
+  var slideSelect = document.getElementById('slide-select');
+  var dotsEl      = document.getElementById('dots');
+
+  /* 3-State Professional Theme Registry: Light, Dark, and Nordic Forest/Spruce */
+  var themes = [
+    { id: 'light',  label: '☀️ Light' },
+    { id: 'dark',   label: '🌙 Dark' },
+    { id: 'forest', label: '🌲 Forest' }
+  ];
+
+  function getActiveThemeIndex() {
+    var currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    for (var i = 0; i < themes.length; i++) {
+      if (themes[i].id === currentTheme) return i;
+    }
+    return 0;
+  }
+
+  function applyTheme(themeIndex) {
+    var target = themes[themeIndex];
+    document.documentElement.setAttribute('data-theme', target.id);
+    btnTheme.textContent = target.label;
+  }
+
+  function cycleTheme() {
+    var nextIndex = (getActiveThemeIndex() + 1) % themes.length;
+    applyTheme(nextIndex);
+  }
+
+  /* Build dot indicators dynamically */
+  var dots = slides.map(function (_, i) {
+    var d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('role', 'tab');
+    d.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    d.addEventListener('click', function (e) { e.stopPropagation(); goTo(i); });
+    dotsEl.appendChild(d);
+    return d;
+  });
+
+  function updateChrome() {
+    var pct = total > 1 ? (current / (total - 1)) * 100 : 100;
+    progressBar.style.width = pct + '%';
+    counter.textContent = (current + 1) + ' / ' + total;
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+    slideSelect.value = current;
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+  }
+
+  function goTo(index) {
+    if (index === current || animating) return;
+    if (index < 0 || index >= total) return;
+
+    animating = true;
+    var prev = current;
+    current = index;
+
+    slides[prev].classList.remove('active');
+    slides[prev].classList.add('exit-left');
+
+    if (index < prev) {
+      slides[current].style.transform = 'translateX(-100%)';
+    } else {
+      slides[current].style.transform = 'translateX(100%)';
+    }
+
+    slides[current].offsetWidth; // force reflow
+
+    slides[current].classList.add('active');
+    slides[current].style.transform = '';
+
+    updateChrome();
+
+    var DURATION = 380;
+    setTimeout(function () {
+      slides[prev].classList.remove('exit-left');
+      slides[prev].style.transform = '';
+      animating = false;
+    }, DURATION);
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  btnNext.addEventListener('click', function (e) { e.stopPropagation(); next(); });
+  btnPrev.addEventListener('click', function (e) { e.stopPropagation(); prev(); });
+  btnTheme.addEventListener('click', function (e) { e.stopPropagation(); cycleTheme(); });
+
+  slideSelect.addEventListener('change', function (e) {
+    e.stopPropagation();
+    goTo(parseInt(e.target.value, 10));
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest('select, input, textarea')) return;
+    var fwd = ['ArrowRight', 'ArrowDown', 'PageDown', 'Space', 'Enter'];
+    var bwd = ['ArrowLeft', 'ArrowUp', 'PageUp'];
+    if (fwd.indexOf(e.key) !== -1) { e.preventDefault(); next(); }
+    if (bwd.indexOf(e.key) !== -1) { e.preventDefault(); prev(); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')  { e.preventDefault(); goTo(total - 1); }
+    if (e.key === 't' || e.key === 'T') { e.preventDefault(); cycleTheme(); }
+  });
+
+  /* Initialize default theme button state */
+  applyTheme(getActiveThemeIndex());
+  updateChrome();
+})();
+</script>
+</body>
+</html>

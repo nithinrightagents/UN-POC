@@ -6,7 +6,7 @@ FR-LD-031, FR-LD-037, SC-004.
 
 from __future__ import annotations
 
-from benchmark.diagnostics import DiagnosticRunResult, IndicatorVerdict
+from benchmark.diagnostics import DiagnosticRunResult
 
 
 def format_elapsed_time(seconds: float) -> str:
@@ -89,7 +89,7 @@ def render_diagnostic_report(result: DiagnosticRunResult) -> str:
         for d in divergent_list:
             lines.append(f"• Indicator {d.indicator_id}: resolved {d.resolved_url}")
             lines.append(f"    Reference was: {d.reference_url}")
-            lines.append(f"    Action: Review whether this URL should be added to accepted_alternatives.")
+            lines.append("    Action: Review whether this URL should be added to accepted_alternatives.")
         lines.append("")
 
     # 4. Summary Totals (FR-LD-030, FR-LD-031)

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 
@@ -17,7 +17,7 @@ def new_id(prefix: str) -> str:
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 # --- Enums ---------------------------------------------------------------
@@ -198,6 +198,20 @@ class ProjectType(str, Enum):
     LOSI_CITY = "losi_city"
 
 
+class AssignmentSource(str, Enum):
+    MAPPING = "mapping"                # applied verbatim from the ingested mapping -- FR-IN-004
+    ADMINISTRATOR = "administrator"    # set by hand in the portal -- FR-MO-001
+    MIGRATION = "migration"            # carried down from the retired project pair -- FR-UA-008
+
+
+class UnstaffedReason(str, Enum):
+    NO_MAPPING_ENTRY         = "no_mapping_entry"          # FR-IN-008
+    INCOMPLETE_MAPPING_ENTRY = "incomplete_mapping_entry"  # FR-IN-007
+    DUPLICATE_ASSESSOR       = "duplicate_assessor"        # FR-IN-005
+    UNKNOWN_ASSESSOR         = "unknown_assessor"          # FR-IN-006
+    CLEARED_BY_ADMINISTRATOR = "cleared_by_administrator"  # FR-MO-005
+
+
 # --- Entities --------------------------------------------------------------
 
 
@@ -207,10 +221,11 @@ class SurveyCycle:
     name: str
     questionnaire_ref: str
     country_set: list[str]
-    status: str = "active"
+    status: str = "active"  # "active" only; "locked" retired (spec 014 R4)
     project_type: ProjectType = ProjectType.NATIONAL_OSI
     # None = inherit the process-wide default; 0.0 = tolerate no disagreement (FR-DR-065)
     discrepancy_rate_threshold: float | None = None
+
 
 
 @dataclass
@@ -242,6 +257,32 @@ class Question:
     how: dict | str | None = None
     benchmark_case: str | None = None
     reference_links: list[str] = field(default_factory=list)
+    status: str = "active"  # "active" | "retired" -- retired indicators drop out of live assessment/scoring but stay visible for audit
+
+
+@dataclass
+class PendingIndicator:
+    """A candidate indicator parsed from an admin-uploaded PDF, awaiting
+    review before it counts as a real Question. Ingestion is never trusted
+    directly -- parsing a slide's What/Why/How text is heuristic, so every
+    extracted candidate lands here first for an admin to edit, approve
+    (converted into a Question via admin.py's review route), or reject
+    (deleted outright, since nothing scoring-relevant ever touched it)."""
+
+    pending_id: str
+    cycle_id: str
+    module: str
+    title: str
+    what: str
+    why: str
+    how: dict
+    indicator_id: str | None = None
+    benchmark_case: str | None = None
+    reference_links: list[str] = field(default_factory=list)
+    evidence_locus: EvidenceLocus = EvidenceLocus.NATIONAL_PORTAL_ONLY
+    source_pdf_filename: str | None = None
+    source_page: int | None = None
+    created_at: datetime = field(default_factory=utcnow)
 
 
 @dataclass
@@ -591,7 +632,7 @@ class Prefill:
 
 
 def prefill_answer_category(
-    suggested: bool, answer: bool | None, reason: "PrefillReason | str | None"
+    suggested: bool, answer: bool | None, reason: PrefillReason | str | None
 ) -> str:
     """Free-standing form of `Prefill.answer_category()` for callers that only
     have the raw fields (e.g. a `units` row's stored context), not a `Prefill`
@@ -716,4 +757,84 @@ class ToleranceChange:
     new_value: float
     changed_by_actor_id: str
     changed_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class Assessor:
+    """Ingested assessor record (spec 014).
+
+    assessor_id is the stable identity and what submissions cite.
+    organisation, languages, and notes are display-only (FR-MO-003, FR-DB-006).
+    """
+
+    assessor_id: str
+    display_name: str
+    email: str
+    organisation: str = ""
+    languages: list[str] = field(default_factory=list)
+    notes: str = ""
+
+
+@dataclass
+class UnitAssessorMappingEntry:
+    """Ingested unit-assessor mapping (spec 014).
+
+    assessor_a_id and assessor_b_id are deliberately nullable -- a source
+    database naming only one role is detected and reported (FR-IN-007),
+    not rejected at load.
+    """
+
+    unit_type: str  # "country" | "city"
+    unit_code: str
+    assessor_a_id: str | None = None
+    assessor_b_id: str | None = None
+
+
+@dataclass
+class RoleAssignment:
+    assessor_id: str
+    source: AssignmentSource
+    set_at: datetime = field(default_factory=utcnow)
+    set_by_actor_id: str | None = None  # None when source is MAPPING
+
+
+@dataclass
+class UnitAssessorAssignment:
+    """Unit-level assessor assignment lifecycle record (spec 014)."""
+
+    assignment_id: str
+    cycle_id: str
+    portal_id: str
+    role_a: RoleAssignment | None = None
+    role_b: RoleAssignment | None = None
+    ingest_defect: UnstaffedReason | None = None
+
+    @property
+    def is_staffed(self) -> bool:
+        """A unit is staffed iff role_a and role_b are both set (FR-UA-005)."""
+        return self.role_a is not None and self.role_b is not None
+
+    def role_for(self, assessor_id: str) -> AssessorRole | None:
+        """Helper returning the AssessorRole held by this assessor_id, or None."""
+        if self.role_a and self.role_a.assessor_id == assessor_id:
+            return AssessorRole.A
+        if self.role_b and self.role_b.assessor_id == assessor_id:
+            return AssessorRole.B
+        return None
+
+
+@dataclass
+class AssignmentChange:
+    """Append-only audit trail of per-role assignment changes (spec 014)."""
+
+    change_id: str
+    cycle_id: str
+    portal_id: str
+    role: str  # 'A' | 'B'
+    previous_assessor_id: str | None
+    new_assessor_id: str | None
+    source: str  # 'mapping' | 'administrator' | 'migration'
+    changed_by_actor_id: str | None = None
+    changed_at: datetime = field(default_factory=utcnow)
+
 

@@ -6,22 +6,22 @@ modifications for 012-portal-discrepancy-reconciliation.
 
 from __future__ import annotations
 
-import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
 
+from portal.discrepancy import (
+    _compare,
+    compute_portal_discrepancy,
+    find_resolved_answer,
+    recompute_portal_discrepancy,
+)
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorRole,
     EscalationReason,
     HumanAssessorSubmission,
     new_id,
-)
-from portal.discrepancy import (
-    _compare,
-    compute_portal_discrepancy,
-    recompute_portal_discrepancy,
-    find_resolved_answer,
 )
 
 
@@ -47,7 +47,7 @@ def _submit(
         notes="",
         ai_suggested_answer=None,
         ai_suggestion_accepted=None,
-        submitted_at=datetime.now(timezone.utc),
+        submitted_at=datetime.now(UTC),
     )
     repo.insert_human_submission(sub)
     return sub

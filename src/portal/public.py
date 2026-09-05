@@ -52,7 +52,10 @@ def build_public_router(database_path: str, templates: Jinja2Templates) -> APIRo
         cycle = r.get_cycle(cycle_id)
         portal = r.get_portal(portal_id)
         record = r.latest_publication(cycle_id, portal_id)
-        questions_by_id = {q.question_id: q for q in r.list_questions(cycle_id)}
+        # include_retired=True: this renders an already-published scorecard, a
+        # historical record -- an indicator retired after publication should
+        # still show its title/text here, not silently blank out.
+        questions_by_id = {q.question_id: q for q in r.list_questions(cycle_id, include_retired=True)}
         breakdown = []
         if record:
             for qid, answer in record.score_breakdown.items():

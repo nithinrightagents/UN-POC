@@ -33,6 +33,15 @@
     </div>
 </div>
 
+{% set resolution_labels = {
+    "returned_for_reconciliation": "Returned for Reconciliation",
+    "senior_reviewer_decision": "Senior Reviewer Decision",
+    "reconciled_by_joint_review": "Reconciled by Joint Review (assessors converged automatically)",
+    "published_unresolved": "Published with Disagreement (legacy)",
+    "senior_reviewer_override": "Senior Reviewer Override (legacy)",
+    "escalation_dismissed": "Escalation Dismissed (legacy)",
+} %}
+
 {% for v in views %}
 <div class="card" style="border-left: 4px solid {% if v.already_resolved %}var(--color-success-border){% else %}#dc2626{% endif %};">
     <div class="card-header" style="margin-bottom: 1rem;">
@@ -67,7 +76,11 @@
                 across <strong>{{ v.item.context.compared_questions }}</strong> evaluated indicator(s).
             </div>
             <div style="margin-top: 0.25rem;">
-                Disputed Indicator IDs: <strong>{{ v.item.context.disagreements|join(", ") }}</strong>
+                Disputed Indicators:
+                {% for qid in v.item.context.disagreements %}
+                {% set q = questions_by_id.get(qid) %}
+                <strong>{{ q.indicator_id if q and q.indicator_id else qid }}</strong>{% if q %} — {{ q.title or q.text }}{% endif %}{% if not loop.last %}; {% endif %}
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -78,7 +91,7 @@
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
             <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
             <strong style="color: var(--color-text-primary);">Recorded Arbitration Disposition:</strong>
-            <span class="badge badge--verified">{{ v.disposition.resolution }}</span>
+            <span class="badge badge--verified">{{ resolution_labels.get(v.disposition.resolution, v.disposition.resolution) }}</span>
         </div>
         <p style="color: var(--color-text-secondary); margin-bottom: 0.5rem;">
             <em>"{{ v.disposition.notes }}"</em>
@@ -106,30 +119,73 @@
         {% endif %}
     </div>
     {% else %}
+    {% set details = disputed_details_by_item.get(v.item.item_id, []) %}
+    {% if details %}
+    <div style="margin-bottom: 1.25rem;">
+        <div class="section-title">
+            <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
+            <span>What Each Assessor Entered</span>
+        </div>
+        {% for d in details %}
+        <div style="background-color: #ffffff; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+            <div style="font-weight: 700; margin-bottom: 0.5rem;">
+                {{ d.question.indicator_id if d.question and d.question.indicator_id else d.question_id }}
+                {% if d.question %} — {{ d.question.title or d.question.text }}{% endif %}
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                    <div class="muted" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Assessor A</div>
+                    {% if d.sub_a %}
+                    <span class="badge {{ 'badge--yes' if d.sub_a.answer else 'badge--no' }}">{{ "Yes" if d.sub_a.answer else "No" }}</span>
+                    {% if d.sub_a.notes %}<p class="muted" style="margin: 0.35rem 0 0;">{{ d.sub_a.notes }}</p>{% endif %}
+                    {% if d.sub_a.evidence_url %}<a href="{{ d.sub_a.evidence_url }}" target="_blank" rel="noopener" style="font-size: 0.8rem; word-break: break-all;">{{ d.sub_a.evidence_url }}</a>{% endif %}
+                    {% else %}
+                    <span class="muted">No answer submitted</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="muted" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Assessor B</div>
+                    {% if d.sub_b %}
+                    <span class="badge {{ 'badge--yes' if d.sub_b.answer else 'badge--no' }}">{{ "Yes" if d.sub_b.answer else "No" }}</span>
+                    {% if d.sub_b.notes %}<p class="muted" style="margin: 0.35rem 0 0;">{{ d.sub_b.notes }}</p>{% endif %}
+                    {% if d.sub_b.evidence_url %}<a href="{{ d.sub_b.evidence_url }}" target="_blank" rel="noopener" style="font-size: 0.8rem; word-break: break-all;">{{ d.sub_b.evidence_url }}</a>{% endif %}
+                    {% else %}
+                    <span class="muted">No answer submitted</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Arbitration Action Form -->
     <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/escalations/{{ v.item.item_id }}/dispose" style="background-color: var(--color-bg-surface-subtle); padding: 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
         <div class="form-group">
             <label for="resolution_{{ v.item.item_id }}">Arbitration Resolution Method</label>
-            <select id="resolution_{{ v.item.item_id }}" name="resolution" required>
+            <select id="resolution_{{ v.item.item_id }}" name="resolution" required data-item-id="{{ v.item.item_id }}" onchange="syncArbitrationFields(this)">
                 <option value="returned_for_reconciliation">Return to Assessors for another reconciliation round (requires stated reason)</option>
-                <option value="published_unresolved">Publish with disagreement on record (contested)</option>
-                <option value="reconciled_by_joint_review">Reconciled by joint Assessor A/B review</option>
-                <option value="senior_reviewer_override">Senior Reviewer authoritative override</option>
-                <option value="escalation_dismissed">Dismissed — not a genuine discrepancy</option>
+                <option value="senior_reviewer_decision">Senior Reviewer reviews both entries above and decides Yes/No for each disputed indicator</option>
             </select>
         </div>
 
         {% if v.item.context.disagreements %}
-        <div style="margin: 0.5rem 0;">
+        <div id="decisionFields_{{ v.item.item_id }}" style="margin: 0.5rem 0;">
             <div class="section-title" style="margin-top: 0.5rem;">
                 <svg class="icon" aria-hidden="true"><use href="#icon-shield"/></svg>
-                <span>Arbitrated Answer Per Disputed Indicator</span>
+                <span>Senior Reviewer's Final Answer Per Disputed Indicator</span>
             </div>
             {% for qid in v.item.context.disagreements %}
+            {% set q = questions_by_id.get(qid) %}
             <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label for="resolved__{{ qid }}">{{ qid }} — Final Determinate Answer</label>
+                <label for="resolved__{{ qid }}">
+                    {{ q.indicator_id if q and q.indicator_id else qid }} — Final Determinate Answer
+                </label>
+                {% if q %}
+                <p class="muted" style="margin: 0 0 0.35rem;">{{ q.title or q.text }}</p>
+                {% endif %}
                 <select id="resolved__{{ qid }}" name="resolved__{{ qid }}">
-                    <option value="">-- Keep best-effort placeholder (pending) --</option>
+                    <option value="">-- Select --</option>
                     <option value="true">Yes — feature present and verifiable on portal</option>
                     <option value="false">No — feature absent or unresolvable</option>
                 </select>
@@ -168,5 +224,17 @@
     </p>
 </div>
 {% endfor %}
+
+<script>
+function syncArbitrationFields(select) {
+    var itemId = select.getAttribute("data-item-id");
+    var container = document.getElementById("decisionFields_" + itemId);
+    if (!container) return;
+    var isDecision = select.value === "senior_reviewer_decision";
+    container.style.display = isDecision ? "" : "none";
+    container.querySelectorAll("select").forEach(function (s) { s.required = isDecision; });
+}
+document.querySelectorAll('select[name="resolution"]').forEach(function (s) { syncArbitrationFields(s); });
+</script>
 
 {% endblock %}

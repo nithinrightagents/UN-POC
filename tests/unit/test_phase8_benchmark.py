@@ -1,11 +1,14 @@
 """Unit tests for Phase 8 benchmark evaluation (T097-T104)."""
 
 import sqlite3
+
 from benchmark.compare import compare_benchmark_runs
 from benchmark.measures import compute_benchmark_measures
 from benchmark.store import BenchmarkStore
 from benchmark.verify import verify_benchmark_isolation
 from shared.config.settings import Settings
+from shared.persistence.benchmark_repo import BenchmarkRepository
+from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AdjudicationResult,
     AssessmentSession,
@@ -18,9 +21,6 @@ from shared.state.entities import (
     TargetPortal,
     new_id,
 )
-from shared.persistence.benchmark_repo import BenchmarkRepository
-from shared.persistence.repositories import Repository
-from shared.persistence.schema import init_db
 
 
 def test_benchmark_store_and_measures():
@@ -30,7 +30,6 @@ def test_benchmark_store_and_measures():
     conn.executescript(DDL)
 
     repo = Repository(conn)
-    bm_repo = BenchmarkRepository(conn)
     store = BenchmarkStore(conn)
 
     # 1. Save benchmark set

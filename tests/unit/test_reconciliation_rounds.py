@@ -5,32 +5,41 @@ Covers Scenarios 1 and 2 of quickstart.md.
 
 from __future__ import annotations
 
-import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+
 import pytest
-from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.reconciliation import unit_reconciliation_state
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
+    AnswerType,
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     EscalationReason,
+    EvidenceLocus,
     HumanAssessorSubmission,
     Question,
-    AnswerType,
-    EvidenceLocus,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
 pytestmark = pytest.mark.unit
 
 
-def _seed_cycle_and_portal(repo: Repository, cycle_id: str = "c-2024", portal_id: str = "DK", num_questions: int = 140) -> list[Question]:
+def _seed_cycle_and_portal(
+    repo: Repository,
+    cycle_id: str = "c-2024",
+    portal_id: str = "DK",
+    num_questions: int = 140,
+    actor_a: str = "actor-a",
+    actor_b: str = "actor-b",
+) -> list[Question]:
     repo.insert_cycle(
         SurveyCycle(
             cycle_id=cycle_id,
@@ -46,6 +55,15 @@ def _seed_cycle_and_portal(repo: Repository, cycle_id: str = "c-2024", portal_id
             country_id="DK",
             resolved_url="https://denmark.example.com",
             display_name="Denmark Portal",
+        )
+    )
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=f"asmt-{portal_id}",
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id=actor_a, source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id=actor_b, source=AssignmentSource.MAPPING),
         )
     )
     questions = []
@@ -85,7 +103,7 @@ def _submit(
         notes="",
         ai_suggested_answer=None,
         ai_suggestion_accepted=None,
-        submitted_at=datetime.now(timezone.utc),
+        submitted_at=datetime.now(UTC),
     )
     repo.insert_human_submission(sub)
     return sub
@@ -98,7 +116,7 @@ def test_scenario_1_nothing_opens_mid_assessment(conn, client, settings):
     repo = Repository(conn)
     cycle_id = "c-2024"
     portal_id = "DK"
-    questions = _seed_cycle_and_portal(repo, cycle_id, portal_id, num_questions=140)
+    questions = _seed_cycle_and_portal(repo, cycle_id, portal_id, num_questions=140, actor_b="test-actor-b")
     session_id = ensure_session(repo, cycle_id)
 
     # Assessor A answers all 140 (all True)
@@ -267,7 +285,7 @@ def test_scenario_2_round_opens_on_second_completion_once(conn, client, settings
         opened_reason=None,
         state="open",
         data=rnd.data,
-        opened_at=datetime.now(timezone.utc),
+        opened_at=datetime.now(UTC),
         closed_at=None,
     )
     ok = repo.insert_reconciliation_round(rnd_duplicate)

@@ -1,9 +1,10 @@
+import httpx
 import pytest
+
 from benchmark.attribution import PipelineStage, attribute
-from benchmark.diagnostics import IndicatorVerdict, check_url_staleness
+from benchmark.diagnostics import check_url_staleness
 from benchmark.trace import UnitResolutionTrace
 from shared.state.entities import GroundTruthAnswer, new_id
-import httpx
 
 
 def test_no_valid_link_scores_portal_page_as_pass():

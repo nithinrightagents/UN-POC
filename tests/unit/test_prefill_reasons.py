@@ -1,19 +1,18 @@
 """Tests for prefill reasons taxonomy, write_prefill seam, and terminal states (spec 008 US2)."""
 
 import sqlite3
+
 import pytest
 
 from orchestration.prefill_writer import write_prefill
 from shared.persistence.repositories import Repository
 from shared.persistence.schema import DDL
 from shared.state.entities import (
-    Prefill,
     PrefillReason,
     SurveyCycle,
     TargetPortal,
     UnitState,
 )
-from shared.state.reason_tags import prefill_reason_tag
 
 pytestmark = pytest.mark.unit
 
@@ -150,12 +149,12 @@ def test_suggested_prefill_invariants():
 @pytest.mark.asyncio
 async def test_exhausted_cascade_dispatches_neither_assessor_agent():
     """FR-PF-018: A fully exhausted link resolution chain halts before assessor dispatch and writes NO_USABLE_EVIDENCE."""
+    from core.telemetry.cost_ledger import CostLedger
+    from core.telemetry.fetch_log import FetchLog
+    from core.telemetry.stage_events import StageEventLog
     from orchestration.scheduler import process_unit
     from shared.config.settings import Settings
     from shared.state.entities import AnswerType, EvidenceLocus, Question
-    from core.telemetry.fetch_log import FetchLog
-    from core.telemetry.stage_events import StageEventLog
-    from core.telemetry.cost_ledger import CostLedger
 
     conn = sqlite3.connect(":memory:")
     conn.row_factory = sqlite3.Row

@@ -4,6 +4,7 @@
   "description": "Standard official UN DESA OSI indicator catalog extracted from Modules 2.1 through 2.6 with complete What, Why, and How scoring criteria.",
   "version": "2024.1",
   "is_master_template": true,
+  "project_type": "national_osi",
   "total_questions": 102,
   "questions": [
     {

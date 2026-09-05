@@ -11,8 +11,8 @@ ekap-integration.md).
 
 from __future__ import annotations
 
-from shared.state.entities import LinkSource, ResolutionAttempt
 from shared.persistence.repositories import Repository
+from shared.state.entities import LinkSource, ResolutionAttempt
 
 
 def resolve_from_msq(
