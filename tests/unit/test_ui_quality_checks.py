@@ -22,13 +22,16 @@ from shared.persistence.schema import init_db
 from shared.state.entities import (
     AnswerType,
     AssessorRole,
+    AssignmentSource,
     EvidenceLocus,
     HumanAssessorSubmission,
     ProjectType,
     PublicationRecord,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -132,8 +135,7 @@ def test_wcag_22_color_contrast_tokens():
 
 
 @pytest.fixture
-def seeded_client(tmp_path):
-    db_path = str(tmp_path / "test_ui.db")
+def seeded_client(db_path):
     init_db(db_path)
     settings = Settings(database_path=db_path)
     app = build_app(db_path, settings)
@@ -171,6 +173,16 @@ def seeded_client(tmp_path):
     )
     repo.insert_portal(portal)
 
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id="un-2026",
+            portal_id="DK",
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
+
     # Seed submission
     sub = HumanAssessorSubmission(
         submission_id=new_id("sub"),
@@ -179,7 +191,7 @@ def seeded_client(tmp_path):
         portal_id="DK",
         question_id="PF-001",
         role=AssessorRole.A,
-        assessor_actor_id="assessor-1",
+        assessor_actor_id="actor-a",
         answer=True,
         evidence_url="https://www.borger.dk",
         notes="Verified directly on national portal.",
@@ -209,8 +221,8 @@ def test_all_portal_routes_render_successfully(seeded_client):
         "/admin/projects/un-2026",
         "/admin/projects/un-2026/escalations",
         "/assessor",
-        "/assessor/un-2026/DK?role=A",
-        "/assessor/un-2026/DK?role=B",
+        "/assessor/un-2026/DK?actor_id=actor-a",
+        "/assessor/un-2026/DK?actor_id=actor-b",
         "/public",
         "/public/un-2026",
         "/public/un-2026/DK",
@@ -263,8 +275,8 @@ def test_reconciliation_workspace_renders_successfully(seeded_client, db_path):
         )
     )
 
-    for role in ("A", "B"):
-        resp = client.get(f"/assessor/un-2026/DK/reconcile?role={role}&actor_id=test-actor")
+    for actor in ("actor-a", "actor-b"):
+        resp = client.get(f"/assessor/un-2026/DK/reconcile?actor_id={actor}")
         assert resp.status_code == 200
         html = resp.text
         assert '<a class="skip-link" href="#main-content">Skip to main content</a>' in html

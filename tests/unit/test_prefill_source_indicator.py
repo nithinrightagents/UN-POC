@@ -7,6 +7,7 @@ from shared.config.settings import Settings
 from shared.persistence.schema import init_db
 from shared.state.entities import (
     AnswerType,
+    AssignmentSource,
     ElementReference,
     EvidenceArtifact,
     EvidenceLocus,
@@ -14,8 +15,10 @@ from shared.state.entities import (
     Prefill,
     ProjectType,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     link_source_display_name,
     new_id,
 )
@@ -224,6 +227,15 @@ def test_assessor_portal_renders_source_indicators(tmp_path):
         resolved_url="https://www.usa.gov",
     )
     repo.insert_portal(portal)
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id="cycle-portal-test",
+            portal_id="US",
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
 
     repo.insert_prefill(
         Prefill(
@@ -245,7 +257,7 @@ def test_assessor_portal_renders_source_indicators(tmp_path):
     app = build_app(db_path, settings)
     client = TestClient(app)
 
-    res = client.get("/assessor/cycle-portal-test/US?role=A")
+    res = client.get("/assessor/cycle-portal-test/US?actor_id=actor-a")
     assert res.status_code == 200
     html = res.text
     assert "AI Suggested Answer" not in html

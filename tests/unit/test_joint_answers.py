@@ -14,12 +14,15 @@ from shared.state.entities import (
     AnswerType,
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     EvidenceLocus,
     HumanAssessorSubmission,
     JointAnswer,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -45,6 +48,15 @@ def _setup_disputed_unit(repo: Repository, total: int = 100, disputes: int = 4):
             country_id="DK",
             resolved_url="https://dk.example.com",
             display_name="Denmark Joint",
+        )
+    )
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
         )
     )
     questions = []

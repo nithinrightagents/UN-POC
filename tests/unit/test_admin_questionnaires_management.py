@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import pathlib
+
 import pytest
 from fastapi.testclient import TestClient
 
 from shared.persistence.repositories import Repository
 from shared.questionnaires.registry import (
-    delete_questionnaire,
     get_questionnaire_detail,
     list_question_sets,
     save_custom_question_set,

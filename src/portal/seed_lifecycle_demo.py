@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from portal.assignment import create_units, ingest_assessor_source
 from portal.common import ensure_session
 from portal.discrepancy import recompute_portal_discrepancy
 from shared.config.settings import Settings
@@ -59,27 +60,15 @@ _NOTE_YES = "Confirmed live on the portal — feature present and reachable with
 _NOTE_NO = "Could not locate a live implementation; the linked page returns a 404 / feature not present."
 
 
-_DEMO_ASSESSOR_A_EMAIL = "assessor.a@ekap-demo.org"
-_DEMO_ASSESSOR_B_EMAIL = "assessor.b@ekap-demo.org"
-
-
 def _create_project(repo: Repository, cycle_id: str) -> tuple[TargetPortal, list[Question], str]:
     country_id, display_name, url = _STAGE_UNITS[cycle_id]
 
-    # Every stage here starts from "assessors already assigned" -- that's
-    # what makes a unit eligible to carry submissions at all under the
-    # assign-assessors-then-lock workflow (admin.py assign_assessors) -- so
-    # each seeded cycle is created pre-locked with the two demo assessor
-    # emails already on it, exactly as assign_assessors() would leave it.
     cycle = SurveyCycle(
         cycle_id=cycle_id,
         name=_STAGE_NAMES[cycle_id],
         questionnaire_ref="UN OSI 2024 Master (20-indicator demo slice)",
         country_set=[country_id],
         project_type=ProjectType.NATIONAL_OSI,
-        status="locked",
-        assessor_a_email=_DEMO_ASSESSOR_A_EMAIL,
-        assessor_b_email=_DEMO_ASSESSOR_B_EMAIL,
     )
     repo.insert_cycle(cycle)
 
@@ -94,7 +83,7 @@ def _create_project(repo: Repository, cycle_id: str) -> tuple[TargetPortal, list
         unit_type="country",
         display_name=display_name,
     )
-    repo.insert_portal(portal)
+    create_units(repo, cycle_id, [portal])
 
     session_id = ensure_session(repo, cycle_id)
     return portal, questions, session_id
@@ -113,6 +102,10 @@ def _submit_pair(
     (truncated to b_answer_limit for an in-progress assessor). Answer
     direction alternates per question so the demo never shows the uniform
     A-always-yes/B-always-no pattern a real disagreement never looks like."""
+    asmt = repo.get_unit_assignment(cycle_id, portal.portal_id)
+    actor_a = asmt.role_a.assessor_id if (asmt and asmt.role_a) else "asr-001"
+    actor_b = asmt.role_b.assessor_id if (asmt and asmt.role_b) else "asr-002"
+
     for i, q in enumerate(questions):
         a_answer = i % 3 != 0
         b_answer = (not a_answer) if i in disagree_indices else a_answer
@@ -121,7 +114,7 @@ def _submit_pair(
             HumanAssessorSubmission(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal.portal_id, role=AssessorRole.A,
-                assessor_actor_id="demo-assessor-a", answer=a_answer,
+                assessor_actor_id=actor_a, answer=a_answer,
                 evidence_url=f"{portal.resolved_url}/services/{q.indicator_id}" if a_answer else None,
                 notes=_NOTE_YES if a_answer else _NOTE_NO,
             )
@@ -134,7 +127,7 @@ def _submit_pair(
             HumanAssessorSubmission(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal.portal_id, role=AssessorRole.B,
-                assessor_actor_id="demo-assessor-b", answer=b_answer,
+                assessor_actor_id=actor_b, answer=b_answer,
                 evidence_url=f"{portal.resolved_url}/search?q={q.indicator_id}" if b_answer else None,
                 notes=_NOTE_YES if b_answer else _NOTE_NO,
             )
@@ -144,10 +137,16 @@ def _submit_pair(
 def _declare_completion(
     repo: Repository, session_id: str, cycle_id: str, portal_id: str, role: str, indicator_count: int
 ) -> None:
+    asmt = repo.get_unit_assignment(cycle_id, portal_id)
+    if role == "A":
+        actor_id = asmt.role_a.assessor_id if (asmt and asmt.role_a) else "asr-001"
+    else:
+        actor_id = asmt.role_b.assessor_id if (asmt and asmt.role_b) else "asr-002"
+
     repo.insert_assessor_completion(
         AssessorCompletion(
             completion_id=new_id("comp"), session_id=session_id, cycle_id=cycle_id,
-            portal_id=portal_id, role=role, actor_id=f"demo-assessor-{role.lower()}",
+            portal_id=portal_id, role=role, actor_id=actor_id,
             indicator_count_at_declaration=indicator_count,
         )
     )
@@ -156,6 +155,8 @@ def _declare_completion(
 def seed_lifecycle_demo(repo: Repository, settings: Settings) -> dict:
     created: list[str] = []
     skipped: list[str] = []
+
+    ingest_assessor_source(repo)
 
     for cycle_id in _STAGE_UNITS:
         if repo.get_cycle(cycle_id) is not None:

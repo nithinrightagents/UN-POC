@@ -11,8 +11,11 @@ from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     HumanAssessorSubmission,
     Prefill,
+    RoleAssignment,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -196,6 +199,15 @@ def test_never_published_and_republish(client: TestClient, auth: dict[str, str],
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id="repub-cycle",
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
     qid = "repub-cycle:R.1"
     ensure_session(repo, "repub-cycle")
 

@@ -8,7 +8,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from shared.persistence.repositories import Repository
-from shared.questionnaires.pdf_ingest import extract_candidate_indicators
 from shared.state.entities import ProjectType, SurveyCycle
 
 pytestmark = pytest.mark.unit

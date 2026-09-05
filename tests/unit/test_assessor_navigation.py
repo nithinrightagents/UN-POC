@@ -13,11 +13,14 @@ from shared.config.settings import Settings
 from shared.persistence.schema import init_db
 from shared.state.entities import (
     AnswerType,
+    AssignmentSource,
     EvidenceLocus,
     ProjectType,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
 )
 
 
@@ -47,6 +50,15 @@ def seeded_portal_app(tmp_path: pathlib.Path):
         resolved_url="https://www.usa.gov",
     )
     repo.insert_portal(portal)
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id="asmt-us-01",
+            cycle_id=cycle.cycle_id,
+            portal_id=portal.portal_id,
+            role_a=RoleAssignment(assessor_id="assessor-1", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="assessor-2", source=AssignmentSource.MAPPING),
+        )
+    )
 
     for i in range(1, 4):
         q = Question(
@@ -113,7 +125,7 @@ def test_assessor_form_submission_redirects_to_anchor(seeded_portal_app):
 
     assert res.status_code == 303
     location = res.headers["location"]
-    assert location == f"/assessor/{cycle_id}/{portal_id}?role=A&actor_id=assessor-1#q_Q-002"
+    assert location == f"/assessor/{cycle_id}/{portal_id}?actor_id=assessor-1#q_Q-002"
 
 
 def test_assessor_submission_all_completed_targets_progress_panel(seeded_portal_app):

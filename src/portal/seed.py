@@ -16,6 +16,7 @@ from __future__ import annotations
 import pathlib
 from datetime import UTC
 
+from portal.assignment import create_units
 from portal.common import ensure_session
 from portal.msq import ingest_msq_pdf
 from shared.config.settings import Settings
@@ -82,6 +83,7 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
     ensure_session(repo, cycle_losi.cycle_id)
 
     national_portals = []
+    new_national = []
     for code, name, url in _NATIONAL_UNITS:
         portal = repo.get_portal_by_country(cycle_national.cycle_id, code)
         if portal is None:
@@ -89,10 +91,13 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
                 portal_id=new_id("portal"), cycle_id=cycle_national.cycle_id, country_id=code,
                 resolved_url=url, unit_type="country", display_name=name,
             )
-            repo.insert_portal(portal)
+            new_national.append(portal)
         national_portals.append(portal)
+    if new_national:
+        create_units(repo, cycle_national.cycle_id, new_national)
 
     losi_portals = []
+    new_losi = []
     for code, name, url in _LOSI_UNITS:
         portal = repo.get_portal_by_country(cycle_losi.cycle_id, code)
         if portal is None:
@@ -100,8 +105,10 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
                 portal_id=new_id("portal"), cycle_id=cycle_losi.cycle_id, country_id=code,
                 resolved_url=url, unit_type="city", display_name=name,
             )
-            repo.insert_portal(portal)
+            new_losi.append(portal)
         losi_portals.append(portal)
+    if new_losi:
+        create_units(repo, cycle_losi.cycle_id, new_losi)
 
 
     if _DENMARK_MSQ_PATH.exists():

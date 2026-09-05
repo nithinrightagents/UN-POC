@@ -29,6 +29,7 @@ from api.schemas import (
     UnitListResponse,
     UnitResponse,
 )
+from portal.assignment import create_units
 from portal.common import ensure_session
 from portal.discrepancy import _compare, recompute_portal_discrepancy
 from shared.config.settings import Settings
@@ -123,6 +124,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
                 repo.insert_question(q)
 
         # Pre-populate units if target countries resolved
+        portals = []
         for c in target_countries:
             if ptype is ProjectType.NATIONAL_OSI:
                 display_name = c.name
@@ -130,7 +132,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
             else:
                 display_name = f"{c.most_populous_city}, {c.name}"
                 unit_type = "city"
-            repo.insert_portal(
+            portals.append(
                 TargetPortal(
                     portal_id=new_id("portal"),
                     cycle_id=body.cycle_id,
@@ -140,6 +142,8 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
                     display_name=display_name,
                 )
             )
+        if portals:
+            create_units(repo, body.cycle_id, portals)
 
         stored = repo.get_cycle(body.cycle_id) or cycle
         created_at = _cycle_created_at(repo, stored.cycle_id)
@@ -594,7 +598,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
             unit_type=body.unit_type,
             display_name=body.display_name,
         )
-        repo.insert_portal(portal)
+        create_units(repo, cycle_id, [portal])
 
         if body.country_id not in cycle.country_set:
             cycle.country_set.append(body.country_id)
@@ -628,6 +632,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
             )
 
         created_units: list[UnitResponse] = []
+        new_portals: list[TargetPortal] = []
         for req in body.units:
             existing = repo.get_portal_by_country(cycle_id, req.country_id)
             if existing is not None:
@@ -642,7 +647,7 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
                 unit_type=req.unit_type,
                 display_name=req.display_name,
             )
-            repo.insert_portal(portal)
+            new_portals.append(portal)
             if req.country_id not in cycle.country_set:
                 cycle.country_set.append(req.country_id)
 
@@ -659,6 +664,8 @@ def build_cycles_router(database_path: str, settings: Settings) -> APIRouter:
                 )
             )
 
+        if new_portals:
+            create_units(repo, cycle_id, new_portals)
         repo.insert_cycle(cycle)
         return UnitBulkCreateResponse(
             created_count=len(created_units), units=created_units

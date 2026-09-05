@@ -43,6 +43,15 @@ class Unauthorized(ApiError):
         super().__init__("unauthorized", 401, message, details)
 
 
+class Forbidden(ApiError):
+    def __init__(
+        self,
+        message: str = "Forbidden.",
+        details: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__("forbidden", 403, message, details)
+
+
 class NotConfigured(ApiError):
     def __init__(
         self,

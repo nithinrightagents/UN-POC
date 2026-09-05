@@ -15,12 +15,15 @@ from shared.state.entities import (
     AnswerType,
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     EvidenceLocus,
     HumanAssessorSubmission,
     ProjectType,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -91,6 +94,16 @@ def test_refusal_names_outstanding_indicators(client: TestClient, auth: dict[str
         resolved_url="https://borger.dk",
     )
     repo.insert_portal(portal)
+
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
 
     q1 = Question(
         question_id=f"{cycle_id}:1.1.1",

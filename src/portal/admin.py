@@ -19,7 +19,13 @@ from fastapi.templating import Jinja2Templates
 
 from api.finalize import final_answer_detail, publication_readiness
 from api.identity import compose_question_id
-from portal.common import ensure_session, repo_factory
+from portal.assignment import (
+    clear_role_assignment,
+    create_units,
+    set_role_assignment,
+    staffing_summary,
+)
+from portal.common import ensure_session, repo_factory, session_id_for_cycle
 from portal.discrepancy import _compare, compute_portal_discrepancy, recompute_portal_discrepancy
 from portal.msq import ingest_msq_pdf
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
@@ -38,6 +44,7 @@ from shared.questionnaires.registry import (
 from shared.reference.countries import list_countries
 from shared.state.entities import (
     AnswerType,
+    Assessor,
     AssessorRole,
     EvidenceLocus,
     PendingIndicator,
@@ -47,21 +54,24 @@ from shared.state.entities import (
     SurveyCycle,
     TargetPortal,
     ToleranceChange,
+    UnitAssessorAssignment,
+    UnstaffedReason,
     new_id,
 )
 
 _log = logging.getLogger(__name__)
 
 
-def _blocked_if_locked(cycle: SurveyCycle | None, cycle_id: str) -> RedirectResponse | None:
-    """Units and questions freeze once an admin has assigned both assessors
-    (SurveyCycle.status == "locked") -- otherwise a mid-assessment unit/
-    question change would silently skew recompute_portal_discrepancy() and
+def _blocked_if_work_started(r: Repository, cycle_id: str) -> RedirectResponse | None:
+    """Units and questions freeze once assessment has actually begun --
+    a mid-assessment unit/question change would silently skew
+    recompute_portal_discrepancy() and
     AssessorCompletion.indicator_count_at_declaration, which both assume a
     fixed question set per unit."""
-    if cycle is not None and cycle.status == "locked":
+    if r.has_any_human_activity(session_id_for_cycle(cycle_id)):
         return RedirectResponse(f"/admin/projects/{cycle_id}?lock_error=1", status_code=303)
     return None
+
 
 
 def _remove_unit(r: Repository, cycle_id: str, portal_id: str) -> None:
@@ -85,6 +95,8 @@ def _build_unit_rows(
     units: list[TargetPortal],
     questions: list[Question],
     settings: Settings,
+    assignments: dict[str, UnitAssessorAssignment] | None = None,
+    roster: dict[str, Assessor] | None = None,
 ) -> list[dict]:
     unit_rows = []
     eff_tol = effective_tolerance(r, cycle_id, settings)
@@ -130,6 +142,17 @@ def _build_unit_rows(
                     "joint_committed_by": joint.committed_by_role if joint else None,
                 })
 
+        asmt = assignments.get(u.portal_id) if assignments else None
+        if asmt is None:
+            staffing = {"is_staffed": False, "reason": UnstaffedReason.NO_MAPPING_ENTRY}
+        elif asmt.is_staffed:
+            staffing = {"is_staffed": True, "reason": None}
+        else:
+            staffing = {"is_staffed": False, "reason": asmt.ingest_defect or UnstaffedReason.NO_MAPPING_ENTRY}
+
+        assessor_a = roster.get(asmt.role_a.assessor_id) if (asmt and asmt.role_a and roster) else None
+        assessor_b = roster.get(asmt.role_b.assessor_id) if (asmt and asmt.role_b and roster) else None
+
         unit_rows.append({
             "portal": u,
             "msq": msq,
@@ -139,6 +162,10 @@ def _build_unit_rows(
             "badge_html": render_badge(recon_state),
             "readiness": readiness,
             "disputes_detail": disputes_detail,
+            "assignment": asmt,
+            "staffing": staffing,
+            "assessor_a": assessor_a,
+            "assessor_b": assessor_b,
         })
     return unit_rows
 
@@ -157,6 +184,17 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 "cycles": cycles,
                 "question_sets": list_question_sets(),
                 "countries": list_countries(),
+            },
+        )
+
+    @router.get("/admin/assessors", response_class=HTMLResponse)
+    def assessors_page(request: Request):
+        r = repo()
+        assessors = r.list_assessors()
+        return templates.TemplateResponse(
+            request, "admin_assessors.html",
+            {
+                "assessors": assessors,
             },
         )
 
@@ -270,7 +308,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                     resolved_url=None, unit_type=unit_type, display_name=display_name,
                 )
             )
-        r.insert_portals(portals)
+        create_units(r, cycle_id, portals)
 
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
@@ -297,16 +335,24 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         # Unit progress/discrepancy math must only count live indicators --
         # retired ones stay in the table above (for visibility) but drop out here.
         active_questions = [q for q in questions if q.status != "retired"]
-        unit_rows = _build_unit_rows(r, session_id, cycle_id, units, active_questions, settings)
+        assignments = r.list_unit_assignments(cycle_id)
+        roster = r.load_assessor_index()
+        unit_rows = _build_unit_rows(
+            r, session_id, cycle_id, units, active_questions, settings,
+            assignments=assignments, roster=roster,
+        )
+        summary = staffing_summary(r, cycle_id)
 
         eff_tol = effective_tolerance(r, cycle_id, settings)
         eff_pct = int(round(eff_tol * 100)) if abs(eff_tol * 100 - round(eff_tol * 100)) < 1e-4 else round(eff_tol * 100, 1)
+        work_started = r.has_any_human_activity(session_id)
 
         return templates.TemplateResponse(
             request, "admin_project_detail.html",
             {
                 "cycle": cycle, "questions": questions,
                 "units": unit_rows, "session_id": session_id,
+                "work_started": work_started,
                 "msq_error": msq_error,
                 "tolerance_error": tolerance_error,
                 "edit_error": edit_error,
@@ -318,6 +364,9 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 "effective_tolerance_pct": eff_pct,
                 "tolerance_is_inherited": cycle.discrepancy_rate_threshold is None,
                 "countries": list_countries(),
+                "staffing_summary": summary,
+                "roster": roster,
+                "roster_list": list(roster.values()),
             },
         )
 
@@ -334,7 +383,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         benchmark_case: str = Form(""),
     ):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         text = f"{title} — {what}"
         how_data = {
@@ -388,7 +437,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         cycle = r.get_cycle(cycle_id)
         if cycle is None:
             return RedirectResponse("/admin", status_code=303)
-        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         live_questions = [q for q in r.list_questions(cycle_id) if q.status != "retired"]
         saved_set = save_custom_question_set(cycle, live_questions, label=label.strip() or None)
@@ -414,7 +463,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         cycle = r.get_cycle(cycle_id)
         if cycle is None:
             return RedirectResponse("/admin", status_code=303)
-        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
 
         contents = await pdf_file.read()
@@ -480,7 +529,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         benchmark_case: str = Form(""),
     ):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         pending = r.get_pending_indicator(pending_id)
         if pending is None or pending.cycle_id != cycle_id:
@@ -517,7 +566,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/indicators/review/{pending_id}/reject")
     def reject_pending_indicator(cycle_id: str, pending_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         pending = r.get_pending_indicator(pending_id)
         if pending is not None and pending.cycle_id == cycle_id:
@@ -527,7 +576,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/indicators/review/bulk-reject")
     def bulk_reject_pending_indicators(cycle_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         r.delete_pending_indicators_for_cycle(cycle_id)
         return RedirectResponse(f"/admin/projects/{cycle_id}/indicators/review", status_code=303)
@@ -537,7 +586,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         cycle_id: str, question_id: str, actor_id: str = Form("senior-reviewer"),
     ):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         r.set_question_status(question_id, "retired", revised_by=actor_id)
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
@@ -547,7 +596,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         cycle_id: str, question_id: str, actor_id: str = Form("senior-reviewer"),
     ):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         r.set_question_status(question_id, "active", revised_by=actor_id)
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
@@ -555,7 +604,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/questions/bulk-retire")
     async def bulk_retire_questions(request: Request, cycle_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         form = await request.form()
         actor_id = form.get("actor_id") or "senior-reviewer"
@@ -566,7 +615,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/questions/bulk-reactivate")
     async def bulk_reactivate_questions(request: Request, cycle_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         form = await request.form()
         actor_id = form.get("actor_id") or "senior-reviewer"
@@ -588,7 +637,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         actor_id: str = Form("senior-reviewer"),
     ):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         existing = r.get_question(question_id)
         if existing is None or not existing.is_custom:
@@ -621,15 +670,15 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     ):
         r = repo()
         cycle = r.get_cycle(cycle_id)
-        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         clean_url = url.strip() if url else None
-        r.insert_portal(
-            TargetPortal(
-                portal_id=new_id("portal"), cycle_id=cycle_id, country_id=country_id,
-                resolved_url=clean_url or None, unit_type=unit_type, display_name=display_name,
-            )
+        derived_unit_type = "city" if (cycle and cycle.project_type == ProjectType.LOSI_CITY) else "country"
+        portal = TargetPortal(
+            portal_id=new_id("portal"), cycle_id=cycle_id, country_id=country_id,
+            resolved_url=clean_url or None, unit_type=derived_unit_type, display_name=display_name,
         )
+        create_units(r, cycle_id, [portal])
         if cycle and country_id not in cycle.country_set:
             cycle.country_set.append(country_id)
             r.insert_cycle(cycle)  # upsert on cycle_id primary key
@@ -638,7 +687,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/remove")
     def remove_unit(cycle_id: str, portal_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         _remove_unit(r, cycle_id, portal_id)
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
@@ -646,7 +695,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
     @router.post("/admin/projects/{cycle_id}/units/bulk-remove")
     async def bulk_remove_units(request: Request, cycle_id: str):
         r = repo()
-        if (resp := _blocked_if_locked(r.get_cycle(cycle_id), cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         form = await request.form()
         for portal_id in form.getlist("portal_ids"):
@@ -658,64 +707,68 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         r = repo()
         form = await request.form()
         country_codes = form.getlist("country_codes")
-        unit_type = form.get("unit_type", "country")
         cycle = r.get_cycle(cycle_id)
-        if (resp := _blocked_if_locked(cycle, cycle_id)) is not None:
+        if (resp := _blocked_if_work_started(r, cycle_id)) is not None:
             return resp
         if cycle and country_codes:
+            derived_unit_type = "city" if cycle.project_type == ProjectType.LOSI_CITY else "country"
             countries_by_code = {c.code: c for c in list_countries()}
             portals = []
             for code in country_codes:
                 c = countries_by_code.get(code)
                 if c is None:
                     continue
-                if unit_type == "city":
+                if derived_unit_type == "city":
                     display_name = f"{c.most_populous_city}, {c.name}"
                 else:
                     display_name = c.name
                 portals.append(
                     TargetPortal(
                         portal_id=new_id("portal"), cycle_id=cycle_id, country_id=c.code,
-                        resolved_url=None, unit_type=unit_type, display_name=display_name,
+                        resolved_url=None, unit_type=derived_unit_type, display_name=display_name,
                     )
                 )
                 if c.code not in cycle.country_set:
                     cycle.country_set.append(c.code)
             if portals:
-                # ON CONFLICT(cycle_id, country_id) DO NOTHING -- re-selecting
-                # a country that already has a unit in this cycle is a no-op
-                # for the portal row, but country_set stays correctly synced.
-                r.insert_portals(portals)
+                create_units(r, cycle_id, portals)
                 r.insert_cycle(cycle)
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
-    @router.post("/admin/projects/{cycle_id}/assign-assessors")
-    def assign_assessors(
-        cycle_id: str, assessor_a_email: str = Form(...), assessor_b_email: str = Form(...),
+    @router.post("/admin/projects/{cycle_id}/units/{portal_id}/assessors")
+    def override_unit_assessor(
+        cycle_id: str,
+        portal_id: str,
+        role: str = Form(...),
+        assessor_id: str = Form(""),
+        actor_id: str = Form("senior-reviewer"),
     ):
         r = repo()
         cycle = r.get_cycle(cycle_id)
         if cycle is None:
             return HTMLResponse("Unknown project.", status_code=404)
-        a, b = assessor_a_email.strip(), assessor_b_email.strip()
-        if "@" not in a or "@" not in b:
-            return RedirectResponse(f"/admin/projects/{cycle_id}?assign_error=1", status_code=303)
-        cycle.assessor_a_email = a
-        cycle.assessor_b_email = b
-        cycle.status = "locked"
-        r.insert_cycle(cycle)
-        return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
+        portal = r.get_portal(portal_id)
+        if portal is None or portal.cycle_id != cycle_id:
+            return HTMLResponse("Unknown unit.", status_code=404)
 
-    @router.post("/admin/projects/{cycle_id}/unassign-assessors")
-    def unassign_assessors(cycle_id: str):
-        r = repo()
-        cycle = r.get_cycle(cycle_id)
-        if cycle is None:
-            return HTMLResponse("Unknown project.", status_code=404)
-        cycle.assessor_a_email = None
-        cycle.assessor_b_email = None
-        cycle.status = "active"
-        r.insert_cycle(cycle)
+        clean_assessor_id = assessor_id.strip()
+        try:
+            if not clean_assessor_id:
+                clear_role_assignment(r, cycle_id, portal_id, role, actor_id)
+            else:
+                set_role_assignment(r, cycle_id, portal_id, role, clean_assessor_id, actor_id)
+        except ValueError as exc:
+            err_type = str(exc)
+            if err_type in ("duplicate", "unknown"):
+                return RedirectResponse(
+                    f"/admin/projects/{cycle_id}?assign_error={err_type}",
+                    status_code=303,
+                )
+            return RedirectResponse(
+                f"/admin/projects/{cycle_id}?assign_error=unknown",
+                status_code=303,
+            )
+
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/msq")

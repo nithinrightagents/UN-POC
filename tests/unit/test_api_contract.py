@@ -8,7 +8,10 @@ from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AdjudicationResult,
     AssessorAgentRun,
+    AssignmentSource,
     EscalationReason,
+    RoleAssignment,
+    UnitAssessorAssignment,
     UnitState,
     ValidationResult,
     VerificationOutcome,
@@ -411,6 +414,15 @@ def test_api_discrepancy_endpoint_parity_and_no_answers_exposed(client: TestClie
         headers=auth,
     )
     portal_id = u_res.json()["portal_id"]
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
     session_id = ensure_session(repo, cycle_id)
 
     # 1. Awaiting second assessment -> state="awaiting_second_assessment", differing_answer_rate=None
@@ -472,6 +484,16 @@ def test_api_end_to_end_discrepancy_and_round_opening(client: TestClient, auth: 
     )
     portal_id = u_res.json()["portal_id"]
     qid = f"{cycle_id}:E.1"
+    repo = Repository(conn)
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
+        )
+    )
 
     # Assessor A submits True, Assessor B submits False
     client.post(

@@ -323,3 +323,91 @@ def both_declared(conn):
         conn.commit()
     return _declare
 
+
+@pytest.fixture
+def ingested(conn):
+    from portal.assignment import ingest_assessor_source
+    from shared.persistence.repositories import Repository
+
+    return ingest_assessor_source(Repository(conn))
+
+
+@pytest.fixture
+def staffed_unit(conn):
+    """Factory returning a TargetPortal with a known pair assigned."""
+    from shared.persistence.repositories import Repository
+    from shared.state.entities import (
+        AssignmentSource,
+        RoleAssignment,
+        TargetPortal,
+        UnitAssessorAssignment,
+        new_id,
+        utcnow,
+    )
+
+    repo = Repository(conn)
+
+    def _create(
+        cycle_id: str,
+        country_id: str = "DK",
+        unit_type: str = "country",
+        assessor_a_id: str = "asr-001",
+        assessor_b_id: str = "asr-007",
+    ) -> TargetPortal:
+        portal = TargetPortal(
+            portal_id=new_id("portal"),
+            cycle_id=cycle_id,
+            country_id=country_id,
+            resolved_url=None,
+            unit_type=unit_type,
+            display_name=country_id,
+        )
+        repo.insert_portal(portal)
+        assignment = UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal.portal_id,
+            role_a=RoleAssignment(
+                assessor_id=assessor_a_id, source=AssignmentSource.MAPPING, set_at=utcnow()
+            ),
+            role_b=RoleAssignment(
+                assessor_id=assessor_b_id, source=AssignmentSource.MAPPING, set_at=utcnow()
+            ),
+        )
+        repo.upsert_unit_assignment(assignment)
+        return portal
+
+    return _create
+
+
+@pytest.fixture
+def legacy_cycle(conn):
+    """Factory writing a survey_cycles row whose raw data JSON carries assessor_a_email/assessor_b_email."""
+
+    def _create(
+        cycle_id: str,
+        assessor_a_email: str = "a.okonkwo@ekap-demo.org",
+        assessor_b_email: str = "f.zahra@ekap-demo.org",
+        status: str = "locked",
+        country_set: list[str] | None = None,
+    ) -> str:
+        payload = {
+            "cycle_id": cycle_id,
+            "name": f"Legacy Cycle {cycle_id}",
+            "questionnaire_ref": "test_ref",
+            "country_set": country_set or ["DK", "SE"],
+            "status": status,
+            "project_type": "national_osi",
+            "assessor_a_email": assessor_a_email,
+            "assessor_b_email": assessor_b_email,
+        }
+        conn.execute(
+            "INSERT INTO survey_cycles (cycle_id, data) VALUES (?, ?)",
+            (cycle_id, json.dumps(payload)),
+        )
+        conn.commit()
+        return cycle_id
+
+    return _create
+
+

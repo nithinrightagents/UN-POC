@@ -17,19 +17,29 @@ from shared.state.entities import (
     AnswerType,
     AssessorCompletion,
     AssessorRole,
+    AssignmentSource,
     EscalationReason,
     EvidenceLocus,
     HumanAssessorSubmission,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
 pytestmark = pytest.mark.unit
 
 
-def _seed_cycle_and_portal(repo: Repository, cycle_id: str = "c-2024", portal_id: str = "DK", num_questions: int = 140) -> list[Question]:
+def _seed_cycle_and_portal(
+    repo: Repository,
+    cycle_id: str = "c-2024",
+    portal_id: str = "DK",
+    num_questions: int = 140,
+    actor_a: str = "actor-a",
+    actor_b: str = "actor-b",
+) -> list[Question]:
     repo.insert_cycle(
         SurveyCycle(
             cycle_id=cycle_id,
@@ -45,6 +55,15 @@ def _seed_cycle_and_portal(repo: Repository, cycle_id: str = "c-2024", portal_id
             country_id="DK",
             resolved_url="https://denmark.example.com",
             display_name="Denmark Portal",
+        )
+    )
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=f"asmt-{portal_id}",
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id=actor_a, source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id=actor_b, source=AssignmentSource.MAPPING),
         )
     )
     questions = []
@@ -97,7 +116,7 @@ def test_scenario_1_nothing_opens_mid_assessment(conn, client, settings):
     repo = Repository(conn)
     cycle_id = "c-2024"
     portal_id = "DK"
-    questions = _seed_cycle_and_portal(repo, cycle_id, portal_id, num_questions=140)
+    questions = _seed_cycle_and_portal(repo, cycle_id, portal_id, num_questions=140, actor_b="test-actor-b")
     session_id = ensure_session(repo, cycle_id)
 
     # Assessor A answers all 140 (all True)

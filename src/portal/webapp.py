@@ -22,10 +22,12 @@ from api.jobs import sweep_interrupted_jobs
 from api.runtime import AIRuntime
 from portal.admin import build_admin_router
 from portal.assessor import build_assessor_router
+from portal.assignment import ingest_assessor_source, migrate_project_level_assignments
 from portal.common import repo_factory
 from portal.public import build_public_router
 from review.web.app import build_app as build_review_app
 from shared.config.settings import Settings
+from shared.persistence.repositories import Repository
 from shared.persistence.schema import init_db
 
 logger = logging.getLogger(__name__)
@@ -46,7 +48,17 @@ def build_app(database_path: str, settings: Settings) -> FastAPI:
 
         init_db(database_path)
         conn = sqlite3.connect(database_path)
+        conn.row_factory = sqlite3.Row
         try:
+            r = Repository(conn)
+            ingest_summary = ingest_assessor_source(r)
+            logger.info(
+                "ingested %d assessor(s) and %d mapping entries",
+                ingest_summary.assessors_written,
+                ingest_summary.mapping_entries_written,
+            )
+            migrated_count = migrate_project_level_assignments(conn)
+            logger.info("migrated %d legacy project-level assignment(s)", migrated_count)
             swept_count = sweep_interrupted_jobs(conn)
             logger.info("swept %d interrupted assessment job(s)", swept_count)
         finally:

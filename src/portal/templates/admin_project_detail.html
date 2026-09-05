@@ -45,14 +45,20 @@
 {% if lock_error %}
 <div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
     <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
-    <strong>Project Is Locked:</strong> Assessors are already assigned, so units and indicators can't be changed. Unassign them below to make changes.
+    <strong>Project Is Locked:</strong> Assessment work has already begun on this project, so units and indicators cannot be changed.
 </div>
 {% endif %}
 
 {% if assign_error %}
 <div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
     <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
-    <strong>Assignment Failed:</strong> Both Assessor A and Assessor B need a valid email address.
+    {% if assign_error == 'duplicate' %}
+    <strong>Assignment Refused:</strong> An assessor cannot hold both Role A and Role B on the same unit.
+    {% elif assign_error == 'unknown' %}
+    <strong>Assignment Refused:</strong> The chosen assessor is not on record in the assessor roster.
+    {% else %}
+    <strong>Assignment Failed:</strong> Please verify the selected assessor.
+    {% endif %}
 </div>
 {% endif %}
 
@@ -127,51 +133,35 @@
     </div>
 </div>
 
-<!-- Assign Assessors Section -->
-<div class="card" style="margin-bottom: 1.5rem; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle);">
-    {% if cycle.status == "locked" %}
+<!-- Staffing Summary Card (FR-SV-002) -->
+<div class="card" id="staffing-summary-card">
     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                <h3 style="margin: 0; font-size: 1rem;">Assessors Assigned</h3>
-                <span class="badge badge--yes" style="font-size: 0.75rem;">Locked</span>
+                <h3 style="margin: 0;">Unit Staffing</h3>
+                {% if staffing_summary %}
+                    {% if staffing_summary.staffed_units == staffing_summary.total_units and staffing_summary.total_units > 0 %}
+                    <span class="badge badge--yes">Fully Staffed</span>
+                    {% elif staffing_summary.staffed_units == 0 %}
+                    <span class="badge badge--no">Unstaffed</span>
+                    {% else %}
+                    <span class="badge badge--pending">Partially Staffed</span>
+                    {% endif %}
+                {% endif %}
             </div>
-            <p class="muted" style="margin: 0; font-size: 0.85rem;">
-                Assessor A: <strong>{{ cycle.assessor_a_email }}</strong> &nbsp;&middot;&nbsp;
-                Assessor B: <strong>{{ cycle.assessor_b_email }}</strong>
+            {% if staffing_summary %}
+            <p class="muted" style="margin-bottom: 0;">
+                <strong>{{ staffing_summary.staffed_units }} of {{ staffing_summary.total_units }} units staffed</strong>
+                {% set unstaffed_count = staffing_summary.total_units - staffing_summary.staffed_units %}
+                {% if unstaffed_count > 0 %}
+                &mdash; <a href="#monitored-units-section" style="color: var(--color-warning-text, #b45309); font-weight: 600;">
+                    {{ unstaffed_count }} unit(s) require attention &darr;
+                </a>
+                {% endif %}
             </p>
+            {% endif %}
         </div>
-        <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/unassign-assessors" onsubmit="return confirm('Unassign both assessors and reopen units/indicators for editing?');">
-            <button type="submit" class="btn btn-sm">
-                <svg class="icon" aria-hidden="true"><use href="#icon-settings"/></svg>
-                <span>Unassign &amp; Reopen Setup</span>
-            </button>
-        </form>
     </div>
-    {% else %}
-    <div>
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-            <h3 style="margin: 0; font-size: 1rem;">Assign Assessors</h3>
-        </div>
-        <p class="muted" style="margin: 0 0 0.75rem 0; font-size: 0.85rem;">
-            Once both assessors are assigned, this project's units and indicators lock -- finish setting those up first.
-        </p>
-        <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/assign-assessors" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="assessor_a_email" style="font-size: 0.8rem;">Assessor A Email</label>
-                <input type="email" id="assessor_a_email" name="assessor_a_email" placeholder="assessor.a@example.org" required style="padding: 0.375rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label for="assessor_b_email" style="font-size: 0.8rem;">Assessor B Email</label>
-                <input type="email" id="assessor_b_email" name="assessor_b_email" placeholder="assessor.b@example.org" required style="padding: 0.375rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
-            </div>
-            <button type="submit" class="btn btn-sm btn-primary" style="align-self: flex-end;">
-                <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
-                <span>Assign &amp; Lock</span>
-            </button>
-        </form>
-    </div>
-    {% endif %}
 </div>
 
 <!-- Indicators Section -->
@@ -193,7 +183,7 @@
                 <span>Review Pending Indicators ({{ pending_indicator_count }})</span>
             </a>
             {% endif %}
-            {% if cycle.status != "locked" %}
+            {% if not work_started %}
             <input type="text" id="customSetLabelInput" placeholder="Custom set name (optional)" style="padding: 0.35rem 0.5rem; font-size: 0.85rem; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xs); width: 220px;">
             <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/save-custom-set" id="saveCustomSetForm" onsubmit="return false;">
                 <input type="hidden" name="label" id="saveCustomSetLabelField">
@@ -297,8 +287,8 @@
                     </td>
                     <td style="vertical-align: top;">
                         <div style="display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start;">
-                            {% if cycle.status == "locked" %}
-                            <span class="badge badge--neutral" style="font-size: 0.7rem;">Locked</span>
+                            {% if work_started %}
+                            <span class="badge badge--neutral" style="font-size: 0.7rem;">Frozen</span>
                             {% elif q.status == 'retired' %}
                             <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/{{ q.question_id }}/reactivate">
                                 <input type="hidden" name="actor_id" value="senior-reviewer">
@@ -317,7 +307,7 @@
                             </form>
                             {% endif %}
 
-                            {% if q.is_custom and cycle.status != "locked" %}
+                            {% if q.is_custom and not work_started %}
                             <details>
                                 <summary style="cursor: pointer; font-size: 0.75rem; color: var(--color-brand-primary); font-weight: 600;">Edit</summary>
                                 <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/questions/{{ q.question_id }}/edit" style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; min-width: 260px;">
@@ -357,7 +347,7 @@
         </table>
     </div>
 
-    {% if cycle.status != "locked" %}
+    {% if not work_started %}
     <!-- Bulk Indicator Actions Bar -->
     <div id="questionsBulkBar" style="display: none; align-items: center; gap: 0.75rem; flex-wrap: wrap; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; margin-bottom: 1.25rem;">
         <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary);">
@@ -503,12 +493,12 @@
 </div>
 
 <!-- Units Management Section -->
-<div class="section-title" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+<div class="section-title" id="monitored-units-section" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
     <div style="display: flex; align-items: center; gap: 0.5rem;">
         <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
         <span>Monitored Units (Countries / Cities)</span>
     </div>
-    {% if units and cycle.status != "locked" %}
+    {% if units and not work_started %}
     <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); text-transform: none;">
         <input type="checkbox" id="unitsSelectAll" aria-label="Select all units" onchange="toggleAllUnitChecks(this)">
         Select All Units
@@ -516,7 +506,7 @@
     {% endif %}
 </div>
 
-{% if cycle.status != "locked" %}
+{% if not work_started %}
 <!-- Bulk Unit Actions Bar -->
 <div id="unitsBulkBar" style="display: none; align-items: center; gap: 0.75rem; flex-wrap: wrap; background-color: var(--color-bg-surface-subtle); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; margin-bottom: 1rem;">
     <span style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-secondary);">
@@ -537,7 +527,7 @@
 <div class="card" style="border-left: 4px solid var(--color-brand-primary);">
     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem;">
         <div style="display: flex; align-items: flex-start; gap: 0.65rem;">
-            {% if cycle.status != "locked" %}
+            {% if not work_started %}
             <input type="checkbox" class="unit-select" value="{{ row.portal.portal_id }}" aria-label="Select unit {{ row.portal.display_name or row.portal.country_id }}" onchange="syncUnitsBulkBar()" style="margin-top: 0.3rem;">
             {% endif %}
             <div>
@@ -580,6 +570,94 @@
                 <span>Public Scorecard</span>
             </a>
             {% endif %}
+        </div>
+    </div>
+
+    <!-- Assessor Assignments & Override -->
+    <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle); margin-bottom: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700;">Assigned Assessors</div>
+            {% if row.staffing.is_staffed %}
+            <span class="badge badge--yes" style="font-size: 0.75rem;">Fully Staffed</span>
+            {% else %}
+            <span class="badge badge--no" style="font-size: 0.75rem;">Unstaffed</span>
+            {% endif %}
+        </div>
+
+        {% if not row.staffing.is_staffed %}
+        <div style="margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--color-danger-text, #991b1b); background-color: var(--color-danger-subtle, #fee2e2); padding: 0.4rem 0.6rem; border-radius: var(--radius-xs); border: 1px solid var(--color-danger, #ef4444);">
+            {% if row.staffing.reason.value == 'no_mapping_entry' or row.staffing.reason == 'no_mapping_entry' %}
+            No entry in the assessor database for this unit.
+            {% elif row.staffing.reason.value == 'duplicate_assessor' or row.staffing.reason == 'duplicate_assessor' %}
+            The assessor database names the same person for both roles.
+            {% elif row.staffing.reason.value == 'unknown_assessor' or row.staffing.reason == 'unknown_assessor' %}
+            The assessor database names an assessor who is not on record.
+            {% elif row.staffing.reason.value == 'incomplete_mapping_entry' or row.staffing.reason == 'incomplete_mapping_entry' %}
+            Only one role is named in the assessor database.
+            {% elif row.staffing.reason.value == 'cleared_by_administrator' or row.staffing.reason == 'cleared_by_administrator' %}
+            Cleared by an administrator.
+            {% else %}
+            {{ row.staffing.reason }}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="grid-2" style="gap: 1rem; margin-bottom: 0;">
+            <!-- Role A Assignment & Override -->
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="font-size: 0.85rem;">
+                    <strong>Role A:</strong>
+                    {% if row.assignment and row.assignment.role_a and row.assessor_a %}
+                    <span style="font-weight: 600;">{{ row.assessor_a.display_name }}</span>
+                    <span class="muted">({{ row.assessor_a.email }})</span>
+                    {% elif row.assignment and row.assignment.role_a %}
+                    <span style="font-weight: 600;">{{ row.assignment.role_a.assessor_id }}</span>
+                    {% else %}
+                    <span class="muted">Unassigned</span>
+                    {% endif %}
+                </div>
+                <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/assessors" style="display: flex; gap: 0.35rem; align-items: center; margin-top: 0.25rem;">
+                    <input type="hidden" name="role" value="A">
+                    <input type="hidden" name="actor_id" value="senior-reviewer">
+                    <select name="assessor_id" style="font-size: 0.8rem; padding: 0.25rem 0.4rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-subtle); flex: 1;">
+                        <option value="">-- Clear / None --</option>
+                        {% for a in roster_list %}
+                        <option value="{{ a.assessor_id }}" {% if row.assignment and row.assignment.role_a and row.assignment.role_a.assessor_id == a.assessor_id %}selected{% endif %}>
+                            {{ a.display_name }} ({{ a.email }}) &mdash; {{ a.organisation }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Set</button>
+                </form>
+            </div>
+
+            <!-- Role B Assignment & Override -->
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <div style="font-size: 0.85rem;">
+                    <strong>Role B:</strong>
+                    {% if row.assignment and row.assignment.role_b and row.assessor_b %}
+                    <span style="font-weight: 600;">{{ row.assessor_b.display_name }}</span>
+                    <span class="muted">({{ row.assessor_b.email }})</span>
+                    {% elif row.assignment and row.assignment.role_b %}
+                    <span style="font-weight: 600;">{{ row.assignment.role_b.assessor_id }}</span>
+                    {% else %}
+                    <span class="muted">Unassigned</span>
+                    {% endif %}
+                </div>
+                <form method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/assessors" style="display: flex; gap: 0.35rem; align-items: center; margin-top: 0.25rem;">
+                    <input type="hidden" name="role" value="B">
+                    <input type="hidden" name="actor_id" value="senior-reviewer">
+                    <select name="assessor_id" style="font-size: 0.8rem; padding: 0.25rem 0.4rem; border-radius: var(--radius-xs); border: 1px solid var(--color-border-subtle); flex: 1;">
+                        <option value="">-- Clear / None --</option>
+                        {% for a in roster_list %}
+                        <option value="{{ a.assessor_id }}" {% if row.assignment and row.assignment.role_b and row.assignment.role_b.assessor_id == a.assessor_id %}selected{% endif %}>
+                            {{ a.display_name }} ({{ a.email }}) &mdash; {{ a.organisation }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Set</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -684,7 +762,7 @@
         <span style="font-size: 0.8rem; color: #b45309; max-width: 350px;">{{ row.readiness.blocking_reason }}</span>
         {% endif %}
 
-        {% if cycle.status != "locked" %}
+        {% if not work_started %}
         <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/remove" onsubmit="return false;">
             <button class="btn btn-sm btn-danger" type="button" data-unit-name="{{ row.portal.display_name or row.portal.country_id }}" onclick="confirmAndSubmit(this.form, 'Remove ' + this.dataset.unitName + ' from this project?', 'Its submissions, MSQ document, and published scorecard (if any) are deleted too.', 'Remove Unit')">
                 <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
@@ -719,8 +797,8 @@
         </div>
     </div>
 
-    {% if cycle.status == "locked" %}
-    <p class="muted" style="margin: 0;">Project is locked -- unassign assessors to edit units.</p>
+    {% if work_started %}
+    <p class="muted" style="margin: 0;">Project units and indicators are frozen because assessment has begun.</p>
     {% else %}
     {% set available_countries = countries | rejectattr("code", "in", cycle.country_set) | list %}
     {% if available_countries %}
@@ -728,10 +806,8 @@
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.75rem;">
             <input type="search" id="countrySearchFilter" placeholder="Search countries..." oninput="filterCountryOptions()" style="flex: 1; min-width: 220px; padding: 0.5rem 0.75rem; border: 1px solid var(--color-border-default); border-radius: var(--radius-xs);">
             {% if cycle.project_type.value == "national_osi" %}
-            <input type="hidden" name="unit_type" value="country">
             <span class="badge badge--neutral" style="padding: 0.5rem 0.75rem;">Tagging as National Portal (Country)</span>
             {% else %}
-            <input type="hidden" name="unit_type" value="city">
             <span class="badge badge--neutral" style="padding: 0.5rem 0.75rem;">Tagging as Municipality Portal (City, using most-populous city)</span>
             {% endif %}
             <button type="button" class="btn btn-sm" onclick="selectAllVisibleCountries()">Select All Visible</button>
@@ -772,8 +848,8 @@
             <svg class="icon" aria-hidden="true"><use href="#icon-globe"/></svg>
         </div>
     </div>
-    {% if cycle.status == "locked" %}
-    <p class="muted" style="margin: 0;">Project is locked -- unassign assessors to edit units.</p>
+    {% if work_started %}
+    <p class="muted" style="margin: 0;">Project units and indicators are frozen because assessment has begun.</p>
     {% else %}
     <form class="stack" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units" style="max-width: 680px;">
         <div class="grid-2" style="margin-bottom: 0;">
@@ -793,13 +869,11 @@
         </div>
 
         <div class="form-group">
-            <label for="unit_type">Unit Classification</label>
+            <label>Unit Classification</label>
             {% if cycle.project_type.value == "national_osi" %}
-            <input type="hidden" id="unit_type" name="unit_type" value="country">
-            <p class="muted" style="margin: 0;">National Member State Portal (Country) -- fixed by this project's type.</p>
+            <p class="muted" style="margin: 0;">National Member State Portal (Country) -- derived from project type.</p>
             {% else %}
-            <input type="hidden" id="unit_type" name="unit_type" value="city">
-            <p class="muted" style="margin: 0;">Local Municipality Portal (City) -- fixed by this project's type.</p>
+            <p class="muted" style="margin: 0;">Local Municipality Portal (City) -- derived from project type.</p>
             {% endif %}
         </div>
 

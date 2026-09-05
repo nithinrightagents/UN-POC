@@ -10,11 +10,14 @@ from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AnswerType,
     AssessorRole,
+    AssignmentSource,
     EvidenceLocus,
     HumanAssessorSubmission,
     Question,
+    RoleAssignment,
     SurveyCycle,
     TargetPortal,
+    UnitAssessorAssignment,
     new_id,
 )
 
@@ -40,6 +43,15 @@ def _setup_workspace_unit(repo: Repository, total: int = 111, disputes: int = 4)
             country_id="DK",
             resolved_url="https://dk.example.com",
             display_name="Denmark Workspace",
+        )
+    )
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a-distinct", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b-distinct", source=AssignmentSource.MAPPING),
         )
     )
     questions = []
@@ -158,7 +170,7 @@ def test_joint_answer_without_justification_rejected(conn, client):
     # Empty justification
     resp = client.post(
         f"/assessor/{cycle_id}/{portal_id}/reconcile/PF-000/joint",
-        data={"role": "A", "actor_id": "actor-a", "answer": "true", "justification": ""},
+        data={"role": "A", "actor_id": "actor-a-distinct", "answer": "true", "justification": ""},
         follow_redirects=False,
     )
     assert resp.status_code == 303
@@ -172,7 +184,7 @@ def test_joint_answer_outside_disputed_set_rejected(conn, client):
     # PF-010 is not in disputed set (PF-000..PF-003)
     resp = client.post(
         f"/assessor/{cycle_id}/{portal_id}/reconcile/PF-010/joint",
-        data={"role": "A", "actor_id": "actor-a", "answer": "true", "justification": "Valid reasoning"},
+        data={"role": "A", "actor_id": "actor-a-distinct", "answer": "true", "justification": "Valid reasoning"},
         follow_redirects=False,
     )
     assert resp.status_code == 303
@@ -198,6 +210,15 @@ def test_workspace_refuses_when_no_round_open(conn, client):
             country_id="DK",
             resolved_url="https://dk.example.com",
             display_name="Denmark No Round",
+        )
+    )
+    repo.upsert_unit_assignment(
+        UnitAssessorAssignment(
+            assignment_id=new_id("asmt"),
+            cycle_id=cycle_id,
+            portal_id=portal_id,
+            role_a=RoleAssignment(assessor_id="actor-a", source=AssignmentSource.MAPPING),
+            role_b=RoleAssignment(assessor_id="actor-b", source=AssignmentSource.MAPPING),
         )
     )
     ensure_session(repo, cycle_id)

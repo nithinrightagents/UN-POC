@@ -1,0 +1,194 @@
+[
+  {
+    "assessor_id": "asr-001",
+    "display_name": "Amara Okonkwo",
+    "email": "a.okonkwo@ekap-demo.org",
+    "organisation": "Regional E-Government Observatory",
+    "languages": ["en", "fr"],
+    "notes": "Prior OSI cycles: 2022, 2024"
+  },
+  {
+    "assessor_id": "asr-002",
+    "display_name": "Mateo Silva",
+    "email": "m.silva@ekap-demo.org",
+    "organisation": "Center for Public Digital Services",
+    "languages": ["es", "pt", "en"],
+    "notes": "Prior OSI cycle: 2024"
+  },
+  {
+    "assessor_id": "asr-003",
+    "display_name": "Amina Al-Mansoor",
+    "email": "a.almansoor@ekap-demo.org",
+    "organisation": "Arab Digital Governance Institute",
+    "languages": ["ar", "en"],
+    "notes": "Specialist in MENA municipal portals"
+  },
+  {
+    "assessor_id": "asr-004",
+    "display_name": "Kenji Sato",
+    "email": "k.sato@ekap-demo.org",
+    "organisation": "Asia-Pacific Public Policy Lab",
+    "languages": ["ja", "en"],
+    "notes": "Prior OSI cycles: 2020, 2022"
+  },
+  {
+    "assessor_id": "asr-005",
+    "display_name": "Elena Rostova",
+    "email": "e.rostova@ekap-demo.org",
+    "organisation": "Eurasian E-Governance Center",
+    "languages": ["ru", "en"],
+    "notes": "Eastern Europe and Central Asia lead"
+  },
+  {
+    "assessor_id": "asr-006",
+    "display_name": "Lukas Weber",
+    "email": "l.weber@ekap-demo.org",
+    "organisation": "Nordic Digital Administration Group",
+    "languages": ["de", "en", "da"],
+    "notes": "Senior researcher in open data"
+  },
+  {
+    "assessor_id": "asr-007",
+    "display_name": "Fatima Zahra",
+    "email": "f.zahra@ekap-demo.org",
+    "organisation": "African Digital Transformation Network",
+    "languages": ["fr", "ar", "en"],
+    "notes": "Prior OSI cycle: 2024"
+  },
+  {
+    "assessor_id": "asr-008",
+    "display_name": "Carlos Mendoza",
+    "email": "c.mendoza@ekap-demo.org",
+    "organisation": "Latin American E-Gov Alliance",
+    "languages": ["es", "en"],
+    "notes": "LOSI assessment contributor"
+  },
+  {
+    "assessor_id": "asr-009",
+    "display_name": "Siddharth Rao",
+    "email": "s.rao@ekap-demo.org",
+    "organisation": "South Asian Digital Services Mission",
+    "languages": ["en", "hi"],
+    "notes": "Prior OSI cycles: 2022, 2024"
+  },
+  {
+    "assessor_id": "asr-010",
+    "display_name": "Ingrid Hansen",
+    "email": "i.hansen@ekap-demo.org",
+    "organisation": "Scandinavian Public Informatics Bureau",
+    "languages": ["da", "no", "en"],
+    "notes": "Nordic region coordinator"
+  },
+  {
+    "assessor_id": "asr-011",
+    "display_name": "Chidi Eze",
+    "email": "c.eze@ekap-demo.org",
+    "organisation": "West Africa Digital Innovation Hub",
+    "languages": ["en", "ig"],
+    "notes": "Expert in national portal verification"
+  },
+  {
+    "assessor_id": "asr-012",
+    "display_name": "Mei-Ling Chen",
+    "email": "m.chen@ekap-demo.org",
+    "organisation": "East Asia Digital Society Foundation",
+    "languages": ["zh", "en"],
+    "notes": "Specialist in municipal portal usability"
+  },
+  {
+    "assessor_id": "asr-013",
+    "display_name": "Guillaume Martin",
+    "email": "g.martin@ekap-demo.org",
+    "organisation": "Francophone Digital Publics Association",
+    "languages": ["fr", "en"],
+    "notes": "Prior OSI cycles: 2018, 2020, 2022"
+  },
+  {
+    "assessor_id": "asr-014",
+    "display_name": "Ananya Patel",
+    "email": "a.patel@ekap-demo.org",
+    "organisation": "Global Governance & AI Monitor",
+    "languages": ["en", "gu"],
+    "notes": "LOSI and OSI data verifier"
+  },
+  {
+    "assessor_id": "asr-015",
+    "display_name": "Tariq Hadad",
+    "email": "t.hadad@ekap-demo.org",
+    "organisation": "Levant E-Services Council",
+    "languages": ["ar", "en", "fr"],
+    "notes": "Prior OSI cycle: 2024"
+  },
+  {
+    "assessor_id": "asr-016",
+    "display_name": "Sofia Lindqvist",
+    "email": "s.lindqvist@ekap-demo.org",
+    "organisation": "Baltic E-State Initiative",
+    "languages": ["sv", "en", "fi"],
+    "notes": "Accessibility and open standards specialist"
+  },
+  {
+    "assessor_id": "asr-017",
+    "display_name": "Kwame Asante",
+    "email": "k.asante@ekap-demo.org",
+    "organisation": "Pan-African E-Governance Institute",
+    "languages": ["en", "ak"],
+    "notes": "Senior research fellow"
+  },
+  {
+    "assessor_id": "asr-018",
+    "display_name": "Valentina Rossi",
+    "email": "v.rossi@ekap-demo.org",
+    "organisation": "Mediterranean Public Sector Center",
+    "languages": ["it", "en", "es"],
+    "notes": "Prior OSI cycles: 2020, 2022, 2024"
+  },
+  {
+    "assessor_id": "asr-019",
+    "display_name": "Zoran Petrovic",
+    "email": "z.petrovic@ekap-demo.org",
+    "organisation": "Balkan Digital Governance Group",
+    "languages": ["sr", "hr", "en"],
+    "notes": "South-Eastern European public portal assessor"
+  },
+  {
+    "assessor_id": "asr-020",
+    "display_name": "Nia Robinson",
+    "email": "n.robinson@ekap-demo.org",
+    "organisation": "Caribbean Digital Policy Forum",
+    "languages": ["en", "es"],
+    "notes": "Small island developing states specialist"
+  },
+  {
+    "assessor_id": "asr-021",
+    "display_name": "Hiroshi Tanaka",
+    "email": "h.tanaka@ekap-demo.org",
+    "organisation": "Pacific Digital Infrastructure Institute",
+    "languages": ["ja", "en"],
+    "notes": "Prior OSI cycles: 2018, 2024"
+  },
+  {
+    "assessor_id": "asr-022",
+    "display_name": "Daria Novak",
+    "email": "d.novak@ekap-demo.org",
+    "organisation": "Central European Public Analytics",
+    "languages": ["cs", "sk", "en"],
+    "notes": "Municipal services benchmark lead"
+  },
+  {
+    "assessor_id": "asr-023",
+    "display_name": "Youssef Bennani",
+    "email": "y.bennani@ekap-demo.org",
+    "organisation": "North African Digital Governance Observatory",
+    "languages": ["ar", "fr", "en"],
+    "notes": "Prior OSI cycle: 2022"
+  },
+  {
+    "assessor_id": "asr-024",
+    "display_name": "Camila O'Connor",
+    "email": "c.oconnor@ekap-demo.org",
+    "organisation": "Atlantic Public Policy Laboratory",
+    "languages": ["en", "es"],
+    "notes": "Senior assessor and methodology contributor"
+  }
+]

@@ -90,7 +90,6 @@
                 </div>
 
                 <form method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/complete" id="complete-assessment-form">
-                    <input type="hidden" name="role" value="{{ role }}">
                     <input type="hidden" name="actor_id" value="{{ actor_id }}">
                     <button type="submit" id="btn-complete-assessment" class="primary" {% if not can_complete %}disabled title="Answer all indicators before declaring completion"{% endif %}>
                         <svg class="icon" aria-hidden="true"><use href="#icon-check"/></svg>
@@ -108,7 +107,6 @@
                 <label for="actor_id" style="font-size: 0.8rem;">Assessor Identifier</label>
                 <input type="text" id="actor_id" name="actor_id" value="{{ actor_id }}" style="font-size: 0.85rem; padding: 0.375rem 0.5rem;">
             </div>
-            <input type="hidden" name="role" value="{{ role }}">
             <button type="submit" class="btn-sm" style="width: 100%;">Update Assessor ID</button>
         </form>
     </div>
@@ -269,7 +267,6 @@
 
     <!-- Submission Form -->
     <form class="stack assessor-submit-form" method="post" action="/assessor/{{ cycle.cycle_id }}/{{ portal.portal_id }}/question/{{ row.question.question_id }}/submit" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--color-border-subtle);" data-qid="{{ row.question.question_id }}">
-        <input type="hidden" name="role" value="{{ role }}">
         <input type="hidden" name="actor_id" value="{{ actor_id }}">
         
         <div class="grid-2" style="margin-bottom: 0;">

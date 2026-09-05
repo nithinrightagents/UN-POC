@@ -413,6 +413,61 @@ CREATE TABLE IF NOT EXISTS pending_indicators (
 
 CREATE INDEX IF NOT EXISTS idx_pending_indicators_cycle
     ON pending_indicators(cycle_id, created_at);
+
+-- Assessors (spec 014): ingested roster of candidate assessors. Source replica; survives project deletion.
+CREATE TABLE IF NOT EXISTS assessors (
+    assessor_id TEXT PRIMARY KEY,
+    email       TEXT NOT NULL,
+    data        TEXT NOT NULL,   -- display_name, organisation, languages, notes
+    ingested_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_assessors_email ON assessors(email);
+
+-- Unit Assessor Mapping (spec 014): the source database's statement of which
+-- assessors cover which units. Source replica; survives project deletion.
+CREATE TABLE IF NOT EXISTS unit_assessor_mapping (
+    unit_type   TEXT NOT NULL,   -- 'country' | 'city'
+    unit_code   TEXT NOT NULL,   -- ISO country code, as carried on TargetPortal.country_id
+    data        TEXT NOT NULL,   -- assessor_a_id, assessor_b_id (either may be null)
+    ingested_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (unit_type, unit_code)
+);
+
+-- Unit Assessor Assignments (spec 014): lifecycle table (mutable) on the
+-- reconciliation_rounds precedent. Who works this unit of this project.
+CREATE TABLE IF NOT EXISTS unit_assessor_assignments (
+    assignment_id TEXT PRIMARY KEY,
+    cycle_id      TEXT NOT NULL,
+    portal_id     TEXT NOT NULL,
+    data          TEXT NOT NULL,   -- role_a, role_b (each RoleAssignment | null), ingest_defect
+    updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- One assignment record per unit: makes distinctness a single-row invariant (R2).
+-- idx_unit_assignment_one_per_unit is a correctness guarantee, not an optimisation.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unit_assignment_one_per_unit
+    ON unit_assessor_assignments(cycle_id, portal_id);
+
+CREATE INDEX IF NOT EXISTS idx_unit_assignment_cycle
+    ON unit_assessor_assignments(cycle_id);
+
+-- Assignment Changes (spec 014): append-only audit trail on the tolerance_changes
+-- precedent. One row per role write.
+CREATE TABLE IF NOT EXISTS assignment_changes (
+    change_id            TEXT PRIMARY KEY,
+    cycle_id             TEXT NOT NULL,
+    portal_id            TEXT NOT NULL,
+    role                 TEXT NOT NULL,   -- 'A' | 'B'
+    previous_assessor_id TEXT,            -- NULL when the role was previously unstaffed
+    new_assessor_id      TEXT,            -- NULL when the role was cleared
+    source               TEXT NOT NULL,   -- 'mapping' | 'administrator' | 'migration'
+    changed_by_actor_id  TEXT,            -- NULL when source = 'mapping'
+    changed_at           TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_assignment_changes_unit
+    ON assignment_changes(cycle_id, portal_id, changed_at);
 """
 
 

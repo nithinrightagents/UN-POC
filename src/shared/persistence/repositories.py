@@ -16,10 +16,12 @@ from shared.state.entities import (
     AdjudicationResult,
     AnswerExport,
     AssessmentSession,
+    Assessor,
     AssessorAgentRun,
     AssessorCompletion,
     AssessorDecision,
     AssessorRole,
+    AssignmentChange,
     ConfigurationSnapshot,
     DiscrepancyCase,
     EscalationQueueItem,
@@ -39,6 +41,8 @@ from shared.state.entities import (
     SurveyCycle,
     TargetPortal,
     ToleranceChange,
+    UnitAssessorAssignment,
+    UnitAssessorMappingEntry,
     ValidationResult,
     new_id,
 )
@@ -126,6 +130,8 @@ class Repository:
         self.conn.execute("DELETE FROM assessment_jobs WHERE cycle_id = ?", (cycle_id,))
         self.conn.execute("DELETE FROM reconciliation_rounds WHERE cycle_id = ?", (cycle_id,))
         self.conn.execute("DELETE FROM tolerance_changes WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM unit_assessor_assignments WHERE cycle_id = ?", (cycle_id,))
+        self.conn.execute("DELETE FROM assignment_changes WHERE cycle_id = ?", (cycle_id,))
         self.conn.execute("DELETE FROM question_revisions WHERE cycle_id = ?", (cycle_id,))
         self.conn.execute("DELETE FROM questions WHERE cycle_id = ?", (cycle_id,))
         self.conn.execute("DELETE FROM pending_indicators WHERE cycle_id = ?", (cycle_id,))
@@ -179,6 +185,14 @@ class Repository:
         )
         self.conn.execute(
             "DELETE FROM reconciliation_rounds WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute(
+            "DELETE FROM unit_assessor_assignments WHERE cycle_id = ? AND portal_id = ?",
+            (cycle_id, portal_id),
+        )
+        self.conn.execute(
+            "DELETE FROM assignment_changes WHERE cycle_id = ? AND portal_id = ?",
             (cycle_id, portal_id),
         )
         self.conn.execute("DELETE FROM target_portals WHERE portal_id = ?", (portal_id,))
@@ -1380,6 +1394,184 @@ class Repository:
         ).fetchall()
         return [_row_to_tolerance_change(r) for r in rows]
 
+    # --- Assessors and Unit Assignment (spec 014) -----------------------
+
+    def upsert_assessor(self, assessor: Assessor) -> None:
+        payload = {
+            "display_name": assessor.display_name,
+            "organisation": assessor.organisation,
+            "languages": assessor.languages,
+            "notes": assessor.notes,
+        }
+        self.conn.execute(
+            """
+            INSERT INTO assessors (assessor_id, email, data, ingested_at)
+            VALUES (?, ?, ?, datetime('now'))
+            ON CONFLICT(assessor_id) DO UPDATE SET
+                email = excluded.email,
+                data = excluded.data,
+                ingested_at = excluded.ingested_at
+            """,
+            (assessor.assessor_id, assessor.email, json.dumps(payload)),
+        )
+        self.conn.commit()
+
+    def get_assessor(self, assessor_id: str) -> Assessor | None:
+        row = self.conn.execute(
+            "SELECT assessor_id, email, data FROM assessors WHERE assessor_id = ?",
+            (assessor_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return _row_to_assessor(row)
+
+    def list_assessors(self) -> list[Assessor]:
+        rows = self.conn.execute(
+            "SELECT assessor_id, email, data FROM assessors ORDER BY assessor_id ASC"
+        ).fetchall()
+        return [_row_to_assessor(r) for r in rows]
+
+    def load_assessor_index(self) -> dict[str, Assessor]:
+        return {a.assessor_id: a for a in self.list_assessors()}
+
+    def upsert_mapping_entry(self, entry: UnitAssessorMappingEntry) -> None:
+        payload = {
+            "assessor_a_id": entry.assessor_a_id,
+            "assessor_b_id": entry.assessor_b_id,
+        }
+        self.conn.execute(
+            """
+            INSERT INTO unit_assessor_mapping (unit_type, unit_code, data, ingested_at)
+            VALUES (?, ?, ?, datetime('now'))
+            ON CONFLICT(unit_type, unit_code) DO UPDATE SET
+                data = excluded.data,
+                ingested_at = excluded.ingested_at
+            """,
+            (entry.unit_type, entry.unit_code, json.dumps(payload)),
+        )
+        self.conn.commit()
+
+    def load_mapping_index(self) -> dict[tuple[str, str], UnitAssessorMappingEntry]:
+        rows = self.conn.execute(
+            "SELECT unit_type, unit_code, data FROM unit_assessor_mapping"
+        ).fetchall()
+        out: dict[tuple[str, str], UnitAssessorMappingEntry] = {}
+        for r in rows:
+            data = json.loads(r["data"]) if isinstance(r["data"], str) else (r["data"] or {})
+            entry = UnitAssessorMappingEntry(
+                unit_type=r["unit_type"],
+                unit_code=r["unit_code"],
+                assessor_a_id=data.get("assessor_a_id"),
+                assessor_b_id=data.get("assessor_b_id"),
+            )
+            out[(entry.unit_type, entry.unit_code)] = entry
+        return out
+
+    def get_unit_assignment(self, cycle_id: str, portal_id: str) -> UnitAssessorAssignment | None:
+        row = self.conn.execute(
+            """
+            SELECT assignment_id, cycle_id, portal_id, data, updated_at
+            FROM unit_assessor_assignments
+            WHERE cycle_id = ? AND portal_id = ?
+            """,
+            (cycle_id, portal_id),
+        ).fetchone()
+        if row is None:
+            return None
+        return _row_to_unit_assignment(row)
+
+    def list_unit_assignments(self, cycle_id: str) -> dict[str, UnitAssessorAssignment]:
+        rows = self.conn.execute(
+            """
+            SELECT assignment_id, cycle_id, portal_id, data, updated_at
+            FROM unit_assessor_assignments
+            WHERE cycle_id = ?
+            """,
+            (cycle_id,),
+        ).fetchall()
+        return {r["portal_id"]: _row_to_unit_assignment(r) for r in rows}
+
+    def list_all_unit_assignments(self) -> list[UnitAssessorAssignment]:
+        rows = self.conn.execute(
+            """
+            SELECT assignment_id, cycle_id, portal_id, data, updated_at
+            FROM unit_assessor_assignments
+            """
+        ).fetchall()
+        return [_row_to_unit_assignment(r) for r in rows]
+
+    def upsert_unit_assignment(self, assignment: UnitAssessorAssignment) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO unit_assessor_assignments (assignment_id, cycle_id, portal_id, data, updated_at)
+            VALUES (?, ?, ?, ?, datetime('now'))
+            ON CONFLICT(cycle_id, portal_id) DO UPDATE SET
+                data = excluded.data,
+                updated_at = excluded.updated_at
+            """,
+            (
+                assignment.assignment_id,
+                assignment.cycle_id,
+                assignment.portal_id,
+                to_json(assignment),
+            ),
+        )
+        self.conn.commit()
+
+    def insert_assignment_change(self, change: AssignmentChange) -> None:
+        changed_at = (
+            change.changed_at.isoformat()
+            if isinstance(change.changed_at, datetime)
+            else str(change.changed_at)
+        )
+        self.conn.execute(
+            """
+            INSERT INTO assignment_changes (
+                change_id, cycle_id, portal_id, role,
+                previous_assessor_id, new_assessor_id, source, changed_by_actor_id, changed_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                change.change_id,
+                change.cycle_id,
+                change.portal_id,
+                change.role,
+                change.previous_assessor_id,
+                change.new_assessor_id,
+                change.source,
+                change.changed_by_actor_id,
+                changed_at,
+            ),
+        )
+        self.conn.commit()
+
+    def list_assignment_changes(self, cycle_id: str, portal_id: str) -> list[AssignmentChange]:
+        rows = self.conn.execute(
+            """
+            SELECT change_id, cycle_id, portal_id, role, previous_assessor_id,
+                   new_assessor_id, source, changed_by_actor_id, changed_at
+            FROM assignment_changes
+            WHERE cycle_id = ? AND portal_id = ?
+            ORDER BY changed_at ASC, rowid ASC
+            """,
+            (cycle_id, portal_id),
+        ).fetchall()
+        return [_row_to_assignment_change(r) for r in rows]
+
+    def has_any_human_activity(self, session_id: str) -> bool:
+        """True once any assessor has submitted or declared completion in this session."""
+        row = self.conn.execute(
+            "SELECT 1 FROM human_assessor_submissions WHERE session_id = ? LIMIT 1",
+            (session_id,),
+        ).fetchone()
+        if row is not None:
+            return True
+        row = self.conn.execute(
+            "SELECT 1 FROM assessor_completions WHERE session_id = ? LIMIT 1",
+            (session_id,),
+        ).fetchone()
+        return row is not None
+
 
 def _row_to_reconciliation_round(row: sqlite3.Row) -> ReconciliationRound:
     from datetime import datetime
@@ -1495,6 +1687,46 @@ def _row_to_job(row: sqlite3.Row):
         data=parsed_data,
         created_at=row["created_at"],
         updated_at=row["updated_at"],
+    )
+
+
+def _row_to_assessor(row: sqlite3.Row) -> Assessor:
+    data = json.loads(row["data"]) if isinstance(row["data"], str) else (row["data"] or {})
+    return Assessor(
+        assessor_id=row["assessor_id"],
+        display_name=data.get("display_name", ""),
+        email=row["email"],
+        organisation=data.get("organisation", ""),
+        languages=data.get("languages", []),
+        notes=data.get("notes", ""),
+    )
+
+
+def _row_to_unit_assignment(row: sqlite3.Row) -> UnitAssessorAssignment:
+    assignment = from_json(row["data"], UnitAssessorAssignment)
+    assignment.assignment_id = row["assignment_id"]
+    assignment.cycle_id = row["cycle_id"]
+    assignment.portal_id = row["portal_id"]
+    return assignment
+
+
+def _row_to_assignment_change(row: sqlite3.Row) -> AssignmentChange:
+    changed_at = row["changed_at"]
+    if isinstance(changed_at, str):
+        try:
+            changed_at = datetime.fromisoformat(changed_at)
+        except Exception:
+            pass
+    return AssignmentChange(
+        change_id=row["change_id"],
+        cycle_id=row["cycle_id"],
+        portal_id=row["portal_id"],
+        role=row["role"],
+        previous_assessor_id=row["previous_assessor_id"],
+        new_assessor_id=row["new_assessor_id"],
+        source=row["source"],
+        changed_by_actor_id=row["changed_by_actor_id"],
+        changed_at=changed_at,
     )
 
 

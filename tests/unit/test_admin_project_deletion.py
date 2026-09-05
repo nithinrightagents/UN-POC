@@ -6,7 +6,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from portal.common import ensure_session
-from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.state.entities import (
     AnswerType,

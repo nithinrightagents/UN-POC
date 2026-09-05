@@ -18,6 +18,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from portal.assignment import resolve_actor_role
 from portal.common import ensure_session, repo_factory
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.reconciliation import (
@@ -42,13 +43,45 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
     repo = repo_factory(database_path)
 
     @router.get("/assessor", response_class=HTMLResponse)
-    def picker(request: Request):
+    def picker(request: Request, actor_id: str | None = None):
         r = repo()
-        cycles = r.list_cycles()
-        units_by_cycle = {c.cycle_id: r.list_portals(c.cycle_id) for c in cycles}
+        roster = r.list_assessors()
+        cycles_map = {c.cycle_id: c for c in r.list_cycles()}
+
+        assigned_units = []
+        if actor_id:
+            all_assignments = r.list_all_unit_assignments()
+            portals_map = {}
+            for c_id in cycles_map:
+                for p in r.list_portals(c_id):
+                    portals_map[(c_id, p.portal_id)] = p
+
+            for asmt in all_assignments:
+                if not asmt.is_staffed:
+                    continue
+                role_val = None
+                if asmt.role_a and asmt.role_a.assessor_id == actor_id:
+                    role_val = "A"
+                elif asmt.role_b and asmt.role_b.assessor_id == actor_id:
+                    role_val = "B"
+
+                if role_val:
+                    cycle = cycles_map.get(asmt.cycle_id)
+                    portal = portals_map.get((asmt.cycle_id, asmt.portal_id))
+                    if cycle and portal:
+                        assigned_units.append({
+                            "cycle": cycle,
+                            "portal": portal,
+                            "role": role_val,
+                        })
+
         return templates.TemplateResponse(
             request, "assessor_picker.html",
-            {"cycles": cycles, "units_by_cycle": units_by_cycle},
+            {
+                "roster": roster,
+                "selected_actor_id": actor_id,
+                "assigned_units": assigned_units,
+            },
         )
 
     @router.get("/assessor/{cycle_id}/{portal_id}", response_class=HTMLResponse)
@@ -56,8 +89,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         request: Request,
         cycle_id: str,
         portal_id: str,
-        role: AssessorRole,
-        actor_id: str = "assessor-1",
+        actor_id: str,
         error: str | None = None,
     ):
         r = repo()
@@ -65,17 +97,22 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         portal = r.get_portal(portal_id)
         if cycle is None or portal is None:
             return HTMLResponse("Unknown project or unit.", status_code=404)
+
+        assigned_role = resolve_actor_role(r, cycle_id, portal_id, actor_id)
+        if assigned_role is None:
+            return HTMLResponse("You are not assigned to this unit.", status_code=403)
+
         questions = r.list_questions(cycle_id)
         session_id = ensure_session(r, cycle_id)
 
         recon_state = unit_reconciliation_state(r, session_id, cycle_id, portal_id, questions, settings)
         if recon_state.state == "reconciliation_open":
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}",
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?actor_id={urllib.parse.quote(actor_id)}",
                 status_code=303,
             )
 
-        assessor_role = role
+        assessor_role = assigned_role
 
         rows = []
         answered_count = 0
@@ -102,7 +139,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
                 "cycle": cycle,
                 "portal": portal,
                 "rows": rows,
-                "role": role.value,
+                "role": assigned_role.value,
                 "actor_id": actor_id,
                 "answered_count": answered_count,
                 "total_questions": len(questions),
@@ -123,16 +160,19 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         cycle_id: str,
         portal_id: str,
         question_id: str,
-        role: AssessorRole = Form(...),
         actor_id: str = Form(...),
         answer: str = Form(...),
         evidence_url: str = Form(""),
         notes: str = Form(""),
     ):
         r = repo()
+        assigned_role = resolve_actor_role(r, cycle_id, portal_id, actor_id)
+        if assigned_role is None:
+            return HTMLResponse("You are not assigned to this unit.", status_code=403)
+
         session_id = ensure_session(r, cycle_id)
         questions = r.list_questions(cycle_id)
-        assessor_role = role
+        assessor_role = assigned_role
 
         bool_answer = answer == "true"
 
@@ -195,7 +235,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             })
 
         return RedirectResponse(
-            f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}#{target_anchor}",
+            f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}#{target_anchor}",
             status_code=303,
         )
 
@@ -203,7 +243,6 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
     def complete_unit(
         cycle_id: str,
         portal_id: str,
-        role: AssessorRole = Form(...),
         actor_id: str = Form(...),
     ):
         r = repo()
@@ -211,6 +250,12 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         portal = r.get_portal(portal_id)
         if cycle is None or portal is None:
             return HTMLResponse("Unknown project or unit.", status_code=404)
+
+        assigned_role = resolve_actor_role(r, cycle_id, portal_id, actor_id)
+        if assigned_role is None:
+            return HTMLResponse("You are not assigned to this unit.", status_code=403)
+
+        role = assigned_role
 
         questions = r.list_questions(cycle_id)
         session_id = ensure_session(r, cycle_id)
@@ -227,7 +272,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             first_q = outstanding[0]
             error_msg = f"Cannot complete assessment: {cnt} {s} outstanding ({first_q})."
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}&error={urllib.parse.quote(error_msg)}",
+                f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
                 status_code=303,
             )
 
@@ -253,7 +298,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         )
 
         return RedirectResponse(
-            f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={actor_id}",
+            f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}",
             status_code=303,
         )
 
@@ -262,8 +307,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         request: Request,
         cycle_id: str,
         portal_id: str,
-        role: AssessorRole,
-        actor_id: str = "assessor-1",
+        actor_id: str,
         error: str | None = None,
     ):
         r = repo()
@@ -271,12 +315,19 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         portal = r.get_portal(portal_id)
         if cycle is None or portal is None:
             return HTMLResponse("Unknown project or unit.", status_code=404)
+
+        assigned_role = resolve_actor_role(r, cycle_id, portal_id, actor_id)
+        if assigned_role is None:
+            return HTMLResponse("You are not assigned to this unit.", status_code=403)
+
+        role = assigned_role
+
         session_id = ensure_session(r, cycle_id)
         open_round = r.open_round_for_unit(session_id, portal_id)
         if open_round is None:
             error_msg = "No reconciliation round is currently open for this unit."
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
                 status_code=303,
             )
 
@@ -344,7 +395,6 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         cycle_id: str,
         portal_id: str,
         question_id: str,
-        role: AssessorRole = Form(...),
         actor_id: str = Form(...),
         answer: bool = Form(...),
         justification: str = Form(""),
@@ -354,12 +404,19 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         portal = r.get_portal(portal_id)
         if cycle is None or portal is None:
             return HTMLResponse("Unknown project or unit.", status_code=404)
+
+        assigned_role = resolve_actor_role(r, cycle_id, portal_id, actor_id)
+        if assigned_role is None:
+            return HTMLResponse("You are not assigned to this unit.", status_code=403)
+
+        role = assigned_role
+
         session_id = ensure_session(r, cycle_id)
         open_round = r.open_round_for_unit(session_id, portal_id)
         if open_round is None:
             error_msg = "No reconciliation round is currently open for this unit."
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
                 status_code=303,
             )
 
@@ -367,14 +424,14 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         if question_id not in disputed_ids:
             error_msg = f"Question '{question_id}' is not part of this round's disputed set."
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}",
                 status_code=303,
             )
 
         if not justification or not justification.strip():
             error_msg = "A justification is required to commit a joint answer."
             return RedirectResponse(
-                f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}#dispute-{question_id}",
+                f"/assessor/{cycle_id}/{portal_id}/reconcile?actor_id={urllib.parse.quote(actor_id)}&error={urllib.parse.quote(error_msg)}#dispute-{question_id}",
                 status_code=303,
             )
 
@@ -401,7 +458,7 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         )
 
         return RedirectResponse(
-            f"/assessor/{cycle_id}/{portal_id}/reconcile?role={role.value}&actor_id={urllib.parse.quote(actor_id)}",
+            f"/assessor/{cycle_id}/{portal_id}/reconcile?actor_id={urllib.parse.quote(actor_id)}",
             status_code=303,
         )
 
