@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 class UsabilityCheck:
     usable: bool
     reason: str | None = None
+    code: str | None = None
 
 
 # Raw data-export formats (2026-08-21: search started surfacing
@@ -29,25 +30,25 @@ _NON_PAGE_EXTENSIONS = (".csv", ".json", ".xml", ".zip", ".xls", ".xlsx", ".tsv"
 
 def check_usable(url: str | None) -> UsabilityCheck:
     if not url:
-        return UsabilityCheck(False, "no candidate URL")
+        return UsabilityCheck(False, "no candidate URL", code="invalid_url")
 
     try:
         parsed = urlparse(url)
     except Exception:  # noqa: BLE001
-        return UsabilityCheck(False, "URL could not be parsed")
+        return UsabilityCheck(False, "URL could not be parsed", code="invalid_url")
 
     if parsed.scheme not in ("http", "https"):
-        return UsabilityCheck(False, f"unsupported scheme: {parsed.scheme!r}")
+        return UsabilityCheck(False, f"unsupported scheme: {parsed.scheme!r}", code="unsupported_scheme")
 
     if not parsed.netloc:
-        return UsabilityCheck(False, "URL has no host")
+        return UsabilityCheck(False, "URL has no host", code="invalid_url")
 
     if "." not in parsed.netloc:
-        return UsabilityCheck(False, "host has no domain suffix")
+        return UsabilityCheck(False, "host has no domain suffix", code="invalid_url")
 
     path = parsed.path.lower()
     if path.endswith(_NON_PAGE_EXTENSIONS):
         ext = path.rsplit(".", 1)[-1]
-        return UsabilityCheck(False, f"URL points to a raw data file ({ext}), not a browsable page")
+        return UsabilityCheck(False, f"URL points to a raw data file ({ext}), not a browsable page", code="raw_data_file")
 
     return UsabilityCheck(True)

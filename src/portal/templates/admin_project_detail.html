@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Admin — {{ cycle.name }} | EKAP{% endblock %}
 {% block head %}
+{% if any_run_in_progress %}
+<meta http-equiv="refresh" content="5">
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -12,6 +15,13 @@
     <span>/</span>
     <span>{{ cycle.name }}</span>
 </div>
+
+{% if assess_error %}
+<div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
+    <svg class="icon" aria-hidden="true" style="width: 1.25rem; height: 1.25rem;"><use href="#icon-alert-triangle"/></svg>
+    <strong>AI Assessment Failed:</strong> {{ assess_error }}
+</div>
+{% endif %}
 
 {% if error_message %}
 <div class="alert-box alert-box--danger" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: var(--radius-sm); background-color: var(--color-danger-subtle, #fee2e2); border: 1px solid var(--color-danger, #ef4444); color: var(--color-danger-text, #991b1b);">
@@ -89,6 +99,12 @@
             </span>
             <span class="badge badge--neutral">{{ questions|length }} Indicators</span>
             <span class="badge badge--neutral">{{ units|length }} Target Units</span>
+            {% if any_run_in_progress %}
+            <span class="badge badge--flag">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                AI Assessment Run in Progress
+            </span>
+            {% endif %}
         </div>
         <h1>{{ cycle.name }}</h1>
         <p class="lead">Project Administration: manage indicators, assign target portals, ingest MSQ reference documents, and publish verified evaluations.</p>
@@ -544,12 +560,17 @@
                 {% endif %}
             </div>
             {% if row.portal.resolved_url %}
-            <p class="muted">
+            <p class="muted" style="margin-bottom: 0.25rem;">
                 Official Portal:
                 <a href="{{ row.portal.resolved_url }}" target="_blank" rel="noopener noreferrer" style="font-weight: 500; word-break: break-all;">
                     {{ row.portal.resolved_url }}
                     <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-external-link"/></svg>
                 </a>
+            </p>
+            {% else %}
+            <p style="color: var(--color-danger-text, #991b1b); font-size: 0.85rem; margin-top: 0.25rem; margin-bottom: 0.25rem;">
+                <span class="badge badge--no" style="font-size: 0.7rem;">Unset Portal URL</span>
+                <span>Official portal registration missing &mdash; poisons sitemap discovery, domain gates, and fallback.</span>
             </p>
             {% endif %}
             </div>
@@ -662,7 +683,43 @@
     </div>
 
     <!-- Status Grid -->
-    <div class="grid-2" style="margin-bottom: 1.25rem;">
+    <div class="grid-3" style="margin-bottom: 1.25rem;">
+        <!-- AI Pre-fill Status -->
+        <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+            <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">AI Assessment Run</div>
+            {% if row.run_in_progress %}
+            <span class="badge badge--flag" style="margin-top: 0.25rem;">
+                <svg class="icon" aria-hidden="true"><use href="#icon-clock"/></svg>
+                Running &mdash; {{ row.assessed_count }}/{{ row.total_questions }} processed
+            </span>
+            {% elif row.started_count == 0 %}
+            <div style="font-size: 0.875rem; color: var(--color-text-muted);">Not started yet</div>
+            {% else %}
+            <div style="font-weight: 600; font-size: 0.95rem; color: var(--color-text-primary);">
+                {{ row.assessed_count }} / {{ row.total_questions }} indicators processed
+            </div>
+            {% if row.prefill_summary %}
+            <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <span class="badge badge--yes" style="font-size: 0.7rem;">{{ row.prefill_summary.suggested_count }} Suggested</span>
+                {% if row.prefill_summary.no_suggestion_count > 0 %}
+                <span class="badge badge--neutral" style="font-size: 0.7rem;">{{ row.prefill_summary.no_suggestion_count }} No Suggestion</span>
+                {% endif %}
+                {% for r_name, r_count in row.prefill_summary.by_reason.items() %}
+                <span class="badge badge--flag" style="font-size: 0.7rem;">{{ r_count }} {{ r_name|replace('_', ' ')|title }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if row.genuinely_resolved_count or row.homepage_fallback_count %}
+            <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.35rem; display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <span class="badge badge--yes" style="font-size: 0.7rem;" title="Indicators resolved to verified deep links">{{ row.genuinely_resolved_count }} Resolved Links</span>
+                {% if row.homepage_fallback_count > 0 %}
+                <span class="badge badge--warning" style="font-size: 0.7rem; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;" title="Resolution fell back to portal homepage">{{ row.homepage_fallback_count }} Homepage Fallback</span>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
         <!-- Assessor A/B Completion Status -->
         <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
             <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">Assessor Declarations</div>
@@ -740,6 +797,13 @@
 
     <!-- Actions Toolbar -->
     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding-top: 0.75rem; border-top: 1px solid var(--color-border-subtle);">
+        <form class="inline" method="post" action="/admin/projects/{{ cycle.cycle_id }}/units/{{ row.portal.portal_id }}/assess">
+            <button type="submit" class="btn btn-sm" {% if row.run_in_progress %}disabled{% endif %}>
+                <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"/></svg>
+                <span>{% if row.run_in_progress %}AI Run Executing…{% else %}Trigger AI Assessment{% endif %}</span>
+            </button>
+        </form>
+
         {% if row.msq %}
         <span class="badge badge--yes" style="font-size: 0.75rem;" title="{{ row.msq.source_filename }}">
             <svg class="icon" aria-hidden="true" style="width: 0.85rem; height: 0.85rem;"><use href="#icon-check"/></svg>

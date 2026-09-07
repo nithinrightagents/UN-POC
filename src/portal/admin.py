@@ -19,6 +19,8 @@ from fastapi.templating import Jinja2Templates
 
 from api.finalize import final_answer_detail, publication_readiness
 from api.identity import compose_question_id
+from api.jobs import job_status, start_assessment_job
+from api.schemas import ApiError
 from portal.assignment import (
     clear_role_assignment,
     create_units,
@@ -27,7 +29,7 @@ from portal.assignment import (
 )
 from portal.common import ensure_session, repo_factory, session_id_for_cycle
 from portal.discrepancy import _compare, compute_portal_discrepancy, recompute_portal_discrepancy
-from portal.msq import ingest_msq_pdf
+from portal.msq import ingest_msq_pdf, match_msq_links
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
 from portal.tolerance import effective_tolerance
 from review.escalations import dispose_escalation, list_escalation_queue
@@ -53,8 +55,10 @@ from shared.state.entities import (
     Question,
     SurveyCycle,
     TargetPortal,
+    TERMINAL_UNIT_STATES,
     ToleranceChange,
     UnitAssessorAssignment,
+    UnitState,
     UnstaffedReason,
     new_id,
 )
@@ -103,6 +107,12 @@ def _build_unit_rows(
     question_ids = [q.question_id for q in questions]
 
     for u in units:
+        unit_states = r.list_units_for_portal(session_id, u.portal_id)
+        states_seen = {row["state"] for row in unit_states}
+        terminal = {s.value for s in TERMINAL_UNIT_STATES}
+        assessed_count = sum(1 for row in unit_states if row["state"] in terminal)
+        st = job_status(r, session_id, cycle_id, u.portal_id, questions_total=len(questions))
+
         msq = r.find_msq_document(cycle_id, u.country_id)
         publication = r.latest_publication(cycle_id, u.portal_id)
 
@@ -153,8 +163,38 @@ def _build_unit_rows(
         assessor_a = roster.get(asmt.role_a.assessor_id) if (asmt and asmt.role_a and roster) else None
         assessor_b = roster.get(asmt.role_b.assessor_id) if (asmt and asmt.role_b and roster) else None
 
+        # Genuinely resolved count vs homepage fallbacks (T019)
+        genuinely_resolved_count = 0
+        homepage_fallback_count = 0
+        for row in unit_states:
+            udata = row.get("data") or {}
+            if isinstance(udata, str):
+                import json
+                try:
+                    udata = json.loads(udata)
+                except Exception:
+                    udata = {}
+            if udata.get("resolved_via_homepage_fallback"):
+                homepage_fallback_count += 1
+            elif udata.get("resolved_url"):
+                genuinely_resolved_count += 1
+
+        portal_health = {
+            "status": "healthy" if (u.resolved_url and u.resolved_url.startswith("http")) else "unset",
+            "detail": "Registered portal URL" if u.resolved_url else "No portal URL registered",
+        }
+
         unit_rows.append({
             "portal": u,
+            "assessed_count": assessed_count,
+            "started_count": len(unit_states),
+            "total_questions": len(questions),
+            "genuinely_resolved_count": genuinely_resolved_count,
+            "homepage_fallback_count": homepage_fallback_count,
+            "portal_health": portal_health,
+            "run_in_progress": st.state == "running" or bool(states_seen - terminal),
+            "job_status": st,
+            "prefill_summary": st.summary,
             "msq": msq,
             "publication": publication,
             "discrepancy": case,
@@ -313,10 +353,11 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
     @router.get("/admin/projects/{cycle_id}", response_class=HTMLResponse)
-    def project_detail(
+    def admin_project_detail(
         request: Request,
         cycle_id: str,
         msq_error: str | None = None,
+        assess_error: str | None = None,
         tolerance_error: str | None = None,
         edit_error: str | None = None,
         custom_set_saved: str | None = None,
@@ -353,7 +394,9 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 "cycle": cycle, "questions": questions,
                 "units": unit_rows, "session_id": session_id,
                 "work_started": work_started,
+                "any_run_in_progress": any(row["run_in_progress"] for row in unit_rows),
                 "msq_error": msq_error,
+                "assess_error": assess_error,
                 "tolerance_error": tolerance_error,
                 "edit_error": edit_error,
                 "custom_set_saved": custom_set_saved,
@@ -771,9 +814,35 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
 
         return RedirectResponse(f"/admin/projects/{cycle_id}", status_code=303)
 
+    @router.post("/admin/projects/{cycle_id}/units/{portal_id}/assess")
+    async def run_assessment(request: Request, cycle_id: str, portal_id: str):
+        r = repo()
+        runtime = getattr(request.app.state, "ai_runtime", None)
+        assess_error = None
+        if runtime is None:
+            assess_error = "AI runtime is not configured on this server."
+        else:
+            try:
+                start_assessment_job(
+                    r,
+                    settings,
+                    runtime,
+                    cycle_id=cycle_id,
+                    portal_id=portal_id,
+                    triggered_by="portal",
+                    actor_id="admin",
+                )
+            except ApiError as exc:
+                assess_error = exc.message
+            except Exception as exc:
+                _log.exception("Assessment job dispatch failed: %s", exc)
+                assess_error = "Could not schedule assessment job. See server logs for details."
+        suffix = f"?assess_error={quote(assess_error)}" if assess_error else ""
+        return RedirectResponse(f"/admin/projects/{cycle_id}{suffix}", status_code=303)
+
     @router.post("/admin/projects/{cycle_id}/units/{portal_id}/msq")
     async def upload_msq_pdf(
-        cycle_id: str, portal_id: str, msq_file: UploadFile = ...
+        request: Request, cycle_id: str, portal_id: str, msq_file: UploadFile = ...
     ):
         r = repo()
         portal = r.get_portal(portal_id)
@@ -795,6 +864,20 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 msq_error = "msq_unreadable"
             else:
                 r.insert_msq_document(doc)
+                runtime = getattr(request.app.state, "ai_runtime", None)
+                if runtime and getattr(runtime, "provider", None):
+                    try:
+                        questions = r.list_questions(cycle_id)
+                        candidates = await match_msq_links(
+                            doc, questions, runtime.provider, settings.validator_model
+                        )
+                        for candidate in candidates:
+                            r.insert_msq_link_candidate(candidate)
+                    except Exception:
+                        _log.warning(
+                            "MSQ link matching failed for cycle=%s country=%s; document stored, "
+                            "no per-question candidates extracted", cycle_id, portal.country_id,
+                        )
         except Exception:
             _log.exception(
                 "MSQ ingestion failed for cycle=%s country=%s file=%s",

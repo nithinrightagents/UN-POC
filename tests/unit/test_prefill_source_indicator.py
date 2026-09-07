@@ -260,7 +260,8 @@ def test_assessor_portal_renders_source_indicators(tmp_path):
     res = client.get("/assessor/cycle-portal-test/US?actor_id=actor-a")
     assert res.status_code == 200
     html = res.text
-    assert "AI Suggested Answer" not in html
-    assert '<div class="ai-suggestion-box">' not in html
-    assert "btn-ai-fill" not in html
-    assert "Use AI Suggestion" not in html
+    assert "AI Suggested Answer" in html
+    assert '<div class="ai-suggestion-box">' in html
+    assert "btn-ai-fill" in html
+    assert "Source: Previous KB" in html
+

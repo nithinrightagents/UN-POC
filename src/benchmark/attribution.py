@@ -90,11 +90,12 @@ def attribute(
         )
 
     for item in trace.resolution_history:
+        rej_code = item.get("rejection_code")
         rej = item.get("rejection_reason")
-        if rej and _is_environment_error(rej):
+        if rej_code in ("environment_error", "timeout", "network_error") or (rej and _is_environment_error(rej)):
             return StageAttribution(
                 stage=PipelineStage.ENVIRONMENT,
-                reason=f"Environmental failure during link resolution: {rej}",
+                reason=f"Environmental failure during link resolution: {rej or rej_code}",
                 source_details=list(trace.resolution_history),
                 escalation_status="not_applicable",
             )

@@ -34,8 +34,17 @@ from shared.state.entities import (
     AssessorRole,
     HumanAssessorSubmission,
     JointAnswer,
+    LinkSource,
+    PrefillReason,
+    link_source_display_name,
     new_id,
 )
+from shared.state.reason_tags import prefill_reason_tag
+
+
+def _supplying_source_label(source: str | None) -> str | None:
+    return link_source_display_name(source)
+
 
 
 def build_assessor_router(database_path: str, settings: Settings, templates: Jinja2Templates) -> APIRouter:
@@ -118,15 +127,65 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         answered_count = 0
         outstanding_question_ids = []
         for q in questions:
+            prefill = r.latest_prefill(session_id, q.question_id, portal_id)
             mine = r.latest_human_submission(session_id, q.question_id, portal_id, assessor_role)
             if mine is not None and mine.answer is not None:
                 answered_count += 1
             else:
                 outstanding_question_ids.append(q.question_id)
 
+            prefill_dict = None
+            if prefill:
+                reason_tag_obj = None
+                if prefill.reason:
+                    try:
+                        reason_val = prefill.reason.value if hasattr(prefill.reason, "value") else str(prefill.reason)
+                        reason_tag_obj = prefill_reason_tag(reason_val)
+                    except KeyError:
+                        pass
+                resolver_reasoning = None
+                if prefill.resolver_decision:
+                    if isinstance(prefill.resolver_decision, dict):
+                        resolver_reasoning = prefill.resolver_decision.get("reasoning")
+                    elif hasattr(prefill.resolver_decision, "reasoning"):
+                        resolver_reasoning = prefill.resolver_decision.reasoning
+
+                prefill_dict = {
+                    "suggested": prefill.suggested,
+                    "answer": prefill.answer,
+                    "confidence": prefill.confidence,
+                    "justification": prefill.justification,
+                    "evidence_url": prefill.evidence_url,
+                    "supplying_source": prefill.supplying_source,
+                    "supplying_source_label": _supplying_source_label(prefill.supplying_source),
+                    "agreement_outcome": prefill.agreement_outcome,
+                    "confidence_gap": prefill.confidence_gap,
+                    "resolver_decision": prefill.resolver_decision,
+                    "resolver_reasoning": resolver_reasoning,
+                    "unselected_position": prefill.unselected_position,
+                    "reason": prefill.reason,
+                    "reason_text": reason_tag_obj.text if reason_tag_obj else None,
+                    "resolved_via_homepage_fallback": (
+                        prefill.supplying_source in ("portal_default", LinkSource.PORTAL_DEFAULT)
+                        or (prefill.reason in ("homepage_fallback", PrefillReason.HOMEPAGE_FALLBACK))
+                    ),
+                }
+
+            unit_rec = r.get_unit(session_id, q.question_id, portal_id)
+            unit_data_obj = unit_rec.get("data") if isinstance(unit_rec, dict) else getattr(unit_rec, "data", {})
+            if isinstance(unit_data_obj, str):
+                import json
+                try:
+                    unit_data_obj = json.loads(unit_data_obj)
+                except Exception:
+                    unit_data_obj = {}
+            res_obs = unit_data_obj.get("resolution_observation") if isinstance(unit_data_obj, dict) else None
+
             rows.append({
                 "question": q,
+                "ai": prefill_dict,
                 "mine": mine,
+                "resolution_observation": res_obs,
             })
 
         completion = r.latest_assessor_completion(session_id, portal_id, assessor_role.value)
@@ -174,7 +233,12 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
         questions = r.list_questions(cycle_id)
         assessor_role = assigned_role
 
+        prefill = r.latest_prefill(session_id, question_id, portal_id)
         bool_answer = answer == "true"
+        ai_suggested_answer = prefill.answer if (prefill and prefill.suggested) else None
+        ai_suggestion_accepted = (
+            bool(prefill.answer) == bool_answer if (prefill and prefill.suggested) else None
+        )
 
         r.insert_human_submission(
             HumanAssessorSubmission(
@@ -188,6 +252,8 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
                 answer=bool_answer,
                 evidence_url=evidence_url or None,
                 notes=notes or None,
+                ai_suggested_answer=ai_suggested_answer,
+                ai_suggestion_accepted=ai_suggestion_accepted,
             )
         )
 

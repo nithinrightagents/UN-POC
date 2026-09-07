@@ -672,6 +672,7 @@ def diagnose() -> None:
 @click.option("--fixture", "fixture_path", default="data/benchmark/reference_links_us.json", help="Reference links fixture path")
 @click.option("--resolve-only", is_flag=True, default=False, help="Stop after link resolution; skip assessor model calls")
 @click.option("--check-staleness", is_flag=True, default=False, help="Verify reference URLs are still live")
+@click.option("--output-json", "output_json_path", default=None, help="Save diagnostic result JSON to file path")
 @click.pass_context
 def diagnose_run_cmd(
     ctx: click.Context,
@@ -681,6 +682,7 @@ def diagnose_run_cmd(
     fixture_path: str,
     resolve_only: bool,
     check_staleness: bool,
+    output_json_path: str | None,
 ) -> None:
     """Run link resolution diagnostics over reference set and output report."""
     import asyncio
@@ -710,6 +712,16 @@ def diagnose_run_cmd(
 
     report_text = render_diagnostic_report(result)
     click.echo(report_text)
+
+    if output_json_path:
+        import json
+        row = repo.conn.execute(
+            "SELECT data FROM benchmark_run_results WHERE session_id = ?",
+            (result.session_id,),
+        ).fetchone()
+        if row:
+            with open(output_json_path, "w", encoding="utf-8") as f:
+                f.write(row["data"])
 
 
 @diagnose.command("compare")

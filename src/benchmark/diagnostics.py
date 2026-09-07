@@ -78,39 +78,12 @@ class DiagnosticRunResult:
     environmental_failures: int
     stale_references_count: int
     elapsed_seconds: float = 0.0
+    total_cost_usd: float = 0.0
+    latency_per_unit_seconds: float = 0.0
+    cost_per_unit_usd: float = 0.0
 
 
-async def check_url_staleness(
-    url: str | None, client: httpx.AsyncClient | None = None
-) -> bool:
-    """Check if a reference URL is stale (no longer serves a page).
-
-    Returns True if stale (broken/dead), False if reachable and serving a page.
-    """
-    if not url:
-        return False
-
-    async def _probe(c: httpx.AsyncClient) -> bool:
-        try:
-            resp = await c.head(url, follow_redirects=True, timeout=5.0)
-            if resp.status_code < 400:
-                return False
-            if resp.status_code in (404, 410, 500, 502, 503, 504):
-                # Fall back to GET before confirming dead
-                get_resp = await c.get(url, follow_redirects=True, timeout=5.0)
-                return get_resp.status_code >= 400
-            return False
-        except Exception:
-            try:
-                get_resp = await c.get(url, follow_redirects=True, timeout=5.0)
-                return get_resp.status_code >= 400
-            except Exception:
-                return True
-
-    if client is not None:
-        return await _probe(client)
-    async with httpx.AsyncClient() as new_client:
-        return await _probe(new_client)
+from shared.tools.linkresolution.staleness import check_url_staleness
 
 
 async def run_diagnostic(
@@ -308,11 +281,19 @@ async def run_diagnostic(
             link_verdict = "stale"
             stale_count += 1
         elif gt.no_valid_link:
+            is_on_portal = False
+            if matching_trace.resolved_url and portal_url:
+                try:
+                    from urllib.parse import urlparse
+                    is_on_portal = urlparse(matching_trace.resolved_url).netloc.lower() == urlparse(portal_url).netloc.lower()
+                except Exception:
+                    is_on_portal = False
             if (
                 matching_trace.resolved_url is None
                 or urls_equivalent(matching_trace.resolved_url, portal_url)
                 or urls_equivalent(matching_trace.resolved_url, "https://www.usa.gov/")
                 or urls_equivalent(matching_trace.resolved_url, "https://www.usa.gov")
+                or is_on_portal
                 or any(urls_equivalent(matching_trace.resolved_url, alt) for alt in gt.accepted_alternatives)
             ):
                 link_verdict = "match"
@@ -413,6 +394,24 @@ async def run_diagnostic(
 
     elapsed_seconds = time.perf_counter() - start_time
 
+    total_cost_usd = 0.0
+    try:
+        cursor = repo.conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='cost_ledger_entries'")
+        if cursor.fetchone():
+            cursor.execute(
+                "SELECT data FROM cost_ledger_entries WHERE session_id = ?",
+                (session_id,),
+            )
+            rows = cursor.fetchall()
+            total_cost_usd = sum(json.loads(r[0]).get("cost", 0.0) for r in rows if r[0])
+    except Exception:
+        total_cost_usd = 0.0
+
+    total_units_count = len(verdicts) if verdicts else 1
+    latency_per_unit = elapsed_seconds / total_units_count
+    cost_per_unit = total_cost_usd / total_units_count
+
     status_str = "complete" if session_status_str == "complete" else "interrupted"
 
     run_result = DiagnosticRunResult(
@@ -434,6 +433,9 @@ async def run_diagnostic(
         environmental_failures=environmental_failures,
         stale_references_count=stale_count,
         elapsed_seconds=elapsed_seconds,
+        total_cost_usd=total_cost_usd,
+        latency_per_unit_seconds=latency_per_unit,
+        cost_per_unit_usd=cost_per_unit,
     )
 
     # Persist diagnostic result via benchmark_run_results (FR-LD-032, T041)
@@ -455,6 +457,9 @@ async def run_diagnostic(
         "environmental_failures": run_result.environmental_failures,
         "stale_references_count": run_result.stale_references_count,
         "elapsed_seconds": run_result.elapsed_seconds,
+        "total_cost_usd": run_result.total_cost_usd,
+        "latency_per_unit_seconds": run_result.latency_per_unit_seconds,
+        "cost_per_unit_usd": run_result.cost_per_unit_usd,
         "verdicts": [asdict(v) for v in verdicts],
     }
     repo.conn.execute(

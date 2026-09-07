@@ -10,6 +10,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
+from typing import Literal
 
 
 def new_id(prefix: str) -> str:
@@ -119,6 +120,8 @@ class PrefillReason(str, Enum):
     # Delivered anyway, confidence-capped, for a human to decide -- see
     # PrefillReason.NEEDS_HUMAN_REVIEW's use in orchestration/scheduler.py.
     NEEDS_HUMAN_REVIEW = "needs_human_review"
+    HOMEPAGE_FALLBACK = "homepage_fallback"
+    NEEDS_MANUAL_LINK = "needs_manual_link"
 
 
 
@@ -286,12 +289,87 @@ class PendingIndicator:
 
 
 @dataclass
+class RejectionCode(str, Enum):
+    NOT_GOV_DOMAIN = "not_gov_domain"
+    DEAD_SHORTENER = "dead_shortener"
+    NON_CONTENT_SUBDOMAIN = "non_content_subdomain"
+    ARCHIVE_SNAPSHOT = "archive_snapshot"
+    BLOG_POST = "blog_post"
+    RAW_DATA_FILE = "raw_data_file"
+    INVALID_URL = "invalid_url"
+    UNSUPPORTED_SCHEME = "unsupported_scheme"
+    URL_STALE = "url_stale"
+    DOMAIN_BLOCKED = "domain_blocked"
+    URL_EXCLUDED = "url_excluded"
+    JUDGE_ABSTAINED = "judge_abstained"
+    NO_CANDIDATES = "no_candidates"
+    ENVIRONMENT_ERROR = "environment_error"
+    OUT_OF_LOCUS = "out_of_locus"
+    LOW_CONFIDENCE = "low_confidence"
+
+
+ResolutionStatus = Literal["resolved", "resolved_low_confidence", "homepage_fallback", "unresolved"]
+ResolutionNextAction = Literal["widen_query", "relax_domain", "retry_other_candidate", "needs_manual_link"]
+
+
+@dataclass
+class CandidateObservation:
+    url: str
+    title: str = ""
+    snippet: str = ""
+    source: str = ""
+    usable: bool = True
+    rejection_reason: str | None = None
+    rejection_code: str | None = None
+    confidence: float | None = None
+    position: int = 0
+
+    def to_dict(self) -> dict:
+        return {
+            "url": self.url,
+            "title": self.title,
+            "snippet": self.snippet,
+            "source": self.source,
+            "usable": self.usable,
+            "rejection_reason": self.rejection_reason,
+            "rejection_code": self.rejection_code,
+            "confidence": self.confidence,
+            "position": self.position,
+        }
+
+
+@dataclass
+class ResolutionObservation:
+    status: ResolutionStatus
+    summary: str
+    winner: CandidateObservation | None = None
+    candidates: list[CandidateObservation] = field(default_factory=list)
+    next_actions: list[ResolutionNextAction] = field(default_factory=list)
+    attempt_count: int = 1
+
+    def to_dict(self) -> dict:
+        return {
+            "status": self.status,
+            "summary": self.summary,
+            "winner": self.winner.to_dict() if self.winner else None,
+            "candidates": [c.to_dict() for c in self.candidates],
+            "next_actions": list(self.next_actions),
+            "attempt_count": self.attempt_count,
+        }
+
+
+@dataclass
 class ResolutionAttempt:
     source: LinkSource
     order: int
     returned: str | None
     usable: bool
     rejection_reason: str | None = None
+    rejection_code: str | None = None
+    title: str | None = None
+    snippet: str | None = None
+    position: int | None = None
+    confidence: float | None = None
 
 
 @dataclass
@@ -306,6 +384,7 @@ class TargetPortal:
     language_in_supported_set: bool | None = None
     unit_type: str = "country"  # "country" | "city" -- LOSI projects assess cities
     display_name: str | None = None
+    admissible_domain_suffixes: list[str] = field(default_factory=list)
 
 
 @dataclass

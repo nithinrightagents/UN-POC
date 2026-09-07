@@ -54,7 +54,7 @@ from shared.state.entities import (
 from shared.state.resume import remaining_work
 from shared.state.schemas import PortalInput, QuestionInput, RetryAddendum
 from shared.tools.browser import BrowserSession
-from shared.tools.linkresolution.chain import resolve_link
+from shared.tools.linkresolution.chain import build_resolution_observation, resolve_link
 from shared.tools.linkresolution.locus import evidence_permitted
 
 logger = logging.getLogger(__name__)
@@ -437,26 +437,47 @@ async def process_unit(
                             "usable": result.resolved_url is not None,
                         }
                     )
+                if getattr(result, "observation", None):
+                    unit_data["resolution_observation"] = result.observation.to_dict()
+                else:
+                    unit_data["resolution_observation"] = build_resolution_observation(
+                        result.resolved_url,
+                        result.supplying_source,
+                        result.history,
+                        attempt_count=unit_data.get("link_retry_count", 0) + 1,
+                    ).to_dict()
+
                 unit_data["resolution_history"] = unit_data.get("resolution_history", []) + [
                     {
-                        "source": a.source.value,
+                        "source": a.source.value if hasattr(a.source, "value") else str(a.source),
                         "order": a.order,
                         "returned": a.returned,
                         "usable": a.usable,
                         "rejection_reason": a.rejection_reason,
+                        "rejection_code": getattr(a, "rejection_code", None),
+                        "title": getattr(a, "title", None),
+                        "snippet": getattr(a, "snippet", None),
+                        "position": getattr(a, "position", None),
+                        "confidence": getattr(a, "confidence", None),
                     }
                     for a in result.history
                 ]
                 if result.resolved_url is None:
                     return await no_suggestion(
                         PrefillReason.NO_USABLE_EVIDENCE,
-                        {"resolution_history": unit_data["resolution_history"]},
+                        {
+                            "resolution_history": unit_data["resolution_history"],
+                            "resolution_observation": unit_data["resolution_observation"],
+                        },
                         terminal_state=UnitState.UNASSESSABLE,
                     )
                 unit_data["resolved_url"] = result.resolved_url
                 unit_data["supplying_source"] = (
                     result.supplying_source.value if result.supplying_source else None
                 )
+                unit_data["delivering_attempt_index"] = unit_data.get("link_retry_count", 0) + 1
+                if result.supplying_source == LinkSource.PORTAL_DEFAULT:
+                    unit_data["resolved_via_homepage_fallback"] = True
                 advance(UnitState.RESOLVED, unit_data)
 
             if resolve_only:
@@ -652,64 +673,78 @@ async def process_unit(
                 # search keeps surfacing new candidates -- bounded to
                 # MAX_LINK_RETRIES so a persistently-wrong search result
                 # can't retry forever.
-                MAX_LINK_RETRIES = 3
+                max_link_retries = getattr(settings, "max_link_resolution_retries", 3)
                 link_needs_retry = bool(all_runs) and all(
                     getattr(r, "portal_unreachable", False) or getattr(r, "link_likely_wrong", False)
                     for r in all_runs
                 )
                 retry_count = unit_data.get("link_retry_count", 0)
-                if link_needs_retry and retry_count < MAX_LINK_RETRIES:
-                    unit_data["link_retry_count"] = retry_count + 1
-                    excluded = set(unit_data.get("excluded_link_sources", []))
-                    dead_source = unit_data.get("supplying_source")
-                    # "search" is never excluded -- it's the fallback meant to
-                    # keep offering new candidates across retries; kb/msq
-                    # each get excluded once, on their first miss.
-                    if dead_source and dead_source != LinkSource.SEARCH.value:
-                        excluded.add(dead_source)
-                    unit_data["excluded_link_sources"] = list(excluded)
-                    tried_urls = set(unit_data.get("tried_urls", []))
-                    blocked_domains = set(unit_data.get("blocked_domains", []))
-                    if unit_data.get("resolved_url"):
-                        tried_urls.add(unit_data["resolved_url"])
-                        # T025: If every run was blocked by an HTTP error or interstitial,
-                        # record the host so chain.py skips it on the next retry instead
-                        # of hammering it three more times.
-                        _BLOCK_REASONS = ("http_4xx", "http_403", "interstitial")
-                        all_unreachable = all_runs and all(
-                            getattr(r, "portal_unreachable", False) for r in all_runs
+                if link_needs_retry:
+                    if retry_count < max_link_retries:
+                        unit_data["link_retry_count"] = retry_count + 1
+                        excluded = set(unit_data.get("excluded_link_sources", []))
+                        dead_source = unit_data.get("supplying_source")
+                        # "search" is never excluded -- it's the fallback meant to
+                        # keep offering new candidates across retries; kb/msq
+                        # each get excluded once, on their first miss.
+                        if dead_source and dead_source != LinkSource.SEARCH.value:
+                            excluded.add(dead_source)
+                        unit_data["excluded_link_sources"] = list(excluded)
+                        tried_urls = set(unit_data.get("tried_urls", []))
+                        blocked_domains = set(unit_data.get("blocked_domains", []))
+                        if unit_data.get("resolved_url"):
+                            tried_urls.add(unit_data["resolved_url"])
+                            # If every run was blocked by an HTTP error or interstitial,
+                            # record the host so chain.py skips it on the next retry instead
+                            # of hammering it three more times.
+                            all_unreachable = all_runs and all(
+                                getattr(r, "portal_unreachable", False) for r in all_runs
+                            )
+                            any_block_reason = any(
+                                (getattr(r, "unreachable_reason", None) or "").startswith(("http_4", "interstitial"))
+                                for r in all_runs
+                            )
+                            if all_unreachable and any_block_reason:
+                                from urllib.parse import urlparse as _urlparse
+                                _host = _urlparse(unit_data["resolved_url"]).netloc
+                                if _host:
+                                    blocked_domains.add(_host)
+                        unit_data["tried_urls"] = list(tried_urls)
+                        unit_data["blocked_domains"] = list(blocked_domains)
+                        unit_data["resolved_url"] = None
+                        unit_data.pop("supplying_source", None)
+                        advance(UnitState.RESOLVING_LINK, unit_data)
+                        return await process_unit(
+                            repo=repo,
+                            settings=settings,
+                            session_id=session_id,
+                            provider=provider,
+                            browser=browser,
+                            http_client=http_client,
+                            fetch_log=fetch_log,
+                            stage_log=stage_log,
+                            cost_ledger=cost_ledger,
+                            question=question,
+                            portal=portal,
+                            adjudicate_results=adjudicate_results,
+                            run_id=run_id,
+                            resolve_only=resolve_only,
+                            batch_run=batch_run,
                         )
-                        any_block_reason = any(
-                            (getattr(r, "unreachable_reason", None) or "").startswith(("http_4", "interstitial"))
-                            for r in all_runs
+                    else:
+                        # Bounded stop condition (T024): terminate with needs_manual_link
+                        if unit_data.get("resolution_observation"):
+                            unit_data["resolution_observation"]["status"] = "unresolved"
+                            unit_data["resolution_observation"]["next_actions"] = ["needs_manual_link"]
+                        return await no_suggestion(
+                            PrefillReason.NEEDS_MANUAL_LINK,
+                            {
+                                "reason": f"exhausted maximum link retries ({max_link_retries}); all candidate links were unreachable or wrong",
+                                "tried_urls": unit_data.get("tried_urls", []),
+                                "resolution_observation": unit_data.get("resolution_observation"),
+                            },
+                            terminal_state=UnitState.UNASSESSABLE,
                         )
-                        if all_unreachable and any_block_reason:
-                            from urllib.parse import urlparse as _urlparse
-                            _host = _urlparse(unit_data["resolved_url"]).netloc
-                            if _host:
-                                blocked_domains.add(_host)
-                    unit_data["tried_urls"] = list(tried_urls)
-                    unit_data["blocked_domains"] = list(blocked_domains)
-                    unit_data["resolved_url"] = None
-                    unit_data.pop("supplying_source", None)
-                    advance(UnitState.RESOLVING_LINK, unit_data)
-                    return await process_unit(
-                        repo=repo,
-                        settings=settings,
-                        session_id=session_id,
-                        provider=provider,
-                        browser=browser,
-                        http_client=http_client,
-                        fetch_log=fetch_log,
-                        stage_log=stage_log,
-                        cost_ledger=cost_ledger,
-                        question=question,
-                        portal=portal,
-                        adjudicate_results=adjudicate_results,
-                        run_id=run_id,
-                        resolve_only=resolve_only,
-                        batch_run=batch_run,
-                    )
 
                 # --- Best-effort delivery (deliver, don't discard) ------------
                 # Validation could not fully confirm any position, but if a

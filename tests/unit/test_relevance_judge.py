@@ -30,18 +30,19 @@ async def test_choose_best_picks_semantically_correct_candidate():
         {"url": "https://www.login.gov", "title": "Your Online Account and Personal Data", "snippet": "Access your personal data and profile online"},
     ]
 
-    index = await choose_best(
+    result = await choose_best(
         provider=mock_provider,
         model="gemini-2.5-flash",
         question={"title": "Personal Data Access", "what": "Can citizens access personal records online?"},
         candidates=candidates,
     )
 
-    assert index == 1
+    assert result.status == "chose"
+    assert result.index == 1
 
 
 @pytest.mark.asyncio
-async def test_choose_best_returns_none_when_no_candidate_fits():
+async def test_choose_best_returns_abstained_when_no_candidate_fits():
     mock_provider = MagicMock()
     mock_response = MagicMock()
     mock_response.text = json.dumps({"index": None})
@@ -51,11 +52,34 @@ async def test_choose_best_returns_none_when_no_candidate_fits():
         {"url": "https://www.usa.gov/weather", "title": "Weather", "snippet": "Forecasts"},
     ]
 
-    index = await choose_best(
+    result = await choose_best(
         provider=mock_provider,
         model="gemini-2.5-flash",
         question={"title": "National CIO", "what": "Name and office of the National CIO"},
         candidates=candidates,
     )
 
-    assert index is None
+    assert result.status == "abstained"
+    assert result.index is None
+
+
+@pytest.mark.asyncio
+async def test_choose_best_returns_unavailable_on_failure():
+    mock_provider = MagicMock()
+    mock_provider.generate = AsyncMock(side_effect=RuntimeError("API timeout"))
+
+    candidates = [
+        {"url": "https://www.usa.gov/weather", "title": "Weather", "snippet": "Forecasts"},
+    ]
+
+    result = await choose_best(
+        provider=mock_provider,
+        model="gemini-2.5-flash",
+        question={"title": "National CIO", "what": "Name and office of the National CIO"},
+        candidates=candidates,
+    )
+
+    assert result.status == "unavailable"
+    assert result.index is None
+    assert "API timeout" in (result.reason or "")
+

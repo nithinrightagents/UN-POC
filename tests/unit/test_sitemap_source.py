@@ -191,3 +191,32 @@ async def test_requires_a_strong_slug_match_before_returning_evidence(
         attempt = await resolve_from_sitemap(client, "https://www.usa.gov", 1, question)
 
     assert attempt.returned == expected
+
+
+_RELAXED_SHAPES = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://www.example.gov/citizens/health/vaccination</loc></url>
+  <url><loc>https://www.example.gov/en/services/tax/file</loc></url>
+</urlset>
+"""
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_relaxed_slug_matching_accepts_nested_and_locale_paths() -> None:
+    """T015: Match anywhere in path without requiring head-word match."""
+    async with _client({"https://www.example.gov/sitemap.xml": (200, _RELAXED_SHAPES)}) as client:
+        # /citizens/health/vaccination matches health & vaccination despite 'citizens' at head
+        attempt1 = await resolve_from_sitemap(
+            client, "https://www.example.gov", 1, "Childhood health vaccination services"
+        )
+        assert attempt1.usable is True
+        assert attempt1.returned == "https://www.example.gov/citizens/health/vaccination"
+
+        # /en/services/tax/file matches tax & file
+        attempt2 = await resolve_from_sitemap(
+            client, "https://www.example.gov", 1, "File income tax online"
+        )
+        assert attempt2.usable is True
+        assert attempt2.returned == "https://www.example.gov/en/services/tax/file"
+

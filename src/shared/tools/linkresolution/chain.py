@@ -20,8 +20,16 @@ import httpx
 from shared.config.settings import Settings
 from shared.persistence.repositories import Repository
 from shared.ratelimit.token_bucket import RateLimiter
-from shared.state.entities import LinkSource, ResolutionAttempt
+from shared.state.entities import (
+    CandidateObservation,
+    LinkSource,
+    ResolutionAttempt,
+    ResolutionNextAction,
+    ResolutionObservation,
+    ResolutionStatus,
+)
 from shared.tools.linkresolution.admissibility import check_admissible
+from shared.tools.linkresolution.staleness import check_url_staleness
 from shared.tools.linkresolution.relevance import choose_best
 from shared.tools.linkresolution.sources.msq import resolve_from_msq
 from shared.tools.linkresolution.sources.prior_survey_kb import resolve_from_prior_survey_kb
@@ -39,6 +47,81 @@ class ChainResolutionResult:
     resolved_url: str | None
     supplying_source: LinkSource | None
     history: list[ResolutionAttempt]
+    observation: ResolutionObservation | None = None
+
+
+def build_resolution_observation(
+    resolved_url: str | None,
+    supplying_source: LinkSource | None,
+    history: list[ResolutionAttempt],
+    attempt_count: int = 1,
+    confidence: float | None = None,
+) -> ResolutionObservation:
+    candidates: list[CandidateObservation] = []
+    winner: CandidateObservation | None = None
+
+    for a in history:
+        cand = CandidateObservation(
+            url=a.returned or "",
+            title=a.title or "",
+            snippet=a.snippet or "",
+            source=a.source.value if hasattr(a.source, "value") else str(a.source),
+            usable=a.usable,
+            rejection_reason=a.rejection_reason,
+            rejection_code=a.rejection_code,
+            confidence=a.confidence,
+            position=a.position or 0,
+        )
+        if a.returned:
+            candidates.append(cand)
+        if a.usable and a.returned == resolved_url and not winner:
+            winner = cand
+
+    if supplying_source == LinkSource.PORTAL_DEFAULT:
+        status: ResolutionStatus = "homepage_fallback"
+        summary = f"Fell back to portal homepage ({resolved_url}); no deep link could be resolved."
+        next_actions: list[ResolutionNextAction] = ["widen_query", "needs_manual_link"]
+    elif resolved_url is not None:
+        if confidence is not None and confidence < 0.60:
+            status = "resolved_low_confidence"
+            summary = f"Resolved to {resolved_url} via {supplying_source.value if supplying_source else 'unknown'} with low confidence ({confidence:.2f})."
+            next_actions = ["retry_other_candidate", "needs_manual_link"]
+        else:
+            status = "resolved"
+            conf_str = f" ({confidence:.2f})" if confidence is not None else ""
+            summary = f"Resolved to {resolved_url} via {supplying_source.value if supplying_source else 'unknown'}{conf_str}."
+            next_actions = []
+    else:
+        status = "unresolved"
+        summary = "No usable evidence URL resolved across configured sources."
+        next_actions = ["widen_query", "relax_domain", "needs_manual_link"]
+
+    return ResolutionObservation(
+        status=status,
+        summary=summary,
+        winner=winner,
+        candidates=candidates,
+        next_actions=next_actions,
+        attempt_count=attempt_count,
+    )
+
+
+def _make_result(
+    resolved_url: str | None,
+    supplying_source: LinkSource | None,
+    history: list[ResolutionAttempt],
+    attempt_count: int = 1,
+    confidence: float | None = None,
+) -> ChainResolutionResult:
+    obs = build_resolution_observation(
+        resolved_url, supplying_source, history, attempt_count=attempt_count, confidence=confidence
+    )
+    return ChainResolutionResult(
+        resolved_url=resolved_url,
+        supplying_source=supplying_source,
+        history=history,
+        observation=obs,
+    )
 
 
 async def resolve_link(
@@ -77,12 +160,10 @@ async def resolve_link(
     `portal_url` provides the target portal's registered base URL as an anchor/fallback
     when no specialized deep-link could be resolved.
 
-    `restrict_domain` (2026-08-21 goal: strict-first-try / relaxed-retry
-    resolution for any_government_domain questions -- national_portal_only
-    questions stay portal-restricted at every round via the caller always
-    passing it) scopes the sitemap to the portal domain. In Step 1 (T005-T007),
-    the sitemap runs portal-scoped while search runs unrestricted; choose_best()
-    then adjudicates between both winners with portal as tie-break.
+    `restrict_domain` scopes link candidate filtering when explicitly provided.
+    In the standard chain, the sitemap source runs portal-scoped while search
+    runs unrestricted across official government domains; choose_best()
+    then adjudicates between both candidate winners with portal as tie-break.
 
     `widened_query` is the phrasing to use once the search leaves the
     portal behind; it falls back to `search_query`.
@@ -106,11 +187,89 @@ async def resolve_link(
                 continue
             order += 1
             attempt = resolve_from_prior_survey_kb(repo, question_id, country_id, order)
+            if attempt.usable and attempt.returned:
+                adm = check_admissible(attempt.returned)
+                if not adm.admissible:
+                    attempt = ResolutionAttempt(
+                        source=attempt.source,
+                        order=attempt.order,
+                        returned=attempt.returned,
+                        usable=False,
+                        rejection_reason=adm.reason,
+                    )
+                else:
+                    is_stale = False
+                    if http_client is not None:
+                        is_stale = await check_url_staleness(attempt.returned, http_client)
+                    if is_stale:
+                        attempt = ResolutionAttempt(
+                            source=attempt.source,
+                            order=attempt.order,
+                            returned=attempt.returned,
+                            usable=False,
+                            rejection_reason=f"stale or unreachable prior URL ({attempt.returned})",
+                        )
+                    elif provider is not None:
+                        judge_res = await choose_best(
+                            provider=provider,
+                            model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
+                            question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                            candidates=[{"url": attempt.returned, "title": attempt.title or relevance_text or search_query, "snippet": ""}],
+                        )
+                        if judge_res.status == "abstained":
+                            attempt = ResolutionAttempt(
+                                source=attempt.source,
+                                order=attempt.order,
+                                returned=attempt.returned,
+                                usable=False,
+                                rejection_reason="no candidate judged relevant by semantic judge",
+                            )
+                        elif judge_res.status == "chose":
+                            attempt.confidence = judge_res.confidence
         elif source_name == "msq":
             if not settings.msq_link_source_enabled:
                 continue
             order += 1
             attempt = resolve_from_msq(repo, question_id, country_id, order)
+            if attempt.usable and attempt.returned:
+                adm = check_admissible(attempt.returned)
+                if not adm.admissible:
+                    attempt = ResolutionAttempt(
+                        source=attempt.source,
+                        order=attempt.order,
+                        returned=attempt.returned,
+                        usable=False,
+                        rejection_reason=adm.reason,
+                    )
+                else:
+                    is_stale = False
+                    if http_client is not None:
+                        is_stale = await check_url_staleness(attempt.returned, http_client)
+                    if is_stale:
+                        attempt = ResolutionAttempt(
+                            source=attempt.source,
+                            order=attempt.order,
+                            returned=attempt.returned,
+                            usable=False,
+                            rejection_reason=f"stale or unreachable MSQ URL ({attempt.returned})",
+                        )
+                    elif provider is not None:
+                        judge_res = await choose_best(
+                            provider=provider,
+                            model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
+                            question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                            candidates=[{"url": attempt.returned, "title": attempt.title or relevance_text or search_query, "snippet": ""}],
+                        )
+                        if judge_res.status == "abstained":
+                            attempt = ResolutionAttempt(
+                                source=attempt.source,
+                                order=attempt.order,
+                                returned=attempt.returned,
+                                usable=False,
+                                rejection_reason="no candidate judged relevant by semantic judge",
+                            )
+                        elif judge_res.status == "chose":
+                            attempt.confidence = judge_res.confidence
         elif source_name == "search":
             # T005 / T006 / T007: Run sitemap (portal-scoped) and search (unrestricted),
             # then adjudicate between the two winners using choose_best() with portal as tie-break.
@@ -152,6 +311,7 @@ async def resolve_link(
                 portal_url=portal_url,
                 exclude_urls=exclude_urls,
                 firecrawl_api_key=getattr(settings, "firecrawl_api_key", None),
+                serper_api_key=getattr(settings, "serper_api_key", None),
                 restrict_domain=None,  # T007: search runs unrestricted
                 relevance_text=relevance_text,
                 relevance_detail=relevance_detail,
@@ -175,24 +335,35 @@ async def resolve_link(
 
             if sitemap_ok and search_ok:
                 if sitemap_attempt.returned == search_attempt.returned:
-                    return ChainResolutionResult(
+                    return _make_result(
                         resolved_url=sitemap_attempt.returned,
                         supplying_source=sitemap_attempt.source,
                         history=history,
                     )
 
                 candidates = [
-                    {"url": sitemap_attempt.returned, "title": relevance_text or search_query, "snippet": ""},
-                    {"url": search_attempt.returned, "title": relevance_text or search_query, "snippet": ""},
+                    {
+                        "url": sitemap_attempt.returned,
+                        "title": sitemap_attempt.title or (relevance_text or search_query),
+                        "snippet": sitemap_attempt.snippet or "",
+                    },
+                    {
+                        "url": search_attempt.returned,
+                        "title": search_attempt.title or (relevance_text or search_query),
+                        "snippet": search_attempt.snippet or "",
+                    },
                 ]
                 chosen_idx = None
+                judge_confidence = None
                 if provider is not None:
-                    chosen_idx = await choose_best(
+                    judge_res = await choose_best(
                         provider=provider,
                         model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
                         question={"title": relevance_text or search_query, "what": relevance_detail or ""},
                         candidates=candidates,
                     )
+                    chosen_idx = judge_res.index if hasattr(judge_res, "index") else judge_res
+                    judge_confidence = getattr(judge_res, "confidence", None)
 
                 # Tie-break: portal/sitemap wins unless judge explicitly chose search (index 1)
                 if chosen_idx == 1:
@@ -200,24 +371,27 @@ async def resolve_link(
                 else:
                     winning_attempt = sitemap_attempt
 
-                return ChainResolutionResult(
+                return _make_result(
                     resolved_url=winning_attempt.returned,
                     supplying_source=winning_attempt.source,
                     history=history,
+                    confidence=judge_confidence or winning_attempt.confidence,
                 )
 
             elif sitemap_ok:
-                return ChainResolutionResult(
+                return _make_result(
                     resolved_url=sitemap_attempt.returned,
                     supplying_source=sitemap_attempt.source,
                     history=history,
+                    confidence=sitemap_attempt.confidence,
                 )
 
             elif search_ok:
-                return ChainResolutionResult(
+                return _make_result(
                     resolved_url=search_attempt.returned,
                     supplying_source=search_attempt.source,
                     history=history,
+                    confidence=search_attempt.confidence,
                 )
 
             continue
@@ -231,6 +405,7 @@ async def resolve_link(
             attempt = ResolutionAttempt(
                 source=attempt.source, order=attempt.order, returned=attempt.returned,
                 usable=False, rejection_reason=admissibility.reason,
+                rejection_code=admissibility.code or "inadmissible",
             )
 
         # Defense in depth for non-search sources (msq, prior_survey_kb)
@@ -244,13 +419,17 @@ async def resolve_link(
                     f"resolved outside the required domain ({restrict_domain}) for "
                     "this attempt"
                 ),
+                rejection_code="outside_domain",
             )
 
         history.append(attempt)
 
         if attempt.usable:
-            return ChainResolutionResult(
-                resolved_url=attempt.returned, supplying_source=attempt.source, history=history
+            return _make_result(
+                resolved_url=attempt.returned,
+                supplying_source=attempt.source,
+                history=history,
+                confidence=attempt.confidence,
             )
 
     # Fallback to portal base URL if registered and usable on a government domain
@@ -265,11 +444,11 @@ async def resolve_link(
                 usable=True,
             )
             history.append(fallback_attempt)
-            return ChainResolutionResult(
+            return _make_result(
                 resolved_url=portal_url,
                 supplying_source=LinkSource.PORTAL_DEFAULT,
                 history=history,
             )
 
     # FR-007: no source in the chain yielded a usable URL.
-    return ChainResolutionResult(resolved_url=None, supplying_source=None, history=history)
+    return _make_result(resolved_url=None, supplying_source=None, history=history)

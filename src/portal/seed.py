@@ -82,16 +82,23 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
     session_national = ensure_session(repo, cycle_national.cycle_id)
     ensure_session(repo, cycle_losi.cycle_id)
 
+    from shared.reference.domains import resolve_admissible_domain_suffixes
+
     national_portals = []
     new_national = []
     for code, name, url in _NATIONAL_UNITS:
         portal = repo.get_portal_by_country(cycle_national.cycle_id, code)
+        suffixes = sorted(resolve_admissible_domain_suffixes(country_id=code, unit_type="country"))
         if portal is None:
             portal = TargetPortal(
                 portal_id=new_id("portal"), cycle_id=cycle_national.cycle_id, country_id=code,
                 resolved_url=url, unit_type="country", display_name=name,
+                admissible_domain_suffixes=suffixes,
             )
             new_national.append(portal)
+        elif not portal.admissible_domain_suffixes:
+            portal.admissible_domain_suffixes = suffixes
+            repo.update_portal(portal)
         national_portals.append(portal)
     if new_national:
         create_units(repo, cycle_national.cycle_id, new_national)
@@ -100,15 +107,21 @@ async def seed_demo_data(repo: Repository, settings: Settings) -> dict:
     new_losi = []
     for code, name, url in _LOSI_UNITS:
         portal = repo.get_portal_by_country(cycle_losi.cycle_id, code)
+        suffixes = sorted(resolve_admissible_domain_suffixes(country_id=code, unit_type="city"))
         if portal is None:
             portal = TargetPortal(
                 portal_id=new_id("portal"), cycle_id=cycle_losi.cycle_id, country_id=code,
                 resolved_url=url, unit_type="city", display_name=name,
+                admissible_domain_suffixes=suffixes,
             )
             new_losi.append(portal)
+        elif not portal.admissible_domain_suffixes:
+            portal.admissible_domain_suffixes = suffixes
+            repo.update_portal(portal)
         losi_portals.append(portal)
     if new_losi:
         create_units(repo, cycle_losi.cycle_id, new_losi)
+
 
 
     if _DENMARK_MSQ_PATH.exists():
@@ -221,14 +234,20 @@ def _seed_human_pair(
     questions: list[Question], disagree_on: set[str],
 ) -> None:
     for q in questions:
-        answer_a = True
-        answer_b = False if q.indicator_id in disagree_on else True
+        prefill = repo.latest_prefill(session_id, q.question_id, portal_id)
+        ai_answer = bool(prefill.answer) if (prefill and prefill.suggested) else True
+
+        answer_a = ai_answer
+        answer_b = (not ai_answer) if q.indicator_id in disagree_on else ai_answer
 
         repo.insert_human_submission(
             HumanAssessorSubmission(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal_id, role=AssessorRole.A,
                 assessor_actor_id="demo-assessor-a", answer=answer_a,
+                evidence_url=prefill.evidence_url if prefill else None,
+                ai_suggested_answer=prefill.answer if (prefill and prefill.suggested) else None,
+                ai_suggestion_accepted=(answer_a == prefill.answer) if (prefill and prefill.suggested) else None,
             )
         )
         repo.insert_human_submission(
@@ -236,6 +255,9 @@ def _seed_human_pair(
                 submission_id=new_id("hsub"), session_id=session_id, cycle_id=cycle_id,
                 question_id=q.question_id, portal_id=portal_id, role=AssessorRole.B,
                 assessor_actor_id="demo-assessor-b", answer=answer_b,
+                evidence_url=prefill.evidence_url if prefill else None,
+                ai_suggested_answer=prefill.answer if (prefill and prefill.suggested) else None,
+                ai_suggestion_accepted=(answer_b == prefill.answer) if (prefill and prefill.suggested) else None,
             )
         )
 

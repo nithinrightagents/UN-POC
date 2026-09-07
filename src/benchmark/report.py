@@ -32,6 +32,9 @@ def render_diagnostic_report(result: DiagnosticRunResult) -> str:
     lines.append(f"Execution Mode:     {'Resolution-Only' if result.resolve_only else 'End-to-End'}")
     lines.append(f"Status:             {result.status.upper()}")
     lines.append(f"Elapsed Time:       {format_elapsed_time(result.elapsed_seconds)}")
+    lines.append(f"Latency / Unit:     {result.latency_per_unit_seconds:.2f}s")
+    lines.append(f"Total Cost:         ${result.total_cost_usd:.4f}")
+    lines.append(f"Cost / Unit:        ${result.cost_per_unit_usd:.4f}")
     lines.append("-" * 80)
 
     if result.status == "interrupted":
@@ -97,6 +100,9 @@ def render_diagnostic_report(result: DiagnosticRunResult) -> str:
     lines.append("SUMMARY TOTALS")
     lines.append("=" * 80)
     lines.append(f"Total Indicators Evaluated:       {result.total_indicators}")
+    lines.append(f"Total Cost (USD):                 ${result.total_cost_usd:.4f}")
+    lines.append(f"Cost per Unit (USD):              ${result.cost_per_unit_usd:.4f}")
+    lines.append(f"Latency per Unit:                 {result.latency_per_unit_seconds:.2f}s")
     lines.append("")
 
     auth_total = result.authoritative_matches + result.authoritative_misses + result.authoritative_divergent_plausible

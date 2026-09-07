@@ -51,6 +51,7 @@ class Settings:
     # assessor_agent_count=2 agents still both run; this controls how many must survive
     # validation, not how many run. 1 means one validated position is sufficient.
     min_validated_positions: int = 1
+    max_link_resolution_retries: int = 3  # Maximum attempts for link re-resolution when runs flag URL wrong/unreachable (T024)
 
     # --- Confidence acceptance gate ---
     confidence_acceptance_threshold: int = 60  # lowered from 75: a well-evidenced answer the model honestly scores 60-74 now proceeds (T021)
@@ -123,6 +124,7 @@ class Settings:
 
     # --- Search / Firecrawl ---
     firecrawl_api_key: str = ""
+    serper_api_key: str = ""
 
     @property
     def resolution_order(self) -> list[str]:
@@ -200,6 +202,7 @@ _ENV_MAP = {
     "prefill_confidence_gap_tolerance": ("AIQ_PREFILL_CONFIDENCE_GAP_TOLERANCE", int),
     "prefill_run_budget": ("AIQ_PREFILL_RUN_BUDGET", float),
     "firecrawl_api_key": ("FIRECRAWL_API_KEY", str),
+    "serper_api_key": ("SERPER_API_KEY", str),
 }
 
 

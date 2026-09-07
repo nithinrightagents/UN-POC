@@ -99,6 +99,31 @@ class DiagnosticComparisonReport:
     unchanged: list[IndicatorDelta]
     has_regression: bool
     summary: str
+    authoritative_matches_a: int = 0
+    authoritative_matches_b: int = 0
+    authoritative_matches_delta: int = 0
+
+
+def _load_run_payload(session_or_path: str, repo: Repository) -> dict:
+    import json
+    import os
+    from pathlib import Path
+
+    p = Path(session_or_path)
+    if p.exists() and p.is_file():
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    row = repo.conn.execute(
+        "SELECT data FROM benchmark_run_results WHERE session_id = ? ORDER BY created_at DESC LIMIT 1",
+        (session_or_path,),
+    ).fetchone()
+    if row:
+        return json.loads(row["data"])
+
+    raise ValueError(
+        f"Diagnostic run results not found for {session_or_path!r} in database or filesystem"
+    )
 
 
 def compare_diagnostic_runs(
@@ -107,27 +132,15 @@ def compare_diagnostic_runs(
     session_id_b: str,
 ) -> DiagnosticComparisonReport:
     """Compare two diagnostic runs and report per-indicator regressions and improvements (FR-LD-033)."""
-    import json
-
-    row_a = repo.conn.execute(
-        "SELECT data FROM benchmark_run_results WHERE session_id = ? ORDER BY created_at DESC LIMIT 1",
-        (session_id_a,),
-    ).fetchone()
-    row_b = repo.conn.execute(
-        "SELECT data FROM benchmark_run_results WHERE session_id = ? ORDER BY created_at DESC LIMIT 1",
-        (session_id_b,),
-    ).fetchone()
-
-    if not row_a or not row_b:
-        raise ValueError(
-            f"Diagnostic run results not found for sessions {session_id_a!r} and/or {session_id_b!r}"
-        )
-
-    data_a = json.loads(row_a["data"])
-    data_b = json.loads(row_b["data"])
+    data_a = _load_run_payload(session_id_a, repo)
+    data_b = _load_run_payload(session_id_b, repo)
 
     verdicts_a = {v["question_id"]: v for v in data_a.get("verdicts", [])}
     verdicts_b = {v["question_id"]: v for v in data_b.get("verdicts", [])}
+
+    auth_a = data_a.get("authoritative_matches", 0)
+    auth_b = data_b.get("authoritative_matches", 0)
+    auth_delta = auth_b - auth_a
 
     all_qids = sorted(set(verdicts_a.keys()) | set(verdicts_b.keys()))
 
@@ -178,11 +191,14 @@ def compare_diagnostic_runs(
         else:
             unchanged.append(delta)
 
-    has_reg = len(regressions) > 0
+    has_reg = len(regressions) > 0 or auth_delta < 0
     lines = [
         f"DIAGNOSTIC RUN COMPARISON: {session_id_a} -> {session_id_b}",
+        f"Authoritative Matches: {auth_a} -> {auth_b} ({auth_delta:+d})",
         f"Regressions: {len(regressions)} | Improvements: {len(improvements)} | Unchanged/Stable: {len(unchanged)}",
     ]
+    if auth_delta < 0:
+        lines.append(f"\n⚠️  REGRESSION: Authoritative matches dropped by {abs(auth_delta)} ({auth_a} -> {auth_b})")
     if regressions:
         lines.append("\nREGRESSIONS DETECTED:")
         for r in regressions:
@@ -207,4 +223,7 @@ def compare_diagnostic_runs(
         unchanged=unchanged,
         has_regression=has_reg,
         summary=summary_txt,
+        authoritative_matches_a=auth_a,
+        authoritative_matches_b=auth_b,
+        authoritative_matches_delta=auth_delta,
     )

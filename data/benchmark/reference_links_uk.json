@@ -1,0 +1,296 @@
+{
+  "benchmark_set_id": "bm-reference-links-uk",
+  "name": "UK / LOSI Link Resolution Reference Set",
+  "description": "Curated reference links for UK local/city portals (London, Manchester, Edinburgh) under the LOSI survey cycle.",
+  "country_id": "GB",
+  "entries": [
+    {
+      "question_id": "IF-010",
+      "indicator_id": "#010",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/governance-and-spending/how-we-work",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/who-we-are/governance-and-spending/how-we-work/gla-structure",
+        "https://www.london.gov.uk"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "London GLA governance and organizational structure"
+    },
+    {
+      "question_id": "IF-011",
+      "indicator_id": "#011",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/mayoral-team",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/who-we-are/mayor-london",
+        "https://www.london.gov.uk/people/mayoral"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "London Mayoral leadership and heads of department"
+    },
+    {
+      "question_id": "IF-014",
+      "indicator_id": "#014",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/privacy-policy",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/about-us/governance-and-spending/privacy-policy",
+        "https://www.london.gov.uk/privacy"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Greater London Authority privacy statement"
+    },
+    {
+      "question_id": "IF-338",
+      "indicator_id": "#338",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/governance-and-spending/sharing-our-information/data-protection",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/about-us/governance-and-spending/data-protection"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "GLA personal data protection and UK GDPR policies"
+    },
+    {
+      "question_id": "IF-339",
+      "indicator_id": "#339",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/governance-and-spending/sharing-our-information/freedom-information",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/about-us/governance-and-spending/sharing-our-information/freedom-information"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "GLA Freedom of Information rights and procedure"
+    },
+    {
+      "question_id": "CP-028",
+      "indicator_id": "#028",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/governance-and-spending/doing-business-us",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/about-us/governance-and-spending/doing-business-us"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "GLA procurement announcements and tendering"
+    },
+    {
+      "question_id": "CP-030",
+      "indicator_id": "#030",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/who-we-are/governance-and-spending/sharing-our-information/contracts-register",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/about-us/governance-and-spending/sharing-our-information/contracts-register"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "London contracts register and procurement awards"
+    },
+    {
+      "question_id": "CP-129",
+      "indicator_id": "#129",
+      "country_id": "LON",
+      "expected_answer": true,
+      "reference_url": "https://www.london.gov.uk/programmes-strategies/communities-and-social-justice/young-people",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.london.gov.uk/what-we-do/communities-and-social-justice/young-people"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Youth employment and skills development programs in London"
+    },
+    {
+      "question_id": "CP-150",
+      "indicator_id": "#150",
+      "country_id": "MCR",
+      "expected_answer": true,
+      "reference_url": "https://www.manchester.gov.uk/info/200048/health_and_wellbeing/6716/adult_social_care",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.manchester.gov.uk/adultsocialcare"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Manchester City Council adult social care and long-term care support"
+    },
+    {
+      "question_id": "SP-029",
+      "indicator_id": "#029",
+      "country_id": "MCR",
+      "expected_answer": true,
+      "reference_url": "https://www.manchester.gov.uk/info/200039/tenders_and_contracts",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.manchester.gov.uk/info/200039/tenders_and_contracts/7257/contracts_register"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Manchester e-procurement and contracts portal"
+    },
+    {
+      "question_id": "SP-043",
+      "indicator_id": "#043",
+      "country_id": "MCR",
+      "expected_answer": true,
+      "reference_url": "https://www.manchester.gov.uk/counciltax",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.manchester.gov.uk/info/200028/council_tax"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Manchester City Council local tax payment and management"
+    },
+    {
+      "question_id": "SP-046",
+      "indicator_id": "#046",
+      "country_id": "MCR",
+      "expected_answer": true,
+      "reference_url": "https://www.manchester.gov.uk/info/200072/parking_tickets_and_permits",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.manchester.gov.uk/parking"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Manchester parking permits and vehicle management"
+    },
+    {
+      "question_id": "CP-117",
+      "indicator_id": "#117",
+      "country_id": "MCR",
+      "expected_answer": true,
+      "reference_url": "https://www.manchester.gov.uk/info/500180/benefits_and_support/6377/free_school_meals_and_help_with_school_clothing",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.manchester.gov.uk/benefits"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Manchester educational grants and financial assistance"
+    },
+    {
+      "question_id": "IF-012",
+      "indicator_id": "#012",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/councillors-committees",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/council"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "City of Edinburgh Council committees and municipal entities"
+    },
+    {
+      "question_id": "IF-342",
+      "indicator_id": "#342",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/council-planning-performance/digital-strategy",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/business-economy/digital-infrastructure"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "City of Edinburgh Digital and e-Government Strategy"
+    },
+    {
+      "question_id": "IF-340",
+      "indicator_id": "#340",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/privacy",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/information-governance"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Edinburgh information governance and cybersecurity policy"
+    },
+    {
+      "question_id": "IF-341",
+      "indicator_id": "#341",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/open-data",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/council-planning-performance/open-data"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Edinburgh Open Government Data initiative"
+    },
+    {
+      "question_id": "CP-015",
+      "indicator_id": "#015",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/accessibility",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/interpretation-translation"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Edinburgh accessibility and language interpretation support"
+    },
+    {
+      "question_id": "SP-047",
+      "indicator_id": "#047",
+      "country_id": "EDI",
+      "expected_answer": true,
+      "reference_url": "https://www.edinburgh.gov.uk/anti-social-behaviour",
+      "no_valid_link": false,
+      "accepted_alternatives": [
+        "https://www.edinburgh.gov.uk/contact-us"
+      ],
+      "confidence": "authoritative",
+      "verified_on": "2026-09-07",
+      "origin": "LOSI UK 2025 portal structure & live web validation",
+      "note": "Edinburgh community safety and incident reporting"
+    }
+  ]
+}

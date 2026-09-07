@@ -50,9 +50,12 @@ class Candidate:
     title: str = ""
     snippet: str = ""
     position: int = 0
+    rejection_reason: str | None = None
+    rejection_code: str | None = None
 
 
 DDG_SEARCH_URL = "https://html.duckduckgo.com/html/"
+TARGET_CANDIDATE_POOL_SIZE: int = 5
 
 # Deliberately conservative: only TLD/second-level *labels* widely recognized
 # as government-restricted namespaces. A production build would source this
@@ -81,7 +84,13 @@ def is_subdomain_of(candidate_domain: str, portal_domain: str) -> bool:
     return candidate_domain == portal_domain or candidate_domain.endswith("." + portal_domain)
 
 
-def is_government_domain(url: str, country_id: str | None = None) -> bool:
+from shared.reference.domains import resolve_admissible_domain_suffixes
+
+
+def is_government_domain(
+    url: str,
+    country_or_suffixes: str | set[str] | list[str] | TargetPortal | None = None,
+) -> bool:
     """Without a target country, falls back to the original label-only
     check. With one, a gov-pattern label alone is not enough: a domain
     carrying "gov" as a label but hosted on a DIFFERENT country's TLD (a
@@ -107,13 +116,18 @@ def is_government_domain(url: str, country_id: str | None = None) -> bool:
         return False
 
     has_gov_label = any(label in _GOV_LABELS for label in labels)
-    if country_id is None:
+    if country_or_suffixes is None:
         return has_gov_label
 
-    cctld = country_id.lower()
-    if cctld == "us":
+    suffixes = resolve_admissible_domain_suffixes(country_or_suffixes)
+    if not suffixes:
+        return has_gov_label
+
+    if "gov" in suffixes or "mil" in suffixes:
         return labels[-1] in {"gov", "mil"}
-    return labels[-1] == cctld
+
+    return labels[-1] in suffixes
+
 
 
 def _unwrap_ddg_redirect(href: str) -> str:
@@ -304,6 +318,45 @@ async def _fetch_firecrawl_links(
         return [], f"firecrawl search failed: {exc}"
 
 
+async def _fetch_serper_links(
+    client: httpx.AsyncClient, api_key: str, query: str, max_results: int = 10
+) -> tuple[list[Candidate], str | None]:
+    """Fetches Google search results via Serper.dev's /search API.
+
+    Same three fields as Firecrawl (`title`, `snippet`/description, `url`) on
+    every organic result, at a fraction of the cost -- 2026-09-06 addition,
+    run as the primary stage ahead of Firecrawl so the common case (a live
+    key, a query that returns something) never touches the pricier API at
+    all; Firecrawl stays reachable as a second independent search provider
+    if Serper comes back empty or errors.
+    """
+    if not api_key:
+        return [], "no serper api key"
+    try:
+        resp = await client.post(
+            "https://google.serper.dev/search",
+            headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
+            json={"q": query, "num": max_results},
+            timeout=10.0,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        items = data.get("organic", [])
+        candidates = [
+            Candidate(
+                url=item["link"],
+                title=item.get("title") or "",
+                snippet=item.get("snippet") or "",
+                position=item.get("position") or position,
+            )
+            for position, item in enumerate(items, start=1)
+            if item.get("link")
+        ]
+        return candidates, None
+    except Exception as exc:  # noqa: BLE001
+        return [], f"serper search failed: {exc}"
+
+
 def _query_variants(query: str, restrict_domain: str | None) -> list[str]:
     """Query text to try, best-first.
 
@@ -335,6 +388,7 @@ async def search_for_link(
     portal_url: str | None = None,
     exclude_urls: set[str] | None = None,
     firecrawl_api_key: str | None = None,
+    serper_api_key: str | None = None,
     restrict_domain: str | None = None,
     relevance_text: str | None = None,
     relevance_detail: str | None = None,
@@ -344,12 +398,14 @@ async def search_for_link(
     non-government top result is not "returned but rejected", it is never
     surfaced as a candidate in the first place.
 
-    Resilient search: Tries Firecrawl search if API key configured.
-    Falls back to DDG, Bing search, and LLM-assisted official portal discovery.
-    Each stage pools its candidates, scores every acceptable one for
-    relevance to the question, and returns the best -- so one irrelevant
-    top result no longer decides the answer, and an empty-handed stage no
-    longer prevents the stages below it from running.
+    Resilient search: Tries Serper.dev search first if configured (2026-09-06
+    -- same title/snippet/url fields as Firecrawl at a fraction of the
+    per-query cost), then Firecrawl if that key is set, then falls back to
+    DDG, Bing search, and LLM-assisted official portal discovery. Each stage
+    pools its candidates, scores every acceptable one for relevance to the
+    question, and returns the best -- so one irrelevant top result no
+    longer decides the answer, and an empty-handed stage no longer prevents
+    the stages below it from running.
 
     `exclude_urls` (2026-08-20 goal: retry with a different candidate when
     the assessor agent flags the previously-tried link as wrong) skips any
@@ -359,11 +415,11 @@ async def search_for_link(
     remaining candidate; the caller drives the "try up to N links" loop by
     re-invoking with the growing exclude set.
 
-    `restrict_domain` (2026-08-21 goal: strict-first-try / relaxed-retry
-    resolution) narrows candidate acceptance to that domain and its
-    subdomains, on top of the government-TLD check -- used to force the
-    first resolution attempt onto the target national portal itself, while
-    later retry attempts pass this as None to allow any government domain.
+    `restrict_domain` optionally narrows candidate acceptance to that domain and
+    its subdomains, on top of the government-TLD check. In the standard resolution
+    chain, sitemap handles portal-scoped link discovery while search runs
+    unrestricted across official government domains and adjudicates candidate
+    winners against sitemap via relevance ranking.
 
     `relevance_text` is the question's own wording, used for ranking. It is
     separate from `query` because the query may carry search operators and
@@ -379,107 +435,138 @@ async def search_for_link(
     excluded = {u for u in (exclude_urls or set())}
     blocked = {b.lower() for b in (blocked_domains or set())}
     rejections: list[str] = []
+    rejection_codes: list[str] = []
     seen: set[str] = set()
 
-    def _acceptable(candidate: Candidate) -> str | None:
-        """None when admissible, else the reason it was rejected."""
+    def _acceptable(candidate: Candidate) -> tuple[str | None, str | None]:
+        """None, None when admissible, else (reason, code)."""
         if not is_government_domain(candidate.url, country_id):
-            return "not on a government domain"
+            return ("not on a government domain", "not_gov_domain")
         cand_host = _domain(candidate.url).lower()
         if blocked and (cand_host in blocked or any(cand_host.endswith("." + b) for b in blocked)):
-            return f"on a blocked host ({cand_host})"
+            return (f"on a blocked host ({cand_host})", "domain_blocked")
         if restrict_domain and not is_subdomain_of(cand_host, restrict_domain):
-            return f"outside the required domain ({restrict_domain})"
+            return (f"outside the required domain ({restrict_domain})", "outside_domain")
         verdict = check_admissible(candidate.url)
-        return None if verdict.admissible else verdict.reason
+        return (None, None) if verdict.admissible else (verdict.reason, verdict.code or "inadmissible")
 
-    async def _best(candidates: list[Candidate]) -> Candidate | None:
-        """Highest-scoring acceptable candidate, judged semantically by model, falling back deterministically."""
-        keep: list[Candidate] = []
-        for candidate in candidates:
-            if candidate.url in excluded or candidate.url in seen:
+    candidate_pool: list[Candidate] = []
+
+    def _add_candidates(raw_candidates: list[Candidate]) -> None:
+        for candidate in raw_candidates:
+            if candidate.url in seen:
                 continue
             seen.add(candidate.url)
-            reason = _acceptable(candidate)
+            if candidate.url in excluded:
+                candidate.rejection_reason = "excluded URL"
+                candidate.rejection_code = "url_excluded"
+                continue
+            reason, code = _acceptable(candidate)
             if reason is None:
-                keep.append(candidate)
+                candidate_pool.append(candidate)
             else:
+                candidate.rejection_reason = reason
+                candidate.rejection_code = code
                 rejections.append(f"{candidate.url}: {reason}")
-        if not keep:
-            return None
+                if code:
+                    rejection_codes.append(code)
 
-        # T040/T041: Semantic relevance judge with deterministic fallback
-        if provider is not None and model:
-            try:
-                chosen_idx = await choose_best(
-                    provider=provider,
-                    model=model,
-                    question={"title": relevance_text or query, "what": relevance_detail or ""},
-                    candidates=keep,
-                )
-                if chosen_idx is not None:
-                    return keep[chosen_idx]
-                rejections.append("no candidate judged relevant by semantic judge")
-                return None
-            except Exception:
-                return keep[0]
-
-        # T041: Fallback when no provider is configured
-        return keep[0]
-
-    def _hit(candidate: Candidate) -> ResolutionAttempt:
+    def _hit(candidate: Candidate, confidence: float | None = None) -> ResolutionAttempt:
         return ResolutionAttempt(
-            source=LinkSource.SEARCH, order=order, returned=candidate.url, usable=True
+            source=LinkSource.SEARCH,
+            order=order,
+            returned=candidate.url,
+            usable=True,
+            title=candidate.title,
+            snippet=candidate.snippet,
+            position=candidate.position,
+            confidence=confidence,
         )
 
-    # 1. Primary: Firecrawl search (if API key available).
-    if firecrawl_api_key:
+    # 1. Primary: Serper.dev search (if API key available).
+    if serper_api_key:
+        for variant in _query_variants(query, restrict_domain):
+            sp_candidates, sp_error = await _fetch_serper_links(
+                client, serper_api_key, variant, max_results
+            )
+            if sp_error is not None:
+                last_error = sp_error
+                break
+            _add_candidates(sp_candidates)
+            if len(candidate_pool) >= TARGET_CANDIDATE_POOL_SIZE:
+                break
+
+    # 2. Secondary: Firecrawl search (if API key available and pool needs more).
+    if firecrawl_api_key and len(candidate_pool) < TARGET_CANDIDATE_POOL_SIZE:
         for variant in _query_variants(query, restrict_domain):
             fc_candidates, fc_error = await _fetch_firecrawl_links(
                 client, firecrawl_api_key, variant, max_results
             )
             if fc_error is not None:
                 last_error = fc_error
-                break  # a request-level failure will not fix itself on a reworded query
-            best = await _best(fc_candidates)
-            if best is not None:
-                return _hit(best)
+                break
+            _add_candidates(fc_candidates)
+            if len(candidate_pool) >= TARGET_CANDIDATE_POOL_SIZE:
+                break
 
-    # 2. Secondary: DuckDuckGo HTML search.
-    ddg_query = _query_variants(query, restrict_domain)[0]
-    for attempt in range(max_attempts):
-        candidates, error = await _fetch_ddg_links(client, ddg_query, max_results)
-        if error is None:
-            best = await _best(candidates)
-            if best is not None:
-                return _hit(best)
-            break  # DDG answered; a second identical request returns the same page
+    # 3. Tertiary: DuckDuckGo HTML search.
+    if len(candidate_pool) < TARGET_CANDIDATE_POOL_SIZE:
+        ddg_query = _query_variants(query, restrict_domain)[0]
+        for attempt in range(max_attempts):
+            candidates, error = await _fetch_ddg_links(client, ddg_query, max_results)
+            if error is None:
+                _add_candidates(candidates)
+                break
+            last_error = error
+            if attempt < max_attempts - 1:
+                await asyncio.sleep(_backoff_delay(retry_delay_seconds, attempt))
 
-        last_error = error
-        if attempt < max_attempts - 1:
-            await asyncio.sleep(_backoff_delay(retry_delay_seconds, attempt))
-
-    # 3. Tertiary: LLM-assisted official deep link resolver (if provider available).
-    if provider is not None and model:
+    # 4. Quaternary: LLM-assisted official deep link resolver.
+    if provider is not None and model and len(candidate_pool) < TARGET_CANDIDATE_POOL_SIZE:
         llm_link = await _resolve_via_llm(
             provider, model, relevance_text or query, country_id, portal_url=portal_url
         )
         if llm_link:
-            best = await _best([Candidate(url=llm_link, title=relevance_text or query)])
-            if best is not None:
-                return _hit(best)
+            _add_candidates([Candidate(url=llm_link, title=relevance_text or query, position=0)])
 
-    # 4. Quaternary: Bing HTML search fallback.
-    bing_candidates, bing_error = await _fetch_bing_links(client, ddg_query, max_results)
-    if bing_error is not None:
-        last_error = last_error or bing_error
-    best = await _best(bing_candidates)
-    if best is not None:
-        return _hit(best)
+    # 5. Quinary: Bing HTML search fallback.
+    if len(candidate_pool) < TARGET_CANDIDATE_POOL_SIZE:
+        ddg_query = _query_variants(query, restrict_domain)[0]
+        bing_candidates, bing_error = await _fetch_bing_links(client, ddg_query, max_results)
+        if bing_error is not None:
+            last_error = last_error or bing_error
+        _add_candidates(bing_candidates)
 
-    # Report what was actually seen and discarded, not just "no results" --
-    # the two failure modes need different fixes and were indistinguishable
-    # in the run logs before this.
+    # Union candidate pool adjudication (T013, T014)
+    if candidate_pool:
+        if provider is not None and model:
+            judge_res = await choose_best(
+                provider=provider,
+                model=model,
+                question={"title": relevance_text or query, "what": relevance_detail or ""},
+                candidates=candidate_pool,
+            )
+            if judge_res.status == "chose" and judge_res.index is not None:
+                winner = candidate_pool[judge_res.index]
+                for idx, c in enumerate(candidate_pool):
+                    if idx != judge_res.index and not c.rejection_reason:
+                        c.rejection_reason = "ranked below winning candidate by relevance judge"
+                        c.rejection_code = "judge_unselected"
+                return _hit(winner, confidence=judge_res.confidence)
+            if judge_res.status == "unavailable":
+                rejections.append(
+                    f"relevance judge unavailable, fell back to engine order: {judge_res.reason or 'unknown error'}"
+                )
+                return _hit(candidate_pool[0], confidence=None)
+            # Explicitly abstained (index is null)
+            rejections.append("no candidate judged relevant by semantic judge")
+            rejection_codes.append("judge_abstained")
+        else:
+            # Fallback when no provider is configured
+            return _hit(candidate_pool[0], confidence=1.0)
+
+    # Report what was actually seen and discarded
+    primary_code = rejection_codes[0] if rejection_codes else "no_candidates"
     if rejections:
         reason = "no admissible government-domain result among the top candidates: " + "; ".join(
             rejections[:5]
@@ -493,4 +580,5 @@ async def search_for_link(
         returned=None,
         usable=False,
         rejection_reason=reason,
+        rejection_code=primary_code,
     )

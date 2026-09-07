@@ -55,6 +55,8 @@ PREFILL_REASON_TAGS: dict[PrefillReason, str] = {
     PrefillReason.ASSESSMENT_FAILURE: "No suggestion: assessment execution failed",
     PrefillReason.BUDGET_REACHED: "No suggestion: the run's budget was reached before this indicator",
     PrefillReason.NEEDS_HUMAN_REVIEW: "Needs review: a resolved link and a confident answer exist, but validation could not fully confirm it",
+    PrefillReason.HOMEPAGE_FALLBACK: "No suggestion: defaulted to portal root because no deep link could be resolved",
+    PrefillReason.NEEDS_MANUAL_LINK: "No suggestion: maximum link resolution retries reached without finding valid evidence URL",
 }
 
 

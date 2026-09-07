@@ -153,16 +153,6 @@ def _match_slug(url: str, terms: set[str], discriminating_terms: set[str]) -> tu
     if not slug_words:
         return False, 0.0
 
-    head_word = slug_words[0]
-
-    # Stems/plurals check for head word
-    head_matched = any(
-        head_word == t or head_word.rstrip("s") == t.rstrip("s")
-        for t in terms
-    )
-    if not head_matched:
-        return False, 0.0
-
     matched = set()
     for sw in slug_words:
         for t in terms:
@@ -175,8 +165,8 @@ def _match_slug(url: str, terms: set[str], discriminating_terms: set[str]) -> tu
 
     slug_coverage = len(matched) / max(len(slug_words), 1)
 
-    # Strong match requires either matching >= 2 terms or 100% slug coverage
-    if len(matched) >= 2 or slug_coverage >= 0.9:
+    # Strong match requires either matching >= 2 terms or high slug coverage (e.g. single-word slug)
+    if len(matched) >= 2 or slug_coverage >= 0.8:
         score = len(matched) * 2.0 + slug_coverage
         return True, score
 
@@ -239,6 +229,16 @@ async def resolve_from_sitemap(
             rejection_reason=f"no page among {len(urls)} sitemap URLs matched the question's terms",
         )
 
+    best_slug_words = _extract_slug_words(best_url)
+    inferred_title = " ".join(best_slug_words).title() if best_slug_words else "Sitemap Page"
+
     return ResolutionAttempt(
-        source=LinkSource.SITEMAP, order=order, returned=best_url, usable=True
+        source=LinkSource.SITEMAP,
+        order=order,
+        returned=best_url,
+        usable=True,
+        title=inferred_title,
+        snippet=f"Matched sitemap page for: {relevance_text}",
+        position=0,
     )
+

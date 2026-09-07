@@ -16,6 +16,7 @@ from shared.tools.linkresolution.usability import check_usable
 class AdmissibilityCheck:
     admissible: bool
     reason: str | None = None
+    code: str | None = None
 
 
 # Subdomains that serve machinery rather than citizen-facing content.
@@ -47,12 +48,13 @@ def is_site_root(url: str) -> bool:
 def check_admissible(url: str | None) -> AdmissibilityCheck:
     """Page-KIND admissibility, layered on top of `check_usable()`."""
     if not url:
-        return AdmissibilityCheck(False, check_usable(url).reason)
+        u_chk = check_usable(url)
+        return AdmissibilityCheck(False, u_chk.reason, code=u_chk.code)
 
     host = _host(url)
     if host in _DEAD_SHORTENER_HOSTS:
         return AdmissibilityCheck(
-            False, f"{host} is a retired URL shortener, not a content page"
+            False, f"{host} is a retired URL shortener, not a content page", code="dead_shortener"
         )
 
     labels = host.split(".")
@@ -60,17 +62,23 @@ def check_admissible(url: str | None) -> AdmissibilityCheck:
     if non_content:
         label = sorted(non_content)[0]
         return AdmissibilityCheck(
-            False, f"{label!r} subdomain serves data/assets, not browsable content"
+            False, f"{label!r} subdomain serves data/assets, not browsable content", code="non_content_subdomain"
         )
 
     # Frozen web archives and historical snapshots (e.g. 19january2021snapshot.epa.gov).
     if any("snapshot" in part or "archive" in part for part in labels):
         return AdmissibilityCheck(
-            False, f"{host} is a frozen archive/snapshot, not live content"
+            False, f"{host} is a frozen archive/snapshot, not live content", code="archive_snapshot"
+        )
+
+    path_segments = [p for p in _path(url).split("/") if p]
+    if any(seg in {"blog", "blogs"} for seg in path_segments):
+        return AdmissibilityCheck(
+            False, f"{url} is an editorial blog post, not an admissible evidence page", code="blog_post"
         )
 
     usability = check_usable(url)
     if not usability.usable:
-        return AdmissibilityCheck(False, usability.reason)
+        return AdmissibilityCheck(False, usability.reason, code=usability.code)
 
     return AdmissibilityCheck(True)
