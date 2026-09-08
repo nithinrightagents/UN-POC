@@ -468,7 +468,61 @@ CREATE TABLE IF NOT EXISTS assignment_changes (
 
 CREATE INDEX IF NOT EXISTS idx_assignment_changes_unit
     ON assignment_changes(cycle_id, portal_id, changed_at);
+
+-- Labelling Passes (spec 017): append-only, one row per unit once both completions are declared.
+-- idx_labelling_pass_once is a load-bearing once-only guarantee rather than an optimisation.
+CREATE TABLE IF NOT EXISTS labelling_passes (
+    pass_id     TEXT PRIMARY KEY,
+    session_id  TEXT NOT NULL,
+    portal_id   TEXT NOT NULL,
+    cycle_id    TEXT NOT NULL,
+    data        TEXT NOT NULL,   -- disputed_question_ids, compared_count, dispatched_by, model_configured
+    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_labelling_pass_once
+    ON labelling_passes(session_id, portal_id);
+
+CREATE INDEX IF NOT EXISTS idx_labelling_pass_cycle
+    ON labelling_passes(cycle_id, created_at);
+
+-- Disagreement Labels (spec 017): append-only audit record per dispute.
+-- idx_disagreement_label_once is a load-bearing once-only guarantee rather than an optimisation.
+-- label is a real column, not a JSON field, because every aggregate in the feature groups by it.
+CREATE TABLE IF NOT EXISTS disagreement_labels (
+    label_id     TEXT PRIMARY KEY,
+    pass_id      TEXT NOT NULL,
+    session_id   TEXT NOT NULL,
+    portal_id    TEXT NOT NULL,
+    question_id  TEXT NOT NULL,
+    label        TEXT NOT NULL,   -- DisagreementLabel enum value
+    data         TEXT NOT NULL,   -- provenance + per-side observations
+    created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_disagreement_label_once
+    ON disagreement_labels(pass_id, question_id);
+
+CREATE INDEX IF NOT EXISTS idx_disagreement_label_unit
+    ON disagreement_labels(session_id, portal_id);
+
+CREATE INDEX IF NOT EXISTS idx_disagreement_label_question
+    ON disagreement_labels(question_id, label);
+
+-- Labelling Attempts (spec 017): append-only, one row per failure.
+CREATE TABLE IF NOT EXISTS labelling_attempts (
+    attempt_id   TEXT PRIMARY KEY,
+    pass_id      TEXT NOT NULL,
+    question_id  TEXT NOT NULL,
+    failure      TEXT NOT NULL,   -- 'provider_error' | 'invalid_response' | 'schema_rejected'
+    data         TEXT NOT NULL,   -- error class, truncated detail; never the raw prompt
+    created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_labelling_attempt_dispute
+    ON labelling_attempts(pass_id, question_id);
 """
+
 
 
 def connect(database_path: str) -> sqlite3.Connection:

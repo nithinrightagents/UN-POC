@@ -917,3 +917,93 @@ class AssignmentChange:
     changed_at: datetime = field(default_factory=utcnow)
 
 
+# --- Disagreement Labelling (spec 017) -----------------------------------
+
+
+class DisagreementLabel(str, Enum):
+    """How two assessor positions relate. Never a verdict on which is correct."""
+    DIFFERENT_SOURCES = "different_sources"
+    ONE_FOUND_NOTHING = "one_found_nothing"
+    ONE_BLOCKED = "one_blocked"
+    DIFFERENT_CONTENT = "different_content"
+    DIFFERENT_JUDGEMENT = "different_judgement"
+    NOT_ENOUGH_NOTES = "not_enough_notes"
+
+
+class SideObservation(str, Enum):
+    """An observation about one submission, attributed to that side only."""
+    NOTES_CONTRADICT_ANSWER = "notes_contradict_answer"
+    ACCEPTED_AI_UNCHANGED = "accepted_ai_unchanged"
+    NO_NOTES = "no_notes"
+
+
+DETERMINISTIC_LABELS = frozenset({
+    DisagreementLabel.DIFFERENT_SOURCES,
+    DisagreementLabel.ONE_FOUND_NOTHING,
+})
+
+CLASSIFIER_LABELS = frozenset({
+    DisagreementLabel.ONE_BLOCKED,
+    DisagreementLabel.DIFFERENT_CONTENT,
+    DisagreementLabel.DIFFERENT_JUDGEMENT,
+    DisagreementLabel.NOT_ENOUGH_NOTES,
+})
+
+DISAGREEMENT_LABEL_BADGES: dict[DisagreementLabel, str] = {
+    DisagreementLabel.DIFFERENT_SOURCES: "Used different sources",
+    DisagreementLabel.ONE_FOUND_NOTHING: "One found nothing",
+    DisagreementLabel.ONE_BLOCKED: "One couldn't access",
+    DisagreementLabel.DIFFERENT_CONTENT: "Saw different things",
+    DisagreementLabel.DIFFERENT_JUDGEMENT: "Judged differently",
+    DisagreementLabel.NOT_ENOUGH_NOTES: "Not enough notes",
+}
+
+SIDE_OBSERVATION_BADGES: dict[SideObservation, str] = {
+    SideObservation.NOTES_CONTRADICT_ANSWER: "Notes contradict answer",
+    SideObservation.ACCEPTED_AI_UNCHANGED: "Accepted AI unchanged",
+    SideObservation.NO_NOTES: "No notes",
+}
+
+
+@dataclass
+class LabellingPass:
+    pass_id: str
+    session_id: str
+    cycle_id: str
+    portal_id: str
+    disputed_question_ids: list[str]
+    compared_count: int
+    dispatched_by: str  # 'portal' | 'api' | 'cli'
+    created_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class DisagreementLabelRecord:
+    label_id: str
+    pass_id: str
+    session_id: str
+    portal_id: str
+    question_id: str
+    label: DisagreementLabel
+    established_by: str  # 'deterministic' | 'classifier'
+    input_digest: str
+    stated_reason: str
+    observations: dict[str, list[SideObservation]]
+    submission_ids: dict[str, str]
+    interval_seconds: int | None = None
+    model_identity: str | None = None
+    prompt_version: str | None = None
+    created_at: datetime = field(default_factory=utcnow)
+
+
+@dataclass
+class LabellingAttempt:
+    attempt_id: str
+    pass_id: str
+    question_id: str
+    failure: str  # 'provider_error' | 'invalid_response' | 'schema_rejected'
+    detail: str = ""
+    created_at: datetime = field(default_factory=utcnow)
+
+
+

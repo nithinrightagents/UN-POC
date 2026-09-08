@@ -17,6 +17,7 @@ from api.routers.cycles import build_cycles_router
 from api.routers.discrepancy import build_discrepancy_router
 from api.routers.export import build_export_router
 from api.routers.human import build_human_router
+from api.routers.labels import build_labels_router
 from api.routers.msq import build_msq_router
 from api.routers.prefills import build_prefills_router
 from api.routers.publication import build_publication_router
@@ -54,6 +55,7 @@ def build_api_router(
     router.include_router(build_verify_router(database_path, settings))
     router.include_router(build_benchmarks_router(database_path, settings))
     router.include_router(build_system_router(database_path, settings))
+    router.include_router(build_labels_router(database_path, settings))
 
     return router
 

@@ -78,6 +78,13 @@ class Settings:
     # transcript-specified trigger is explicitly ">5%" (spec 005 Section 3.4).
     human_discrepancy_rate_threshold: float = 0.05
 
+    # --- Disagreement Labelling (spec 017) ---
+    # Disabling labelling suppresses dispatch only. Existing labels stay readable,
+    # because a stored label is history and does not depend on the feature being switched on.
+    disagreement_labelling_enabled: bool = True
+    disagreement_label_model: str = "gemini-2.5-flash-lite"
+    disagreement_label_temperature: float = 0.0
+
     # --- Link resolution ---
     kb_link_source_enabled: bool = True
     msq_link_source_enabled: bool = True
@@ -184,6 +191,9 @@ _ENV_MAP = {
         "AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD",
         float,
     ),
+    "disagreement_labelling_enabled": ("AIQ_DISAGREEMENT_LABELLING_ENABLED", _bool),
+    "disagreement_label_model": ("AIQ_DISAGREEMENT_LABEL_MODEL", str),
+    "disagreement_label_temperature": ("AIQ_DISAGREEMENT_LABEL_TEMPERATURE", float),
     "kb_link_source_enabled": ("AIQ_KB_LINK_SOURCE_ENABLED", _bool),
     "msq_link_source_enabled": ("AIQ_MSQ_LINK_SOURCE_ENABLED", _bool),
     "url_resolution_mode": ("AIQ_URL_RESOLUTION_MODE", str),

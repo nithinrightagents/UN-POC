@@ -128,9 +128,42 @@
         </div>
         {% for d in details %}
         <div style="background-color: #ffffff; border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
-            <div style="font-weight: 700; margin-bottom: 0.5rem;">
-                {{ d.question.indicator_id if d.question and d.question.indicator_id else d.question_id }}
-                {% if d.question %} — {{ d.question.title or d.question.text }}{% endif %}
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <div style="font-weight: 700;">
+                    {{ d.question.indicator_id if d.question and d.question.indicator_id else d.question_id }}
+                    {% if d.question %} — {{ d.question.title or d.question.text }}{% endif %}
+                </div>
+                {% if d.label_state and d.label_state.badge %}
+                <div style="text-align: right;">
+                    <span class="badge badge--disagreement-label" data-labelling-state="{{ d.label_state.state }}" style="font-size: 0.8rem; font-weight: normal; background-color: var(--color-bg-surface-subtle); color: var(--color-text-primary); border: 1px solid var(--color-border-subtle);">
+                        {{ d.label_state.badge }}
+                    </span>
+                    {% if d.label_state.stale %}
+                    <span class="muted" style="font-size: 0.75rem; margin-left: 0.5rem; color: var(--color-text-muted);">
+                        (submission has changed since labelling)
+                    </span>
+                    {% endif %}
+                    {% if d.label_state.record %}
+                    <details style="margin-top: 0.25rem; font-size: 0.75rem;">
+                        <summary style="cursor: pointer; color: var(--color-brand-primary);">Provenance</summary>
+                        <div style="text-align: left; background: var(--color-bg-surface-subtle); padding: 0.35rem 0.5rem; border-radius: var(--radius-xs); margin-top: 0.25rem; border: 1px solid var(--color-border-subtle); font-family: monospace;">
+                            <div><strong>Established by:</strong> {{ d.label_state.record.established_by }}</div>
+                            {% if d.label_state.record.model_identity %}
+                            <div><strong>Model:</strong> {{ d.label_state.record.model_identity }}</div>
+                            <div><strong>Prompt version:</strong> {{ d.label_state.record.prompt_version }}</div>
+                            {% else %}
+                            <div><strong>Model:</strong> established without a model</div>
+                            {% endif %}
+                            <div><strong>Digest:</strong> {{ d.label_state.record.input_digest[:16] }}...</div>
+                            <div><strong>Time:</strong> {{ d.label_state.record.created_at }}</div>
+                            {% if d.label_state.record.stated_reason %}
+                            <div><strong>Reason:</strong> {{ d.label_state.record.stated_reason }}</div>
+                            {% endif %}
+                        </div>
+                    </details>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                 <div>
@@ -142,6 +175,19 @@
                     {% else %}
                     <span class="muted">No answer submitted</span>
                     {% endif %}
+                    {% if d.label_state and d.label_state.observations and d.label_state.observations.get('A') %}
+                    <div style="margin-top: 0.35rem;">
+                        {% for obs in d.label_state.observations.get('A') %}
+                        {% set obs_val = obs.value if obs.value is defined else obs %}
+                        <span class="badge" style="font-size: 0.75rem; font-weight: normal; background-color: var(--color-bg-surface-subtle); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); margin-right: 0.25rem;">
+                            {% if obs_val == 'notes_contradict_answer' %}notes contradict answer
+                            {% elif obs_val == 'accepted_ai_unchanged' %}accepted ai unchanged
+                            {% elif obs_val == 'no_notes' %}no notes
+                            {% else %}{{ obs_val }}{% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
                 <div>
                     <div class="muted" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Assessor B</div>
@@ -151,6 +197,19 @@
                     {% if d.sub_b.evidence_url %}<a href="{{ d.sub_b.evidence_url }}" target="_blank" rel="noopener" style="font-size: 0.8rem; word-break: break-all;">{{ d.sub_b.evidence_url }}</a>{% endif %}
                     {% else %}
                     <span class="muted">No answer submitted</span>
+                    {% endif %}
+                    {% if d.label_state and d.label_state.observations and d.label_state.observations.get('B') %}
+                    <div style="margin-top: 0.35rem;">
+                        {% for obs in d.label_state.observations.get('B') %}
+                        {% set obs_val = obs.value if obs.value is defined else obs %}
+                        <span class="badge" style="font-size: 0.75rem; font-weight: normal; background-color: var(--color-bg-surface-subtle); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); margin-right: 0.25rem;">
+                            {% if obs_val == 'notes_contradict_answer' %}notes contradict answer
+                            {% elif obs_val == 'accepted_ai_unchanged' %}accepted ai unchanged
+                            {% elif obs_val == 'no_notes' %}no notes
+                            {% else %}{{ obs_val }}{% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
                     {% endif %}
                 </div>
             </div>

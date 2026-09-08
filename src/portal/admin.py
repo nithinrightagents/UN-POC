@@ -28,6 +28,7 @@ from portal.assignment import (
     staffing_summary,
 )
 from portal.common import ensure_session, repo_factory, session_id_for_cycle
+from portal.disagreement_labels import indicator_ambiguity, unit_label_composition, unit_labelling_state
 from portal.discrepancy import _compare, compute_portal_discrepancy, recompute_portal_discrepancy
 from portal.msq import ingest_msq_pdf, match_msq_links
 from portal.reconciliation import open_reviewer_round, render_badge, unit_reconciliation_state
@@ -202,6 +203,7 @@ def _build_unit_rows(
             "badge_html": render_badge(recon_state),
             "readiness": readiness,
             "disputes_detail": disputes_detail,
+            "label_composition": unit_label_composition(r, session_id, u.portal_id),
             "assignment": asmt,
             "staffing": staffing,
             "assessor_a": assessor_a,
@@ -1027,6 +1029,7 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
             qids = v.item.context.get("disagreements") or []
             if not qids:
                 continue
+            labelling_states = unit_labelling_state(r, session_id, v.item.portal_id)
             submissions = r.list_human_submissions(session_id, v.item.portal_id)
             subs_by_role_qid = {(sub.role, sub.question_id): sub for sub in submissions}
             details = []
@@ -1034,11 +1037,13 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 q = questions_by_id.get(qid)
                 sub_a = subs_by_role_qid.get((AssessorRole.A, qid))
                 sub_b = subs_by_role_qid.get((AssessorRole.B, qid))
+                label_state = labelling_states.get(qid)
                 details.append({
                     "question_id": qid,
                     "question": q,
                     "sub_a": sub_a,
                     "sub_b": sub_b,
+                    "label_state": label_state,
                 })
             disputed_details_by_item[v.item.item_id] = details
 
@@ -1130,5 +1135,36 @@ def build_admin_router(database_path: str, settings: Settings, templates: Jinja2
                 )
 
         return RedirectResponse(f"/admin/projects/{cycle_id}/escalations", status_code=303)
+
+    @router.get("/admin/projects/{cycle_id}/ambiguity", response_class=HTMLResponse)
+    def project_ambiguity_page(request: Request, cycle_id: str):
+        r = repo()
+        cycle = r.get_cycle(cycle_id)
+        if cycle is None:
+            return HTMLResponse("Unknown project.", status_code=404)
+        report = indicator_ambiguity(r, cycle_id=cycle_id)
+        return templates.TemplateResponse(
+            request, "admin_indicator_ambiguity.html",
+            {
+                "cycle": cycle,
+                "rows": report,
+                "insufficient_notes_share": report.insufficient_notes_share,
+            },
+        )
+
+    @router.get("/admin/indicators/ambiguity", response_class=HTMLResponse)
+    def cross_project_ambiguity_page(request: Request):
+        # FR-DL-067: Scope distinction between Senior Reviewer (per-project) and Administrator
+        # (cross-project) is presentational only; no permission boundary prevents access to the unfiltered route.
+        r = repo()
+        report = indicator_ambiguity(r, cycle_id=None)
+        return templates.TemplateResponse(
+            request, "admin_indicator_ambiguity.html",
+            {
+                "cycle": None,
+                "rows": report,
+                "insufficient_notes_share": report.insufficient_notes_share,
+            },
+        )
 
     return router

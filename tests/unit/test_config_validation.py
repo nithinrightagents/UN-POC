@@ -31,3 +31,17 @@ def test_human_discrepancy_rate_threshold_invalid_values_rejected():
     # 1.01 must be rejected
     with pytest.raises(ConfigurationError, match="AIQ_HUMAN_DISCREPANCY_RATE_THRESHOLD"):
         validate_settings(Settings(human_discrepancy_rate_threshold=1.01, **_REQUIRED))
+
+
+def test_disagreement_label_temperature_validation():
+    # 0.0 and 2.0 are valid boundary values
+    validate_settings(Settings(disagreement_label_temperature=0.0, **_REQUIRED))
+    validate_settings(Settings(disagreement_label_temperature=1.0, **_REQUIRED))
+    validate_settings(Settings(disagreement_label_temperature=2.0, **_REQUIRED))
+
+    with pytest.raises(ConfigurationError, match="AIQ_DISAGREEMENT_LABEL_TEMPERATURE"):
+        validate_settings(Settings(disagreement_label_temperature=-0.1, **_REQUIRED))
+
+    with pytest.raises(ConfigurationError, match="AIQ_DISAGREEMENT_LABEL_TEMPERATURE"):
+        validate_settings(Settings(disagreement_label_temperature=2.1, **_REQUIRED))
+

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, status
+import logging
+
+from fastapi import APIRouter, BackgroundTasks, Depends, Request, status
 
 from api.deps import make_repo_dependency
 from api.finalize import publication_readiness
@@ -18,6 +20,7 @@ from api.schemas import (
 )
 from portal.assignment import resolve_actor_role
 from portal.common import ensure_session
+from portal.disagreement_labels import dispatch_labelling_pass, run_labelling_pass
 from portal.discrepancy import recompute_portal_discrepancy
 from portal.tolerance import effective_tolerance
 from shared.config.settings import Settings
@@ -26,6 +29,8 @@ from shared.state.entities import (
     AssessorCompletion,
     new_id,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def build_completions_router(
@@ -40,6 +45,8 @@ def build_completions_router(
         status_code=status.HTTP_201_CREATED,
     )
     def declare_completion(
+        request: Request,
+        background: BackgroundTasks,
         cycle_id: str,
         portal_id: str,
         body: CompletionCreateRequest,
@@ -71,35 +78,40 @@ def build_completions_router(
                 details={"assigned_role": assigned_role.value, "requested_role": body.role},
             )
 
-        role_enum = assigned_role
+        # Idempotency check: if this actor already completed for this unit, return it
+        existing = repo.latest_assessor_completion(
+            session_id=ensure_session(repo, cycle_id),
+            portal_id=portal_id,
+            role=assigned_role.value,
+        )
+        if existing and existing.actor_id == body.actor_id:
+            return CompletionCreateResponse(
+                completion_id=existing.completion_id,
+                role=existing.role,
+                actor_id=existing.actor_id,
+                declared_at=existing.declared_at.isoformat()
+                if hasattr(existing.declared_at, "isoformat")
+                else str(existing.declared_at),
+                indicator_count=existing.indicator_count_at_declaration,
+            )
 
-        session_id = ensure_session(repo, cycle_id)
         questions = repo.list_questions(cycle_id)
+        session_id = ensure_session(repo, cycle_id)
         total_indicators = len(questions)
 
-        outstanding: list[str] = []
-        answered_count = 0
+        # Check all indicators are answered
+        unanswered: list[str] = []
         for q in questions:
             sub = repo.latest_human_submission(
-                session_id, q.question_id, portal_id, role_enum
+                session_id, q.question_id, portal_id, assigned_role
             )
-            if sub is not None and sub.answer is not None:
-                answered_count += 1
-            else:
-                outstanding.append(q.question_id)
+            if sub is None or sub.answer is None:
+                unanswered.append(q.question_id)
 
-        if outstanding:
-            cnt = len(outstanding)
-            s = "indicator" if cnt == 1 else "indicators"
-            first_q = outstanding[0]
+        if unanswered:
             raise IncompleteAssessment(
-                message=f"Cannot declare completion: {cnt} {s} outstanding ({first_q}).",
-                details={
-                    "role": body.role,
-                    "outstanding_question_ids": outstanding,
-                    "answered_count": answered_count,
-                    "total_indicators": total_indicators,
-                },
+                f"Cannot declare completion: {len(unanswered)} indicators unanswered.",
+                details={"unanswered_question_ids": unanswered},
             )
 
         comp = AssessorCompletion(
@@ -121,6 +133,30 @@ def build_completions_router(
             effective_tolerance(repo, cycle_id, settings),
             cycle_id=cycle_id,
         )
+
+        try:
+            runtime = getattr(request.app.state, "ai_runtime", None)
+            labelling_pass = dispatch_labelling_pass(
+                repo=repo,
+                settings=settings,
+                session_id=session_id,
+                cycle_id=cycle_id,
+                portal_id=portal_id,
+                question_ids=[q.question_id for q in questions],
+                threshold=effective_tolerance(repo, cycle_id, settings),
+                dispatched_by="api",
+                provider_available=runtime is not None,
+            )
+            if labelling_pass is not None:
+                background.add_task(
+                    run_labelling_pass,
+                    database_path,
+                    settings,
+                    runtime,
+                    labelling_pass.pass_id,
+                )
+        except Exception:
+            logger.exception("Failed to dispatch disagreement labelling pass for unit %s", portal_id)
 
         return CompletionCreateResponse(
             completion_id=comp.completion_id,

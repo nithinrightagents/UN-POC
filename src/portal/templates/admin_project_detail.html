@@ -750,8 +750,17 @@
         <!-- Discrepancy Status -->
         <div style="background-color: var(--color-bg-surface-subtle); padding: 0.875rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
             <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 700; margin-bottom: 0.25rem;">Assessor A/B Discrepancy</div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; flex-wrap: wrap;">
                 {{ row.badge_html | safe }}
+                {% if row.label_composition %}
+                <span class="label-composition" style="display: inline-flex; gap: 0.35rem; align-items: center; font-size: 0.75rem;">
+                    {% for label_name, count in row.label_composition.items() %}
+                    <span class="badge badge--disagreement-label" style="font-weight: normal; background-color: #ffffff; color: var(--color-text-primary); border: 1px solid var(--color-border-subtle);">
+                        {{ count }} {{ label_name }}
+                    </span>
+                    {% endfor %}
+                </span>
+                {% endif %}
             </div>
         </div>
     </div>

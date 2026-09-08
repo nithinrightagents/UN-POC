@@ -85,6 +85,12 @@ def validate_settings(settings: Settings) -> None:
             0,
             100,
         ),
+        (
+            "AIQ_DISAGREEMENT_LABEL_TEMPERATURE",
+            settings.disagreement_label_temperature,
+            0.0,
+            2.0,
+        ),
     ]:
         if not (lo <= value <= hi):
             errors.append(f"{name}={value} must be within [{lo}, {hi}]")

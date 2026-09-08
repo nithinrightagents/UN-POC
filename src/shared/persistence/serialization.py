@@ -80,4 +80,14 @@ def _coerce_value(value: Any, hint: Any) -> Any:
         (item_hint,) = typing.get_args(hint) or (None,)
         return [_coerce_value(v, item_hint) for v in value]
 
+    if origin in (dict, dict) and isinstance(value, dict):
+        args = typing.get_args(hint) or (None, None)
+        key_hint = args[0] if len(args) > 0 else None
+        val_hint = args[1] if len(args) > 1 else None
+        return {
+            _coerce_value(k, key_hint): _coerce_value(v, val_hint)
+            for k, v in value.items()
+        }
+
     return value
+

@@ -806,3 +806,41 @@ class SystemHealthResponse(BaseModel):
     database_path: str
     ai_runtime_active: bool
     timestamp: str
+
+
+# --- Disagreement Labelling Schemas (spec 017, T072) -----------------------
+
+
+class LabelProvenanceResponse(BaseModel):
+    established_by: str
+    model_identity: str | None = None
+    prompt_version: str | None = None
+    input_digest: str | None = None
+    created_at: str | None = None
+
+
+class UnitLabelItemResponse(BaseModel):
+    """Carries label projection and provenance without assessor answers or notes (T072)."""
+    question_id: str
+    state: str
+    label: str | None = None
+    badge: str
+    observations: dict[str, list[str]] = Field(default_factory=dict)
+    stale: bool = False
+    provenance: LabelProvenanceResponse | None = None
+
+
+class IndicatorAmbiguityItemResponse(BaseModel):
+    indicator_key: str
+    judged_differently: int
+    units_measured: int
+    units_total: int
+    labelled_share: float
+
+
+class LabellingCountsResponse(BaseModel):
+    awaiting: int
+    exhausted: int
+    established_deterministic: int
+    established_by_classifier: int
+

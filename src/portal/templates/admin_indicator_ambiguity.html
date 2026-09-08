@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{% if cycle %}Indicator Ambiguity — {{ cycle.name }}{% else %}Cross-Project Indicator Ambiguity{% endif %} | EKAP{% endblock %}
+{% block content %}
+
+<div class="breadcrumb">
+    <a href="/">Portal Home</a>
+    <span>/</span>
+    <a href="/admin">Admin</a>
+    <span>/</span>
+    {% if cycle %}
+    <a href="/admin/projects/{{ cycle.cycle_id }}">{{ cycle.name }}</a>
+    <span>/</span>
+    <span>Indicator Ambiguity</span>
+    {% else %}
+    <span>Indicator Ambiguity (All Projects)</span>
+    {% endif %}
+</div>
+
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>{% if cycle %}Indicator Ambiguity: {{ cycle.name }}{% else %}Cross-Project Indicator Ambiguity{% endif %}</h1>
+        <p class="lead">Recurring interpretive splits identifying indicators where assessors looking at the same evidence arrived at different conclusions.</p>
+    </div>
+</div>
+
+<!-- Headline Figure: Thin Evidence / Insufficient Notes Rate (FR-DL-074, SC-007, T071) -->
+<div class="card" style="margin-top: 1.5rem; padding: 1.25rem 1.5rem; background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between;">
+    <div>
+        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); font-weight: 700;">Thin Evidence Measure (FR-DL-074)</div>
+        <div style="font-size: 1.15rem; font-weight: 600; color: var(--color-text-primary); margin-top: 0.25rem;">
+            Disputes with Insufficient Notes
+        </div>
+        <div style="font-size: 0.85rem; color: var(--color-text-secondary); margin-top: 0.25rem;">
+            Proportion of labelled disputes where assessor notes were missing or too thin to characterize the disagreement with confidence.
+        </div>
+    </div>
+    <div style="text-align: right; min-width: 120px;">
+        <div style="font-size: 2.25rem; font-weight: 700; color: var(--color-brand-primary);">
+            {{ "%.1f%%"|format((insufficient_notes_share or 0.0) * 100) }}
+        </div>
+        <div style="font-size: 0.75rem; color: var(--color-text-muted);">
+            Observed rate
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 1.5rem;">
+    <table class="table" id="ambiguity-table">
+        <thead>
+            <tr>
+                <th>Indicator</th>
+                <th>Judged Differently</th>
+                <th>Units Measured</th>
+                <th>Units Total</th>
+                <th>Labelled Share</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.indicator_key }}</td>
+                <td>{{ row.judged_differently }}</td>
+                <td>{{ row.units_measured }}</td>
+                <td>{{ row.units_total }}</td>
+                <td>{{ "%.1f%%"|format(row.labelled_share * 100) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: var(--color-muted, #666);">No ambiguity data available.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

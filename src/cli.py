@@ -30,7 +30,8 @@ def main(ctx: click.Context, env_file: str) -> None:
     """EKAP AIQ — AI-assisted portal assessment proof of concept."""
     ctx.ensure_object(dict)
     ctx.obj["env_file"] = env_file
-    ctx.obj["settings"] = load_settings(env_file)
+    if "settings" not in ctx.obj:
+        ctx.obj["settings"] = load_settings(env_file)
 
 
 @main.group()
@@ -749,6 +750,83 @@ def diagnose_compare_cmd(
     if fail_on_regression and report.has_regression:
         click.secho("Regression detected in link resolution diagnostics!", fg="red", err=True)
         raise SystemExit(1)
+
+
+@main.group()
+def label() -> None:
+    """Disagreement labelling commands (spec 017)."""
+
+
+@label.command("drain")
+@click.option("--cycle", "cycle_id", default=None, help="Filter by survey cycle ID")
+@click.option("--limit", "limit", default=None, type=int, help="Maximum number of passes to process")
+@click.pass_context
+def label_drain_cmd(ctx: click.Context, cycle_id: str | None, limit: int | None) -> None:
+    """Complete outstanding disputes of existing passes (FR-DL-011, FR-DL-012, FR-DL-057)."""
+    settings: Settings = ctx.obj["settings"]
+    try:
+        validate_settings(settings)
+    except ConfigurationError as exc:
+        click.secho(f"Configuration error: {exc}", fg="red", err=True)
+        raise SystemExit(1)
+
+    from shared.persistence.repositories import Repository, _row_to_labelling_pass
+    from portal.disagreement_labels import labelling_counts, run_labelling_pass
+    from api.runtime import AIRuntime
+
+    conn = _connect(settings)
+    repo = Repository(conn)
+
+    counts_before = labelling_counts(repo, cycle_id)
+    click.echo(
+        f"Before drain: awaiting={counts_before.awaiting}, exhausted={counts_before.exhausted}, "
+        f"deterministic={counts_before.established_deterministic}, classifier={counts_before.established_by_classifier}"
+    )
+
+    if cycle_id is not None:
+        passes = repo.list_labelling_passes(cycle_id)
+    else:
+        rows = conn.execute("SELECT * FROM labelling_passes ORDER BY created_at ASC").fetchall()
+        passes = [_row_to_labelling_pass(r) for r in rows]
+
+    target_passes = []
+    for p in passes:
+        labels = repo.list_labels_for_unit(p.session_id, p.portal_id)
+        labeled_qids = {l.question_id for l in labels}
+        has_outstanding = False
+        for qid in p.disputed_question_ids:
+            if qid not in labeled_qids:
+                if repo.count_attempts(p.pass_id, qid) < 3:
+                    has_outstanding = True
+                    break
+        if has_outstanding:
+            target_passes.append(p)
+
+    if limit is not None:
+        target_passes = target_passes[:limit]
+
+    conn.close()
+
+    async def _drain_all():
+        runtime = AIRuntime(settings)
+        await runtime.start()
+        try:
+            for p in target_passes:
+                await run_labelling_pass(settings.database_path, settings, runtime, p.pass_id)
+        finally:
+            await runtime.stop()
+
+    asyncio.run(_drain_all())
+
+    conn2 = _connect(settings)
+    repo2 = Repository(conn2)
+    counts_after = labelling_counts(repo2, cycle_id)
+    conn2.close()
+
+    click.echo(
+        f"After drain:  awaiting={counts_after.awaiting}, exhausted={counts_after.exhausted}, "
+        f"deterministic={counts_after.established_deterministic}, classifier={counts_after.established_by_classifier}"
+    )
 
 
 def run_async(coro):

@@ -11,16 +11,21 @@ independently verify or override. Completion is an explicit attributed declarati
 
 from __future__ import annotations
 
+import logging
 import urllib.parse
-from datetime import UTC
+from datetime import datetime, timezone
+from decimal import Decimal
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, BackgroundTasks, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from portal.assignment import resolve_actor_role
 from portal.common import ensure_session, repo_factory
+from portal.disagreement_labels import dispatch_labelling_pass, run_labelling_pass
 from portal.discrepancy import recompute_portal_discrepancy
+
+logger = logging.getLogger(__name__)
 from portal.reconciliation import (
     _format_pct,
     close_round_if_complete,
@@ -307,6 +312,8 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
 
     @router.post("/assessor/{cycle_id}/{portal_id}/complete")
     def complete_unit(
+        request: Request,
+        background: BackgroundTasks,
         cycle_id: str,
         portal_id: str,
         actor_id: str = Form(...),
@@ -362,6 +369,30 @@ def build_assessor_router(database_path: str, settings: Settings, templates: Jin
             effective_tolerance(r, cycle_id, settings),
             cycle_id=cycle_id,
         )
+
+        try:
+            runtime = getattr(request.app.state, "ai_runtime", None)
+            labelling_pass = dispatch_labelling_pass(
+                repo=r,
+                settings=settings,
+                session_id=session_id,
+                cycle_id=cycle_id,
+                portal_id=portal_id,
+                question_ids=[q.question_id for q in questions],
+                threshold=effective_tolerance(r, cycle_id, settings),
+                dispatched_by="portal",
+                provider_available=runtime is not None,
+            )
+            if labelling_pass is not None:
+                background.add_task(
+                    run_labelling_pass,
+                    database_path,
+                    settings,
+                    runtime,
+                    labelling_pass.pass_id,
+                )
+        except Exception:
+            logger.exception("Failed to dispatch disagreement labelling pass for unit %s", portal_id)
 
         return RedirectResponse(
             f"/assessor/{cycle_id}/{portal_id}?actor_id={urllib.parse.quote(actor_id)}",

@@ -411,3 +411,171 @@ def legacy_cycle(conn):
     return _create
 
 
+class NoCallProvider:
+    """Provider that raises AssertionError if generate() is called."""
+    def __init__(self):
+        pass
+
+    async def generate(self, *args, **kwargs):
+        raise AssertionError("ModelProvider.generate should NOT be called!")
+
+
+class RaisingProvider:
+    """Provider that raises an injected exception upon generate()."""
+    def __init__(self, exc: Exception | None = None):
+        self.exc = exc or RuntimeError("Injected provider failure")
+        self.call_count = 0
+
+    async def generate(self, *args, **kwargs):
+        self.call_count += 1
+        raise self.exc
+
+
+class FakeLabelProvider:
+    """Fake model provider returning canned JSON with recorded calls."""
+    def __init__(
+        self,
+        canned_response: str | dict | None = None,
+        model_identity: str = "fake-provider/test-model",
+    ):
+        self.canned_response = canned_response
+        self.model_identity = model_identity
+        self.call_count = 0
+        self.calls: list[dict] = []
+
+    async def generate(
+        self,
+        *,
+        prompt: str = "",
+        model: str = "",
+        system_instruction: str = "",
+        response_schema=None,
+        temperature: float = 0.0,
+        **kwargs,
+    ):
+        self.call_count += 1
+        self.calls.append({
+            "prompt": prompt,
+            "model": model,
+            "system_instruction": system_instruction,
+            "response_schema": response_schema,
+            "temperature": temperature,
+            "kwargs": kwargs,
+        })
+        if isinstance(self.canned_response, dict):
+            text = json.dumps(self.canned_response)
+        elif isinstance(self.canned_response, str):
+            text = self.canned_response
+        else:
+            text = json.dumps({
+                "label": "different_judgement",
+                "reason": "Assessors looked at the same document but judged differently.",
+                "position_1_notes_contradict_answer": False,
+                "position_2_notes_contradict_answer": False,
+            })
+        from core.llm_factory import ModelResponse
+        return ModelResponse(
+            text=text,
+            model_identity=self.model_identity,
+            input_tokens=100,
+            output_tokens=30,
+        )
+
+
+@pytest.fixture
+def fake_label_provider():
+    return FakeLabelProvider
+
+
+@pytest.fixture
+def no_call_provider():
+    return NoCallProvider
+
+
+@pytest.fixture
+def raising_provider():
+    return RaisingProvider
+
+
+@pytest.fixture
+def disputed_unit(conn):
+    """Constructs a unit with given questions and (a_answer, a_url, a_notes, b_answer, b_url, b_notes) tuples.
+    dispute_map is dict[str, tuple[object, str | None, str | None, object, str | None, str | None]].
+    """
+    from shared.persistence.repositories import Repository
+    from shared.state.entities import AssessorRole, HumanAssessorSubmission, new_id, utcnow
+
+    repo = Repository(conn)
+
+    def _create(
+        session_id: str,
+        cycle_id: str,
+        portal_id: str,
+        dispute_map: dict[str, tuple[object, str | None, str | None, object, str | None, str | None]],
+        *,
+        declare_both: bool = True,
+        actor_a: str = "actor-A",
+        actor_b: str = "actor-B",
+        a_accepted_ai: bool | None = None,
+        b_accepted_ai: bool | None = None,
+    ):
+        for qid, (a_ans, a_url, a_notes, b_ans, b_url, b_notes) in dispute_map.items():
+            if a_ans is not None:
+                sub_a = HumanAssessorSubmission(
+                    submission_id=new_id("sub"),
+                    session_id=session_id,
+                    cycle_id=cycle_id,
+                    question_id=qid,
+                    portal_id=portal_id,
+                    role=AssessorRole.A,
+                    assessor_actor_id=actor_a,
+                    answer=bool(a_ans) if isinstance(a_ans, (bool, int)) else a_ans,
+                    evidence_url=a_url,
+                    ai_suggested_answer=None,
+                    ai_suggestion_accepted=a_accepted_ai,
+                    notes=a_notes or "",
+                    submitted_at=utcnow(),
+                )
+                repo.insert_human_submission(sub_a)
+            if b_ans is not None:
+                sub_b = HumanAssessorSubmission(
+                    submission_id=new_id("sub"),
+                    session_id=session_id,
+                    cycle_id=cycle_id,
+                    question_id=qid,
+                    portal_id=portal_id,
+                    role=AssessorRole.B,
+                    assessor_actor_id=actor_b,
+                    answer=bool(b_ans) if isinstance(b_ans, (bool, int)) else b_ans,
+                    evidence_url=b_url,
+                    ai_suggested_answer=None,
+                    ai_suggestion_accepted=b_accepted_ai,
+                    notes=b_notes or "",
+                    submitted_at=utcnow(),
+                )
+                repo.insert_human_submission(sub_b)
+
+        if declare_both:
+            now = datetime.now(UTC).isoformat()
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO assessor_completions (
+                    completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "A", actor_a, len(dispute_map), now),
+            )
+            cursor.execute(
+                """
+                INSERT INTO assessor_completions (
+                    completion_id, session_id, cycle_id, portal_id, role, actor_id, indicator_count_at_declaration, declared_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (f"comp-{uuid.uuid4().hex[:10]}", session_id, cycle_id, portal_id, "B", actor_b, len(dispute_map), now),
+            )
+            conn.commit()
+    return _create
+
+
+

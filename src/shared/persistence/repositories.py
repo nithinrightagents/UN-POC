@@ -11,6 +11,7 @@ import json
 import sqlite3
 from contextlib import contextmanager
 from datetime import UTC, datetime
+from typing import Any
 
 from shared.state.entities import (
     AdjudicationResult,
@@ -23,11 +24,15 @@ from shared.state.entities import (
     AssessorRole,
     AssignmentChange,
     ConfigurationSnapshot,
+    DisagreementLabel,
+    DisagreementLabelRecord,
     DiscrepancyCase,
     EscalationQueueItem,
     EvidenceArtifact,
     HumanAssessorSubmission,
     JointAnswer,
+    LabellingAttempt,
+    LabellingPass,
     LanguageDecision,
     MSQDocument,
     MSQLinkCandidate,
@@ -38,6 +43,7 @@ from shared.state.entities import (
     Question,
     ReconciliationRound,
     SessionStatus,
+    SideObservation,
     SurveyCycle,
     TargetPortal,
     ToleranceChange,
@@ -1572,6 +1578,226 @@ class Repository:
         ).fetchone()
         return row is not None
 
+    # --- Disagreement Labelling (spec 017) -------------------------------
+
+    def insert_labelling_pass(self, pass_: LabellingPass) -> bool:
+        """Inserts a labelling pass record once both completions are declared.
+        Returns False on sqlite3.IntegrityError via unique index idx_labelling_pass_once (once-only guard).
+        """
+        created_at_str = (
+            pass_.created_at.isoformat()
+            if hasattr(pass_.created_at, "isoformat")
+            else str(pass_.created_at)
+        )
+        payload = {
+            "disputed_question_ids": pass_.disputed_question_ids,
+            "compared_count": pass_.compared_count,
+            "dispatched_by": pass_.dispatched_by,
+        }
+        try:
+            self.conn.execute(
+                """
+                INSERT INTO labelling_passes (
+                    pass_id, session_id, portal_id, cycle_id, data, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    pass_.pass_id,
+                    pass_.session_id,
+                    pass_.portal_id,
+                    pass_.cycle_id,
+                    json.dumps(payload),
+                    created_at_str,
+                ),
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+
+    def get_labelling_pass(self, session_id: str, portal_id: str) -> LabellingPass | None:
+        row = self.conn.execute(
+            "SELECT * FROM labelling_passes WHERE session_id = ? AND portal_id = ?",
+            (session_id, portal_id),
+        ).fetchone()
+        return _row_to_labelling_pass(row) if row else None
+
+    def list_labelling_passes(self, cycle_id: str) -> list[LabellingPass]:
+        rows = self.conn.execute(
+            "SELECT * FROM labelling_passes WHERE cycle_id = ? ORDER BY created_at ASC",
+            (cycle_id,),
+        ).fetchall()
+        return [_row_to_labelling_pass(r) for r in rows]
+
+    def insert_disagreement_label(self, record: DisagreementLabelRecord) -> bool:
+        """Inserts a disagreement label record.
+        Returns False on sqlite3.IntegrityError via unique index idx_disagreement_label_once.
+        """
+        created_at_str = (
+            record.created_at.isoformat()
+            if hasattr(record.created_at, "isoformat")
+            else str(record.created_at)
+        )
+        observations_data = {
+            role: [obs.value if hasattr(obs, "value") else str(obs) for obs in obs_list]
+            for role, obs_list in record.observations.items()
+        }
+        payload = {
+            "established_by": record.established_by,
+            "model_identity": record.model_identity,
+            "prompt_version": record.prompt_version,
+            "input_digest": record.input_digest,
+            "stated_reason": record.stated_reason,
+            "observations": observations_data,
+            "submission_ids": record.submission_ids,
+            "interval_seconds": record.interval_seconds,
+        }
+        label_val = record.label.value if hasattr(record.label, "value") else str(record.label)
+        try:
+            self.conn.execute(
+                """
+                INSERT INTO disagreement_labels (
+                    label_id, pass_id, session_id, portal_id, question_id, label, data, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record.label_id,
+                    record.pass_id,
+                    record.session_id,
+                    record.portal_id,
+                    record.question_id,
+                    label_val,
+                    json.dumps(payload),
+                    created_at_str,
+                ),
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False
+
+    def list_labels_for_unit(self, session_id: str, portal_id: str) -> list[DisagreementLabelRecord]:
+        rows = self.conn.execute(
+            "SELECT * FROM disagreement_labels WHERE session_id = ? AND portal_id = ? ORDER BY created_at ASC",
+            (session_id, portal_id),
+        ).fetchall()
+        return [_row_to_disagreement_label(r) for r in rows]
+
+    def list_labels_for_cycle(self, cycle_id: str) -> list[DisagreementLabelRecord]:
+        rows = self.conn.execute(
+            """
+            SELECT l.* FROM disagreement_labels l
+            JOIN labelling_passes p ON l.pass_id = p.pass_id
+            WHERE p.cycle_id = ?
+            ORDER BY l.created_at ASC
+            """,
+            (cycle_id,),
+        ).fetchall()
+        return [_row_to_disagreement_label(r) for r in rows]
+
+    def insert_labelling_attempt(self, attempt: LabellingAttempt) -> None:
+        """Records an unsuccessful labelling attempt.
+        Only failures are recorded, so COUNT(*) is exactly the attempt count capped at 3.
+        """
+        created_at_str = (
+            attempt.created_at.isoformat()
+            if hasattr(attempt.created_at, "isoformat")
+            else str(attempt.created_at)
+        )
+        payload = {"detail": attempt.detail}
+        self.conn.execute(
+            """
+            INSERT INTO labelling_attempts (
+                attempt_id, pass_id, question_id, failure, data, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                attempt.attempt_id,
+                attempt.pass_id,
+                attempt.question_id,
+                attempt.failure,
+                json.dumps(payload),
+                created_at_str,
+            ),
+        )
+        self.conn.commit()
+
+    def count_attempts(self, pass_id: str, question_id: str) -> int:
+        row = self.conn.execute(
+            "SELECT COUNT(*) FROM labelling_attempts WHERE pass_id = ? AND question_id = ?",
+            (pass_id, question_id),
+        ).fetchone()
+        return row[0] if row else 0
+
+    def count_labels_by_kind(self, cycle_id: str | None = None) -> dict[str, int]:
+        """Returns established-deterministic, established-by-classifier, and pass/label/attempt totals in one query."""
+        if cycle_id is not None:
+            p_count_sql = "SELECT COUNT(*) FROM labelling_passes WHERE cycle_id = ?"
+            l_sql = """
+                SELECT json_extract(l.data, '$.established_by') as est_by, COUNT(*)
+                FROM disagreement_labels l
+                JOIN labelling_passes p ON l.pass_id = p.pass_id
+                WHERE p.cycle_id = ?
+                GROUP BY est_by
+            """
+            a_sql = """
+                SELECT COUNT(*)
+                FROM labelling_attempts a
+                JOIN labelling_passes p ON a.pass_id = p.pass_id
+                WHERE p.cycle_id = ?
+            """
+            pass_count = self.conn.execute(p_count_sql, (cycle_id,)).fetchone()[0]
+            label_rows = self.conn.execute(l_sql, (cycle_id,)).fetchall()
+            attempt_count = self.conn.execute(a_sql, (cycle_id,)).fetchone()[0]
+        else:
+            pass_count = self.conn.execute("SELECT COUNT(*) FROM labelling_passes").fetchone()[0]
+            l_sql = "SELECT json_extract(data, '$.established_by') as est_by, COUNT(*) FROM disagreement_labels GROUP BY est_by"
+            label_rows = self.conn.execute(l_sql).fetchall()
+            attempt_count = self.conn.execute("SELECT COUNT(*) FROM labelling_attempts").fetchone()[0]
+
+        det_count = 0
+        clf_count = 0
+        total_labels = 0
+        for est_by, cnt in label_rows:
+            total_labels += cnt
+            if est_by == "deterministic":
+                det_count += cnt
+            else:
+                clf_count += cnt
+
+        return {
+            "established_deterministic": det_count,
+            "established_by_classifier": clf_count,
+            "total_passes": pass_count,
+            "total_labels": total_labels,
+            "total_attempts": attempt_count,
+        }
+
+    def count_labels_by_question(self, cycle_id: str | None = None) -> list[dict[str, Any]]:
+        """Groups labels by (question_id, label) for the ambiguity measure."""
+        if cycle_id is not None:
+            query = """
+                SELECT l.question_id, l.label, COUNT(*) as count
+                FROM disagreement_labels l
+                JOIN labelling_passes p ON l.pass_id = p.pass_id
+                WHERE p.cycle_id = ?
+                GROUP BY l.question_id, l.label
+            """
+            params = (cycle_id,)
+        else:
+            query = """
+                SELECT l.question_id, l.label, COUNT(*) as count
+                FROM disagreement_labels l
+                GROUP BY l.question_id, l.label
+            """
+            params = ()
+        rows = self.conn.execute(query, params).fetchall()
+        return [
+            {"question_id": row[0], "label": row[1], "count": row[2]}
+            for row in rows
+        ]
+
+
 
 def _row_to_reconciliation_round(row: sqlite3.Row) -> ReconciliationRound:
     from datetime import datetime
@@ -1728,5 +1954,85 @@ def _row_to_assignment_change(row: sqlite3.Row) -> AssignmentChange:
         changed_by_actor_id=row["changed_by_actor_id"],
         changed_at=changed_at,
     )
+
+
+def _row_to_labelling_pass(row: sqlite3.Row) -> LabellingPass:
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    created_at = row["created_at"]
+    if isinstance(created_at, str):
+        try:
+            created_at = datetime.fromisoformat(created_at)
+        except Exception:
+            pass
+    return LabellingPass(
+        pass_id=row["pass_id"],
+        session_id=row["session_id"],
+        portal_id=row["portal_id"],
+        cycle_id=row["cycle_id"],
+        disputed_question_ids=parsed_data.get("disputed_question_ids", []),
+        compared_count=parsed_data.get("compared_count", 0),
+        dispatched_by=parsed_data.get("dispatched_by", "portal"),
+        created_at=created_at,
+    )
+
+
+def _row_to_disagreement_label(row: sqlite3.Row) -> DisagreementLabelRecord:
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    created_at = row["created_at"]
+    if isinstance(created_at, str):
+        try:
+            created_at = datetime.fromisoformat(created_at)
+        except Exception:
+            pass
+    raw_obs = parsed_data.get("observations", {})
+    observations: dict[str, list[SideObservation]] = {}
+    for role, obs_list in raw_obs.items():
+        observations[role] = [
+            SideObservation(obs) if not isinstance(obs, SideObservation) else obs
+            for obs in obs_list
+        ]
+
+    label_str = row["label"]
+    label_enum = DisagreementLabel(label_str) if not isinstance(label_str, DisagreementLabel) else label_str
+
+    return DisagreementLabelRecord(
+        label_id=row["label_id"],
+        pass_id=row["pass_id"],
+        session_id=row["session_id"],
+        portal_id=row["portal_id"],
+        question_id=row["question_id"],
+        label=label_enum,
+        established_by=parsed_data.get("established_by", "classifier"),
+        input_digest=parsed_data.get("input_digest", ""),
+        stated_reason=parsed_data.get("stated_reason", ""),
+        observations=observations,
+        submission_ids=parsed_data.get("submission_ids", {}),
+        interval_seconds=parsed_data.get("interval_seconds"),
+        model_identity=parsed_data.get("model_identity"),
+        prompt_version=parsed_data.get("prompt_version"),
+        created_at=created_at,
+    )
+
+
+def _row_to_labelling_attempt(row: sqlite3.Row) -> LabellingAttempt:
+    data_val = row["data"]
+    parsed_data = json.loads(data_val) if isinstance(data_val, str) else (data_val or {})
+    created_at = row["created_at"]
+    if isinstance(created_at, str):
+        try:
+            created_at = datetime.fromisoformat(created_at)
+        except Exception:
+            pass
+    return LabellingAttempt(
+        attempt_id=row["attempt_id"],
+        pass_id=row["pass_id"],
+        question_id=row["question_id"],
+        failure=row["failure"],
+        detail=parsed_data.get("detail", ""),
+        created_at=created_at,
+    )
+
 
 
