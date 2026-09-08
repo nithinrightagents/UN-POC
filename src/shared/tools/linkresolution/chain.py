@@ -40,6 +40,7 @@ from shared.tools.linkresolution.sources.search import (
     search_for_link,
 )
 from shared.tools.linkresolution.sources.sitemap import resolve_from_sitemap
+from shared.reference.domains import jurisdiction_hint
 
 
 @dataclass
@@ -179,6 +180,13 @@ async def resolve_link(
     order = 0
     excluded = exclude_sources or set()
 
+    # T009: tell the relevance judge which level of government the winning
+    # candidate must belong to, so a topically-matching but jurisdictionally
+    # wrong page (e.g. a state DMV page for a national indicator) can be
+    # rejected on that basis rather than accepted for matching the topic.
+    _hint = jurisdiction_hint(country_id)
+    judge_what = f"{relevance_detail or ''}\n\n{_hint}".strip() if _hint else (relevance_detail or "")
+
     for source_name in settings.resolution_order:
         if source_name in excluded:
             continue
@@ -213,7 +221,7 @@ async def resolve_link(
                         judge_res = await choose_best(
                             provider=provider,
                             model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
-                            question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                            question={"title": relevance_text or search_query, "what": judge_what},
                             candidates=[{"url": attempt.returned, "title": attempt.title or relevance_text or search_query, "snippet": ""}],
                         )
                         if judge_res.status == "abstained":
@@ -257,7 +265,7 @@ async def resolve_link(
                         judge_res = await choose_best(
                             provider=provider,
                             model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
-                            question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                            question={"title": relevance_text or search_query, "what": judge_what},
                             candidates=[{"url": attempt.returned, "title": attempt.title or relevance_text or search_query, "snippet": ""}],
                         )
                         if judge_res.status == "abstained":
@@ -359,7 +367,7 @@ async def resolve_link(
                     judge_res = await choose_best(
                         provider=provider,
                         model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
-                        question={"title": relevance_text or search_query, "what": relevance_detail or ""},
+                        question={"title": relevance_text or search_query, "what": judge_what},
                         candidates=candidates,
                     )
                     chosen_idx = judge_res.index if hasattr(judge_res, "index") else judge_res
@@ -379,12 +387,50 @@ async def resolve_link(
                 )
 
             elif sitemap_ok:
-                return _make_result(
-                    resolved_url=sitemap_attempt.returned,
-                    supplying_source=sitemap_attempt.source,
-                    history=history,
-                    confidence=sitemap_attempt.confidence,
+                # T008: sitemap matching is purely lexical (slug-word overlap,
+                # see sources/sitemap.py). Unlike the two-winner adjudication
+                # above and the msq/prior_survey_kb sources, a sitemap-only
+                # win previously returned unconfirmed -- a coincidental slug
+                # match could become a "resolved" answer with no semantic
+                # check at all. Run it through the same judge used everywhere
+                # else before accepting it.
+                sitemap_confirmed = True
+                sitemap_confidence = sitemap_attempt.confidence
+                if provider is not None:
+                    judge_res = await choose_best(
+                        provider=provider,
+                        model=model or getattr(settings, "validator_model", "gemini-2.5-flash"),
+                        question={"title": relevance_text or search_query, "what": judge_what},
+                        candidates=[{
+                            "url": sitemap_attempt.returned,
+                            "title": sitemap_attempt.title or (relevance_text or search_query),
+                            "snippet": sitemap_attempt.snippet or "",
+                        }],
+                    )
+                    if judge_res.status == "abstained":
+                        sitemap_confirmed = False
+                    elif judge_res.status == "chose":
+                        sitemap_confidence = judge_res.confidence
+
+                if sitemap_confirmed:
+                    return _make_result(
+                        resolved_url=sitemap_attempt.returned,
+                        supplying_source=sitemap_attempt.source,
+                        history=history,
+                        confidence=sitemap_confidence,
+                    )
+
+                rejected_sitemap = ResolutionAttempt(
+                    source=sitemap_attempt.source,
+                    order=sitemap_attempt.order,
+                    returned=sitemap_attempt.returned,
+                    usable=False,
+                    rejection_reason="no candidate judged relevant by semantic judge",
                 )
+                for i, h in enumerate(history):
+                    if h is sitemap_attempt:
+                        history[i] = rejected_sitemap
+                        break
 
             elif search_ok:
                 return _make_result(

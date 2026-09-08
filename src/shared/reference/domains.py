@@ -49,7 +49,63 @@ def _load_city_to_country_map() -> dict[str, str]:
         return {}
 
 
+def _load_country_names() -> dict[str, str]:
+    """Build an ISO alpha-2 code to country name map from un_member_states.json."""
+    if not _UN_MEMBER_STATES_PATH.exists():
+        return {}
+    try:
+        data = json.loads(_UN_MEMBER_STATES_PATH.read_text(encoding="utf-8"))
+        return {
+            c["code"].upper(): c["name"]
+            for c in data.get("countries", [])
+            if c.get("code") and c.get("name")
+        }
+    except Exception:
+        return {}
+
+
 _CITY_NAME_TO_COUNTRY = _load_city_to_country_map()
+_COUNTRY_NAMES = _load_country_names()
+
+
+def jurisdiction_hint(country_id: str | None) -> str:
+    """Build a short instruction telling a relevance judge what jurisdiction
+    level a candidate link must belong to (spec 016 follow-up, 2026-09).
+
+    Government-domain admissibility (gov/mil-style suffixes) accepts any
+    matching page regardless of level of government -- a US state DMV page
+    (pa.gov) is just as admissible as the national aggregator
+    (usa.gov/state-motor-vehicle-services). The semantic judge never learns
+    which level the question actually needs, so a topically-matching but
+    jurisdictionally-wrong page can win outright. This hint is appended to
+    every relevance-judge prompt so the class of error (not any one
+    question) is addressed generically across all countries and indicators.
+    """
+    if not country_id:
+        return ""
+
+    code = country_id.strip().upper()
+
+    if code in _CITY_CODE_TO_PARENT:
+        return (
+            "Jurisdiction requirement: this assessment targets a LOCAL/city "
+            "government. The winning candidate must belong to that city's "
+            "own government -- a national/federal page, or another city's "
+            "page, does not satisfy this even if it is topically relevant."
+        )
+
+    if len(code) == 2:
+        name = _COUNTRY_NAMES.get(code, code)
+        return (
+            f"Jurisdiction requirement: this assessment targets the NATIONAL "
+            f"(central/federal) government of {name}. A page belonging to a "
+            "state, provincial, regional, county, or municipal government -- "
+            "even on a matching domain suffix -- does NOT satisfy a "
+            "national-level indicator unless it is explicitly the country's "
+            "own designated national aggregator or portal for this service."
+        )
+
+    return ""
 
 
 def resolve_admissible_domain_suffixes(

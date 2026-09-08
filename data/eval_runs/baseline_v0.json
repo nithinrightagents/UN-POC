@@ -1,0 +1,2950 @@
+{
+  "session_id": "bm-sess-a3f5e99f4040",
+  "sample_size": 25,
+  "seed": 42,
+  "resolved_count": 50,
+  "unresolved_count": 0,
+  "by_source": {
+    "search": 40,
+    "sitemap": 7,
+    "portal_default": 3
+  },
+  "results": [
+    {
+      "question_id": "eval-national-25q-2026:CP-028",
+      "indicator_id": "#028",
+      "title": "Procurement announcements",
+      "country_id": "DK",
+      "resolved_url": "https://udbud.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://udbud.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Procurement announcements",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:CP-028",
+      "indicator_id": "#028",
+      "title": "Procurement announcements",
+      "country_id": "US",
+      "resolved_url": "https://sam.gov/opportunities",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://sam.gov/opportunities",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Contract Opportunities",
+          "snippet": "Contract opportunities are procurement notices from federal contracting offices. Opportunities include pre-solicitation notices, solicitation notices, award ...",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-006",
+      "indicator_id": "#006",
+      "title": "Help feature/FAQs section",
+      "country_id": "DK",
+      "resolved_url": "https://denmark.dk/faq/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://denmark.dk/faq/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "FAQ",
+          "snippet": "Find answers on some of the typical questions you might have about Denmark. We also recommend Danish government and politics society Government and politics",
+          "position": 1,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-006",
+      "indicator_id": "#006",
+      "title": "Help feature/FAQs section",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/features/get-help-for-homelessness-hunger-and-more",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/features/get-help-for-homelessness-hunger-and-more",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Features Get Help Homelessness Hunger More",
+          "snippet": "Matched sitemap page for: Help feature/FAQs section",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://www.cbpp.org/research/food-assistance/a-quick-guide-to-snap-eligibility-and-benefits: not on a government domain; https://www.hudexchange.info/program-support/: not on a government domain; no candidate judged relevant by semantic judge",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-007",
+      "indicator_id": "#007",
+      "title": "Social networking features",
+      "country_id": "DK",
+      "resolved_url": "https://denmark.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://denmark.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Welcome to the official website of Denmark",
+          "snippet": "The Danish Vikings were great innovators and engineers, and the spirit of innovation is still alive in Denmark. In areas like food and …",
+          "position": 1,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-007",
+      "indicator_id": "#007",
+      "title": "Social networking features",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/features",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/features",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Features",
+          "snippet": "Matched sitemap page for: Social networking features",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://www.brennancenter.org/our-work/analysis-opinion/government-expanding-its-social-media-surveillance-capabilities: not on a government domain; https://en.wikipedia.org/wiki/Social_networking_service: not on a government domain; https://charlestonlaw.libguides.com/c.php?g=509283&p=3482544: not on a government domain; https://epic.org/issues/consumer-privacy/social-media-privacy/: not on a government domain; https://www.socialnewsdesk.com/industries/government/: not on a government domain",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-009",
+      "indicator_id": "#009",
+      "title": "Live chat support with a person",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk/support",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.borger.dk/support",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Support",
+          "snippet": "Matched sitemap page for: Live chat support with a person",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.thedanishparliament.dk/en/organization/the-danish-parliament-information-centre",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "The Danish Parliament Information Centre",
+          "snippet": "The Danish Parliament Information Centre is free of charge, and we are ready to provide factual answers to your questions by phone, e-mail or chat all weekdays ...",
+          "position": 4,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-009",
+      "indicator_id": "#009",
+      "title": "Live chat support with a person",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/contact-center",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/contact-center",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "gXCC Contact Center | USAGov",
+          "snippet": "The gXCC (Government Experience Contact Center) manages calls and chats for federal agency customers, including the USAGov program. Live agents ...",
+          "position": 1,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-016",
+      "indicator_id": "#016",
+      "title": "Information on online services use",
+      "country_id": "DK",
+      "resolved_url": "https://lifeindenmark.borger.dk/apps-and-digital-services",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://lifeindenmark.borger.dk/apps-and-digital-services",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Digital services - Lifeindenmark.dk - Borger.dk",
+          "snippet": "Topics: Digital services ; MitID – Denmark's national eID Apply for MitID, get help with MitID ; Digital Post Access Digital Post with MitID or non-Danish eID, ...",
+          "position": 9,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-016",
+      "indicator_id": "#016",
+      "title": "Information on online services use",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov",
+      "supplying_source": "portal_default",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://digitalgovernmenthub.org/wp-content/uploads/2023/11/FACTSHEET_BuildingDigitalExperiencesfortheAmericanPeople_OMB_TheWhiteHouse.pdf: not on a government domain; https://www.brennancenter.org/our-work/research-reports/social-media-surveillance-us-government: not on a government domain; https://www.gao.gov/blog/2019/02/19/your-internet-privacy: https://www.gao.gov/blog/2019/02/19/your-internet-privacy is an editorial blog post, not an admissible evidence page; https://www.ca-ilg.org/post/pew-study-online-access-public-agency-services: not on a government domain; https://www.superlawyers.com/resources/civil-rights/how-can-the-government-use-the-information-it-has-about-me/: not on a government domain",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "portal_default",
+          "order": 5,
+          "returned": "https://www.usa.gov",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-039",
+      "indicator_id": "#039",
+      "title": "Guidance on Open Government datasets",
+      "country_id": "DK",
+      "resolved_url": "https://digst.dk/data/aabne-data/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://digst.dk/data/aabne-data/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Guidance on Open Government datasets",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EGL-039",
+      "indicator_id": "#039",
+      "title": "Guidance on Open Government datasets",
+      "country_id": "US",
+      "resolved_url": "https://resources.data.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/no-free-money",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "No Free Money",
+          "snippet": "Matched sitemap page for: Guidance on Open Government datasets",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://resources.data.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Home | resources.data.gov",
+          "snippet": "Playbooks, guidance , templates, and other resources to support the implementation of policy, the creation of data governance structures, and the day-to-day work of data management in the federal government",
+          "position": 9,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-021",
+      "indicator_id": "#021",
+      "title": "Corruption Reporting",
+      "country_id": "DK",
+      "resolved_url": "https://whistleblower.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://whistleblower.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Corruption Reporting",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-021",
+      "indicator_id": "#021",
+      "title": "Corruption Reporting",
+      "country_id": "US",
+      "resolved_url": "https://www.gao.gov/about/what-gao-does/fraud",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.gao.gov/about/what-gao-does/fraud",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Report and Prevent Fraud",
+          "snippet": "About FraudNet. GAO maintains the FraudNet hotline to support accountability across the federal government. If you suspect fraud, waste, abuse, or mismanagement ...",
+          "position": 1,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-099",
+      "indicator_id": "#099, #112, #128, #141, #170, #181",
+      "title": "Open government datasets for 6 sectors",
+      "country_id": "DK",
+      "resolved_url": "https://www.opendata.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.opendata.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Open Data DK",
+          "snippet": "Kontakt os Open data for collaboration Find open data from municipalities and other public organisations. Search datasets Search Find more data at datavejviser.dk",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-099",
+      "indicator_id": "#099, #112, #128, #141, #170, #181",
+      "title": "Open government datasets for 6 sectors",
+      "country_id": "US",
+      "resolved_url": "https://data.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/health",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Health",
+          "snippet": "Matched sitemap page for: Open government datasets for 6 sectors",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://data.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Data.gov Home - Data.gov",
+          "snippet": "The Home of the U.S. Government's Open Data. Here you will find data, tools, and resources to conduct research, develop web and mobile applications, design data ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-304",
+      "indicator_id": "#304, #305, #306, #307, #308, #309",
+      "title": "Budget expenditure datasets for 6 sectors",
+      "country_id": "DK",
+      "resolved_url": "https://www.dst.dk/en/Statistik/emner/oekonomi/offentlig-oekonomi/offentlig-sektors-oekonomi",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.dst.dk/en/Statistik/emner/oekonomi/offentlig-oekonomi/offentlig-sektors-oekonomi",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Economy of the general government sector",
+          "snippet": "General government expenditure by function (COFOG) · 10. Social protection (40.91 %) · 7. Health (17.50 %) · 1. General public services (12.14 %) · 9. Education ( ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-304",
+      "indicator_id": "#304, #305, #306, #307, #308, #309",
+      "title": "Budget expenditure datasets for 6 sectors",
+      "country_id": "US",
+      "resolved_url": "https://www.usaspending.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/health",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Health",
+          "snippet": "Matched sitemap page for: Budget expenditure datasets for 6 sectors",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usaspending.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "USAspending: Government Spending Open Data",
+          "snippet": "USAspending is the official open data source of federal spending information, including information about federal awards such as contracts, grants, and loans.",
+          "position": 3,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-313",
+      "indicator_id": "#313",
+      "title": "Online services for rural areas",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk",
+      "supplying_source": "portal_default",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://www.oecd.org/en/publications/denmark-efficient-e-government-for-smarter-public-service-delivery_9789264087118-en.html: not on a government domain; https://tile.loc.gov/storage-services/master/gdc/gdcebookspublic/20/21/76/29/15/2021762915/2021762915.pdf: not on a government domain; https://govinsider.asia/intl-en/article/following-the-citizens-journey-makes-denmark-a-world-leader-in-e-government: not on a government domain; https://www.globalgovernmentforum.com/denmark-ranked-as-the-worlds-top-government-for-digitalisation/: not on a government domain; https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/48-Denmark: not on a government domain",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "portal_default",
+          "order": 5,
+          "returned": "https://www.borger.dk",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:EP-313",
+      "indicator_id": "#313",
+      "title": "Online services for rural areas",
+      "country_id": "US",
+      "resolved_url": "https://www.rd.usda.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/export-license-permit",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Export License Permit",
+          "snippet": "Matched sitemap page for: Online services for rural areas",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.rd.usda.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Rural Development",
+          "snippet": "Welcome to the new Rural Data Gateway! For more than 80 years, USDA Rural Development has been financing infrastructure and housing throughout rural America.",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-014",
+      "indicator_id": "#014",
+      "title": "Privacy statement(s)",
+      "country_id": "DK",
+      "resolved_url": "https://denmark.dk/privacy-notice/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://denmark.dk/privacy-notice/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Privacy notice | Denmark's official website",
+          "snippet": "This privacy notice tells you how we process your personal information when you contact the editors of denmark.dk.",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-014",
+      "indicator_id": "#014",
+      "title": "Privacy statement(s)",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/privacy",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/privacy",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Privacy",
+          "snippet": "Matched sitemap page for: Privacy statement(s)",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/privacy",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Privacy and security policies",
+          "snippet": "Learn how USA.gov protects your privacy when you visit our website, and how you can opt-out of anonymous data collection.",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-090",
+      "indicator_id": "#090, #103, #119, #132, #161, #172",
+      "title": "Link to the sectoral or ministerial websites",
+      "country_id": "DK",
+      "resolved_url": "https://www.thedanishparliament.dk/en/members/the-government",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": "https://sum.dk/",
+          "usable": false,
+          "rejection_reason": "resolved outside the required domain (www.borger.dk) for this attempt",
+          "rejection_code": "outside_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.thedanishparliament.dk/en/members/the-government",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "The Government",
+          "snippet": "The Government was formed on 3 June 2026 and consists of the Social Democratic Party, the Green Left, the Moderates and the Social Liberal Party. Minister ...",
+          "position": 1,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-090",
+      "indicator_id": "#090, #103, #119, #132, #161, #172",
+      "title": "Link to the sectoral or ministerial websites",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/agency-index",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/social-security-report-a-death",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Social Security Report A Death",
+          "snippet": "Matched sitemap page for: Link to the sectoral or ministerial websites",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/agency-index",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "A-Z index of U.S. government departments and agencies",
+          "snippet": "Get contact information for U.S. federal government agencies, departments, corporations, instrumentalities, and government-sponsored enterprises.",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-336",
+      "indicator_id": "#336",
+      "title": "Legislation/law/regulation against misinformation, disinformation and/or fake news",
+      "country_id": "DK",
+      "resolved_url": "https://www.retsinformation.dk/eli/lta/2019/499",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.retsinformation.dk/eli/lta/2019/499",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Legislation/law/regulation against misinformation, disinformation and/or fake news",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-336",
+      "indicator_id": "#336",
+      "title": "Legislation/law/regulation against misinformation, disinformation and/or fake news",
+      "country_id": "US",
+      "resolved_url": "https://www.congress.gov/bill/117th-congress/house-bill/6971",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/laws-and-legal-issues",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Laws Legal Issues",
+          "snippet": "Matched sitemap page for: Legislation/law/regulation against misinformation, disinformation and/or fake news",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.congress.gov/bill/117th-congress/house-bill/6971",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Educating Against Misinformation and Disinformation Act ...",
+          "snippet": "Summary of H.R.6971 - 117th Congress (2021-2022): Educating Against Misinformation and Disinformation Act. ... Cloture invoked/not invoked, Rereferred to ...",
+          "position": 1,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-342",
+      "indicator_id": "#342",
+      "title": "National e-Government/Digital Government Strategy",
+      "country_id": "DK",
+      "resolved_url": "https://en.digst.dk/strategy/the-joint-government-digital-strategy/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": "https://en.digst.dk/media/27861/national-strategy-for-digitalisation-together-in-the-digital-development.pdf",
+          "usable": false,
+          "rejection_reason": "stale or unreachable MSQ URL (https://en.digst.dk/media/27861/national-strategy-for-digitalisation-together-in-the-digital-development.pdf)",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.borger.dk/hjaelp-og-vejledning/hvad-har-du-brug-for-hjaelp-til/digital-post/funktioner-i-digital-post",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Hjaelp Og Vejledning Hvad Har Du Brug Hjaelp Til Digital Post Funktioner I Digital Post",
+          "snippet": "Matched sitemap page for: National e-Government/Digital Government Strategy",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://en.digst.dk/strategy/the-joint-government-digital-strategy/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "The Joint Government Digital Strategy",
+          "snippet": "The strategic approach to digital initiatives makes it possible for the Danish public sector to make joint investments in areas which are particularly complex ...",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-342",
+      "indicator_id": "#342",
+      "title": "National e-Government/Digital Government Strategy",
+      "country_id": "US",
+      "resolved_url": "https://www.state.gov/digital-government-strategy",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.state.gov/digital-government-strategy",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Digital Government Strategy",
+          "snippet": "A comprehensive Digital Government Strategy aimed at delivering better digital services to the American people was launched on May 23, 2012.",
+          "position": 1,
+          "confidence": 0.8
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-343",
+      "indicator_id": "#343",
+      "title": "A cloud strategy or equivalent",
+      "country_id": "DK",
+      "resolved_url": "https://digst.dk/strategier/cloudstrategi/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://digst.dk/strategier/cloudstrategi/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "A cloud strategy or equivalent",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:IF-343",
+      "indicator_id": "#343",
+      "title": "A cloud strategy or equivalent",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov",
+      "supplying_source": "portal_default",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://aws.amazon.com/blogs/publicsector/a-cloud-timeline-u-s-governments-modernization-journey/: not on a government domain; https://www.intel.com/content/www/us/en/government/cloud-computing.html: not on a government domain; https://obamawhitehouse.archives.gov/sites/default/files/omb/egov/digital-government/digital-government.html: obamawhitehouse.archives.gov is a frozen archive/snapshot, not live content; https://digitalgovernment.com/cloud-computing-it-modernization-ai/: not on a government domain; https://www.deloitte.com/us/en/what-we-do/capabilities/cloud-transformation/case-studies/government-cloud-adoption-benefits.html: not on a government domain",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "portal_default",
+          "order": 5,
+          "returned": "https://www.usa.gov",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-043",
+      "indicator_id": "#043",
+      "title": "Income taxes",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk/oekonomi-skat-su/Skat-og-tastselv",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.borger.dk/oekonomi-skat-su/Skat-og-tastselv",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Income taxes",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-043",
+      "indicator_id": "#043",
+      "title": "Income taxes",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/file-taxes",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/file-taxes",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "File Taxes",
+          "snippet": "Matched sitemap page for: Income taxes",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.irs.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Internal Revenue Service | An official website of the United ...",
+          "snippet": "Pay your taxes. Get your refund status. Find IRS forms and answers to tax questions. We help you understand and meet your federal tax responsibilities.",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-045",
+      "indicator_id": "#045",
+      "title": "Entry or Transit Visa",
+      "country_id": "DK",
+      "resolved_url": "https://applyvisa.um.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://applyvisa.um.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "ApplyVisa",
+          "snippet": "ApplyVisa is an online platform for submitting visa applications to Denmark and other Schengen countries.",
+          "position": 2,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-045",
+      "indicator_id": "#045",
+      "title": "Entry or Transit Visa",
+      "country_id": "US",
+      "resolved_url": "https://travel.state.gov/content/travel/en/us-visas/other-visa-categories/transit.html",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/visa-application-rejected",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Visa Application Rejected",
+          "snippet": "Matched sitemap page for: Entry or Transit Visa",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://travel.state.gov/content/travel/en/us-visas/other-visa-categories/transit.html",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Transit Visa",
+          "snippet": "Transit (C) visas are nonimmigrant visas for persons traveling in immediate and continuous transit through the United States enroute to another country, with ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-046",
+      "indicator_id": "#046",
+      "title": "Registration or renewal for a vehicle",
+      "country_id": "DK",
+      "resolved_url": "https://lifeindenmark.borger.dk/ActionPage?selfserviceId=9ca563a4-34f0-44cd-9c7f-d2ae6df332ca",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://lifeindenmark.borger.dk/ActionPage?selfserviceId=9ca563a4-34f0-44cd-9c7f-d2ae6df332ca",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Registering and re-registering your vehicle - Lifeindenmark.dk",
+          "snippet": "You can find information in the Register of Motor Vehicles [Motorregistret] on all vehicles registered in Denmark.",
+          "position": 5,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-046",
+      "indicator_id": "#046",
+      "title": "Registration or renewal for a vehicle",
+      "country_id": "US",
+      "resolved_url": "https://www.pa.gov/services/dmv/renew-vehicle-registration",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.pa.gov/services/dmv/renew-vehicle-registration",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Renew Your Vehicle Registration",
+          "snippet": "To renew online you will need your registration plate number, title number, insurance information, odometer reading, a valid credit card, and a printer. At the ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-047",
+      "indicator_id": "#047",
+      "title": "Online Police declaration",
+      "country_id": "DK",
+      "resolved_url": "https://politi.dk/en/report-a-crime",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://politi.dk/en/report-a-crime",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Report a crime | Danish police - Politi",
+          "snippet": "In many cases you can report the crime online. Dial (+45) 114, which is the service number for the Danish police, to report a crime. You can also report a ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-047",
+      "indicator_id": "#047",
+      "title": "Online Police declaration",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/report-crime",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/report-crime",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Report a crime | USAGov",
+          "snippet": "To file a police report, search online for the local law enforcement agency's contact information where the crime occurred. Most local law enforcement agencies ...",
+          "position": 1,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-049",
+      "indicator_id": "#049",
+      "title": "Registration for a new company or business entity",
+      "country_id": "DK",
+      "resolved_url": "https://indberet.virk.dk/myndigheder/stat/erhvervsstyrelsen/start-virksomhed",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://indberet.virk.dk/myndigheder/stat/erhvervsstyrelsen/start-virksomhed",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Registration for a new company or business entity",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-049",
+      "indicator_id": "#049",
+      "title": "Registration for a new company or business entity",
+      "country_id": "US",
+      "resolved_url": "https://www.sba.gov/counseling/launch-your-business/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.sba.gov/counseling/launch-your-business/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Launch your business - Small Business Administration",
+          "snippet": "Pick your business location · Choose a business structure · Choose your business name · Register your business · Get federal and state tax ID numbers · Apply for ...",
+          "position": 1,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-055",
+      "indicator_id": "#055",
+      "title": "Online land title registration",
+      "country_id": "DK",
+      "resolved_url": "https://lifeindenmark.borger.dk/housing-and-moving/buying/the-digital-land-register",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.borger.dk/udlaendinge-i-danmark/ret-til-at-opholde-sig-i-danmark/borgere-fra-et-eu-eoes-land",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Udlaendinge I Danmark Ret Til At Opholde Sig I Danmark Borgere Fra Et Eu Eoes Land",
+          "snippet": "Matched sitemap page for: Online land title registration",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://lifeindenmark.borger.dk/housing-and-moving/buying/the-digital-land-register",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "The digital Land Register - Lifeindenmark.dk",
+          "snippet": "The digital Land Register. The Land Register allows you to secure your rights to real property, etc. in Denmark.",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:SP-055",
+      "indicator_id": "#055",
+      "title": "Online land title registration",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/property-records",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/property-records",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Online land title registration",
+          "snippet": "",
+          "position": 0,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-002",
+      "indicator_id": "#002",
+      "title": "Government portal ease of finding",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.borger.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "borger.dk - din indgang til det offentlige",
+          "snippet": "På borger.dk finder du offentlig selvbetjening, Post, NemSMS og Mit Overblik. Du kan se mere personlige oplysninger, hvis du logger på borger.dk med dit MitID.",
+          "position": 4,
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-002",
+      "indicator_id": "#002",
+      "title": "Government portal ease of finding",
+      "country_id": "US",
+      "resolved_url": "https://www.usa.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/search-gov",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Search",
+          "snippet": "Matched sitemap page for: Government portal ease of finding",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usa.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "USA.gov",
+          "snippet": "Making government services easier to find. USA.gov helps you locate and understand government benefits, programs, and information. How do I ...",
+          "position": 1,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-005",
+      "indicator_id": "#005",
+      "title": "Sitemap/Index",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk/kampagnesider/efter-arbejdsskade-find-vej-tilbage-i-job-med-en-ny-uddannelse",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.borger.dk/kampagnesider/efter-arbejdsskade-find-vej-tilbage-i-job-med-en-ny-uddannelse",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Kampagnesider Efter Arbejdsskade Find Vej Tilbage I Job Med En Ny Uddannelse",
+          "snippet": "Matched sitemap page for: Sitemap/Index",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no admissible government-domain result among the top candidates: https://developers.google.com/search/docs/crawling-indexing/sitemaps/large-sitemaps: not on a government domain; https://digital.gov/resources/introduction-xml-sitemaps: not on a government domain; https://www.govinfo.gov/sitemaps: not on a government domain; https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/48-Denmark: not on a government domain; https://github.com/samdark/sitemap: not on a government domain",
+          "rejection_code": "not_gov_domain",
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-005",
+      "indicator_id": "#005",
+      "title": "Sitemap/Index",
+      "country_id": "US",
+      "resolved_url": "https://www.usda.gov/sitemap",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/search-gov",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Search",
+          "snippet": "Matched sitemap page for: Sitemap/Index",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.usda.gov/sitemap",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Site Map | USDA",
+          "snippet": "A .govWebsite belongs to an official government organization in the United States .",
+          "position": 5,
+          "confidence": 0.95
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-071",
+      "indicator_id": "#071",
+      "title": "Responsive web design",
+      "country_id": "DK",
+      "resolved_url": "https://www.borger.dk/hjaelp-og-vejledning/hvad-har-du-brug-for-hjaelp-til/borger-dk/teknisk-hjaelp/smartphones-og-tablets",
+      "supplying_source": "sitemap",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.borger.dk/hjaelp-og-vejledning/hvad-har-du-brug-for-hjaelp-til/borger-dk/teknisk-hjaelp/smartphones-og-tablets",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Hjaelp Og Vejledning Hvad Har Du Brug Hjaelp Til Borger Dk Teknisk Hjaelp Smartphones Og Tablets",
+          "snippet": "Matched sitemap page for: Responsive web design",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://designsystem.dk/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Forside | Det Fælles Designsystem",
+          "snippet": "Brug Det Fælles Designsystem til at lave simple og effektive selvbetjeningsløsninger til borger.dk og Virk. Lad os om det grundlæggende, og sæt fokus på at inddrage dine brugere. Det er gratis (open source).",
+          "position": 1,
+          "confidence": 0.8
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-071",
+      "indicator_id": "#071",
+      "title": "Responsive web design",
+      "country_id": "US",
+      "resolved_url": "https://designsystem.digital.gov/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1533 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://designsystem.digital.gov/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "USWDS: The United States Web Design System | U.S. Web ...",
+          "snippet": "The design system for the federal government. We make it easier to build accessible, mobile-friendly government websites. Introducing USWDS 3.0 Migrating to ...",
+          "position": 1,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-09a",
+      "indicator_id": "#09a",
+      "title": "Availability of AI-enabled chat-bot functionality",
+      "country_id": "DK",
+      "resolved_url": "https://dendigitalehotline.dk/nyheder/seneste-nyt-chatbot/den-kommunale-chatbot-muni-skal-udvikles-og-forbedres-til-glaede-for-borgerne-i-40-danske-kommuner",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no page among 1977 sitemap URLs matched the question's terms",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://dendigitalehotline.dk/nyheder/seneste-nyt-chatbot/den-kommunale-chatbot-muni-skal-udvikles-og-forbedres-til-glaede-for-borgerne-i-40-danske-kommuner",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Chatbot med AI skal hjælpe 2,5 mio. danskere med selvbetjening i kommunen",
+          "snippet": "I starten af 2025 kan 2,5 mio. borgere i mindst 40 af landets kommuner via det tværkommunale borgerservicesamarbejde DDH få forbedret hjælp døgnet rundt gennem den fælles chatbot Muni og yderligere AI -services. Det står klart, efter Deloitte og den norske tech-virksomhed boost. ai har vundet Danmarks største kommunale udbud om borgervendte AI -services.",
+          "position": 3,
+          "confidence": 0.85
+        }
+      ]
+    },
+    {
+      "question_id": "eval-national-25q-2026:TECH-09a",
+      "indicator_id": "#09a",
+      "title": "Availability of AI-enabled chat-bot functionality",
+      "country_id": "US",
+      "resolved_url": "https://www.state.gov/artificial-intelligence/",
+      "supplying_source": "search",
+      "history": [
+        {
+          "source": "prior_survey_kb",
+          "order": 1,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no prior-cycle link on record",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "msq",
+          "order": 2,
+          "returned": null,
+          "usable": false,
+          "rejection_reason": "no MSQ submission contained a link for this question",
+          "rejection_code": null,
+          "title": null,
+          "snippet": null,
+          "position": null,
+          "confidence": null
+        },
+        {
+          "source": "sitemap",
+          "order": 3,
+          "returned": "https://www.usa.gov/content",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Content",
+          "snippet": "Matched sitemap page for: Availability of AI-enabled chat-bot functionality",
+          "position": 0,
+          "confidence": null
+        },
+        {
+          "source": "search",
+          "order": 4,
+          "returned": "https://www.state.gov/artificial-intelligence/",
+          "usable": true,
+          "rejection_reason": null,
+          "rejection_code": null,
+          "title": "Artificial Intelligence (AI) - United States Department of State",
+          "snippet": "# Artificial Intelligence (AI)\nDepartment of State is harnessing the potential of Artificial Intelligence (AI) to advance diplomacy in the 21st century.\n\n### Generative AI Playbook\nDepartment of State’s experience developing StateChat and its enterprise AI platform, the playbook aims to help agencies accelerate innovation, strengthen government capabilities, and deliver greater value to the American people.\n\n## DOS Internal Data and AI Guidance\n### How is the State Department Using AI?\n**StateChat**: StateChat is the Department’s Enterprise AI Chatbot, approved for use with Sensitive but Unclassified (SBU) data. StateChat is currently available to all State Department personnel and helps draft, translate, analyze, and brainstorm.",
+          "position": 8,
+          "confidence": 0.85
+        }
+      ]
+    }
+  ]
+}

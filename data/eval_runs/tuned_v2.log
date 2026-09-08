@@ -1,0 +1,339 @@
+==> Effective retrieval configuration:
+    resolution_order            = ['prior_survey_kb', 'msq', 'search']
+    msq_link_source_enabled     = True
+    kb_link_source_enabled      = True
+    serper_api_key configured   = True
+    firecrawl_api_key configured= True
+
+==> Building evaluation project (national_osi, US + DK) ...
+    102 national indicators loaded, 2 portals ready
+==> Ingesting Denmark MSQ and matching to sample ...
+    12 MSQ link candidates matched
+==> Sampled 25 indicators (seed=42):
+    #002: Government portal ease of finding
+    #005: Sitemap/Index
+    #006: Help feature/FAQs section
+    #007: Social networking features
+    #009: Live chat support with a person
+    #014: Privacy statement(s)
+    #016: Information on online services use
+    #021: Corruption Reporting
+    #028: Procurement announcements
+    #039: Guidance on Open Government datasets
+    #043: Income taxes
+    #045: Entry or Transit Visa
+    #046: Registration or renewal for a vehicle
+    #047: Online Police declaration
+    #049: Registration for a new company or business entity
+    #055: Online land title registration
+    #071: Responsive web design
+    #090, #103, #119, #132, #161, #172: Link to the sectoral or ministerial websites
+    #099, #112, #128, #141, #170, #181: Open government datasets for 6 sectors
+    #09a: Availability of AI-enabled chat-bot functionality
+    #304, #305, #306, #307, #308, #309: Budget expenditure datasets for 6 sectors
+    #313: Online services for rural areas
+    #336: Legislation/law/regulation against misinformation, disinformation and/or fake news
+    #342: National e-Government/Digital Government Strategy
+    #343: A cloud strategy or equivalent
+
+==> Resolving links for 25 indicators x 2 countries (resolve_only) ...
+    session_id = bm-sess-64c7feb2bbf0, 50 units resolved
+
+[DK] #028 Procurement announcements
+    -> https://udbud.dk  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #028 Procurement announcements
+    -> https://sam.gov/opportunities  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #006 Help feature/FAQs section
+    -> https://denmark.dk/faq/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #006 Help feature/FAQs section
+    -> https://www.usa.gov/features/get-help-for-homelessness-hunger-and-more  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #007 Social networking features
+    -> https://denmark.dk/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #007 Social networking features
+    -> https://www.usa.gov  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] rejected https://www.usa.gov/features: no candidate judged relevant by semantic judge
+       [search] no candidate: no admissible government-domain result among the top candidates: https://www.brennancenter.org/our-work/analysis-opinion/government-expanding-its-social-media-surveillance-capabilities: not on a government domain; https://epic.org/issues/consumer-privacy/social-media-privacy/: not on a government domain; https://www.sciencedirect.com/science/article/abs/pii/S0740624X12001438: not on a government domain; https://charlestonlaw.libguides.com/c.php?g=509283&p=3482544: not on a government domain; https://pavilion.dinfos.edu/Article/Article/2107540/comparison-of-social-media-platforms-used-by-the-dod/: not on a government domain
+
+[DK] #009 Live chat support with a person
+    -> https://www.borger.dk/support  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[US] #009 Live chat support with a person
+    -> https://www.usa.gov/contact-center  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #016 Information on online services use
+    -> https://lifeindenmark.borger.dk/apps-and-digital-services  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #016 Information on online services use
+    -> https://www.usa.gov  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+       [search] no candidate: no admissible government-domain result among the top candidates: https://digitalgovernmenthub.org/wp-content/uploads/2023/11/FACTSHEET_BuildingDigitalExperiencesfortheAmericanPeople_OMB_TheWhiteHouse.pdf: not on a government domain; https://www.brennancenter.org/our-work/research-reports/social-media-surveillance-us-government: not on a government domain; https://www.gao.gov/blog/2019/02/19/your-internet-privacy: https://www.gao.gov/blog/2019/02/19/your-internet-privacy is an editorial blog post, not an admissible evidence page; https://www.ca-ilg.org/post/pew-study-online-access-public-agency-services: not on a government domain; https://www.superlawyers.com/resources/civil-rights/how-can-the-government-use-the-information-it-has-about-me/: not on a government domain
+
+[DK] #039 Guidance on Open Government datasets
+    -> https://digst.dk/data-og-it-arkitektur/aabne-data/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #039 Guidance on Open Government datasets
+    -> https://resources.data.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #021 Corruption Reporting
+    -> https://whistleblower.dk/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #021 Corruption Reporting
+    -> https://www.fbi.gov/investigate/public-corruption  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #099, #112, #128, #141, #170, #181 Open government datasets for 6 sectors
+    -> https://en.digst.dk/digital-governance/data/the-danish-data-portal/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #099, #112, #128, #141, #170, #181 Open government datasets for 6 sectors
+    -> https://data.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #304, #305, #306, #307, #308, #309 Budget expenditure datasets for 6 sectors
+    -> https://www.dst.dk/en/Statistik/emner/oekonomi/offentlig-oekonomi/offentlig-sektors-oekonomi  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #304, #305, #306, #307, #308, #309 Budget expenditure datasets for 6 sectors
+    -> https://www.usaspending.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #313 Online services for rural areas
+    -> https://www.borger.dk  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+       [search] no candidate: no admissible government-domain result among the top candidates: https://www.oecd.org/en/publications/denmark-efficient-e-government-for-smarter-public-service-delivery_9789264087118-en.html: not on a government domain; https://tile.loc.gov/storage-services/master/gdc/gdcebookspublic/20/21/76/29/15/2021762915/2021762915.pdf: not on a government domain; https://govinsider.asia/intl-en/article/following-the-citizens-journey-makes-denmark-a-world-leader-in-e-government: not on a government domain; https://queue-it.com/blog/government-digital-transformation-denmark/: not on a government domain; https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/48-Denmark: not on a government domain
+
+[US] #313 Online services for rural areas
+    -> https://www.rd.usda.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #014 Privacy statement(s)
+    -> https://denmark.dk/privacy-notice/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #014 Privacy statement(s)
+    -> https://www.usa.gov/privacy  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #090, #103, #119, #132, #161, #172 Link to the sectoral or ministerial websites
+    -> https://www.thedanishparliament.dk/en/members/the-government  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] rejected https://sum.dk/: resolved outside the required domain (www.borger.dk) for this attempt
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #090, #103, #119, #132, #161, #172 Link to the sectoral or ministerial websites
+    -> https://www.usa.gov/agency-index  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #336 Legislation/law/regulation against misinformation, disinformation and/or fake news
+    -> https://www.retsinformation.dk/eli/lta/2019/444  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #336 Legislation/law/regulation against misinformation, disinformation and/or fake news
+    -> https://www.cisa.gov/topics/election-security/foreign-malign-influence-and-misinformation-disinformation-and-malinformation  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #342 National e-Government/Digital Government Strategy
+    -> https://en.digst.dk/strategy/the-joint-government-digital-strategy/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] rejected https://en.digst.dk/media/27861/national-strategy-for-digitalisation-together-in-the-digital-development.pdf: stale or unreachable MSQ URL (https://en.digst.dk/media/27861/national-strategy-for-digitalisation-together-in-the-digital-development.pdf)
+
+[US] #342 National e-Government/Digital Government Strategy
+    -> https://www.state.gov/digital-government-strategy  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #343 A cloud strategy or equivalent
+    -> https://digst.dk/it-styring/cloud/statens-cloudstrategi/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #343 A cloud strategy or equivalent
+    -> https://www.usa.gov  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+       [search] no candidate: no admissible government-domain result among the top candidates: https://aws.amazon.com/blogs/publicsector/a-cloud-timeline-u-s-governments-modernization-journey/: not on a government domain; https://www.intel.com/content/www/us/en/government/cloud-computing.html: not on a government domain; https://obamawhitehouse.archives.gov/sites/default/files/omb/egov/digital-government/digital-government.html: obamawhitehouse.archives.gov is a frozen archive/snapshot, not live content; https://digitalgovernment.com/cloud-computing-it-modernization-ai/: not on a government domain; https://www.deloitte.com/us/en/what-we-do/capabilities/cloud-transformation/case-studies/government-cloud-adoption-benefits.html: not on a government domain
+
+[DK] #043 Income taxes
+    -> https://skat.dk/borger/aarsopgoerelse-forskudsopgoerelse-og-skattekort  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #043 Income taxes
+    -> https://www.usa.gov/file-taxes  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #045 Entry or Transit Visa
+    -> https://applyvisa.um.dk/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #045 Entry or Transit Visa
+    -> https://travel.state.gov/content/travel/en/us-visas/other-visa-categories/transit.html  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #046 Registration or renewal for a vehicle
+    -> https://motorst.dk/en-us/individuals/registration-and-re-registration  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #046 Registration or renewal for a vehicle
+    -> https://www.usa.gov/state-motor-vehicle-services  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #047 Online Police declaration
+    -> https://politi.dk/en/report-a-crime  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #047 Online Police declaration
+    -> https://www.usa.gov/report-crime  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #049 Registration for a new company or business entity
+    -> https://indberet.virk.dk/myndigheder/stat/ERST/Start_virksomhed  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #049 Registration for a new company or business entity
+    -> https://www.sba.gov/counseling/launch-your-business/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #055 Online land title registration
+    -> https://lifeindenmark.borger.dk/housing-and-moving/buying/the-digital-land-register  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[US] #055 Online land title registration
+    -> https://www.usa.gov/property-records  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #002 Government portal ease of finding
+    -> https://www.borger.dk/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+
+[US] #002 Government portal ease of finding
+    -> https://www.usa.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #005 Sitemap/Index
+    -> https://www.borger.dk  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] rejected https://www.borger.dk/kampagnesider/efter-arbejdsskade-find-vej-tilbage-i-job-med-en-ny-uddannelse: no candidate judged relevant by semantic judge
+       [search] no candidate: no admissible government-domain result among the top candidates: https://developers.google.com/search/docs/crawling-indexing/sitemaps/large-sitemaps: not on a government domain; https://digital.gov/resources/introduction-xml-sitemaps: not on a government domain; https://www.govinfo.gov/sitemaps: not on a government domain; https://publicadministration.un.org/egovkb/en-us/Data/Country-Information/id/48-Denmark: not on a government domain; https://github.com/samdark/sitemap: not on a government domain
+
+[US] #005 Sitemap/Index
+    -> https://www.usa.gov/search-gov  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[DK] #071 Responsive web design
+    -> https://www.borger.dk/hjaelp-og-vejledning/hvad-har-du-brug-for-hjaelp-til/borger-dk/teknisk-hjaelp/smartphones-og-tablets  (source=sitemap)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+[US] #071 Responsive web design
+    -> https://designsystem.digital.gov/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1533 sitemap URLs matched the question's terms
+
+[DK] #09a Availability of AI-enabled chat-bot functionality
+    -> https://www.borger.dk  (source=portal_default)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+       [sitemap] no candidate: no page among 1977 sitemap URLs matched the question's terms
+       [search] no candidate: no admissible government-domain result among the top candidates: https://www.sciencedirect.com/science/article/pii/S0740624X24000194: not on a government domain; https://www.opengovpartnership.org/members/denmark-withdrawn/commitments/DK0071/: not on a government domain; https://pmc.ncbi.nlm.nih.gov/articles/PMC12967755/: not on a government domain; https://chatmaxima.com/blog/how-government-agencies-use-ai-chatbots/: not on a government domain; https://eurocities.eu/latest/accessing-danish-digital-public-services-with-muni/: not on a government domain
+
+[US] #09a Availability of AI-enabled chat-bot functionality
+    -> https://www.usai.gov/chat/  (source=search)
+       [prior_survey_kb] no candidate: no prior-cycle link on record
+       [msq] no candidate: no MSQ submission contained a link for this question
+
+======================================================================
+Resolved: 50 / 50  |  Unresolved: 0
+By supplying source:
+  - search: 38
+  - sitemap: 6
+  - portal_default: 6
+======================================================================
+
+Saved detailed results to data\eval_runs\tuned_v2.json

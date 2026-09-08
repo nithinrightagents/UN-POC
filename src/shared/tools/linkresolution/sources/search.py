@@ -39,6 +39,7 @@ from urllib.parse import parse_qs, urlparse
 import httpx
 from bs4 import BeautifulSoup
 
+from shared.reference.domains import jurisdiction_hint
 from shared.state.entities import LinkSource, ResolutionAttempt
 from shared.tools.linkresolution.admissibility import check_admissible
 from shared.tools.linkresolution.relevance import choose_best
@@ -275,6 +276,54 @@ async def _resolve_via_llm(
     except Exception:
         pass
     return None
+
+
+# Countries whose national government sites are predominantly published in
+# English, so an English-language query is expected to match their own
+# content. Every other country is a candidate for the localized-query
+# fallback below -- most UN member states publish primarily in a language
+# other than English, and an English-only query against their sitemap/search
+# index returns third-party commentary (OECD, think tanks, encyclopedic
+# summaries) rather than the government's own pages, none of which are on
+# an admissible domain.
+_ENGLISH_PRIMARY_COUNTRIES = frozenset({"US", "GB", "UK", "IE", "AU", "NZ", "CA"})
+
+
+async def _translate_query(provider: object, model: str, query: str, country_id: str) -> str | None:
+    """Localizes a search query into the primary official language used by
+    a country's national government (2026-09 goal: retrieval generalization).
+
+    Last-resort stage -- only invoked once every English-language search
+    engine has come back empty, so it costs one LLM call per otherwise-dead
+    search rather than on every query.
+    """
+    prompt = (
+        f"What is the primary official language used on national government "
+        f"websites in the country with ISO 3166-1 alpha-2 code '{country_id}'? "
+        f"Translate the following search query into that language, keeping it "
+        f"short and natural as a search-engine query (not a literal word-for-word "
+        f"translation): \"{query}\"\n"
+        "Return ONLY a JSON object: {\"language\": \"<language name>\", \"translated_query\": \"<query>\"}. "
+        "If the primary language is already English, return the original query unchanged."
+    )
+    try:
+        resp = await provider.generate(
+            model=model,
+            system_instruction="You are a precise translator for government web search queries. Return JSON only.",
+            prompt=prompt,
+            temperature=0.0,
+        )
+        import json
+        text = resp.text.strip()
+        if "```json" in text:
+            text = text.split("```json")[1].split("```")[0].strip()
+        elif "```" in text:
+            text = text.split("```")[1].split("```")[0].strip()
+        parsed = json.loads(text)
+        translated = (parsed.get("translated_query") or "").strip()
+        return translated or None
+    except Exception:
+        return None
 
 
 def _backoff_delay(base_delay_seconds: float, attempt: int) -> float:
@@ -537,13 +586,38 @@ async def search_for_link(
             last_error = last_error or bing_error
         _add_candidates(bing_candidates)
 
+    # 6. Senary: localized-language query retry (2026-09 goal). Every prior
+    # stage searched in English only, which mainly surfaces third-party
+    # commentary about non-English-speaking countries rather than their own
+    # government pages. Only fires once the pool is still empty and the
+    # country's government sites are not predominantly English-language.
+    if (
+        not candidate_pool
+        and provider is not None
+        and model
+        and country_id
+        and country_id.strip().upper() not in _ENGLISH_PRIMARY_COUNTRIES
+    ):
+        translated = await _translate_query(provider, model, relevance_text or query, country_id)
+        if translated and translated.strip().lower() != (relevance_text or query).strip().lower():
+            ddg_candidates, ddg_error = await _fetch_ddg_links(client, translated, max_results)
+            if ddg_error is None:
+                _add_candidates(ddg_candidates)
+            if len(candidate_pool) < TARGET_CANDIDATE_POOL_SIZE:
+                bing_candidates2, bing_error2 = await _fetch_bing_links(client, translated, max_results)
+                if bing_error2 is not None:
+                    last_error = last_error or bing_error2
+                _add_candidates(bing_candidates2)
+
     # Union candidate pool adjudication (T013, T014)
     if candidate_pool:
         if provider is not None and model:
+            _hint = jurisdiction_hint(country_id)
+            judge_what = f"{relevance_detail or ''}\n\n{_hint}".strip() if _hint else (relevance_detail or "")
             judge_res = await choose_best(
                 provider=provider,
                 model=model,
-                question={"title": relevance_text or query, "what": relevance_detail or ""},
+                question={"title": relevance_text or query, "what": judge_what},
                 candidates=candidate_pool,
             )
             if judge_res.status == "chose" and judge_res.index is not None:
